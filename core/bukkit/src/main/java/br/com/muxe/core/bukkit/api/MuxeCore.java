@@ -11,6 +11,7 @@ import br.com.muxe.core.common.persistence.migration.MigrationRunner;
 import br.com.muxe.core.common.persistence.transaction.Transactions;
 import br.com.muxe.core.common.server.ServerIdentity;
 import br.com.muxe.core.common.server.directory.ServerDirectory;
+import br.com.muxe.core.common.store.ExpiringStore;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.concurrent.Executor;
@@ -42,6 +43,8 @@ public interface MuxeCore {
     Transactions transactions();
 
     MigrationRunner migrations();
+
+    ExpiringStore store();
 
     MetricRegistry metrics();
 

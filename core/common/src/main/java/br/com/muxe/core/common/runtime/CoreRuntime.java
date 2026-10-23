@@ -39,6 +39,8 @@ import br.com.muxe.core.common.server.ServerIdentity;
 import br.com.muxe.core.common.server.directory.ServerDirectory;
 import br.com.muxe.core.common.server.directory.ServerDirectorySync;
 import br.com.muxe.core.common.server.heartbeat.ServerHeartbeat;
+import br.com.muxe.core.common.store.ExpiringStore;
+import br.com.muxe.core.common.store.redis.RedisExpiringStore;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.time.Clock;
@@ -64,6 +66,7 @@ public final class CoreRuntime implements AutoCloseable {
     private final ServerDirectory directory;
     private final CommandBus commands;
     private final QueryBus queries;
+    private final ExpiringStore store;
 
     private CoreRuntime(Wiring wiring) {
         this.settings = wiring.settings;
@@ -79,6 +82,7 @@ public final class CoreRuntime implements AutoCloseable {
         this.directory = wiring.directory;
         this.commands = wiring.commands;
         this.queries = wiring.queries;
+        this.store = wiring.store;
     }
 
     public static CoreRuntime start(MuxeSettings settings, PlatformHooks hooks) {
@@ -144,6 +148,10 @@ public final class CoreRuntime implements AutoCloseable {
         return queries;
     }
 
+    public ExpiringStore store() {
+        return store;
+    }
+
     @Override
     public void close() {
         closer.close();
@@ -165,6 +173,7 @@ public final class CoreRuntime implements AutoCloseable {
         private ServerDirectory directory;
         private CommandBus commands;
         private QueryBus queries;
+        private ExpiringStore store;
 
         private Wiring(MuxeSettings settings, PlatformHooks hooks) {
             this.settings = settings;
@@ -188,6 +197,7 @@ public final class CoreRuntime implements AutoCloseable {
 
             RedisConnector redis = closer.register(RedisConnector.connect(settings.redis(), "muxe-" + identity.id()));
             RedisMessageTransport transport = closer.register(new RedisMessageTransport(redis, executors.io(), executors.scheduler(), metrics, logger));
+            store = new RedisExpiringStore(redis);
 
             packetRegistry = NetworkPackets.registerAll(new PacketRegistry());
             packets = closer.register(DefaultPacketBus.builder()

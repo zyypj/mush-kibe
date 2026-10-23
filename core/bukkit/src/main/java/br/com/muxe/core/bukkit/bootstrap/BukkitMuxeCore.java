@@ -13,6 +13,7 @@ import br.com.muxe.core.common.persistence.transaction.Transactions;
 import br.com.muxe.core.common.runtime.CoreRuntime;
 import br.com.muxe.core.common.server.ServerIdentity;
 import br.com.muxe.core.common.server.directory.ServerDirectory;
+import br.com.muxe.core.common.store.ExpiringStore;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.concurrent.Executor;
@@ -69,6 +70,11 @@ final class BukkitMuxeCore implements MuxeCore {
     @Override
     public MigrationRunner migrations() {
         return runtime.migrations();
+    }
+
+    @Override
+    public ExpiringStore store() {
+        return runtime.store();
     }
 
     @Override
