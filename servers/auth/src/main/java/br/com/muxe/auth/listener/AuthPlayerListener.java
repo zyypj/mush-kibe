@@ -1,6 +1,7 @@
 package br.com.muxe.auth.listener;
 
 import br.com.muxe.auth.flow.AuthFlow;
+import br.com.muxe.core.bukkit.effect.Anchors;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import java.time.Duration;
 import java.util.UUID;
@@ -20,12 +21,16 @@ public final class AuthPlayerListener implements Listener {
     private final AuthFlow flow;
     private final MessageCatalog messages;
     private final Duration loginTimeout;
+    private final double challengeDistance;
+    private final double challengeHeight;
 
-    public AuthPlayerListener(Plugin plugin, AuthFlow flow, MessageCatalog messages, Duration loginTimeout) {
+    public AuthPlayerListener(Plugin plugin, AuthFlow flow, MessageCatalog messages, Duration loginTimeout, double challengeDistance, double challengeHeight) {
         this.plugin = plugin;
         this.flow = flow;
         this.messages = messages;
         this.loginTimeout = loginTimeout;
+        this.challengeDistance = challengeDistance;
+        this.challengeHeight = challengeHeight;
     }
 
     @EventHandler
@@ -34,7 +39,7 @@ public final class AuthPlayerListener implements Listener {
         event.setJoinMessage(null);
         hideFromEveryone(player);
         player.teleport(player.getWorld().getSpawnLocation());
-        flow.begin(player);
+        flow.begin(player, Anchors.inFrontOfEyes(player.getEyeLocation(), challengeDistance, challengeHeight));
         scheduleTimeout(player.getUniqueId());
     }
 

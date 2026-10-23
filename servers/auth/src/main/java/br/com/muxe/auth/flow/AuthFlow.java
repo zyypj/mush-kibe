@@ -1,5 +1,8 @@
 package br.com.muxe.auth.flow;
 
+import br.com.muxe.auth.challenge.ChallengeAnswer;
+import br.com.muxe.auth.challenge.ChallengeRenderer;
+import br.com.muxe.auth.challenge.ChallengeTracker;
 import br.com.muxe.auth.credential.application.command.RegisterCredentialCommand;
 import br.com.muxe.auth.credential.application.command.VerifyCredentialCommand;
 import br.com.muxe.auth.credential.application.query.HasCredentialQuery;
@@ -10,14 +13,17 @@ import br.com.muxe.auth.session.LoginAttemptLimiter;
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.messaging.channel.PacketTarget;
+import br.com.muxe.core.common.metrics.Tags;
 import br.com.muxe.core.common.network.auth.AuthenticationMethod;
 import br.com.muxe.core.common.network.auth.PlayerAuthenticatedPacket;
 import br.com.muxe.core.common.result.Result;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public final class AuthFlow {
@@ -25,34 +31,72 @@ public final class AuthFlow {
     private final MuxeCore core;
     private final AuthSessionRegistry sessions;
     private final LoginAttemptLimiter limiter;
+    private final ChallengeTracker challenges;
+    private final ChallengeRenderer renderer;
+    private final boolean challengeEnabled;
+    private final AuthPrompts prompts;
     private final MessageCatalog messages;
     private final Logger logger;
 
-    public AuthFlow(MuxeCore core, AuthSessionRegistry sessions, LoginAttemptLimiter limiter, MessageCatalog messages, Logger logger) {
+    public AuthFlow(
+        MuxeCore core,
+        AuthSessionRegistry sessions,
+        LoginAttemptLimiter limiter,
+        ChallengeTracker challenges,
+        ChallengeRenderer renderer,
+        boolean challengeEnabled,
+        AuthPrompts prompts,
+        MessageCatalog messages,
+        Logger logger
+    ) {
         this.core = core;
         this.sessions = sessions;
         this.limiter = limiter;
+        this.challenges = challenges;
+        this.renderer = renderer;
+        this.challengeEnabled = challengeEnabled;
+        this.prompts = prompts;
         this.messages = messages;
         this.logger = logger;
     }
 
-    public void begin(Player player) {
+    public void begin(Player player, Location challengeAnchor) {
         UUID playerId = player.getUniqueId();
         sessions.set(playerId, AuthState.LOADING);
         whenDone(player, core.queries().ask(new HasCredentialQuery(playerId)), (registered, error) -> {
             if (error != null) {
                 fail(player, error);
-                return;
+            } else if (challengeEnabled) {
+                startChallenge(player, registered, challengeAnchor);
+            } else {
+                askCredentials(player, registered);
             }
-            sessions.set(playerId, registered ? AuthState.AWAITING_LOGIN : AuthState.AWAITING_REGISTER);
-            player.sendMessage(messages.get(registered ? "prompt-login" : "prompt-register"));
         });
+    }
+
+    public void answerChallenge(Player player, String text) {
+        UUID playerId = player.getUniqueId();
+        ChallengeAnswer answer = challenges.answer(playerId, text);
+        if (answer.outcome() != ChallengeAnswer.Outcome.NOT_IN_CHALLENGE) {
+            core.metrics().counter("muxe_auth_challenges_total", Tags.of("outcome", answer.outcome().name().toLowerCase(Locale.ROOT))).increment();
+        }
+        switch (answer.outcome()) {
+            case PASSED -> {
+                renderer.untrack(playerId);
+                player.sendMessage(messages.get("challenge-passed"));
+                askCredentials(player, answer.registered());
+            }
+            case WRONG -> player.sendMessage(messages.get("challenge-wrong", "remaining", Integer.toString(answer.remainingAttempts())));
+            case FAILED -> player.kickPlayer(messages.get("challenge-failed"));
+            case NOT_IN_CHALLENGE -> {
+            }
+        }
     }
 
     public void register(Player player, String password, String confirmation) {
         UUID playerId = player.getUniqueId();
         if (!sessions.transition(playerId, AuthState.AWAITING_REGISTER, AuthState.PROCESSING)) {
-            player.sendMessage(messages.get(sessions.isAuthenticated(playerId) ? "already-authenticated" : "use-login"));
+            player.sendMessage(messages.get(blockedReason(playerId, "use-login")));
             return;
         }
         player.sendMessage(messages.get("processing"));
@@ -76,7 +120,7 @@ public final class AuthFlow {
             return;
         }
         if (!sessions.transition(playerId, AuthState.AWAITING_LOGIN, AuthState.PROCESSING)) {
-            player.sendMessage(messages.get(sessions.isAuthenticated(playerId) ? "already-authenticated" : "use-register"));
+            player.sendMessage(messages.get(blockedReason(playerId, "use-register")));
             return;
         }
         player.sendMessage(messages.get("processing"));
@@ -92,12 +136,40 @@ public final class AuthFlow {
         });
     }
 
-    public void end(UUID playerId) {
-        sessions.remove(playerId);
+    public boolean isInChallenge(UUID playerId) {
+        return challenges.isChallenging(playerId);
     }
 
     public boolean isAuthenticated(UUID playerId) {
         return sessions.isAuthenticated(playerId);
+    }
+
+    public void end(UUID playerId) {
+        sessions.remove(playerId);
+        challenges.end(playerId);
+        renderer.untrack(playerId);
+    }
+
+    private void startChallenge(Player player, boolean registered, Location anchor) {
+        sessions.set(player.getUniqueId(), AuthState.CHALLENGE);
+        challenges.start(player.getUniqueId(), registered);
+        renderer.track(player.getUniqueId(), anchor);
+        prompts.challenge(player);
+    }
+
+    private void askCredentials(Player player, boolean registered) {
+        sessions.set(player.getUniqueId(), registered ? AuthState.AWAITING_LOGIN : AuthState.AWAITING_REGISTER);
+        prompts.credentials(player, registered);
+    }
+
+    private String blockedReason(UUID playerId, String otherCommandKey) {
+        AuthState state = sessions.state(playerId).orElse(AuthState.LOADING);
+        return switch (state) {
+            case AUTHENTICATED -> "already-authenticated";
+            case CHALLENGE -> "complete-challenge-first";
+            case LOADING, PROCESSING -> "processing";
+            case AWAITING_LOGIN, AWAITING_REGISTER -> otherCommandKey;
+        };
     }
 
     private void handleLoginFailure(Player player, String code) {
@@ -118,7 +190,7 @@ public final class AuthFlow {
 
     private void complete(Player player, AuthenticationMethod method) {
         sessions.set(player.getUniqueId(), AuthState.AUTHENTICATED);
-        player.sendMessage(messages.get(method == AuthenticationMethod.REGISTER ? "registered" : "logged-in"));
+        prompts.authenticated(player, method == AuthenticationMethod.LOGIN);
         PlayerAuthenticatedPacket packet = new PlayerAuthenticatedPacket(player.getUniqueId(), player.getName(), method);
         core.packets().publish(PacketTarget.proxy(), packet).exceptionally(error -> {
             logger.log(Level.WARNING, "Could not notify the proxy about " + player.getName(), error);

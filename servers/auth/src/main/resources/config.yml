@@ -8,17 +8,39 @@ password:
   min-length: 6
   max-length: 64
 
+challenge:
+  enabled: true
+  length: 4
+  max-attempts: 3
+  distance: 4
+
+reminder:
+  interval: 5s
+
 messages:
   players-only: "&cApenas jogadores podem usar este comando."
-  prompt-login: "&eBem-vindo de volta! Use &f/login <senha>&e para entrar."
-  prompt-register: "&eBem-vindo à Muxe! Use &f/register <senha> <senha>&e para criar sua conta."
-  usage-login: "&cUso: /login <senha>"
-  usage-register: "&cUso: /register <senha> <senha>"
-  use-login: "&cVocê já tem uma conta. Use &f/login <senha>&c."
-  use-register: "&cVocê ainda não tem uma conta. Use &f/register <senha> <senha>&c."
+  challenge-header: "&e&lDESAFIO:"
+  challenge-instruction: "&eDigite o &bcódigo &eem frente no &bchat&e!"
+  challenge-hint: "&7&o(É necessário ativar as partículas para visualizar corretamente)"
+  challenge-action-bar: "&eDigite o código em frente no chat!"
+  challenge-passed: "&aDesafio completado com sucesso!"
+  challenge-wrong: "&cCódigo incorreto! Um novo código foi gerado. Tentativas restantes: &f{remaining}"
+  challenge-failed: "&cVocê errou o desafio muitas vezes."
+  complete-challenge-first: "&cComplete o desafio primeiro: digite o código em frente no chat."
+  password-warning: "&cNUNCA COMPARTILHE A SUA SENHA COM NINGUÉM!"
+  prompt-login: "&eFaça o login utilizando &b/logar <senha>"
+  prompt-register: "&eFaça o registro utilizando &b/registrar <senha> <senha>"
+  title: "&b&lMUXE"
+  subtitle-login: "&eUse /logar <senha>"
+  subtitle-register: "&eUse /registrar <senha> <senha>"
+  usage-login: "&cUso: /logar <senha>"
+  usage-register: "&cUso: /registrar <senha> <senha>"
+  use-login: "&cVocê já possui uma conta. Use &b/logar <senha>&c."
+  use-register: "&cVocê ainda não possui uma conta. Use &b/registrar <senha> <senha>&c."
   processing: "&7Verificando..."
-  logged-in: "&aLogin realizado! Enviando você ao lobby..."
-  registered: "&aConta criada! Enviando você ao lobby..."
+  logged-in: "&aVocê se autenticou com sucesso!"
+  registered: "&aVocê se registrou com sucesso!"
+  sending-to-lobby: "&aEnviando ao lobby..."
   already-authenticated: "&eVocê já está autenticado."
   wrong-password: "&cSenha incorreta. Tentativas restantes: &f{remaining}"
   too-many-attempts: "&cMuitas tentativas incorretas. Aguarde alguns minutos e tente novamente."
@@ -26,6 +48,6 @@ messages:
   password-too-short: "&cSua senha é muito curta."
   password-too-long: "&cSua senha é muito longa."
   password-equals-username: "&cSua senha não pode ser igual ao seu nome."
-  blocked-command: "&cAutentique-se primeiro com &f/login&c ou &f/register&c."
+  blocked-command: "&cFaça o login utilizando &b/logar <senha>"
   timeout: "&cVocê demorou demais para se autenticar."
   service-unavailable: "&cNão foi possível autenticar agora. Tente novamente em instantes."
