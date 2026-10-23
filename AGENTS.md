@@ -37,7 +37,8 @@ Read these before changing code, in this order:
 - Business rules live in plain Java classes that can be tested without a server. Bukkit and Velocity classes only adapt events and commands to them.
 - State changes go through a `Command` and its handler; reads go through a `Query`. Expected business failures return `Result.failure(...)` with a problem code; exceptions are for infrastructure failures.
 - Never block the main thread. Database and Redis work runs on the core's async executor; anything that touches Bukkit goes back through `MuxeCore.mainThread()`.
-- Never reach Redis directly from a feature. Use `PacketBus` and register a `PacketType` with a codec and a delivery policy.
+- Never reach Redis directly from a feature. Use `PacketBus` for messages and `MuxeCore.store()` for short-lived values.
+- Reusable helpers belong in the core, not in a feature. Before writing something generic (titles, action bars, effects, items, menus), check the [Core API](docs/development/core-api/README.md); if it is missing, add it to `core:bukkit` or `core:common`, test it and document it there.
 - Player-facing text lives in each plugin's `config.yml`, under `messages`, in Portuguese with `&` color codes.
 - YAML uses expanded block style: no inline maps, no inline lists.
 

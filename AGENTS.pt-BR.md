@@ -39,7 +39,8 @@ Leia antes de alterar código, nesta ordem:
 - As regras de negócio ficam em classes Java simples, que podem ser testadas sem servidor. As classes do Bukkit e do Velocity só adaptam eventos e comandos para elas.
 - Mudanças de estado passam por um `Command` e seu handler; leituras passam por uma `Query`. Falhas de negócio esperadas retornam `Result.failure(...)` com um código de problema; exceções são para falhas de infraestrutura.
 - Nunca bloqueie a thread principal. Trabalho com banco e Redis roda no executor assíncrono do core; tudo o que mexe no Bukkit volta pelo `MuxeCore.mainThread()`.
-- Nunca acesse o Redis diretamente a partir de uma feature. Use o `PacketBus` e registre um `PacketType` com um codec e uma política de entrega.
+- Nunca acesse o Redis diretamente a partir de uma feature. Use o `PacketBus` para mensagens e o `MuxeCore.store()` para valores de curta duração.
+- Utilitários reutilizáveis ficam no core, não em uma feature. Antes de escrever algo genérico (títulos, action bars, efeitos, itens, menus), confira a [API do core](docs/development/core-api/README.pt-BR.md); se faltar, adicione-o ao `core:bukkit` ou ao `core:common`, teste-o e documente-o lá.
 - Os textos para jogadores ficam no `config.yml` de cada plugin, em `messages`, em português, com códigos de cor `&`.
 - O YAML usa o estilo de bloco expandido: nada de mapas nem listas inline.
 

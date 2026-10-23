@@ -8,6 +8,7 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 
 - [Development](development/README.md): requirements, modules, dependency rules, build commands and how to run a local network.
 - [Conventions](development/conventions/README.md): Java style, package organization, naming, configuration and messages.
+- [Core API](development/core-api/README.md): what Muxe-Core offers to plugins, including titles, action bars and particle text.
 - [Process](process/README.md): how work is planned and delivered, and what "ready" and "done" mean.
 - [Legal and clean-room policy](legal/README.md): what may and may not enter this repository.
 
@@ -28,7 +29,7 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 ## Features
 
 - [Accounts](features/accounts/README.md): one account per player, created on the first login.
-- [Authentication](features/authentication/README.md): `/register` and `/login` on the auth server.
+- [Authentication](features/authentication/README.md): premium auto-login, anti-bot challenge, `/registrar`, `/logar` and 2-hour sessions.
 - [Network routing](features/network-routing/README.md): how the proxy picks servers, `/lobby` and the access gate.
 - [Network administration](features/network-admin/README.md): `/muxe` commands for staff.
 - [Lobby](features/lobby/README.md): spawn, protection and `/jogar`.
