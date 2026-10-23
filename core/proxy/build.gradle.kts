@@ -4,4 +4,6 @@ plugins {
 
 dependencies {
     implementation(projects.core.common)
+
+    testImplementation(testFixtures(projects.core.common))
 }
