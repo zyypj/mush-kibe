@@ -7,6 +7,12 @@ routing:
   auth-group: auth
   lobby-group: lobby
 
+authentication:
+  premium-auto-login: true
+  premium-lookup-timeout: 3s
+  premium-cache: 6h
+  session-duration: 2h
+
 database:
   url: jdbc:postgresql://localhost:5432/muxe
   username: muxe
