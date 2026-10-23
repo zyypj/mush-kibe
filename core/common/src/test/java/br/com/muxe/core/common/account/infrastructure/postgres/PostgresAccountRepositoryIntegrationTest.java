@@ -50,7 +50,28 @@ class PostgresAccountRepositoryIntegrationTest {
 
     @Test
     void migrationsCreateTheCoreSchema() {
-        assertThat(migration.schemaVersion()).isEqualTo("2");
+        assertThat(migration.schemaVersion()).isEqualTo("3");
+    }
+
+    @Test
+    void aNameCanBeReleasedAndTakenByAnotherAccountInTheSameTransaction() {
+        String name = "Grumm" + suffix();
+        Account previous = Account.firstLogin(UUID.randomUUID(), name, true, now());
+        Account next = Account.firstLogin(UUID.randomUUID(), name, true, now());
+        transactions.inTransaction("test.save", () -> {
+            repository.save(previous);
+            return null;
+        });
+
+        transactions.inTransaction("test.reclaim", () -> {
+            repository.save(previous.withoutUsername());
+            repository.save(next);
+            return null;
+        });
+
+        assertThat(transactions.readOnly("test.find", () -> repository.findByUsername(name))).map(Account::id).contains(next.id());
+        assertThat(transactions.readOnly("test.find", () -> repository.findById(previous.id())))
+            .hasValueSatisfying(account -> assertThat(account.currentUsername()).isEmpty());
     }
 
     @Test

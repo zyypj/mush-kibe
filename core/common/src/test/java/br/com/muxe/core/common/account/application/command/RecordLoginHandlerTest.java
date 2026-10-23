@@ -23,9 +23,8 @@ class RecordLoginHandlerTest {
     void createsTheAccountOnFirstLogin() {
         UUID id = UUID.randomUUID();
 
-        Result<Account> result = handler.handle(new RecordLoginCommand(id, "Steve", false));
+        Account account = login(id, "Steve", false);
 
-        Account account = result.orElseThrow();
         assertThat(account.firstSeenAt()).isEqualTo(clock.instant());
         assertThat(account.premium()).isFalse();
         assertThat(accounts.findById(id)).contains(account);
@@ -34,38 +33,85 @@ class RecordLoginHandlerTest {
 
     @Test
     void remembersPremiumAccounts() {
-        Account account = handler.handle(new RecordLoginCommand(UUID.randomUUID(), "Notch", true)).orElseThrow();
-
-        assertThat(account.premium()).isTrue();
+        assertThat(login(UUID.randomUUID(), "Notch", true).premium()).isTrue();
     }
 
     @Test
     void keepsTheModeChosenOnTheFirstLogin() {
         UUID id = UUID.randomUUID();
-        handler.handle(new RecordLoginCommand(id, "Notch", true));
+        login(id, "Notch", true);
 
-        Account account = handler.handle(new RecordLoginCommand(id, "Notch", false)).orElseThrow();
-
-        assertThat(account.premium()).isTrue();
+        assertThat(login(id, "Notch", false).premium()).isTrue();
     }
 
     @Test
     void updatesTheLastLoginOfReturningPlayers() {
         UUID id = UUID.randomUUID();
-        handler.handle(new RecordLoginCommand(id, "Steve", false));
+        login(id, "Steve", false);
         clock.advance(Duration.ofDays(1));
 
-        Account account = handler.handle(new RecordLoginCommand(id, "Steve", false)).orElseThrow();
+        Account account = login(id, "Steve", false);
 
         assertThat(account.lastSeenAt()).isEqualTo(clock.instant());
         assertThat(account.firstSeenAt()).isEqualTo(clock.instant().minus(Duration.ofDays(1)));
     }
 
     @Test
-    void refusesANameThatDiffersOnlyByCase() {
-        handler.handle(new RecordLoginCommand(UUID.randomUUID(), "Steve", false));
+    void aPremiumPlayerWhoChangedNameKeepsTheSameAccount() {
+        UUID id = UUID.randomUUID();
+        login(id, "Steve", true);
 
-        Result<Account> result = handler.handle(new RecordLoginCommand(UUID.randomUUID(), "STEVE", false));
+        Account account = login(id, "Steve2", true);
+
+        assertThat(account.username()).isEqualTo("Steve2");
+        assertThat(accounts.findByUsername("Steve")).isEmpty();
+        assertThat(accounts.size()).isEqualTo(1);
+    }
+
+    @Test
+    void theNewPremiumOwnerOfANameTakesItFromThePreviousOwner() {
+        UUID previousOwner = UUID.randomUUID();
+        UUID newOwner = UUID.randomUUID();
+        login(previousOwner, "Steve", true);
+
+        RecordedLogin recorded = handler.handle(new RecordLoginCommand(newOwner, "Steve", true)).orElseThrow();
+
+        assertThat(recorded.nameReclaimedFrom()).contains(previousOwner);
+        assertThat(accounts.findByUsername("Steve")).map(Account::id).contains(newOwner);
+        assertThat(accounts.findById(previousOwner)).hasValueSatisfying(previous -> {
+            assertThat(previous.currentUsername()).isEmpty();
+            assertThat(previous.premium()).isTrue();
+        });
+    }
+
+    @Test
+    void aPremiumPlayerTakesTheirNameBackFromACrackedAccountInAnyCase() {
+        UUID cracked = UUID.randomUUID();
+        UUID premium = UUID.randomUUID();
+        login(cracked, "notch", false);
+
+        RecordedLogin recorded = handler.handle(new RecordLoginCommand(premium, "Notch", true)).orElseThrow();
+
+        assertThat(recorded.nameReclaimedFrom()).contains(cracked);
+        assertThat(accounts.findById(cracked)).hasValueSatisfying(account -> assertThat(account.currentUsername()).isEmpty());
+    }
+
+    @Test
+    void theReleasedAccountGetsANameAgainWhenItsOwnerReturns() {
+        UUID previousOwner = UUID.randomUUID();
+        login(previousOwner, "Steve", true);
+        login(UUID.randomUUID(), "Steve", true);
+
+        Account account = login(previousOwner, "SteveRenamed", true);
+
+        assertThat(account.username()).isEqualTo("SteveRenamed");
+    }
+
+    @Test
+    void aCrackedPlayerCannotTakeANameThatDiffersOnlyByCase() {
+        login(UUID.randomUUID(), "Steve", false);
+
+        Result<RecordedLogin> result = handler.handle(new RecordLoginCommand(UUID.randomUUID(), "STEVE", false));
 
         assertThat(result).isInstanceOfSatisfying(Result.Failure.class, failure ->
             assertThat(failure.problem().code()).isEqualTo(AccountProblems.NAME_CASE_CONFLICT));
@@ -73,10 +119,23 @@ class RecordLoginHandlerTest {
     }
 
     @Test
+    void aCrackedPlayerCannotTakeAPremiumName() {
+        login(UUID.randomUUID(), "Notch", true);
+
+        Result<RecordedLogin> result = handler.handle(new RecordLoginCommand(UUID.randomUUID(), "notch", false));
+
+        assertThat(result.isFailure()).isTrue();
+    }
+
+    @Test
     void refusesInvalidNamesWithoutTouchingTheDatabase() {
-        Result<Account> result = handler.handle(new RecordLoginCommand(UUID.randomUUID(), "no spaces!", false));
+        Result<RecordedLogin> result = handler.handle(new RecordLoginCommand(UUID.randomUUID(), "no spaces!", false));
 
         assertThat(result.isFailure()).isTrue();
         assertThat(transactions.operations()).isEmpty();
+    }
+
+    private Account login(UUID id, String username, boolean premium) {
+        return handler.handle(new RecordLoginCommand(id, username, premium)).orElseThrow().account();
     }
 }

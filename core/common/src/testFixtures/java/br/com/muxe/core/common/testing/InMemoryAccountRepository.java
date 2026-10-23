@@ -21,7 +21,7 @@ public final class InMemoryAccountRepository implements AccountRepository {
     public Optional<Account> findByUsername(String username) {
         String lower = username.toLowerCase(Locale.ROOT);
         return accounts.values().stream()
-            .filter(account -> account.username().toLowerCase(Locale.ROOT).equals(lower))
+            .filter(account -> account.username() != null && account.username().toLowerCase(Locale.ROOT).equals(lower))
             .findFirst();
     }
 
