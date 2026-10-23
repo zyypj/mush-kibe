@@ -23,21 +23,39 @@ class RecordLoginHandlerTest {
     void createsTheAccountOnFirstLogin() {
         UUID id = UUID.randomUUID();
 
-        Result<Account> result = handler.handle(new RecordLoginCommand(id, "Steve"));
+        Result<Account> result = handler.handle(new RecordLoginCommand(id, "Steve", false));
 
         Account account = result.orElseThrow();
         assertThat(account.firstSeenAt()).isEqualTo(clock.instant());
+        assertThat(account.premium()).isFalse();
         assertThat(accounts.findById(id)).contains(account);
         assertThat(transactions.operations()).containsExactly("account.record_login");
     }
 
     @Test
+    void remembersPremiumAccounts() {
+        Account account = handler.handle(new RecordLoginCommand(UUID.randomUUID(), "Notch", true)).orElseThrow();
+
+        assertThat(account.premium()).isTrue();
+    }
+
+    @Test
+    void keepsTheModeChosenOnTheFirstLogin() {
+        UUID id = UUID.randomUUID();
+        handler.handle(new RecordLoginCommand(id, "Notch", true));
+
+        Account account = handler.handle(new RecordLoginCommand(id, "Notch", false)).orElseThrow();
+
+        assertThat(account.premium()).isTrue();
+    }
+
+    @Test
     void updatesTheLastLoginOfReturningPlayers() {
         UUID id = UUID.randomUUID();
-        handler.handle(new RecordLoginCommand(id, "Steve"));
+        handler.handle(new RecordLoginCommand(id, "Steve", false));
         clock.advance(Duration.ofDays(1));
 
-        Account account = handler.handle(new RecordLoginCommand(id, "Steve")).orElseThrow();
+        Account account = handler.handle(new RecordLoginCommand(id, "Steve", false)).orElseThrow();
 
         assertThat(account.lastSeenAt()).isEqualTo(clock.instant());
         assertThat(account.firstSeenAt()).isEqualTo(clock.instant().minus(Duration.ofDays(1)));
@@ -45,9 +63,9 @@ class RecordLoginHandlerTest {
 
     @Test
     void refusesANameThatDiffersOnlyByCase() {
-        handler.handle(new RecordLoginCommand(UUID.randomUUID(), "Steve"));
+        handler.handle(new RecordLoginCommand(UUID.randomUUID(), "Steve", false));
 
-        Result<Account> result = handler.handle(new RecordLoginCommand(UUID.randomUUID(), "STEVE"));
+        Result<Account> result = handler.handle(new RecordLoginCommand(UUID.randomUUID(), "STEVE", false));
 
         assertThat(result).isInstanceOfSatisfying(Result.Failure.class, failure ->
             assertThat(failure.problem().code()).isEqualTo(AccountProblems.NAME_CASE_CONFLICT));
@@ -56,7 +74,7 @@ class RecordLoginHandlerTest {
 
     @Test
     void refusesInvalidNamesWithoutTouchingTheDatabase() {
-        Result<Account> result = handler.handle(new RecordLoginCommand(UUID.randomUUID(), "no spaces!"));
+        Result<Account> result = handler.handle(new RecordLoginCommand(UUID.randomUUID(), "no spaces!", false));
 
         assertThat(result.isFailure()).isTrue();
         assertThat(transactions.operations()).isEmpty();
