@@ -7,6 +7,7 @@ public record AuthenticationSettings(
     boolean premiumAutoLogin,
     Duration premiumLookupTimeout,
     Duration premiumCacheDuration,
+    Duration crackedCacheDuration,
     Duration sessionDuration
 ) {
 
@@ -15,6 +16,7 @@ public record AuthenticationSettings(
             source.bool("authentication.premium-auto-login", true),
             source.duration("authentication.premium-lookup-timeout", Duration.ofSeconds(3)),
             source.duration("authentication.premium-cache", Duration.ofHours(6)),
+            source.duration("authentication.cracked-cache", Duration.ofMinutes(10)),
             source.duration("authentication.session-duration", Duration.ofHours(2))
         );
     }

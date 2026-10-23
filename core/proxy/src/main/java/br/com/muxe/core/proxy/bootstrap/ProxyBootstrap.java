@@ -85,6 +85,13 @@ public final class ProxyBootstrap {
             .executor(runtime.executors().io())
             .build();
         MojangPremiumLookup mojang = new MojangPremiumLookup(client, MojangPremiumLookup.DEFAULT_ENDPOINT, authentication.premiumLookupTimeout(), logger);
-        return new CachedPremiumLookup(mojang, runtime.store(), authentication.premiumCacheDuration(), runtime.metrics(), logger);
+        return new CachedPremiumLookup(
+            mojang,
+            runtime.store(),
+            authentication.premiumCacheDuration(),
+            authentication.crackedCacheDuration(),
+            runtime.metrics(),
+            logger
+        );
     }
 }

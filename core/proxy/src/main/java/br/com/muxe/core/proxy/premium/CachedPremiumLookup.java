@@ -15,14 +15,23 @@ public final class CachedPremiumLookup implements PremiumLookup {
 
     private final PremiumLookup remote;
     private final ExpiringStore store;
-    private final Duration timeToLive;
+    private final Duration premiumTimeToLive;
+    private final Duration crackedTimeToLive;
     private final MetricRegistry metrics;
     private final Logger logger;
 
-    public CachedPremiumLookup(PremiumLookup remote, ExpiringStore store, Duration timeToLive, MetricRegistry metrics, Logger logger) {
+    public CachedPremiumLookup(
+        PremiumLookup remote,
+        ExpiringStore store,
+        Duration premiumTimeToLive,
+        Duration crackedTimeToLive,
+        MetricRegistry metrics,
+        Logger logger
+    ) {
         this.remote = remote;
         this.store = store;
-        this.timeToLive = timeToLive;
+        this.premiumTimeToLive = premiumTimeToLive;
+        this.crackedTimeToLive = crackedTimeToLive;
         this.metrics = metrics;
         this.logger = logger;
     }
@@ -54,7 +63,7 @@ public final class CachedPremiumLookup implements PremiumLookup {
 
     private void writeCache(String key, PremiumStatus status) {
         try {
-            store.put(key, status.name(), timeToLive);
+            store.put(key, status.name(), status == PremiumStatus.PREMIUM ? premiumTimeToLive : crackedTimeToLive);
         } catch (RuntimeException exception) {
             logger.log(Level.FINE, "Premium cache unavailable: " + exception.getMessage());
         }

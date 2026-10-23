@@ -11,6 +11,7 @@ authentication:
   premium-auto-login: true
   premium-lookup-timeout: 3s
   premium-cache: 6h
+  cracked-cache: 10m
   session-duration: 2h
 
 database:

@@ -22,14 +22,16 @@ When a connection starts, the proxy decides its **login mode**:
 | Situation | Mode |
 |---|---|
 | An account with this name exists and is premium | Premium |
-| An account with this name exists and is cracked | Cracked |
+| An account with this name exists and is cracked, and the name is not premium at Mojang | Cracked |
+| An account with this name exists and is cracked, but the name is now premium at Mojang | Premium: the Mojang owner takes the name back |
 | No account, and Mojang has a profile with this name | Premium |
 | No account, and Mojang has no profile with this name | Cracked |
 | No account, and Mojang could not be reached | Connection refused with `service-unavailable` |
 
 - **Premium** connections are forced into online mode: Velocity checks the player's session with Mojang. A cracked client using a premium name fails this check and cannot join.
 - **Cracked** connections are forced into offline mode.
-- The mode is decided once, on the first login, and stored in the account. Mojang answers are cached in Redis for `authentication.premium-cache`.
+- The premium flag is stored in the account on its first login. Names held by cracked accounts are checked against Mojang again on every login, so a name that became premium goes to its owner. Who keeps a name is described in [Accounts](../accounts/README.md#name-ownership).
+- Mojang answers are cached in Redis: premium answers for `authentication.premium-cache`, cracked answers for the shorter `authentication.cracked-cache`, so a name bought at Mojang is protected within minutes.
 - With `authentication.premium-auto-login: false`, every new account is cracked.
 
 ### 2. Automatic authentication (proxy, at login)
@@ -82,7 +84,8 @@ Proxy `config.yml`:
 |---|---|---|
 | `authentication.premium-auto-login` | `true` | Detect premium names and let them in without a password. |
 | `authentication.premium-lookup-timeout` | `3s` | Timeout of the Mojang lookup. |
-| `authentication.premium-cache` | `6h` | How long Mojang answers are cached in Redis. |
+| `authentication.premium-cache` | `6h` | How long "premium" answers from Mojang are cached in Redis. |
+| `authentication.cracked-cache` | `10m` | How long "not premium" answers are cached. Short, so a name that becomes premium is protected quickly. |
 | `authentication.session-duration` | `2h` | How long a password login is remembered for the same account and IP. |
 
 `plugins/Muxe-Auth/config.yml`:
@@ -120,7 +123,7 @@ Required:
 | PostgreSQL `auth.credentials` | `player_id`, `password_hash` (`pbkdf2_sha256$<iterations>$<salt>$<hash>`), `created_at`, `updated_at`, `last_login_at`. |
 | PostgreSQL `core.accounts.premium` | Whether the account logs in through Mojang. See [Accounts](../accounts/README.md). |
 | Redis `muxe:auth:session:<player id>` | SHA-256 of the player id and IP of the last password login. Expires after `session-duration`. The raw IP is never stored. |
-| Redis `muxe:auth:premium:<lowercase name>` | `PREMIUM` or `CRACKED` from Mojang. Expires after `premium-cache`. |
+| Redis `muxe:auth:premium:<lowercase name>` | `PREMIUM` or `CRACKED` from Mojang. Expires after `premium-cache` or `cracked-cache`. |
 
 ## Application
 
@@ -151,8 +154,8 @@ Plus `muxe_cqrs_handle_seconds` for the commands and queries above, `muxe_db_tra
 
 ## Acceptance criteria
 
-- [x] Known accounts keep their login mode; new names follow Mojang; an unreachable Mojang refuses only new names.
-- [x] Mojang answers are cached and an unavailable cache does not block logins.
+- [x] Premium accounts always log in through Mojang; cracked accounts stay cracked while the name is not premium and go to the Mojang owner once it is; new names follow Mojang; an unreachable Mojang refuses only new names.
+- [x] Mojang answers are cached, cracked answers for less time than premium ones, and an unavailable cache does not block logins.
 - [x] A password login is resumed only for the same account, from the same IP, within the session duration, and the IP is stored hashed.
 - [x] The challenge accepts the right code ignoring case and spaces, renews the code after a wrong answer and fails after the maximum attempts.
 - [x] Codes only use unambiguous characters that the particle font can draw.
@@ -165,7 +168,7 @@ Plus `muxe_cqrs_handle_seconds` for the commands and queries above, `muxe_db_tra
 
 ## Failures and recovery
 
-- **Mojang unreachable:** existing accounts log in normally; new names are refused with `service-unavailable` until Mojang answers, so a premium name can never be registered as cracked by accident.
+- **Mojang unreachable:** existing accounts log in normally (cracked names cannot be re-checked until Mojang answers); new names are refused with `service-unavailable`, so a premium name can never be registered as cracked by accident.
 - **Redis unavailable:** sessions cannot be resumed, so cracked players log in with their password; premium lookups go straight to Mojang.
 - **Database unavailable:** the login is refused with `service-unavailable`; nothing is half-written.
 - **Proxy does not receive `auth.authenticated`:** the publish fails and the player is kicked with `service-unavailable`, so they never wait forever.
@@ -173,7 +176,8 @@ Plus `muxe_cqrs_handle_seconds` for the commands and queries above, `muxe_db_tra
 
 ## Known limitations
 
-- A cracked account registered before the premium owner of the same name keeps the name; the premium owner cannot join with it. Staff must resolve these cases.
+- A name bought at Mojang can still be used by a cracked player for up to `cracked-cache` (10 minutes by default) after a cached "not premium" answer.
+- When a cracked client tries a premium name, the refusal message is Velocity's own online-mode error.
 - Premium players cannot yet choose to protect their account with a password too. This preference is planned and will reuse the same session rules.
 - Wrong-password limits are counted per player on each auth server, in memory.
 - No password change or recovery yet.

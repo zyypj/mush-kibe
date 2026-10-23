@@ -22,14 +22,16 @@ Quando uma conexão começa, o proxy decide o seu **modo de login**:
 | Situação | Modo |
 |---|---|
 | Existe uma conta com esse nome e ela é premium | Premium |
-| Existe uma conta com esse nome e ela é pirata | Pirata |
+| Existe uma conta com esse nome e ela é pirata, e o nome não é premium na Mojang | Pirata |
+| Existe uma conta com esse nome e ela é pirata, mas o nome agora é premium na Mojang | Premium: o dono na Mojang recupera o nome |
 | Não há conta, e a Mojang tem um perfil com esse nome | Premium |
 | Não há conta, e a Mojang não tem perfil com esse nome | Pirata |
 | Não há conta, e não foi possível consultar a Mojang | Conexão recusada com `service-unavailable` |
 
 - Conexões **premium** são forçadas ao modo online: o Velocity verifica a sessão do jogador com a Mojang. Um cliente pirata usando um nome premium falha nessa verificação e não consegue entrar.
 - Conexões **piratas** são forçadas ao modo offline.
-- O modo é decidido uma única vez, no primeiro login, e gravado na conta. As respostas da Mojang ficam em cache no Redis por `authentication.premium-cache`.
+- A marca de premium é gravada na conta no primeiro login. Nomes que estão com contas piratas são verificados de novo na Mojang a cada login, então um nome que virou premium vai para o seu dono. Quem fica com cada nome está descrito em [Contas](../accounts/README.pt-BR.md#dono-do-nome).
+- As respostas da Mojang ficam em cache no Redis: respostas premium por `authentication.premium-cache`, respostas piratas pelo tempo menor de `authentication.cracked-cache`, então um nome comprado na Mojang fica protegido em minutos.
 - Com `authentication.premium-auto-login: false`, toda conta nova é pirata.
 
 ### 2. Autenticação automática (proxy, no login)
@@ -82,7 +84,8 @@ Não se aplica.
 |---|---|---|
 | `authentication.premium-auto-login` | `true` | Detecta nomes premium e os deixa entrar sem senha. |
 | `authentication.premium-lookup-timeout` | `3s` | Tempo limite da consulta à Mojang. |
-| `authentication.premium-cache` | `6h` | Por quanto tempo as respostas da Mojang ficam em cache no Redis. |
+| `authentication.premium-cache` | `6h` | Por quanto tempo as respostas "premium" da Mojang ficam em cache no Redis. |
+| `authentication.cracked-cache` | `10m` | Por quanto tempo as respostas "não premium" ficam em cache. É curto, para que um nome que vira premium fique protegido rápido. |
 | `authentication.session-duration` | `2h` | Por quanto tempo um login com senha é lembrado para a mesma conta e o mesmo IP. |
 
 `plugins/Muxe-Auth/config.yml`:
@@ -120,7 +123,7 @@ Obrigatório:
 | PostgreSQL `auth.credentials` | `player_id`, `password_hash` (`pbkdf2_sha256$<iterations>$<salt>$<hash>`), `created_at`, `updated_at`, `last_login_at`. |
 | PostgreSQL `core.accounts.premium` | Se a conta faz login pela Mojang. Veja [Contas](../accounts/README.pt-BR.md). |
 | Redis `muxe:auth:session:<player id>` | SHA-256 do id do jogador e do IP do último login com senha. Expira depois de `session-duration`. O IP puro nunca é guardado. |
-| Redis `muxe:auth:premium:<lowercase name>` | `PREMIUM` ou `CRACKED`, vindo da Mojang. Expira depois de `premium-cache`. |
+| Redis `muxe:auth:premium:<lowercase name>` | `PREMIUM` ou `CRACKED`, vindo da Mojang. Expira depois de `premium-cache` ou `cracked-cache`. |
 
 ## Aplicação
 
@@ -151,8 +154,8 @@ Além de `muxe_cqrs_handle_seconds` para os comandos e consultas acima, `muxe_db
 
 ## Critérios de aceitação
 
-- [x] Contas conhecidas mantêm o seu modo de login; nomes novos seguem a Mojang; uma Mojang inacessível recusa só nomes novos.
-- [x] As respostas da Mojang ficam em cache, e um cache indisponível não bloqueia logins.
+- [x] Contas premium sempre fazem login pela Mojang; contas piratas continuam piratas enquanto o nome não é premium e vão para o dono na Mojang quando passa a ser; nomes novos seguem a Mojang; uma Mojang inacessível recusa só nomes novos.
+- [x] As respostas da Mojang ficam em cache, as piratas por menos tempo que as premium, e um cache indisponível não bloqueia logins.
 - [x] Um login com senha só é retomado para a mesma conta, do mesmo IP, dentro da duração da sessão, e o IP é guardado como hash.
 - [x] O desafio aceita o código certo ignorando maiúsculas, minúsculas e espaços, renova o código depois de uma resposta errada e falha depois do máximo de tentativas.
 - [x] Os códigos só usam caracteres sem ambiguidade que a fonte de partículas consegue desenhar.
@@ -165,7 +168,7 @@ Além de `muxe_cqrs_handle_seconds` para os comandos e consultas acima, `muxe_db
 
 ## Falhas e recuperação
 
-- **Mojang inacessível:** contas existentes fazem login normalmente; nomes novos são recusados com `service-unavailable` até a Mojang responder, para que um nome premium nunca seja registrado como pirata por engano.
+- **Mojang inacessível:** contas existentes fazem login normalmente (nomes piratas não podem ser verificados de novo até a Mojang responder); nomes novos são recusados com `service-unavailable`, para que um nome premium nunca seja registrado como pirata por engano.
 - **Redis indisponível:** sessões não podem ser retomadas, então jogadores piratas fazem login com a senha; as consultas de premium vão direto para a Mojang.
 - **Banco indisponível:** o login é recusado com `service-unavailable`; nada fica gravado pela metade.
 - **O proxy não recebe `auth.authenticated`:** a publicação falha e o jogador é expulso com `service-unavailable`, para nunca ficar esperando para sempre.
@@ -173,7 +176,8 @@ Além de `muxe_cqrs_handle_seconds` para os comandos e consultas acima, `muxe_db
 
 ## Limitações conhecidas
 
-- Uma conta pirata registrada antes do dono premium do mesmo nome fica com o nome; o dono premium não consegue entrar com ele. A equipe precisa resolver esses casos.
+- Um nome comprado na Mojang ainda pode ser usado por um jogador pirata por até `cracked-cache` (10 minutos por padrão) depois de uma resposta "não premium" em cache.
+- Quando um cliente pirata tenta um nome premium, a mensagem de recusa é o próprio erro de modo online do Velocity.
 - Jogadores premium ainda não podem escolher proteger a conta também com senha. Essa preferência está planejada e vai reaproveitar as mesmas regras de sessão.
 - Os limites de senha errada são contados por jogador em cada servidor de autenticação, em memória.
 - Ainda não há troca nem recuperação de senha.
