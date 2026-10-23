@@ -53,7 +53,7 @@ return transactions.inTransaction("account.record_login", () -> {
 
 | Schema | Owner | Tables |
 |---|---|---|
-| `core` | `core:common` | `accounts` (V1), `accounts.premium` (V2) |
+| `core` | `core:common` | `accounts` (V1), `accounts.premium` (V2), nullable `accounts.username` for released names (V3) |
 | `auth` | `servers:auth` | `credentials` |
 
 ## Kinds of data
