@@ -24,7 +24,8 @@ Como a rede protege seus servidores, serviços e jogadores. O princípio: os jog
 
 A rede aceita jogadores sem conta do Minecraft (modo offline), então o proxy não pode confiar só no nome de usuário. O `velocity.toml` roda com `online-mode = false`, e o proxy decide a cada conexão:
 
-- **Nomes premium** (uma conta premium existente, ou um nome novo que existe na Mojang) são forçados ao modo online: o Velocity verifica a sessão com a Mojang, então um cliente pirata não consegue usar um nome premium. Jogadores premium são autenticados sem senha.
+- **Nomes premium** (uma conta premium existente, ou qualquer nome que existe na Mojang, mesmo que uma conta pirata o tenha registrado aqui antes) são forçados ao modo online: o Velocity verifica a sessão com a Mojang, então um cliente pirata não consegue usar um nome premium. Jogadores premium são autenticados sem senha.
+- **Os nomes seguem a identidade verificada pela Mojang:** um login premium toma o seu nome de qualquer outra conta, e um jogador premium que trocou de nome mantém a mesma conta, porque o UUID da Mojang não muda. Veja [Contas](../../features/accounts/README.pt-BR.md#dono-do-nome).
 - **Nomes piratas** vão para um servidor de auth, resolvem um código desenhado com partículas (anti-bot) e depois se registram ou fazem login com senha.
 - **Sessões de login:** depois de um login com senha, o proxy guarda no Redis, por 2 horas, o SHA-256 do id do jogador e do IP. Uma reconexão da mesma conta, do mesmo IP, dentro desse tempo é autenticada sem senha. O IP puro nunca é guardado.
 - Se a Mojang não puder ser consultada, nomes novos são recusados em vez de serem registrados como piratas.

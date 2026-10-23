@@ -4,6 +4,7 @@ import br.com.muxe.core.common.account.application.query.FindAccountByUsernameQu
 import br.com.muxe.core.common.account.domain.Account;
 import br.com.muxe.core.common.cqrs.query.QueryBus;
 import br.com.muxe.core.proxy.premium.PremiumLookup;
+import br.com.muxe.core.proxy.premium.PremiumStatus;
 import java.util.Optional;
 
 public final class LoginModeResolver {
@@ -20,13 +21,17 @@ public final class LoginModeResolver {
 
     public LoginMode resolve(String username) {
         Optional<Account> account = queries.ask(new FindAccountByUsernameQuery(username)).join();
-        if (account.isPresent()) {
-            return account.get().premium() ? LoginMode.PREMIUM : LoginMode.CRACKED;
+        if (account.isPresent() && account.get().premium()) {
+            return LoginMode.PREMIUM;
         }
         if (!premiumEnabled) {
             return LoginMode.CRACKED;
         }
-        return switch (premium.lookup(username)) {
+        PremiumStatus status = premium.lookup(username);
+        if (account.isPresent()) {
+            return status == PremiumStatus.PREMIUM ? LoginMode.PREMIUM : LoginMode.CRACKED;
+        }
+        return switch (status) {
             case PREMIUM -> LoginMode.PREMIUM;
             case CRACKED -> LoginMode.CRACKED;
             case UNKNOWN -> LoginMode.UNDECIDED;
