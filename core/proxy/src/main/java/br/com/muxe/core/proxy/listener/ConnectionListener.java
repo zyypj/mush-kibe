@@ -31,11 +31,13 @@ public final class ConnectionListener {
 
     @Subscribe
     public void onChooseInitialServer(PlayerChooseInitialServerEvent event) {
-        Optional<RegisteredServer> authServer = router.pick(routing.authGroup());
-        if (authServer.isPresent()) {
-            event.setInitialServer(authServer.get());
+        boolean authenticated = gate.isAuthenticated(event.getPlayer().getUniqueId());
+        String group = authenticated ? routing.lobbyGroup() : routing.authGroup();
+        Optional<RegisteredServer> initial = router.pick(group);
+        if (initial.isPresent()) {
+            event.setInitialServer(initial.get());
         } else {
-            event.getPlayer().disconnect(messages.get("no-auth-server"));
+            event.getPlayer().disconnect(messages.get(authenticated ? "no-lobby-server" : "no-auth-server"));
         }
     }
 

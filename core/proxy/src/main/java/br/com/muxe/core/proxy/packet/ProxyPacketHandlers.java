@@ -11,12 +11,14 @@ import br.com.muxe.core.proxy.auth.AccessPolicy;
 import br.com.muxe.core.proxy.auth.AuthenticationGate;
 import br.com.muxe.core.proxy.config.RoutingSettings;
 import br.com.muxe.core.proxy.routing.ServerRouter;
+import br.com.muxe.core.proxy.session.LoginSessions;
 import br.com.muxe.core.proxy.text.ProxyMessages;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class ProxyPacketHandlers {
@@ -26,15 +28,26 @@ public final class ProxyPacketHandlers {
     private final AccessPolicy access;
     private final ServerRouter router;
     private final RoutingSettings routing;
+    private final LoginSessions sessions;
     private final ProxyMessages messages;
     private final Logger logger;
 
-    public ProxyPacketHandlers(ProxyServer proxy, AuthenticationGate gate, AccessPolicy access, ServerRouter router, RoutingSettings routing, ProxyMessages messages, Logger logger) {
+    public ProxyPacketHandlers(
+        ProxyServer proxy,
+        AuthenticationGate gate,
+        AccessPolicy access,
+        ServerRouter router,
+        RoutingSettings routing,
+        LoginSessions sessions,
+        ProxyMessages messages,
+        Logger logger
+    ) {
         this.proxy = proxy;
         this.gate = gate;
         this.access = access;
         this.router = router;
         this.routing = routing;
+        this.sessions = sessions;
         this.messages = messages;
         this.logger = logger;
     }
@@ -57,8 +70,17 @@ public final class ProxyPacketHandlers {
             return;
         }
         gate.authenticate(packet.playerId());
+        rememberSession(player.get());
         if (!router.connect(player.get(), DestinationType.GROUP, routing.lobbyGroup())) {
             player.get().sendMessage(messages.get("no-lobby-server"));
+        }
+    }
+
+    private void rememberSession(Player player) {
+        try {
+            sessions.remember(player.getUniqueId(), player.getRemoteAddress().getAddress());
+        } catch (RuntimeException exception) {
+            logger.log(Level.WARNING, "Could not remember the login session of " + player.getUsername() + ": " + exception.getMessage());
         }
     }
 
