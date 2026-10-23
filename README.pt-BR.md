@@ -47,3 +47,7 @@ Início do desenvolvimento. A plataforma (core, mensageria, persistência, métr
 - [CONTRIBUTING.pt-BR.md](CONTRIBUTING.pt-BR.md): branches, commits, documentação e pull requests.
 - [AGENTS.pt-BR.md](AGENTS.pt-BR.md): regras para agentes de IA que trabalham neste repositório.
 - [SECURITY.pt-BR.md](SECURITY.pt-BR.md): como reportar uma vulnerabilidade.
+
+## Licença
+
+[MIT](LICENSE). Veja também a [política legal e de clean-room](docs/legal/README.pt-BR.md).
