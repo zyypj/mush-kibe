@@ -34,4 +34,4 @@ Um servidor que roda a Muxe precisa seguir o [EULA do Minecraft](https://www.min
 
 ## Licença
 
-A licença do projeto é definida no arquivo `LICENSE`, na raiz do repositório. As contribuições são aceitas sob essa licença.
+A Muxe é distribuída sob a [Licença MIT](../../LICENSE). As contribuições são aceitas sob essa licença.
