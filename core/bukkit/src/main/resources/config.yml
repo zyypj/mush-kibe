@@ -1,0 +1,51 @@
+server:
+  id: lobby-1
+  group: lobby
+  kind: LOBBY
+
+network:
+  lobby-group: lobby
+
+database:
+  url: jdbc:postgresql://localhost:5432/muxe
+  username: muxe
+  password: env:MUXE_DATABASE_PASSWORD
+  pool-size: 4
+  connection-timeout: 5s
+  run-migrations: true
+
+redis:
+  host: localhost
+  port: 6379
+  username: ""
+  password: env:MUXE_REDIS_PASSWORD
+  database: 0
+  ssl: false
+  pool-size: 8
+  timeout: 2s
+
+messaging:
+  secret: env:MUXE_MESSAGING_SECRET
+  request-timeout: 3s
+
+metrics:
+  enabled: true
+  host: 127.0.0.1
+  port: 9400
+
+startup:
+  shutdown-on-failure: true
+
+messages:
+  no-permission: "&cVocê não tem permissão para isso."
+  players-only: "&cApenas jogadores podem usar este comando."
+  connecting: "&7Conectando você a &b{destination}&7..."
+  connect-failed: "&cNão foi possível enviar você agora. Tente novamente em instantes."
+  admin:
+    usage: "&eUso: /muxe <servers|find <jogador>|metrics>"
+    servers-header: "&bServidores ativos ({count}):"
+    servers-line: "&8- &f{id} &7({group}, {kind}) &a{online}&7/&a{max}"
+    find-online: "&a{player} &7está em &b{server}&7."
+    find-offline: "&c{player} não está online."
+    find-failed: "&cNão foi possível localizar o jogador: {reason}"
+    metrics: "&7Pacotes: &a{published} &7enviados, &a{received} &7recebidos, &e{duplicates} &7duplicados, &c{rejected} &7rejeitados, &c{failures} &7falhas. &7TPS: &a{tps}"
