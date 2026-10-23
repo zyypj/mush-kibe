@@ -1,0 +1,7 @@
+name: Muxe-SkyWars
+version: '${version}'
+main: br.com.muxe.minigame.skywars.SkyWarsPlugin
+author: Muxe
+description: SkyWars for the Muxe network.
+depend:
+  - Muxe-Core

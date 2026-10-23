@@ -1,0 +1,11 @@
+modes:
+  solo:
+    display-name: SkyWars Solo
+    min-players: 2
+    max-players: 12
+    countdown: 15s
+  duo:
+    display-name: SkyWars Duplas
+    min-players: 4
+    max-players: 24
+    countdown: 20s
