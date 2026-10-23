@@ -1,0 +1,14 @@
+play:
+  games:
+    - skywars
+    - bedwars
+
+protection:
+  void-level: 0
+
+messages:
+  play-usage: "&eUso: /jogar <modo>. Modos: &f{games}"
+  play-unknown: "&cModo desconhecido. Modos: &f{games}"
+  play-connecting: "&7Procurando uma sala de &b{game}&7..."
+  play-failed: "&cNão foi possível entrar agora. Tente novamente."
+  spawn-set: "&aSpawn do lobby definido."

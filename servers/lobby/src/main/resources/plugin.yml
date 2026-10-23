@@ -1,0 +1,22 @@
+name: Muxe-Lobby
+version: '${version}'
+main: br.com.muxe.lobby.MuxeLobbyPlugin
+author: Muxe
+description: Main lobby of the Muxe network.
+depend:
+  - Muxe-Core
+commands:
+  jogar:
+    description: Sends you to a game.
+    usage: /jogar <game>
+    aliases:
+      - play
+  setspawn:
+    description: Sets the lobby spawn at your position.
+permissions:
+  muxe.lobby.build:
+    description: Allows building, breaking and dropping items in the lobby.
+    default: op
+  muxe.lobby.setspawn:
+    description: Allows /setspawn.
+    default: op
