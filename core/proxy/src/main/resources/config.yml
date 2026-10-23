@@ -1,0 +1,44 @@
+server:
+  id: proxy-1
+  group: proxy
+  kind: PROXY
+
+routing:
+  auth-group: auth
+  lobby-group: lobby
+
+database:
+  url: jdbc:postgresql://localhost:5432/muxe
+  username: muxe
+  password: env:MUXE_DATABASE_PASSWORD
+  pool-size: 4
+  connection-timeout: 5s
+  run-migrations: true
+
+redis:
+  host: localhost
+  port: 6379
+  username: ""
+  password: env:MUXE_REDIS_PASSWORD
+  database: 0
+  ssl: false
+  pool-size: 8
+  timeout: 2s
+
+messaging:
+  secret: env:MUXE_MESSAGING_SECRET
+  request-timeout: 3s
+
+metrics:
+  enabled: true
+  host: 127.0.0.1
+  port: 9410
+
+messages:
+  no-auth-server: "&cNenhum servidor de autenticação disponível. Tente novamente em instantes."
+  no-lobby-server: "&cNenhum lobby disponível no momento. Use /lobby em instantes."
+  no-server: "&cNenhum servidor disponível para &f{destination}&c."
+  must-authenticate: "&cFaça login antes de trocar de servidor."
+  name-case-conflict: "&cO nome &f{username} &cjá está registrado com outras letras maiúsculas/minúsculas. Entre com o nome exato."
+  invalid-username: "&cO nome &f{username} &cnão é permitido."
+  service-unavailable: "&cNossos serviços estão indisponíveis. Tente novamente em instantes."

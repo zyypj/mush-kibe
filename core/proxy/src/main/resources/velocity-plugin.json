@@ -1,0 +1,10 @@
+{
+  "id": "muxe-proxy",
+  "name": "Muxe Proxy",
+  "version": "${version}",
+  "description": "Velocity plugin of the Muxe network: authentication gate, routing and packets.",
+  "authors": [
+    "Muxe"
+  ],
+  "main": "br.com.muxe.core.proxy.MuxeProxyPlugin"
+}
