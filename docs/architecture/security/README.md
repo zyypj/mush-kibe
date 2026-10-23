@@ -22,10 +22,13 @@ How the network protects its servers, services and players. The principle: playe
 
 ## Authentication
 
-The network accepts players without a Minecraft account (offline mode), so the proxy cannot trust a username by itself. Authentication happens on the auth server, and the proxy enforces it:
+The network accepts players without a Minecraft account (offline mode), so the proxy cannot trust a username by itself. `velocity.toml` runs with `online-mode = false`, and the proxy decides per connection:
 
-- New connections always go to an auth server.
-- Until the proxy receives `auth.authenticated` for a player, it **denies every connection to a server outside the auth group**, and ignores `player.connect` packets for that player.
+- **Premium names** (an existing premium account, or a new name that exists at Mojang) are forced into online mode: Velocity verifies the session with Mojang, so a cracked client cannot use a premium name. Premium players are authenticated without a password.
+- **Cracked names** go to an auth server, solve a particle-drawn code (anti-bot) and then register or log in with a password.
+- **Login sessions:** after a password login, the proxy keeps the SHA-256 of the player id and IP in Redis for 2 hours. A reconnection of the same account from the same IP within that time is authenticated without a password. The raw IP is never stored.
+- If Mojang cannot be reached, new names are refused instead of being registered as cracked.
+- Until a player is authenticated, the proxy **denies every connection to a server outside the auth group**, and ignores `player.connect` packets for that player.
 - The proxy only accepts `auth.authenticated` from an origin that its server directory knows as an `AUTH` server of the auth group.
 - The authenticated state is forgotten when the player disconnects.
 - Names that differ only in letter case from an existing account are refused at login, because offline-mode identities are derived from the exact name.

@@ -60,6 +60,17 @@ Labels: `type` is the packet id, `reason` the rejection reason, `outcome` the re
 
 `bad_signature` above zero means a misconfigured server or someone publishing to Redis without the secret: investigate.
 
+## Authentication
+
+| Metric | Type | What it shows |
+|---|---|---|
+| `muxe_auth_login_modes_total{mode}` | counter | Login modes decided by the proxy: `premium`, `cracked`, `undecided`. |
+| `muxe_auth_logins_total{mode}` | counter | How players were let in: `premium`, `session` or `password`. |
+| `muxe_auth_premium_lookups_total{result,source}` | counter | Mojang lookups by result (`premium`, `cracked`, `unknown`) and source (`cache`, `remote`). |
+| `muxe_auth_challenges_total{outcome}` | counter | Anti-bot challenge answers: `passed`, `wrong`, `failed`. |
+
+A growing share of `undecided` or `unknown` means Mojang is unreachable or rate-limiting the proxy.
+
 ## Application
 
 | Metric | Type | What it shows |
