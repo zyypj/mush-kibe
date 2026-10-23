@@ -43,6 +43,20 @@ class CachedPremiumLookupTest {
     }
 
     @Test
+    void forgetsCrackedAnswersSoonerThanPremiumOnes() {
+        CachedPremiumLookup cracked = lookup(PremiumStatus.CRACKED, store);
+        cracked.lookup("Steve");
+        CachedPremiumLookup premium = lookup(PremiumStatus.PREMIUM, store);
+        premium.lookup("Notch");
+
+        clock.advance(Duration.ofMinutes(11));
+        cracked.lookup("Steve");
+        premium.lookup("Notch");
+
+        assertThat(calls).hasValue(3);
+    }
+
+    @Test
     void neverCachesUnknownAnswers() {
         CachedPremiumLookup lookup = lookup(PremiumStatus.UNKNOWN, store);
 
@@ -79,6 +93,6 @@ class CachedPremiumLookupTest {
             calls.incrementAndGet();
             return answer;
         };
-        return new CachedPremiumLookup(remote, cache, Duration.ofHours(6), metrics, Logger.getLogger("test"));
+        return new CachedPremiumLookup(remote, cache, Duration.ofHours(6), Duration.ofMinutes(10), metrics, Logger.getLogger("test"));
     }
 }
