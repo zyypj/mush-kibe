@@ -14,6 +14,7 @@ import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.proxy.Player;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,6 +48,7 @@ public final class LoginListener {
                     event.setResult(ResultedEvent.ComponentResult.denied(messageFor(failure.problem().code(), player.getUsername())));
                     return;
                 }
+                result.orElseThrow().nameReclaimedFrom().ifPresent(previous -> reportReclaimedName(player, previous));
                 authenticateIfTrusted(player);
             })
             .exceptionally(error -> {
@@ -69,6 +71,11 @@ public final class LoginListener {
             mode = "password";
         }
         metrics.counter("muxe_auth_logins_total", Tags.of("mode", mode)).increment();
+    }
+
+    private void reportReclaimedName(Player player, UUID previousHolder) {
+        metrics.counter("muxe_accounts_names_reclaimed_total").increment();
+        logger.info("Premium player " + player.getUniqueId() + " reclaimed the name " + player.getUsername() + " from account " + previousHolder);
     }
 
     private boolean canResumeSession(Player player) {

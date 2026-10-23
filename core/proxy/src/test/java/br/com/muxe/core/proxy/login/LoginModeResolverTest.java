@@ -26,14 +26,26 @@ class LoginModeResolverTest {
     }
 
     @Test
-    void knownAccountsKeepTheirModeWithoutAskingMojang() {
-        accounts.save(Account.firstLogin(UUID.randomUUID(), "Steve", false, Instant.EPOCH));
+    void premiumAccountsAlwaysLogInThroughMojangWithoutALookup() {
         accounts.save(Account.firstLogin(UUID.randomUUID(), "Notch", true, Instant.EPOCH));
-        LoginModeResolver resolver = resolver(PremiumStatus.PREMIUM, true);
 
-        assertThat(resolver.resolve("steve")).isEqualTo(LoginMode.CRACKED);
-        assertThat(resolver.resolve("Notch")).isEqualTo(LoginMode.PREMIUM);
+        assertThat(resolver(PremiumStatus.CRACKED, true).resolve("notch")).isEqualTo(LoginMode.PREMIUM);
         assertThat(lookups).hasValue(0);
+    }
+
+    @Test
+    void crackedAccountsStayCrackedWhileTheNameIsNotPremium() {
+        accounts.save(Account.firstLogin(UUID.randomUUID(), "Steve", false, Instant.EPOCH));
+
+        assertThat(resolver(PremiumStatus.CRACKED, true).resolve("Steve")).isEqualTo(LoginMode.CRACKED);
+        assertThat(resolver(PremiumStatus.UNKNOWN, true).resolve("Steve")).isEqualTo(LoginMode.CRACKED);
+    }
+
+    @Test
+    void aCrackedNameThatBecamePremiumGoesToItsMojangOwner() {
+        accounts.save(Account.firstLogin(UUID.randomUUID(), "Steve", false, Instant.EPOCH));
+
+        assertThat(resolver(PremiumStatus.PREMIUM, true).resolve("Steve")).isEqualTo(LoginMode.PREMIUM);
     }
 
     @Test
@@ -48,8 +60,11 @@ class LoginModeResolverTest {
     }
 
     @Test
-    void everyoneIsCrackedWhenPremiumLoginIsDisabled() {
+    void everyNewNameIsCrackedWhenPremiumLoginIsDisabled() {
+        accounts.save(Account.firstLogin(UUID.randomUUID(), "Steve", false, Instant.EPOCH));
+
         assertThat(resolver(PremiumStatus.PREMIUM, false).resolve("Jeb")).isEqualTo(LoginMode.CRACKED);
+        assertThat(resolver(PremiumStatus.PREMIUM, false).resolve("Steve")).isEqualTo(LoginMode.CRACKED);
         assertThat(lookups).hasValue(0);
     }
 
