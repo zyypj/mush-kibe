@@ -1,0 +1,31 @@
+security:
+  pbkdf2-iterations: 600000
+  login-timeout: 60s
+  max-attempts: 5
+  attempt-window: 5m
+
+password:
+  min-length: 6
+  max-length: 64
+
+messages:
+  players-only: "&cApenas jogadores podem usar este comando."
+  prompt-login: "&eBem-vindo de volta! Use &f/login <senha>&e para entrar."
+  prompt-register: "&eBem-vindo à Muxe! Use &f/register <senha> <senha>&e para criar sua conta."
+  usage-login: "&cUso: /login <senha>"
+  usage-register: "&cUso: /register <senha> <senha>"
+  use-login: "&cVocê já tem uma conta. Use &f/login <senha>&c."
+  use-register: "&cVocê ainda não tem uma conta. Use &f/register <senha> <senha>&c."
+  processing: "&7Verificando..."
+  logged-in: "&aLogin realizado! Enviando você ao lobby..."
+  registered: "&aConta criada! Enviando você ao lobby..."
+  already-authenticated: "&eVocê já está autenticado."
+  wrong-password: "&cSenha incorreta. Tentativas restantes: &f{remaining}"
+  too-many-attempts: "&cMuitas tentativas incorretas. Aguarde alguns minutos e tente novamente."
+  passwords-do-not-match: "&cAs senhas não coincidem."
+  password-too-short: "&cSua senha é muito curta."
+  password-too-long: "&cSua senha é muito longa."
+  password-equals-username: "&cSua senha não pode ser igual ao seu nome."
+  blocked-command: "&cAutentique-se primeiro com &f/login&c ou &f/register&c."
+  timeout: "&cVocê demorou demais para se autenticar."
+  service-unavailable: "&cNão foi possível autenticar agora. Tente novamente em instantes."
