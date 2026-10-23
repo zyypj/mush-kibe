@@ -11,8 +11,9 @@ Todo jogador tem uma conta, criada na primeira vez que ele chega ao proxy e atua
 
 ## Como funciona
 
-- Quando um jogador entra no proxy, o proxy despacha `RecordLoginCommand(playerId, username)`.
-- O primeiro login cria a conta com `first_seen_at` e `last_seen_at`. Os logins seguintes atualizam o nome e o `last_seen_at`.
+- Quando um jogador entra no proxy, o proxy despacha `RecordLoginCommand(playerId, username, premium)`.
+- O primeiro login cria a conta com `first_seen_at`, `last_seen_at` e se ela é **premium** (verificada pela Mojang) ou pirata. Os logins seguintes atualizam o nome e o `last_seen_at`; a marca de premium nunca muda.
+- Contas premium usam o UUID da Mojang do jogador; contas piratas usam o UUID do modo offline derivado do nome. A marca decide como a conta faz login a partir daí, como descrito em [Autenticação](../authentication/README.pt-BR.md).
 - Se outra conta já usa o mesmo nome com maiúsculas e minúsculas diferentes, o login é recusado com uma mensagem pedindo que o jogador use o nome exato.
 - Os nomes precisam seguir `[A-Za-z0-9_]{3,16}`; qualquer outra coisa é recusada.
 
@@ -44,14 +45,15 @@ Schema `core`, que pertence ao `core:common`:
 
 | Tabela | Colunas |
 |---|---|
-| `accounts` | `id` UUID chave primária, `username`, `first_seen_at`, `last_seen_at`. Índice único em `LOWER(username)`. |
+| `accounts` | `id` UUID chave primária, `username`, `premium`, `first_seen_at`, `last_seen_at`. Índice único em `LOWER(username)`. |
 
 ## Aplicação
 
 | Mensagem | Tipo | Resultado |
 |---|---|---|
 | `RecordLoginCommand` | Comando | `Result<Account>`; falhas `account.invalid_username`, `account.name_case_conflict`. |
-| `FindAccountQuery` | Query | `Optional<Account>`. |
+| `FindAccountQuery` | Query | `Optional<Account>` pelo id. |
+| `FindAccountByUsernameQuery` | Query | `Optional<Account>` pelo nome, ignorando maiúsculas e minúsculas. |
 
 ## Métricas
 
@@ -68,6 +70,7 @@ Schema `core`, que pertence ao `core:common`:
 - [x] Um jogador que volta mantém o `first_seen_at` e recebe um novo `last_seen_at`.
 - [x] Um nome que difere só em maiúsculas e minúsculas de uma conta existente é recusado, no código e pelo índice do banco.
 - [x] Um nome inválido é recusado sem tocar no banco.
+- [x] A marca de premium é gravada no primeiro login e nunca muda.
 
 ## Falhas e recuperação
 
@@ -77,4 +80,4 @@ Schema `core`, que pertence ao `core:common`:
 ## Limitações conhecidas
 
 - Os jogadores não podem mudar de nome nem juntar contas.
-- Contas premium (originais) ainda não são detectadas; todo jogador é identificado pelo UUID do modo offline fornecido pelo proxy.
+- Uma conta pirata que registrou um nome primeiro fica com ele, mesmo que um jogador premium seja dono desse nome na Mojang.

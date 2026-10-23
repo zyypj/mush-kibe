@@ -50,12 +50,12 @@ class PostgresAccountRepositoryIntegrationTest {
 
     @Test
     void migrationsCreateTheCoreSchema() {
-        assertThat(migration.schemaVersion()).isEqualTo("1");
+        assertThat(migration.schemaVersion()).isEqualTo("2");
     }
 
     @Test
     void savesAndFindsAccountsIgnoringCase() {
-        Account account = Account.firstLogin(UUID.randomUUID(), "Notch" + suffix(), now());
+        Account account = Account.firstLogin(UUID.randomUUID(), "Notch" + suffix(), false, now());
 
         transactions.inTransaction("test.save", () -> {
             repository.save(account);
@@ -67,8 +67,23 @@ class PostgresAccountRepositoryIntegrationTest {
     }
 
     @Test
+    void storesThePremiumFlagAndNeverChangesIt() {
+        Account account = Account.firstLogin(UUID.randomUUID(), "Dinnerbone" + suffix(), true, now());
+
+        transactions.inTransaction("test.save", () -> {
+            repository.save(account);
+            repository.save(new Account(account.id(), account.username(), false, account.firstSeenAt(), now()));
+            return null;
+        });
+
+        assertThat(transactions.readOnly("test.find", () -> repository.findById(account.id())))
+            .map(Account::premium)
+            .contains(true);
+    }
+
+    @Test
     void upsertKeepsTheFirstSeenDate() {
-        Account account = Account.firstLogin(UUID.randomUUID(), "Jeb" + suffix(), now().minus(1, ChronoUnit.DAYS));
+        Account account = Account.firstLogin(UUID.randomUUID(), "Jeb" + suffix(), false, now().minus(1, ChronoUnit.DAYS));
         transactions.inTransaction("test.save", () -> {
             repository.save(account);
             repository.save(account.withLogin(account.username(), now()));
@@ -85,12 +100,12 @@ class PostgresAccountRepositoryIntegrationTest {
     void theDatabaseRefusesTwoAccountsWithTheSameNameInAnotherCase() {
         String name = "Alex" + suffix();
         transactions.inTransaction("test.save", () -> {
-            repository.save(Account.firstLogin(UUID.randomUUID(), name, now()));
+            repository.save(Account.firstLogin(UUID.randomUUID(), name, false, now()));
             return null;
         });
 
         assertThatThrownBy(() -> transactions.inTransaction("test.save", () -> {
-            repository.save(Account.firstLogin(UUID.randomUUID(), name.toLowerCase(), now()));
+            repository.save(Account.firstLogin(UUID.randomUUID(), name.toLowerCase(), false, now()));
             return null;
         })).isInstanceOf(PersistenceException.class);
     }
@@ -100,7 +115,7 @@ class PostgresAccountRepositoryIntegrationTest {
         UUID id = UUID.randomUUID();
 
         assertThatThrownBy(() -> transactions.inTransaction("test.rollback", () -> {
-            repository.save(Account.firstLogin(id, "Herobrine" + suffix(), now()));
+            repository.save(Account.firstLogin(id, "Herobrine" + suffix(), false, now()));
             throw new IllegalStateException("abort");
         })).isInstanceOf(IllegalStateException.class);
 

@@ -36,7 +36,7 @@ public final class RecordLoginHandler implements CommandHandler<RecordLoginComma
             Instant now = clock.instant();
             Account account = accounts.findById(command.playerId())
                 .map(existing -> existing.withLogin(command.username(), now))
-                .orElseGet(() -> Account.firstLogin(command.playerId(), command.username(), now));
+                .orElseGet(() -> Account.firstLogin(command.playerId(), command.username(), command.premium(), now));
             accounts.save(account);
             return Result.success(account);
         });

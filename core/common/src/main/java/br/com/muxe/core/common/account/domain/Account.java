@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
-public record Account(UUID id, String username, Instant firstSeenAt, Instant lastSeenAt) {
+public record Account(UUID id, String username, boolean premium, Instant firstSeenAt, Instant lastSeenAt) {
 
     public Account {
         Objects.requireNonNull(id, "id");
@@ -15,11 +15,11 @@ public record Account(UUID id, String username, Instant firstSeenAt, Instant las
         }
     }
 
-    public static Account firstLogin(UUID id, String username, Instant at) {
-        return new Account(id, username, at, at);
+    public static Account firstLogin(UUID id, String username, boolean premium, Instant at) {
+        return new Account(id, username, premium, at, at);
     }
 
     public Account withLogin(String currentUsername, Instant at) {
-        return new Account(id, currentUsername, firstSeenAt, at);
+        return new Account(id, currentUsername, premium, firstSeenAt, at);
     }
 }
