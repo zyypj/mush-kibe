@@ -1,0 +1,11 @@
+modes:
+  solo:
+    display-name: BedWars Solo
+    min-players: 4
+    max-players: 8
+    countdown: 20s
+  quartets:
+    display-name: BedWars Quartetos
+    min-players: 8
+    max-players: 16
+    countdown: 30s

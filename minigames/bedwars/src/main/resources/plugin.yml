@@ -1,0 +1,7 @@
+name: Muxe-BedWars
+version: '${version}'
+main: br.com.muxe.minigame.bedwars.BedWarsPlugin
+author: Muxe
+description: BedWars for the Muxe network.
+depend:
+  - Muxe-Core
