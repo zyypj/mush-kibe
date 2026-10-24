@@ -38,7 +38,7 @@ Proxy `config.yml`:
 |---|---|---|
 | `routing.auth-group` | `auth` | Group of the auth servers. |
 | `routing.lobby-group` | `lobby` | Group players are sent to after authenticating. |
-| `messages.no-auth-server` | Six-line screen: network closed, reason, retry hint, a blank line and where to follow updates | Shown when the login is refused because no auth server is alive. A YAML list, one item per line. |
+| `messages.no-auth-server` | Six-line screen: could not connect, reason, retry hint, a blank line, where to follow the news and the team's Discord | Shown when the login is refused because no auth server is alive. A YAML list, one item per line. |
 | `messages.no-lobby-server`, `no-server`, `must-authenticate` | Portuguese texts | Messages shown by the proxy. |
 | `authentication.*` | see [Authentication](../authentication/README.md#configuration) | Premium detection and login sessions. |
 

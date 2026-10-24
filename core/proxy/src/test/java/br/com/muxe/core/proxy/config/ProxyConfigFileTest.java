@@ -20,12 +20,12 @@ class ProxyConfigFileTest {
         ProxyMessages messages = new ProxyMessages(config);
 
         String expected = String.join("\n",
-            "&cA rede está temporariamente fechada.",
-            "&cMotivo: Servidores de autenticação desligados",
+            "&cNão foi possível te conectar ao servidor.",
+            "&cMotivo: Servidores de Autenticação Desligados",
             "&cTente novamente em alguns minutos.",
             "",
-            "&eAcompanhe as novidades em: &bmuxe.com.br",
-            "&cO problema continua? Avise a equipe em &bmuxe.com.br"
+            "&eAcompanhe as notícias em: &bmuxe.com.br",
+            "&cO problema continua? Avise a equipe em &bdiscord.muxe.com.br"
         );
 
         assertThat(messages.get("no-auth-server")).isEqualTo(LegacyComponentSerializer.legacyAmpersand().deserialize(expected));

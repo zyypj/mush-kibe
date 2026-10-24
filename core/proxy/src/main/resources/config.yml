@@ -43,12 +43,12 @@ metrics:
 
 messages:
   no-auth-server:
-    - "&cA rede está temporariamente fechada."
-    - "&cMotivo: Servidores de autenticação desligados"
+    - "&cNão foi possível te conectar ao servidor."
+    - "&cMotivo: Servidores de Autenticação Desligados"
     - "&cTente novamente em alguns minutos."
     - ""
-    - "&eAcompanhe as novidades em: &bmuxe.com.br"
-    - "&cO problema continua? Avise a equipe em &bmuxe.com.br"
+    - "&eAcompanhe as notícias em: &bmuxe.com.br"
+    - "&cO problema continua? Avise a equipe em &bdiscord.muxe.com.br"
   no-lobby-server: "&cNenhum lobby disponível no momento. Use /lobby em instantes."
   no-server: "&cNenhum servidor disponível para &f{destination}&c."
   must-authenticate: "&cFaça login antes de trocar de servidor."

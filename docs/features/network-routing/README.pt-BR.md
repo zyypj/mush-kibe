@@ -38,7 +38,7 @@ Não se aplica.
 |---|---|---|
 | `routing.auth-group` | `auth` | Grupo dos servidores de autenticação. |
 | `routing.lobby-group` | `lobby` | Grupo para onde os jogadores vão depois de se autenticar. |
-| `messages.no-auth-server` | Tela de seis linhas: rede fechada, motivo, dica para tentar de novo, uma linha em branco e onde acompanhar as novidades | Mostrada quando o login é recusado porque nenhum servidor de autenticação está vivo. Uma lista YAML, um item por linha. |
+| `messages.no-auth-server` | Tela de seis linhas: não foi possível conectar, motivo, dica para tentar de novo, uma linha em branco, onde acompanhar as notícias e o Discord da equipe | Mostrada quando o login é recusado porque nenhum servidor de autenticação está vivo. Uma lista YAML, um item por linha. |
 | `messages.no-lobby-server`, `no-server`, `must-authenticate` | Textos em português | Mensagens mostradas pelo proxy. |
 | `authentication.*` | veja [Autenticação](../authentication/README.pt-BR.md#configuração) | Detecção de premium e sessões de login. |
 
