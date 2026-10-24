@@ -121,6 +121,139 @@ hologram.remove();
 - `PixelHolograms.layout(anchor, text)` returns the position and name of every pixel, which is what tests use. `ShadedLayout` does the same in grid units, without positions.
 - Holograms need the 1.8 server internals, reached by reflection in `PacketHologramTransport`. When they are missing, `isAvailable()` is `false` and `show` draws nothing.
 
+### Text holograms
+
+```java
+TextHolograms holograms = TextHolograms.standard();
+SpawnedHologram hologram = holograms.show(player, top, List.of("&b&lSKYWARS", "&e37 jogando"));
+```
+
+- Lines go down from `top`, 0.28 blocks apart. A blank line keeps its space and shows nothing. `height(lines)` tells how tall the text is.
+- Same transport as the pixel holograms: invisible armor stands sent only to `player`.
+
+## Items
+
+Package `br.com.muxe.core.bukkit.item`.
+
+```java
+ItemStack star = ItemBuilder.of(Material.NETHER_STAR)
+    .name("&aSelecionar lobby")
+    .lore("&7Clique para abrir")
+    .addLoreIf(player.hasPermission("muxe.vip"), "&6Vantagem VIP")
+    .glow()
+    .build();
+
+ItemStack head = ItemBuilder.skull().name("&aMeu perfil").skullOwner(player.getName()).build();
+ItemStack pane = ItemBuilder.from(config.getConfigurationSection("lobby-selector.current"))
+    .replacing("number", "3", "online", "32", "max", "60")
+    .build();
+```
+
+- `ItemBuilder` is immutable: every method returns a new builder, so a template can be shared and filled in many times.
+- Covers material and data, amount, name and lore (with `&` colors), `addLore`, `addLoreIf`, enchantments, `glow()`, `unbreakable()`, leather `color`, skulls by owner (`skullOwner`) or by texture (`skullTexture`, base64), and `{placeholder}` replacement in name and lore with `replacing`.
+- Item flags are hidden by default; `showFlags()` shows them.
+- `ItemBuilder.from(section)` reads the same fields from configuration:
+
+```yaml
+item:
+  material: LEATHER_CHESTPLATE
+  data: 0
+  amount: 1
+  name: "&cPeitoral"
+  lore:
+    - "&7Uma linha"
+  glow: true
+  unbreakable: true
+  hide-flags: true
+  color: "#FF5555"
+  skull-owner: Notch
+  skull-texture: "base64..."
+  enchantments:
+    DURABILITY: 3
+```
+
+- `build()` needs a running server. Everything else is plain data, so tests check builders directly.
+
+## Menus
+
+Package `br.com.muxe.core.bukkit.menu`. Muxe-Core registers the listener, so any plugin can open menus.
+
+```java
+Menu menu = Menu.builder("&8Perfil").rows(3)
+    .border(ItemBuilder.of(Material.STAINED_GLASS_PANE, 15).name(" "))
+    .button(1, 4, ItemBuilder.skull().name("&a" + player.getName()).skullOwner(player.getName()), context -> context.close())
+    .button(22, ItemBuilder.of(Material.BARRIER).name("&cFechar"), ClickContext::close)
+    .onClose(viewer -> viewer.sendMessage("Até mais!"))
+    .build();
+menu.open(player);
+```
+
+- Buttons go by slot or by row and column (`Slots.of(row, column)`). `border` frames the menu, `fill` covers the empty slots; buttons always win.
+- Clicks receive a `ClickContext`: the player, the click type (`isLeftClick`, `isRightClick`, `isShiftClick`), the slot, and actions to `close()`, `open(otherMenu)`, `update(slot, button)` or `updateIcon(icon)` while the menu is open.
+- Every click inside a menu is cancelled: players never take or drop items from it.
+- Titles are translated and cut to the 32 characters 1.8 allows.
+
+### Paginated menus
+
+```java
+PaginatedMenu lobbies = PaginatedMenu.builder("Selecionar lobby ({page}/{pages})")
+    .items(buttons)
+    .previous(ItemBuilder.of(Material.ARROW).name("&aPágina anterior"))
+    .next(ItemBuilder.of(Material.ARROW).name("&aPróxima página"))
+    .build();
+lobbies.open(player, 1);
+```
+
+- Up to 21 items per page, 7 per row, each row centered (`MenuLayout.centered`): one item sits in the middle, two lean to the left of the center, as in the lobby selector.
+- The menu keeps one empty row above and below the items. The arrows sit at the ends of the last row and only appear when there is a page to go to.
+- `slots(list)` places items in fixed slots instead, `rows(n)` fixes the height, `extra(slot, button)` adds a button to every page and `fill(icon)` covers the empty slots.
+- `page(n)` builds the menu without opening it, which is what tests use.
+
+## Scoreboard
+
+Package `br.com.muxe.core.bukkit.scoreboard`.
+
+```java
+Sidebar sidebar = Sidebar.create(player);
+sidebar.title("&b&lMUXE");
+sidebar.lines(List.of("", "&fJogadores: &b2211", "", "&amuxe.com.br"));
+```
+
+- One scoreboard per player, with up to 15 lines. Each line lives in a team, so updating a line never makes the sidebar flicker; only lines that changed are sent.
+- Lines up to about 30 visible characters are split between the team prefix and suffix (16 characters each in 1.8), carrying the color over (`SidebarText.split`). Blank lines are fine.
+- `scoreboard()` exposes the Bukkit scoreboard for other teams, such as the one that hides NPC names.
+
+## Boss bar
+
+Package `br.com.muxe.core.bukkit.bossbar`.
+
+```java
+BossBars bars = BossBars.start(plugin);
+BossBarFrames frames = new BossBarFrames(List.of("&e&lMUXE", "&6&lMUXE"), 10);
+bars.show(player, frames.at(tick));
+```
+
+- 1.8 has no boss bar API: the bar is an invisible wither sent only to the player, kept 32 blocks in front of their eyes so it stays in view. It follows the player every 2 ticks when they move or turn.
+- `show` renames the bar when it is already shown. The bar is spawned again after a respawn or world change.
+- `BossBarFrames` turns a list of texts and a period in ticks into the frame for any tick, for animated titles.
+
+## NPCs
+
+Package `br.com.muxe.core.bukkit.npc`.
+
+```java
+NpcService npcs = NpcService.start(plugin, npc -> List.of("&b&lSKYWARS", "&e37 jogando"));
+npcs.onClick((player, npc) -> player.sendMessage("Clicou em " + npc.id()));
+npcs.put(new Npc("skywars", location, Optional.of(skin)));
+
+MojangSkins.standard().byName("Notch").thenAccept(found -> ...);
+```
+
+- NPCs are players that only exist in packets: they are sent to each player within 48 blocks and removed beyond 64. They stay in the tab list for 2 seconds so the client loads the skin, and their name tag is hidden with a team; the text above them is a text hologram.
+- Clicks are read from the network: `PacketInterceptor` adds a Netty handler to each player's connection and reports `PacketPlayInUseEntity`, because the server ignores clicks on entities it does not know. The click handler runs on the main thread.
+- `MojangSkins` finds the signed skin of an original player name (`api.mojang.com` and `sessionserver.mojang.com`). Store the result instead of asking on every start.
+- See [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.md).
+
 ## Locations
 
 Package `br.com.muxe.core.bukkit.location`.
@@ -145,6 +278,7 @@ In `core:common`, usable on the proxy too:
 | `ExpiringStore` | Short-lived key-value data in Redis (`RedisExpiringStore`), in-memory for tests (`InMemoryExpiringStore` in the test fixtures). |
 | `MetricRegistry`, `Tags` | Counters, timers and gauges. |
 | `ConfigSource`, `DurationParser`, `SecretResolver` | Reading configuration, durations (`5s`) and secrets (`env:`, `file:`). |
+| `SpamGuard`, `CooldownFormat` | Anti-spam for clicks: a number of uses inside a window starts a cooldown (`3` uses in `1s` start `3s`), and the remaining time is shown as `2,9`. |
 
 ## Adding a helper
 
