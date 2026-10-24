@@ -7,6 +7,9 @@ commands:
   muxe:
     description: Network administration.
     usage: /muxe <servers|find <player>|metrics>
+  build:
+    description: Turns build mode on or off on every server.
+    usage: /build <on|off>
   lobby:
     description: Sends you back to a lobby.
     aliases:
@@ -15,4 +18,7 @@ commands:
 permissions:
   muxe.admin:
     description: Allows /muxe.
+    default: op
+  muxe.build:
+    description: Allows /build, which switches to creative to build and break on any server.
     default: op

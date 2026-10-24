@@ -254,6 +254,28 @@ MojangSkins.standard().byName("Notch").thenAccept(found -> ...);
 - `MojangSkins` busca a skin assinada de um nome original (`api.mojang.com` e `sessionserver.mojang.com`). Guarde o resultado em vez de buscar a cada inicialização.
 - Veja a [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.pt-BR.md).
 
+## Modo construção
+
+Pacote `br.com.muxe.core.bukkit.buildmode`. O Muxe-Core registra o `/build <on|off>` (permissão `muxe.build`) em todos os servidores.
+
+```java
+BuildMode build = MuxeCore.get().buildMode();
+if (build.isBuilding(player)) { ... }
+build.addHook(new BuildModeHook() {
+    @Override
+    public boolean allows(Player player) { return authenticated(player); }
+
+    @Override
+    public void left(Player player) { giveItemsBack(player); }
+});
+```
+
+- **Ligado:** limpa o inventário, coloca no Criativo e repete `build-action-bar` na action bar a cada segundo.
+- **Desligado:** limpa o inventário e a action bar e volta para o Aventura nos tipos de `build-mode.adventure-only`, ou para o modo de jogo padrão do servidor nos outros. Depois os hooks devolvem os itens.
+- O estado fica no Redis (`muxe:build:<uuid>`) por `build-mode.duration` (6 horas), renovado a cada entrada num servidor. Quem liga o modo continua com ele ao trocar de servidor; quem não tem `muxe.build` o perde na próxima entrada.
+- Nos tipos de `adventure-only` (`LOBBY` e `AUTH`), qualquer modo de jogo que não seja Aventura é cancelado, exceto o Criativo no modo construção (`BuildRules.allowsGameMode`).
+- Os plugins só leem `isBuilding` para decidir o que o jogador pode fazer. Um hook pode recusar o modo construção (`allows`), como o servidor de autenticação faz antes do login, e reagir a `entered` e `left`.
+
 ## Localizações
 
 Pacote `br.com.muxe.core.bukkit.location`.

@@ -1,10 +1,10 @@
 package br.com.muxe.lobby.listener;
 
+import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cooldown.CooldownFormat;
 import br.com.muxe.core.common.cooldown.SpamDecision;
 import br.com.muxe.core.common.cooldown.SpamGuard;
-import br.com.muxe.lobby.build.BuildMode;
 import br.com.muxe.lobby.hotbar.HotbarAction;
 import br.com.muxe.lobby.hotbar.LobbyHotbar;
 import br.com.muxe.lobby.selector.LobbySelectorMenu;

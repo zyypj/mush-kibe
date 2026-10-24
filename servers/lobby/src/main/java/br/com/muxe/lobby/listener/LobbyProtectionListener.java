@@ -1,7 +1,6 @@
 package br.com.muxe.lobby.listener;
 
-import br.com.muxe.lobby.build.BuildMode;
-import br.com.muxe.lobby.build.BuildRules;
+import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.lobby.spawn.ArrivalService;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -15,10 +14,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 public final class LobbyProtectionListener implements Listener {
@@ -70,13 +67,6 @@ public final class LobbyProtectionListener implements Listener {
         onlyWhileBuilding(event.getWhoClicked(), event);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onGameModeChange(PlayerGameModeChangeEvent event) {
-        if (!BuildRules.allowsGameMode(event.getNewGameMode(), build.isBuilding(event.getPlayer()))) {
-            event.setCancelled(true);
-        }
-    }
-
     @EventHandler(priority = EventPriority.LOW)
     public void onWeather(WeatherChangeEvent event) {
         if (event.toWeatherState()) {
@@ -93,11 +83,6 @@ public final class LobbyProtectionListener implements Listener {
                 player.setAllowFlight(true);
             }
         }
-    }
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        build.forget(event.getPlayer().getUniqueId());
     }
 
     private void onlyWhileBuilding(HumanEntity actor, Cancellable event) {

@@ -88,9 +88,11 @@ Os jogadores ficam sempre no modo Aventura: qualquer troca para outro modo de jo
 
 ### Modo construção
 
-- `/build on` (ou `/build` para alternar) limpa a hotbar, coloca no Criativo e deixa o jogador quebrar, colocar e mover itens. A action bar mostra `&aModo construção ativado` enquanto o modo estiver ligado.
-- `/build off` limpa a action bar, devolve os itens do lobby (com o corante de visibilidade atual), volta para o Aventura e devolve o voo para quem tem `muxe.lobby.fly`.
-- As ações da hotbar não fazem nada no modo construção. Sair do servidor encerra o modo; na próxima entrada o jogador volta no Aventura com os itens do lobby.
+O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na [API do core](../../development/core-api/README.pt-BR.md#modo-construção). No lobby:
+
+- `/build on` limpa a hotbar, coloca no Criativo e deixa o jogador quebrar, colocar e mover itens, com `&aModo construção ativado` na action bar enquanto o modo estiver ligado.
+- `/build off` devolve os itens do lobby (com o corante de visibilidade atual), volta para o Aventura e deixa quem tem `muxe.lobby.fly` voar de novo.
+- O modo construção acompanha o jogador nos outros servidores: ir para outro lobby mantém o modo ligado. As ações da hotbar não fazem nada enquanto ele estiver ligado.
 
 ## Comandos
 
@@ -98,7 +100,7 @@ Os jogadores ficam sempre no modo Aventura: qualquer troca para outro modo de jo
 |---|---|---|
 | `/jogar <modo>` (`/play`) | Envia o jogador para um grupo de jogo. | Nenhuma |
 | `/setspawn` | Salva a posição atual como spawn do lobby. | `muxe.lobby.setspawn` |
-| `/build <on\|off>` | Liga ou desliga o modo construção; sem argumento, alterna. | `muxe.lobby.build` |
+| `/build <on\|off>` | Liga ou desliga o modo construção em qualquer servidor; sem argumento, alterna. Vem do Muxe-Core. | `muxe.build` |
 | `/npc criar <id> <grupo> <skin> <nome>` | Cria um NPC onde você está. | `muxe.lobby.npc` |
 | `/npc mover <id>` | Move um NPC para onde você está. | `muxe.lobby.npc` |
 | `/npc skin <id> <skin>` | Troca a skin pela de um nome original. | `muxe.lobby.npc` |
@@ -111,7 +113,7 @@ Os jogadores ficam sempre no modo Aventura: qualquer troca para outro modo de jo
 | Permissão | Libera | Padrão |
 |---|---|---|
 | `muxe.lobby.fly` | Chegar acima do spawn, voando. | op |
-| `muxe.lobby.build` | Usar `/build` para quebrar, colocar, largar e pegar itens no Criativo. | op |
+| `muxe.build` | Usar o `/build` (Muxe-Core) para quebrar, colocar, largar e pegar itens no Criativo. | op |
 | `muxe.lobby.setspawn` | Usar `/setspawn`. | op |
 | `muxe.lobby.npc` | Usar `/npc`. | op |
 

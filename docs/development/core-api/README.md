@@ -254,6 +254,28 @@ MojangSkins.standard().byName("Notch").thenAccept(found -> ...);
 - `MojangSkins` finds the signed skin of an original player name (`api.mojang.com` and `sessionserver.mojang.com`). Store the result instead of asking on every start.
 - See [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.md).
 
+## Build mode
+
+Package `br.com.muxe.core.bukkit.buildmode`. Muxe-Core registers `/build <on|off>` (permission `muxe.build`) on every server.
+
+```java
+BuildMode build = MuxeCore.get().buildMode();
+if (build.isBuilding(player)) { ... }
+build.addHook(new BuildModeHook() {
+    @Override
+    public boolean allows(Player player) { return authenticated(player); }
+
+    @Override
+    public void left(Player player) { giveItemsBack(player); }
+});
+```
+
+- **On:** clears the inventory, switches to Creative and repeats `build-action-bar` in the action bar every second.
+- **Off:** clears the inventory and the action bar and returns to Adventure on the kinds in `build-mode.adventure-only`, or to the server's default game mode elsewhere. Hooks then give items back.
+- The state lives in Redis (`muxe:build:<uuid>`) for `build-mode.duration` (6 hours), renewed on every server join. A player who turns it on keeps it when moving to another server; players without `muxe.build` lose it on their next join.
+- On `adventure-only` kinds (`LOBBY` and `AUTH`), any game mode other than Adventure is cancelled, except Creative in build mode (`BuildRules.allowsGameMode`).
+- Plugins only read `isBuilding` to decide what a player may do. A hook can refuse build mode (`allows`), as the auth server does before login, and react to `entered` and `left`.
+
 ## Locations
 
 Package `br.com.muxe.core.bukkit.location`.

@@ -21,6 +21,7 @@ import br.com.muxe.auth.session.AuthSessionRegistry;
 import br.com.muxe.auth.session.LoginAttemptLimiter;
 import br.com.muxe.auth.setup.AuthLocations;
 import br.com.muxe.core.bukkit.api.MuxeCore;
+import br.com.muxe.core.bukkit.buildmode.BuildModeHook;
 import br.com.muxe.core.bukkit.config.BukkitConfigSource;
 import br.com.muxe.core.bukkit.hologram.PixelHolograms;
 import br.com.muxe.core.bukkit.location.ConfigLocation;
@@ -31,6 +32,7 @@ import java.security.SecureRandom;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -89,7 +91,13 @@ public final class AuthBootstrap {
 
         PluginManager plugins = plugin.getServer().getPluginManager();
         plugins.registerEvents(new AuthPlayerListener(plugin, flow, messages, settings.loginTimeout(), locations, codeText.height()), plugin);
-        plugins.registerEvents(new AuthRestrictionListener(sessions, locations, settings.voidLevel(), messages), plugin);
+        core.buildMode().addHook(new BuildModeHook() {
+            @Override
+            public boolean allows(Player player) {
+                return sessions.isAuthenticated(player.getUniqueId());
+            }
+        });
+        plugins.registerEvents(new AuthRestrictionListener(sessions, locations, settings.voidLevel(), messages, core.buildMode()), plugin);
         plugins.registerEvents(new ChallengeChatListener(flow, core.mainThread()), plugin);
 
         BukkitScheduler scheduler = plugin.getServer().getScheduler();

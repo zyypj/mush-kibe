@@ -13,16 +13,10 @@ commands:
       - play
   setspawn:
     description: Sets the lobby spawn at your position.
-  build:
-    description: Turns build mode on or off.
-    usage: /build <on|off>
   npc:
     description: Creates and manages the game NPCs of the lobby.
     usage: /npc <criar|mover|skin|nome|remover|listar>
 permissions:
-  muxe.lobby.build:
-    description: Allows /build, which turns on creative mode to build and break in the lobby.
-    default: op
   muxe.lobby.setspawn:
     description: Allows /setspawn.
     default: op

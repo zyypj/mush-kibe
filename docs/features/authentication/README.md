@@ -64,9 +64,9 @@ The code is never sent as text: each hologram only carries a `⬛`, so a bot has
 - On success: `Você se autenticou com sucesso!` (or `Você se registrou com sucesso!`) and `Enviando ao lobby...`. The auth server publishes `auth.authenticated`; the proxy opens the gate, **remembers the login session** and sends the player to a lobby.
 - A player who does not finish in `security.login-timeout` is kicked.
 
-Every player on the auth server stays in Adventure mode: it is set on join and any other game mode is cancelled.
+Every player on the auth server stays in Adventure mode: it is set on join and Muxe-Core cancels any other game mode, except Creative in build mode.
 
-While unauthenticated, a player can only walk, type the code in the chat and use `/logar` and `/registrar`. They cannot chat with others, run other commands, see other players, interact with blocks or entities (item frames, armor stands, paintings), use buckets, drop or pick up items, open inventories, break or place blocks, take damage or lose hunger. Falling below `protection.void-level` sends the player back to the spawn. After authenticating, commands are released for everyone; building and interacting are released only for players with `muxe.auth.setup`. Chat stays closed for everyone on the auth server.
+While unauthenticated, a player can only walk, type the code in the chat and use `/logar` and `/registrar`. They cannot chat with others, run other commands, see other players, interact with blocks or entities (item frames, armor stands, paintings), use buckets, drop or pick up items, open inventories, break or place blocks, take damage or lose hunger. Falling below `protection.void-level` sends the player back to the spawn. After authenticating, commands are released for everyone; building and interacting are released only for players in build mode (`/build`, which needs `muxe.build`). Build mode only starts on the auth server after the player is authenticated, so a cracked client using a staff member's name never inherits it. Chat stays closed for everyone on the auth server.
 
 ### 5. Configuring the auth server (staff)
 
@@ -93,7 +93,7 @@ Positions are saved in `plugins/Muxe-Auth/config.yml` under `locations`, and app
 
 | Permission | Grants | Default |
 |---|---|---|
-| `muxe.auth.setup` | `/authsetup`, and moving, building and interacting on the auth server after logging in. Only works once the player is authenticated, so a cracked client using an operator's name gets nothing. | op |
+| `muxe.auth.setup` | `/authsetup`, after logging in. Only works once the player is authenticated, so a cracked client using an operator's name gets nothing. | op |
 
 ## Configuration
 

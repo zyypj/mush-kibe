@@ -88,9 +88,11 @@ Players are always in Adventure mode: any change to another game mode is cancell
 
 ### Build mode
 
-- `/build on` (or `/build` to toggle) clears the hotbar, switches to Creative and lets the player break, place and move items. The action bar shows `&aModo construção ativado` for as long as the mode is on.
-- `/build off` clears the action bar, gives the lobby items back (with the current visibility dye), returns to Adventure and restores flight for players with `muxe.lobby.fly`.
-- Hotbar actions do nothing in build mode. Leaving the server ends build mode; the next join starts in Adventure with the lobby items.
+`/build` comes from Muxe-Core and works on every server, as described in the [Core API](../../development/core-api/README.md#build-mode). In the lobby:
+
+- `/build on` clears the hotbar, switches to Creative and lets the player break, place and move items, with `&aModo construção ativado` in the action bar for as long as the mode is on.
+- `/build off` gives the lobby items back (with the current visibility dye), returns to Adventure and lets players with `muxe.lobby.fly` fly again.
+- Build mode follows the player to the other servers: moving to another lobby keeps it on. Hotbar actions do nothing while it is on.
 
 ## Commands
 
@@ -98,7 +100,7 @@ Players are always in Adventure mode: any change to another game mode is cancell
 |---|---|---|
 | `/jogar <mode>` (`/play`) | Sends the player to a game group. | None |
 | `/setspawn` | Saves the current position as the lobby spawn. | `muxe.lobby.setspawn` |
-| `/build <on\|off>` | Turns build mode on or off; without an argument it toggles. | `muxe.lobby.build` |
+| `/build <on\|off>` | Turns build mode on or off on any server; without an argument it toggles. Provided by Muxe-Core. | `muxe.build` |
 | `/npc criar <id> <grupo> <skin> <nome>` | Creates an NPC where you stand. | `muxe.lobby.npc` |
 | `/npc mover <id>` | Moves an NPC to where you stand. | `muxe.lobby.npc` |
 | `/npc skin <id> <skin>` | Changes the skin to the one of an original player name. | `muxe.lobby.npc` |
@@ -111,7 +113,7 @@ Players are always in Adventure mode: any change to another game mode is cancell
 | Permission | Grants | Default |
 |---|---|---|
 | `muxe.lobby.fly` | Arrive above the spawn, flying. | op |
-| `muxe.lobby.build` | Use `/build` to break, place, drop and pick up items in Creative. | op |
+| `muxe.build` | Use `/build` (Muxe-Core) to break, place, drop and pick up items in Creative. | op |
 | `muxe.lobby.setspawn` | Use `/setspawn`. | op |
 | `muxe.lobby.npc` | Use `/npc`. | op |
 
