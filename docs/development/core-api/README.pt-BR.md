@@ -88,6 +88,20 @@ text.show(player, anchor, "A7KX");
 - `Anchors.inFrontOfEyes` posiciona o conteúdo na frente de onde o jogador está olhando, centralizado na linha dos olhos.
 - `ParticleColor` tem `GREEN`, `WHITE`, `AQUA`, `YELLOW`, ou qualquer valor RGB.
 
+## Localizações
+
+Pacote `br.com.muxe.core.bukkit.location`.
+
+```java
+ConfigLocation spawn = new ConfigLocation(plugin, "locations.spawn");
+spawn.set(player.getLocation());
+Location target = spawn.location().orElseGet(world::getSpawnLocation);
+```
+
+- `StoredLocation`: mundo, coordenadas, yaw e pitch, lidos e gravados na configuração (`from`, `toMap`), convertidos para uma `Location` do Bukkit só quando o mundo está carregado, e `describe()` para mensagens da equipe.
+- `ConfigLocation`: uma `StoredLocation` salva em um caminho do `config.yml` de um plugin, gravada em disco a cada mudança. Implementa `LocationSlot`, então os serviços podem ser testados com uma posição em memória.
+- `Anchors.lookingAt(content, viewerEyes, height)`: posiciona um conteúdo, como um `ParticleText`, virado para quem o vê de outro lugar.
+
 ## Utilitários independentes de plataforma
 
 No `core:common`, usáveis também no proxy:

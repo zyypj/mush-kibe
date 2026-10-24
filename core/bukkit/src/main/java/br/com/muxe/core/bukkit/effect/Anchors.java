@@ -19,4 +19,15 @@ public final class Anchors {
         anchor.setPitch(0);
         return anchor;
     }
+
+    public static Location lookingAt(Location contentCenter, Location viewerEyes, double contentHeight) {
+        Vector towardsContent = contentCenter.toVector().subtract(viewerEyes.toVector()).setY(0);
+        Location anchor = contentCenter.clone();
+        if (towardsContent.lengthSquared() > 0) {
+            anchor.setDirection(towardsContent);
+        }
+        anchor.setPitch(0);
+        anchor.setY(contentCenter.getY() - contentHeight / 2);
+        return anchor;
+    }
 }
