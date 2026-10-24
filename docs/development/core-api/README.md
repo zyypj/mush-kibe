@@ -62,14 +62,28 @@ ActionBar.send(player, "&eDigite o código em frente no chat!");
 
 Spigot 1.8.8 has no action bar API, so this sends the 1.8 packet through `LegacyPackets` (reflection on the server internals, resolved once). If the server does not expose them, `send` returns `false` and logs one warning; nothing else breaks. `ActionBar.isSupported()` tells whether it works.
 
+The 1.8 client draws the action bar from the plain text of the message and drops JSON colors, so the `&` colors are kept inside the text as `§` codes, which the client does draw.
+
 ### Message catalog
 
 ```java
 MessageCatalog messages = MessageCatalog.from(getConfig().getConfigurationSection("messages"));
 player.sendMessage(messages.get("wrong-password", "remaining", "3"));
+messages.lines("challenge").forEach(player::sendMessage);
 ```
 
 Placeholders are written `{name}` in the configuration. `merge` combines catalogs (the plugin's own messages win).
+
+A message can be a YAML list. `lines(key)` returns one entry per line, with blank items (`""`) turned into a line the chat shows empty, and `get(key)` joins the lines with line breaks, which suits kick screens. The proxy's `ProxyMessages` accepts lists the same way.
+
+```yaml
+messages:
+  challenge:
+    - "&6&lDESAFIO:"
+    - "&eDigite o &bcódigo &eem frente &ano chat&e!"
+    - ""
+    - "&7&o(É necessário ativar os hologramas para visualizar corretamente)"
+```
 
 ## Effects
 

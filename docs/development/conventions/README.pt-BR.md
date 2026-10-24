@@ -82,4 +82,6 @@ Regras:
 - Os textos para jogadores ficam em `messages`, no `config.yml` do plugin, nunca no código Java.
 - As mensagens são em português, com códigos de cor `&`, e os placeholders são escritos como `{name}`.
 - As chaves são em `kebab-case` e agrupadas por feature quando ajuda (`admin.servers-line`).
+- Uma mensagem mostrada em várias linhas de uma vez é uma lista YAML em uma única chave, nunca uma chave por linha. Uma linha em branco é um item vazio (`""`).
+- Quando uma mensagem é copiada de um print de referência, mantenha as cores, a ordem e as linhas em branco.
 - Os códigos de problema da camada de aplicação são convertidos em chaves de mensagem na camada de plataforma.
