@@ -24,7 +24,6 @@ public final class LobbyCommand implements CommandExecutor {
             sender.sendMessage(messages.get("players-only"));
             return true;
         }
-        player.sendMessage(messages.get("connecting", "destination", lobbyGroup));
         core.network().connectToGroup(player.getUniqueId(), lobbyGroup).exceptionally(error -> {
             core.mainThread().execute(() -> player.sendMessage(messages.get("connect-failed")));
             return null;

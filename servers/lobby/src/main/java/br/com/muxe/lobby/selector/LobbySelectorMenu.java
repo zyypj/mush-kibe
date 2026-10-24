@@ -56,7 +56,6 @@ public final class LobbySelectorMenu {
             return;
         }
         context.close();
-        player.sendMessage(messages.get("lobby-connecting", "number", entry.label()));
         core.network().connectToServer(player.getUniqueId(), entry.serverId()).exceptionally(error -> {
             core.mainThread().execute(() -> player.sendMessage(messages.get("lobby-failed")));
             return null;

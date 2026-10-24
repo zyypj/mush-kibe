@@ -111,7 +111,6 @@ messages:
   visibility-none: "&cVocê escondeu todos os jogadores."
   lobby-current: "&cVocê já está conectado neste lobby."
   lobby-full: "&cEste lobby está cheio."
-  lobby-connecting: "&7Conectando você ao &aLobby Principal #{number}&7..."
   lobby-failed: "&cNão foi possível trocar de lobby agora. Tente novamente."
   npc-connecting: "&7Procurando uma sala de &b{name}&7..."
   npc-unavailable: "&cNenhuma sala de &f{name} &cdisponível no momento."
