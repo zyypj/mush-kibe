@@ -85,7 +85,7 @@ public final class AuthBootstrap {
 
         PluginManager plugins = plugin.getServer().getPluginManager();
         plugins.registerEvents(new AuthPlayerListener(plugin, flow, messages, settings.loginTimeout(), locations, codeText.height()), plugin);
-        plugins.registerEvents(new AuthRestrictionListener(sessions, messages), plugin);
+        plugins.registerEvents(new AuthRestrictionListener(sessions, locations, settings.voidLevel(), messages), plugin);
         plugins.registerEvents(new ChallengeChatListener(flow, core.mainThread()), plugin);
 
         BukkitScheduler scheduler = plugin.getServer().getScheduler();

@@ -1,22 +1,30 @@
 package br.com.muxe.auth.listener;
 
-import br.com.muxe.auth.command.AuthCommands;
 import br.com.muxe.auth.command.AuthSetupCommand;
+import br.com.muxe.auth.protection.AuthProtection;
 import br.com.muxe.auth.session.AuthSessionRegistry;
+import br.com.muxe.auth.setup.AuthLocations;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
-import java.util.Locale;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -24,44 +32,33 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 public final class AuthRestrictionListener implements Listener {
 
     private final AuthSessionRegistry sessions;
+    private final AuthLocations locations;
+    private final int voidLevel;
     private final MessageCatalog messages;
 
-    public AuthRestrictionListener(AuthSessionRegistry sessions, MessageCatalog messages) {
+    public AuthRestrictionListener(AuthSessionRegistry sessions, AuthLocations locations, int voidLevel, MessageCatalog messages) {
         this.sessions = sessions;
+        this.locations = locations;
+        this.voidLevel = voidLevel;
         this.messages = messages;
-    }
-
-    private boolean isRestricted(Player player) {
-        return !sessions.isAuthenticated(player.getUniqueId()) || !player.hasPermission(AuthSetupCommand.PERMISSION);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCommand(PlayerCommandPreprocessEvent event) {
-        if (sessions.isAuthenticated(event.getPlayer().getUniqueId())) {
-            return;
-        }
-        String label = event.getMessage().substring(1).split(" ", 2)[0].toLowerCase(Locale.ROOT);
-        if (!AuthCommands.ALLOWED_LABELS.contains(label)) {
+        Player player = event.getPlayer();
+        if (!AuthProtection.mayRunCommand(isAuthenticated(player), event.getMessage())) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(messages.get("blocked-command"));
+            player.sendMessage(messages.get("blocked-command"));
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onMove(PlayerMoveEvent event) {
-        if (!isRestricted(event.getPlayer())) {
-            return;
-        }
-        Location from = event.getFrom();
+    @EventHandler(ignoreCancelled = true)
+    public void onFall(PlayerMoveEvent event) {
         Location to = event.getTo();
-        if (to == null) {
-            return;
-        }
-        if (from.getBlockX() != to.getBlockX() || from.getBlockY() != to.getBlockY() || from.getBlockZ() != to.getBlockZ()) {
-            Location frozen = from.clone();
-            frozen.setYaw(to.getYaw());
-            frozen.setPitch(to.getPitch());
-            event.setTo(frozen);
+        if (to != null && AuthProtection.fellOut(to.getY(), voidLevel)) {
+            Player player = event.getPlayer();
+            player.setFallDistance(0);
+            player.teleport(locations.spawnLocation().orElseGet(() -> player.getWorld().getSpawnLocation()));
         }
     }
 
@@ -73,37 +70,79 @@ public final class AuthRestrictionListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
+    public void onAttack(EntityDamageByEntityEvent event) {
+        guard(event.getDamager(), event);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onHunger(FoodLevelChangeEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInteract(PlayerInteractEvent event) {
-        event.setCancelled(isRestricted(event.getPlayer()));
+        guard(event.getPlayer(), event);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInteractEntity(PlayerInteractEntityEvent event) {
+        guard(event.getPlayer(), event);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onArmorStand(PlayerArmorStandManipulateEvent event) {
+        guard(event.getPlayer(), event);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onHangingBreak(HangingBreakByEntityEvent event) {
+        guard(event.getRemover(), event);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
+        guard(event.getPlayer(), event);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onBucketFill(PlayerBucketFillEvent event) {
+        guard(event.getPlayer(), event);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDrop(PlayerDropItemEvent event) {
-        event.setCancelled(isRestricted(event.getPlayer()));
+        guard(event.getPlayer(), event);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPickup(PlayerPickupItemEvent event) {
-        event.setCancelled(isRestricted(event.getPlayer()));
+        guard(event.getPlayer(), event);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClick(InventoryClickEvent event) {
-        event.setCancelled(!(event.getWhoClicked() instanceof Player player) || isRestricted(player));
+        guard(event.getWhoClicked(), event);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onBreak(BlockBreakEvent event) {
-        event.setCancelled(isRestricted(event.getPlayer()));
+        guard(event.getPlayer(), event);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlace(BlockPlaceEvent event) {
-        event.setCancelled(isRestricted(event.getPlayer()));
+        guard(event.getPlayer(), event);
+    }
+
+    private void guard(Entity actor, Cancellable event) {
+        boolean allowed = actor instanceof Player player
+            && AuthProtection.mayInteract(isAuthenticated(player), player.hasPermission(AuthSetupCommand.PERMISSION));
+        if (!allowed) {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean isAuthenticated(Player player) {
+        return sessions.isAuthenticated(player.getUniqueId());
     }
 }

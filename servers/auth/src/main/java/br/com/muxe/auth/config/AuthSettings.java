@@ -12,7 +12,8 @@ public record AuthSettings(
     Duration attemptWindow,
     PasswordPolicy passwordPolicy,
     ChallengeSettings challenge,
-    Duration reminderInterval
+    Duration reminderInterval,
+    int voidLevel
 ) {
 
     public static AuthSettings from(ConfigSource source) {
@@ -31,7 +32,8 @@ public record AuthSettings(
                 source.integer("challenge.max-attempts", 3),
                 source.integer("challenge.distance", 4)
             ),
-            source.duration("reminder.interval", Duration.ofSeconds(5))
+            source.duration("reminder.interval", Duration.ofSeconds(5)),
+            source.integer("protection.void-level", 0)
         );
     }
 

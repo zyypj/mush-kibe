@@ -40,7 +40,7 @@ Passwords:
 - Compared in constant time. Never logged: commands and records that hold passwords override `toString`.
 - **Set `commands.log: false` in the auth server's `spigot.yml`**, otherwise Spigot prints every command, including `/login <password>`, to the console and logs.
 - Wrong passwords are limited per player (5 per 5 minutes by default); the player is kicked when the limit is reached.
-- Unauthenticated players cannot move, chat, use other commands, interact or see other players.
+- Unauthenticated players can only walk, type the challenge code and use `/logar` and `/registrar`. They cannot chat, use other commands, interact with blocks or entities, build or see other players.
 
 ## Packets
 
