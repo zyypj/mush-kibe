@@ -53,6 +53,7 @@ Title.clear(player);
 
 - Colors with `&` are translated automatically.
 - Timings are in ticks (defaults 10, 70 and 20). On a server that does not expose title timings, the title is still shown with the client's default timings.
+- `Title.clear` hides the title and the subtitle at once. The 1.8 client keeps the subtitle on screen after a plain reset, so `clear` first zeroes the timings, then empties the subtitle and only then resets.
 
 ### Action bar
 
