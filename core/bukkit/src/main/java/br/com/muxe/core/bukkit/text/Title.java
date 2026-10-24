@@ -34,7 +34,9 @@ public record Title(String title, String subtitle, int fadeInTicks, int stayTick
 
     @SuppressWarnings("deprecation")
     public static void clear(Player player) {
-        player.resetTitle();
+        if (!LegacyPackets.clearTitle(player)) {
+            player.resetTitle();
+        }
     }
 
     public static final class Builder {

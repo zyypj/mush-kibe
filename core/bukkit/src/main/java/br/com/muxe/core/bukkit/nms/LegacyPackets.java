@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -35,11 +36,15 @@ public final class LegacyPackets {
     }
 
     public static boolean sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        return Holder.HANDLES.map(handles ->
-            handles.send(player, () -> handles.titleTimesPacket.newInstance(fadeIn, stay, fadeOut))
-                && handles.send(player, () -> handles.titleTextPacket.newInstance(handles.subtitleAction, handles.component(subtitle)))
-                && handles.send(player, () -> handles.titleTextPacket.newInstance(handles.titleAction, handles.component(title)))
-        ).orElse(false);
+        return sendAll(player, TitlePacket.showing(title, subtitle, fadeIn, stay, fadeOut));
+    }
+
+    public static boolean clearTitle(Player player) {
+        return sendAll(player, TitlePacket.clearing());
+    }
+
+    private static boolean sendAll(Player player, List<TitlePacket> packets) {
+        return Holder.HANDLES.map(handles -> packets.stream().allMatch(packet -> handles.send(player, () -> handles.titlePacket(packet)))).orElse(false);
     }
 
     private static final class Holder {
@@ -62,6 +67,7 @@ public final class LegacyPackets {
         private final Constructor<?> titleTimesPacket;
         private final Object titleAction;
         private final Object subtitleAction;
+        private final Object resetAction;
 
         private Handles(
             Method getHandle,
@@ -72,7 +78,8 @@ public final class LegacyPackets {
             Constructor<?> titleTextPacket,
             Constructor<?> titleTimesPacket,
             Object titleAction,
-            Object subtitleAction
+            Object subtitleAction,
+            Object resetAction
         ) {
             this.getHandle = getHandle;
             this.playerConnection = playerConnection;
@@ -83,6 +90,7 @@ public final class LegacyPackets {
             this.titleTimesPacket = titleTimesPacket;
             this.titleAction = titleAction;
             this.subtitleAction = subtitleAction;
+            this.resetAction = resetAction;
         }
 
         private static Optional<Handles> resolve() {
@@ -107,7 +115,8 @@ public final class LegacyPackets {
                     titlePacket.getConstructor(titleActions, component),
                     titlePacket.getConstructor(int.class, int.class, int.class),
                     constant(titleActions, "TITLE"),
-                    constant(titleActions, "SUBTITLE")
+                    constant(titleActions, "SUBTITLE"),
+                    constant(titleActions, "RESET")
                 ));
             } catch (ReflectiveOperationException | RuntimeException | LinkageError exception) {
                 Bukkit.getLogger().log(Level.WARNING, "[Muxe] Action bars and title timings are unavailable on this server: " + exception);
@@ -122,6 +131,15 @@ public final class LegacyPackets {
                 }
             }
             throw new IllegalStateException(enumType.getName() + " has no " + name);
+        }
+
+        private Object titlePacket(TitlePacket packet) throws ReflectiveOperationException {
+            return switch (packet) {
+                case TitlePacket.Times times -> titleTimesPacket.newInstance(times.fadeIn(), times.stay(), times.fadeOut());
+                case TitlePacket.Subtitle subtitle -> titleTextPacket.newInstance(subtitleAction, component(subtitle.text()));
+                case TitlePacket.Main main -> titleTextPacket.newInstance(titleAction, component(main.text()));
+                case TitlePacket.Reset reset -> titleTextPacket.newInstance(resetAction, null);
+            };
         }
 
         private Object component(String legacyText) throws ReflectiveOperationException {

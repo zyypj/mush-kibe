@@ -53,6 +53,7 @@ Title.clear(player);
 
 - As cores com `&` são traduzidas automaticamente.
 - Os tempos são em ticks (padrões 10, 70 e 20). Em um servidor que não expõe os tempos de título, o título ainda aparece, com os tempos padrão do cliente.
+- `Title.clear` esconde o título e o subtítulo de uma vez. O cliente 1.8 mantém o subtítulo na tela depois de um reset simples, então o `clear` primeiro zera os tempos, depois esvazia o subtítulo e só então faz o reset.
 
 ### Action bar
 
