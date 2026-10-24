@@ -18,6 +18,7 @@ reminder:
   interval: 5s
 
 messages:
+  no-permission: "&cVocê não tem permissão para isso."
   players-only: "&cApenas jogadores podem usar este comando."
   challenge-header: "&e&lDESAFIO:"
   challenge-instruction: "&eDigite o &bcódigo &eem frente no &bchat&e!"
@@ -51,3 +52,12 @@ messages:
   blocked-command: "&cFaça o login utilizando &b/logar <senha>"
   timeout: "&cVocê demorou demais para se autenticar."
   service-unavailable: "&cNão foi possível autenticar agora. Tente novamente em instantes."
+  setup-usage: "&eUso: /authsetup <spawn|codigo|testar|info|limpar <spawn|codigo>>"
+  setup-not-authenticated: "&cFaça login antes de configurar o servidor."
+  setup-spawn-set: "&aSpawn definido em &f{location}&a."
+  setup-code-set: "&aPosição do código definida em &f{location}&a. Use &f/authsetup testar &apara conferir."
+  setup-preview: "&7Mostrando um código de exemplo por 10 segundos, visto a partir do spawn..."
+  setup-info-spawn: "&7Spawn: &f{location}"
+  setup-info-code: "&7Código do desafio: &f{location}"
+  setup-default: "padrão"
+  setup-cleared: "&aPosição de &f{target} &aremovida. Voltando ao padrão."
