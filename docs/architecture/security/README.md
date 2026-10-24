@@ -22,10 +22,14 @@ How the network protects its servers, services and players. The principle: playe
 
 ## Authentication
 
-The network accepts players without a Minecraft account (offline mode), so the proxy cannot trust a username by itself. Authentication happens on the auth server, and the proxy enforces it:
+The network accepts players without a Minecraft account (offline mode), so the proxy cannot trust a username by itself. `velocity.toml` runs with `online-mode = false`, and the proxy decides per connection:
 
-- New connections always go to an auth server.
-- Until the proxy receives `auth.authenticated` for a player, it **denies every connection to a server outside the auth group**, and ignores `player.connect` packets for that player.
+- **Premium names** (an existing premium account, or any name that exists at Mojang, even if a cracked account registered it here first) are forced into online mode: Velocity verifies the session with Mojang, so a cracked client cannot use a premium name. Premium players are authenticated without a password.
+- **Names follow the Mojang-verified identity:** a premium login takes its name from any other account, and a renamed premium player keeps the same account because the Mojang UUID does not change. See [Accounts](../../features/accounts/README.md#name-ownership).
+- **Cracked names** go to an auth server, solve a code drawn with holograms (anti-bot) and then register or log in with a password.
+- **Login sessions:** after a password login, the proxy keeps the SHA-256 of the player id and IP in Redis for 2 hours. A reconnection of the same account from the same IP within that time is authenticated without a password. The raw IP is never stored.
+- If Mojang cannot be reached, new names are refused instead of being registered as cracked.
+- Until a player is authenticated, the proxy **denies every connection to a server outside the auth group**, and ignores `player.connect` packets for that player.
 - The proxy only accepts `auth.authenticated` from an origin that its server directory knows as an `AUTH` server of the auth group.
 - The authenticated state is forgotten when the player disconnects.
 - Names that differ only in letter case from an existing account are refused at login, because offline-mode identities are derived from the exact name.
@@ -36,7 +40,7 @@ Passwords:
 - Compared in constant time. Never logged: commands and records that hold passwords override `toString`.
 - **Set `commands.log: false` in the auth server's `spigot.yml`**, otherwise Spigot prints every command, including `/login <password>`, to the console and logs.
 - Wrong passwords are limited per player (5 per 5 minutes by default); the player is kicked when the limit is reached.
-- Unauthenticated players cannot move, chat, use other commands, interact or see other players.
+- Unauthenticated players can only walk, type the challenge code and use `/logar` and `/registrar`. They cannot chat, use other commands, interact with blocks or entities, build or see other players.
 
 ## Packets
 

@@ -1,6 +1,8 @@
 package br.com.muxe.core.common.network;
 
 import br.com.muxe.core.common.messaging.packet.PacketRegistry;
+import br.com.muxe.core.common.network.auth.AuthStatusRequest;
+import br.com.muxe.core.common.network.auth.AuthStatusResponse;
 import br.com.muxe.core.common.network.auth.PlayerAuthenticatedPacket;
 import br.com.muxe.core.common.network.player.ConnectPlayerPacket;
 import br.com.muxe.core.common.network.player.PlayerLocateRequest;
@@ -20,6 +22,8 @@ public final class NetworkPackets {
             .register(ConnectPlayerPacket.TYPE)
             .register(PlayerLocateRequest.TYPE)
             .register(PlayerLocateResponse.TYPE)
-            .register(PlayerAuthenticatedPacket.TYPE);
+            .register(PlayerAuthenticatedPacket.TYPE)
+            .register(AuthStatusRequest.TYPE)
+            .register(AuthStatusResponse.TYPE);
     }
 }

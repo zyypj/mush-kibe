@@ -198,6 +198,8 @@ Packets defined in `core:common` (`br.com.muxe.core.common.network`). Feature pa
 | `player.locate_request` | `PlayerLocateRequest` | proxy | standard, max age 5 s | Ask where a player is. |
 | `player.locate_response` | `PlayerLocateResponse` | requester | standard, max age 5 s | Answer to the above. |
 | `auth.authenticated` | `PlayerAuthenticatedPacket` | proxy | `DURABLE` 5 min, max age 15 s | A player registered or logged in on an auth server. |
+| `auth.status_request` | `AuthStatusRequest` | proxy | standard, max age 5 s | Ask whether a player is already authenticated. |
+| `auth.status_response` | `AuthStatusResponse` | requester | standard, max age 5 s | Answer to the above, sent only by the proxy the player is on. |
 
 ## Metrics
 

@@ -82,4 +82,6 @@ Rules:
 - Player-facing text lives under `messages` in the plugin's `config.yml`, never in Java code.
 - Messages are in Portuguese, with `&` color codes, and placeholders written as `{name}`.
 - Keys are `kebab-case` and grouped by feature when it helps (`admin.servers-line`).
+- A message shown as several lines at once is one YAML list under one key, never one key per line. A blank line is an empty item (`""`).
+- When a message is copied from a reference screenshot, keep its colors, its order and its blank lines.
 - Problem codes from the application layer are mapped to message keys in the platform layer.

@@ -16,6 +16,7 @@ Code: `core/common/src/main/java/br/com/muxe/core/common/persistence`.
 | `JdbcTransactions` | The JDBC implementation. |
 | `TransactionContext` | Gives repositories the connection of the current transaction. |
 | `MigrationRunner` | Runs the Flyway migrations of one module in its own schema. |
+| `ExpiringStore` | Short-lived values in Redis (`RedisExpiringStore`), every one with a time to live. Keys get the `muxe:` prefix. |
 
 ## Transactions
 
@@ -52,7 +53,7 @@ return transactions.inTransaction("account.record_login", () -> {
 
 | Schema | Owner | Tables |
 |---|---|---|
-| `core` | `core:common` | `accounts` |
+| `core` | `core:common` | `accounts` (V1), `accounts.premium` (V2), nullable `accounts.username` for released names (V3) |
 | `auth` | `servers:auth` | `credentials` |
 
 ## Kinds of data
@@ -62,7 +63,7 @@ return transactions.inTransaction("account.record_login", () -> {
 | Critical | Credentials, coins, purchases, rewards | Written in a PostgreSQL transaction **before** the player is told it happened. |
 | Non-critical | Preferences, toggles | Applied in memory and written in the background. A crash may lose the last seconds. |
 | Match state | Teams, kills, timers | Memory only, on the server running the match. |
-| Ephemeral network state | Server status, idempotency claims | Redis or packets, always with an expiration. |
+| Ephemeral network state | Server status, idempotency claims, login sessions, premium lookups | Redis or packets, always with an expiration. |
 
 ## Rules
 

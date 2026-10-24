@@ -16,6 +16,7 @@ Código: `core/common/src/main/java/br/com/muxe/core/common/persistence`.
 | `JdbcTransactions` | A implementação JDBC. |
 | `TransactionContext` | Dá aos repositórios a conexão da transação atual. |
 | `MigrationRunner` | Roda as migrações Flyway de um módulo no seu próprio schema. |
+| `ExpiringStore` | Valores de curta duração no Redis (`RedisExpiringStore`), cada um com um tempo de vida. As chaves recebem o prefixo `muxe:`. |
 
 ## Transações
 
@@ -52,7 +53,7 @@ return transactions.inTransaction("account.record_login", () -> {
 
 | Schema | Dono | Tabelas |
 |---|---|---|
-| `core` | `core:common` | `accounts` |
+| `core` | `core:common` | `accounts` (V1), `accounts.premium` (V2), `accounts.username` anulável para nomes liberados (V3) |
 | `auth` | `servers:auth` | `credentials` |
 
 ## Tipos de dados
@@ -62,7 +63,7 @@ return transactions.inTransaction("account.record_login", () -> {
 | Crítico | Credenciais, coins, compras, recompensas | Gravado em uma transação do PostgreSQL **antes** de o jogador ser informado de que aconteceu. |
 | Não crítico | Preferências, opções | Aplicado em memória e gravado em segundo plano. Um crash pode perder os últimos segundos. |
 | Estado de partida | Times, kills, timers | Só em memória, no servidor que roda a partida. |
-| Estado efêmero da rede | Status de servidores, reservas de idempotência | Redis ou pacotes, sempre com expiração. |
+| Estado efêmero da rede | Status de servidores, reservas de idempotência, sessões de login, consultas de premium | Redis ou pacotes, sempre com expiração. |
 
 ## Regras
 

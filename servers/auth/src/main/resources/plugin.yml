@@ -16,3 +16,10 @@ commands:
     usage: /register <password> <password>
     aliases:
       - registrar
+  authsetup:
+    description: Configures the spawn and the challenge code position.
+    usage: /authsetup <spawn|codigo|testar|info|limpar <spawn|codigo>>
+permissions:
+  muxe.auth.setup:
+    description: Allows /authsetup and moving freely on the auth server after logging in.
+    default: op

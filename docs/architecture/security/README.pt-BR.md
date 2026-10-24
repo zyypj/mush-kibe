@@ -22,10 +22,14 @@ Como a rede protege seus servidores, serviços e jogadores. O princípio: os jog
 
 ## Autenticação
 
-A rede aceita jogadores sem conta do Minecraft (modo offline), então o proxy não pode confiar só no nome de usuário. A autenticação acontece no servidor de auth, e o proxy a garante:
+A rede aceita jogadores sem conta do Minecraft (modo offline), então o proxy não pode confiar só no nome de usuário. O `velocity.toml` roda com `online-mode = false`, e o proxy decide a cada conexão:
 
-- Novas conexões sempre vão para um servidor de auth.
-- Até o proxy receber `auth.authenticated` para um jogador, ele **nega toda conexão a um servidor fora do grupo de auth** e ignora pacotes `player.connect` desse jogador.
+- **Nomes premium** (uma conta premium existente, ou qualquer nome que existe na Mojang, mesmo que uma conta pirata o tenha registrado aqui antes) são forçados ao modo online: o Velocity verifica a sessão com a Mojang, então um cliente pirata não consegue usar um nome premium. Jogadores premium são autenticados sem senha.
+- **Os nomes seguem a identidade verificada pela Mojang:** um login premium toma o seu nome de qualquer outra conta, e um jogador premium que trocou de nome mantém a mesma conta, porque o UUID da Mojang não muda. Veja [Contas](../../features/accounts/README.pt-BR.md#dono-do-nome).
+- **Nomes piratas** vão para um servidor de auth, resolvem um código desenhado com hologramas (anti-bot) e depois se registram ou fazem login com senha.
+- **Sessões de login:** depois de um login com senha, o proxy guarda no Redis, por 2 horas, o SHA-256 do id do jogador e do IP. Uma reconexão da mesma conta, do mesmo IP, dentro desse tempo é autenticada sem senha. O IP puro nunca é guardado.
+- Se a Mojang não puder ser consultada, nomes novos são recusados em vez de serem registrados como piratas.
+- Até um jogador ser autenticado, o proxy **nega toda conexão a um servidor fora do grupo de auth** e ignora pacotes `player.connect` desse jogador.
 - O proxy só aceita `auth.authenticated` de uma origem que seu diretório de servidores conhece como um servidor `AUTH` do grupo de auth.
 - O estado de autenticado é esquecido quando o jogador desconecta.
 - Nomes que diferem de uma conta existente só em maiúsculas/minúsculas são recusados no login, porque as identidades do modo offline são derivadas do nome exato.
@@ -36,7 +40,7 @@ Senhas:
 - Comparadas em tempo constante. Nunca registradas em log: comandos e records que guardam senhas sobrescrevem `toString`.
 - **Defina `commands.log: false` no `spigot.yml` do servidor de auth**, senão o Spigot imprime todo comando, incluindo `/login <senha>`, no console e nos logs.
 - Senhas erradas são limitadas por jogador (5 a cada 5 minutos por padrão); o jogador é expulso ao atingir o limite.
-- Jogadores não autenticados não podem se mover, falar no chat, usar outros comandos, interagir nem ver outros jogadores.
+- Jogadores não autenticados só podem andar, digitar o código do desafio e usar `/logar` e `/registrar`. Eles não podem falar no chat, usar outros comandos, interagir com blocos ou entidades, construir nem ver outros jogadores.
 
 ## Pacotes
 

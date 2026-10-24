@@ -34,4 +34,4 @@ A server running Muxe must follow the [Minecraft EULA](https://www.minecraft.net
 
 ## License
 
-The project license is defined in the `LICENSE` file at the root of the repository. Contributions are accepted under that license.
+Muxe is released under the [MIT License](../../LICENSE). Contributions are accepted under that license.
