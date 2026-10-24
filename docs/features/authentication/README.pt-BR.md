@@ -12,6 +12,7 @@ Fica no `core:proxy` (detecção de premium, sessões, a passagem) e no `servers
 - Como jogador pirata, quero criar uma senha, para que ninguém mais jogue com o meu nome.
 - Como jogador pirata, quero reconectar em até duas horas do mesmo lugar sem fazer login de novo.
 - Como operador, quero que bots sejam barrados antes da etapa de senha, e que senhas erradas repetidas também sejam barradas.
+- Como membro da equipe, quero escolher onde os jogadores aparecem no servidor de autenticação e onde o código do desafio é desenhado, sem editar arquivos.
 
 ## Como funciona
 
@@ -45,8 +46,8 @@ Jogadores autenticados automaticamente vão direto para um lobby. Os demais vão
 
 ### 3. Desafio (servidor de autenticação)
 
-1. Ao entrar, o jogador fica escondido dos outros, é teleportado para o spawn e fica parado.
-2. Um código aleatório (4 caracteres por padrão, sem `0`, `O`, `1` e `I`) é desenhado com partículas na frente do jogador, e o chat diz:
+1. Ao entrar, o servidor de autenticação pergunta ao proxy se o jogador já está autenticado (`auth.status_request`). Se estiver, o desafio e a senha são pulados e o jogador vê `Você já está autenticado.` Caso contrário, o jogador fica escondido dos outros, é teleportado para o spawn configurado (ou o spawn do mundo) e fica parado.
+2. Um código aleatório (4 caracteres por padrão, sem `0`, `O`, `1` e `I`) é desenhado com partículas na posição do código configurada, virado para o jogador, ou 4 blocos à frente do jogador quando nenhuma posição está configurada. O chat diz:
    - `DESAFIO:` / `Digite o código em frente no chat!`, com uma dica para ativar as partículas.
    - A action bar repete `Digite o código em frente no chat!` a cada segundo.
 3. O jogador digita o código no chat (maiúsculas, minúsculas e espaços são ignorados). As mensagens do chat nunca aparecem para os outros jogadores.
@@ -63,7 +64,16 @@ O código é desenhado com partículas em vez de entidades de texto, para que bo
 - Em caso de sucesso: `Você se autenticou com sucesso!` (ou `Você se registrou com sucesso!`) e `Enviando ao lobby...`. O servidor de autenticação publica `auth.authenticated`; o proxy abre a passagem, **lembra a sessão de login** e envia o jogador para um lobby.
 - Um jogador que não termina em `security.login-timeout` é expulso.
 
-Enquanto não está autenticado, o jogador não pode se mover (só olhar em volta), conversar, usar outros comandos, interagir, largar ou pegar itens, abrir inventários, quebrar ou colocar blocos, levar dano ou perder fome.
+Enquanto não está autenticado, o jogador não pode se mover (só olhar em volta), conversar, usar outros comandos, interagir, largar ou pegar itens, abrir inventários, quebrar ou colocar blocos, levar dano ou perder fome. Depois de autenticar, os comandos são liberados para todos; andar, construir e interagir são liberados só para jogadores com `muxe.auth.setup`.
+
+### 5. Configurando o servidor de auth (equipe)
+
+1. Faça login normalmente e volte ao servidor de autenticação com o `/server auth-1` do Velocity. O proxy confirma que você está autenticado, então você pula o desafio e, com `muxe.auth.setup`, pode andar livremente.
+2. Fique onde os jogadores devem aparecer, olhando para onde eles devem olhar, e use `/authsetup spawn`.
+3. Fique onde o código deve aparecer (ele fica centralizado nos seus olhos) e use `/authsetup codigo`. O código é virado para o spawn automaticamente.
+4. Use `/authsetup testar` para ver um código de exemplo por 10 segundos, visto a partir do spawn.
+
+As posições são salvas em `plugins/Muxe-Auth/config.yml`, em `locations`, e valem para os próximos jogadores que entrarem.
 
 ## Comandos
 
@@ -71,10 +81,17 @@ Enquanto não está autenticado, o jogador não pode se mover (só olhar em volt
 |---|---|---|
 | `/registrar <senha> <senha>` (`/register`) | Cria a senha da conta. | Nenhuma |
 | `/logar <senha>` (`/login`) | Faz login. | Nenhuma |
+| `/authsetup spawn` | Define o spawn na sua posição e direção. | `muxe.auth.setup` |
+| `/authsetup codigo` | Define a posição do código do desafio nos seus olhos. | `muxe.auth.setup` |
+| `/authsetup testar` | Mostra um código de exemplo por 10 segundos, visto a partir do spawn. | `muxe.auth.setup` |
+| `/authsetup info` | Mostra as duas posições. | `muxe.auth.setup` |
+| `/authsetup limpar <spawn\|codigo>` | Remove uma posição e volta ao padrão. | `muxe.auth.setup` |
 
 ## Permissões
 
-Não se aplica.
+| Permissão | Libera | Padrão |
+|---|---|---|
+| `muxe.auth.setup` | `/authsetup`, e andar, construir e interagir no servidor de autenticação depois do login. Só vale depois que o jogador está autenticado, então um cliente pirata usando o nome de um operador não ganha nada. | op |
 
 ## Configuração
 
@@ -97,6 +114,8 @@ Não se aplica.
 | `challenge.max-attempts` | `3` | Códigos errados antes de o jogador ser expulso. |
 | `challenge.distance` | `4` | Blocos entre os olhos do jogador e o código. |
 | `reminder.interval` | `5s` | De quanto em quanto tempo o pedido de senha e o título se repetem. |
+| `locations.spawn` | não definido | Gravado por `/authsetup spawn`: mundo, x, y, z, yaw, pitch. Sem ele, é usado o spawn do mundo. |
+| `locations.challenge-code` | não definido | Gravado por `/authsetup codigo`. Sem ele, o código aparece `challenge.distance` blocos à frente do jogador. |
 | `security.pbkdf2-iterations` | `600000` | Iterações de PBKDF2-HMAC-SHA256 para novos hashes. Aumentar o valor atualiza os hashes antigos no próximo login. |
 | `security.login-timeout` | `60s` | Tempo para se autenticar antes de ser expulso. |
 | `security.max-attempts` | `5` | Senhas erradas permitidas por janela. |
@@ -115,6 +134,8 @@ Obrigatório:
 | Id | Destino | Política | Para quê |
 |---|---|---|---|
 | `auth.authenticated` | proxy | `DURABLE`, janela de 5 min, idade máxima de 15 s | Avisa o proxy que o jogador se registrou (`REGISTER`) ou fez login (`LOGIN`). |
+| `auth.status_request` | proxy | padrão, idade máxima de 5 s | Pergunta se um jogador que acabou de entrar no servidor de autenticação já está autenticado. Só responde o proxy em que o jogador está conectado. |
+| `auth.status_response` | quem pediu | padrão, idade máxima de 5 s | A resposta. Nenhuma resposta dentro de `messaging.request-timeout` significa "não autenticado". |
 
 ## Dados
 
@@ -165,6 +186,9 @@ Além de `muxe_cqrs_handle_seconds` para os comandos e consultas acima, `muxe_db
 - [ ] Um cliente pirata usando um nome premium é recusado pelo Velocity (conferido no jogo).
 - [ ] O código fica legível na frente do jogador, e o título e a action bar aparecem (conferido no jogo).
 - [ ] Reentrar em até duas horas do mesmo IP pula o servidor de autenticação (conferido no jogo).
+- [x] O servidor de autenticação só pula o fluxo quando o proxy diz que o jogador está autenticado; nenhuma resposta, ou uma resposta sobre outro jogador, significa não autenticado.
+- [x] Uma posição de código configurada fica virada para quem olha; sem ela, o código aparece na frente do jogador.
+- [ ] A equipe consegue definir o spawn e a posição do código com `/authsetup` e pré-visualizar (conferido no jogo).
 
 ## Falhas e recuperação
 
