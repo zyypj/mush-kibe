@@ -19,6 +19,8 @@ The main hub, where players arrive after logging in and choose a game. Lives in 
 - On join: Adventure mode, inventory and armor cleared, full health and hunger, experience reset, then teleported to the configured spawn (or the main world's spawn).
 - Players with `muxe.lobby.fly` arrive `arrival.fly-height` blocks (5) above the spawn, already flying. Everyone else arrives on the spawn. Falling below `protection.void-level` sends the player back the same way.
 - Join and quit messages are hidden.
+- Half a second after joining, the player hears a level-up sound and sees the title `&b&lMUXE` with the subtitle `&eBoas-vindas!`. This greeting comes from Muxe-Core and runs on every `LOBBY` server, never on auth or game servers.
+- Switching lobbies in the selector, or using `/lobby`, shows no "connecting" message: the player is just moved.
 
 ### Boss bar and scoreboard
 
@@ -125,6 +127,16 @@ Players cannot take damage, lose hunger, break, place, drop or pick up items, or
 | `spawn.*` | not set | Written by `/setspawn`. |
 | `messages.*` | Portuguese texts | Messages of this plugin; shared messages come from Muxe-Core. |
 
+`plugins/Muxe-Core/config.yml`:
+
+| Key | Default | Description |
+|---|---|---|
+| `join-greeting.server-kinds` | `LOBBY` | Server kinds that greet players on join. |
+| `join-greeting.delay` | `500ms` | Wait after joining before the greeting. |
+| `join-greeting.sound`, `volume`, `pitch` | `LEVEL_UP`, `1.0`, `1.0` | Sound played to the player (a 1.8 `Sound` name). Empty for no sound. |
+| `join-greeting.fade-in`, `stay`, `fade-out` | `10`, `50`, `20` | Title timings in ticks. |
+| `messages.join-title`, `messages.join-subtitle` | `&b&lMUXE`, `&eBoas-vindas!` | Title and subtitle of the greeting. |
+
 Items use the [`ItemBuilder` format](../../development/core-api/README.md#items). NPCs are saved in `plugins/Muxe-Lobby/npcs.yml` by `/npc`.
 
 ## Packets
@@ -156,6 +168,7 @@ The Spigot server metrics of Muxe-Core, plus `muxe_db_transaction_seconds{operat
 - [x] The hotbar items sit in slots 1, 2, 5, 8 and 9 with the reference names, and the visibility dye cycles through the three options.
 - [x] The lobby selector lists lobbies in number order, centered, lime for the current one and gray for the others, with the reference name and lore.
 - [x] Three quick uses start a 3-second cooldown with the remaining time as `2,9`.
+- [x] The join greeting is enabled only on `LOBBY` servers, with the reference title and subtitle.
 - [x] The boss bar alternates `&e&lMUXE` and `&6&lMUXE` every 10 ticks, and the scoreboard fills the reference lines.
 - [x] The visibility choice is saved in PostgreSQL and read back.
 - [x] NPCs survive being saved to and read from `npcs.yml`; broken entries are skipped.

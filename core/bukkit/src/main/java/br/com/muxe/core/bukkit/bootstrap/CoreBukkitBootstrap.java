@@ -4,6 +4,8 @@ import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.command.LobbyCommand;
 import br.com.muxe.core.bukkit.command.MuxeAdminCommand;
 import br.com.muxe.core.bukkit.config.BukkitConfigSource;
+import br.com.muxe.core.bukkit.greeting.GreetingSettings;
+import br.com.muxe.core.bukkit.greeting.JoinGreeting;
 import br.com.muxe.core.bukkit.menu.MenuListener;
 import br.com.muxe.core.bukkit.monitor.BukkitServerLoad;
 import br.com.muxe.core.bukkit.monitor.TickMonitor;
@@ -52,6 +54,10 @@ public final class CoreBukkitBootstrap {
 
         plugin.getServer().getScheduler().runTaskTimer(plugin, new TickMonitor(load, runtime.metrics()), 1L, 1L);
         plugin.getServer().getPluginManager().registerEvents(new MenuListener(), plugin);
+        GreetingSettings greeting = GreetingSettings.from(config.getConfigurationSection("join-greeting"));
+        if (greeting.appliesTo(settings.server().kind())) {
+            plugin.getServer().getPluginManager().registerEvents(new JoinGreeting(plugin, greeting, messages), plugin);
+        }
         String lobbyGroup = config.getString("network.lobby-group", "lobby");
         bindCommand("muxe", new MuxeAdminCommand(core));
         bindCommand("lobby", new LobbyCommand(core, lobbyGroup));

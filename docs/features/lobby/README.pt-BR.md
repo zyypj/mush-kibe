@@ -19,6 +19,8 @@ O hub principal, onde os jogadores chegam depois de fazer login e escolhem um jo
 - Ao entrar: modo Aventura, inventário e armadura limpos, vida e fome cheias, experiência zerada, e teleporte para o spawn configurado (ou o spawn do mundo principal).
 - Quem tem `muxe.lobby.fly` chega `arrival.fly-height` blocos (5) acima do spawn, já voando. Os outros chegam no spawn. Cair abaixo de `protection.void-level` manda o jogador de volta do mesmo jeito.
 - As mensagens de entrada e saída ficam escondidas.
+- Meio segundo depois de entrar, o jogador ouve um som de level up e vê o título `&b&lMUXE` com o subtítulo `&eBoas-vindas!`. Essa saudação vem do Muxe-Core e acontece em todo servidor `LOBBY`, nunca nos servidores de autenticação ou de jogo.
+- Trocar de lobby pelo seletor, ou usar `/lobby`, não mostra mensagem de "conectando": o jogador só é movido.
 
 ### Boss bar e scoreboard
 
@@ -125,6 +127,16 @@ Os jogadores não levam dano, não perdem fome, não quebram, não colocam, não
 | `spawn.*` | não definido | Escrito pelo `/setspawn`. |
 | `messages.*` | Textos em português | Mensagens deste plugin; as mensagens compartilhadas vêm do Muxe-Core. |
 
+`plugins/Muxe-Core/config.yml`:
+
+| Chave | Padrão | Descrição |
+|---|---|---|
+| `join-greeting.server-kinds` | `LOBBY` | Tipos de servidor que recebem o jogador com a saudação. |
+| `join-greeting.delay` | `500ms` | Espera depois de entrar antes da saudação. |
+| `join-greeting.sound`, `volume`, `pitch` | `LEVEL_UP`, `1.0`, `1.0` | Som tocado para o jogador (um nome de `Sound` da 1.8). Vazio para não tocar som. |
+| `join-greeting.fade-in`, `stay`, `fade-out` | `10`, `50`, `20` | Tempos do título em ticks. |
+| `messages.join-title`, `messages.join-subtitle` | `&b&lMUXE`, `&eBoas-vindas!` | Título e subtítulo da saudação. |
+
 Os itens usam o [formato do `ItemBuilder`](../../development/core-api/README.pt-BR.md#itens). Os NPCs ficam salvos em `plugins/Muxe-Lobby/npcs.yml` pelo `/npc`.
 
 ## Pacotes
@@ -156,6 +168,7 @@ As métricas de servidor Spigot do Muxe-Core, mais `muxe_db_transaction_seconds{
 - [x] Os itens da hotbar ficam nos slots 1, 2, 5, 8 e 9 com os nomes de referência, e o corante de visibilidade alterna entre as três opções.
 - [x] O seletor de lobby lista os lobbys em ordem de número, centralizados, verde-limão para o atual e cinza para os outros, com o nome e a lore de referência.
 - [x] Três usos rápidos iniciam um cooldown de 3 segundos com o tempo restante como `2,9`.
+- [x] A saudação de entrada só fica ativa em servidores `LOBBY`, com o título e o subtítulo de referência.
 - [x] A boss bar alterna `&e&lMUXE` e `&6&lMUXE` a cada 10 ticks, e a scoreboard preenche as linhas de referência.
 - [x] A escolha de visibilidade é salva no PostgreSQL e lida de volta.
 - [x] Os NPCs sobrevivem a ser salvos e lidos do `npcs.yml`; entradas quebradas são puladas.
