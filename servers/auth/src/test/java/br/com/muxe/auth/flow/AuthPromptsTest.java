@@ -29,7 +29,7 @@ class AuthPromptsTest {
     @Test
     void afterTheChallengeTheWarningComesFirstAndTheSuccessLast() {
         assertThat(prompts.credentialLines(true, true)).containsExactly(
-            "§cNUNCA COMPARTILHE A SUA SENHA COM NINGUÉM!",
+            "§c§lNUNCA COMPARTILHE A SUA SENHA COM NINGUÉM!",
             BLANK,
             "§eFaça o login utilizando §b/logar <senha>",
             "§aDesafio completado com sucesso!"
@@ -39,7 +39,7 @@ class AuthPromptsTest {
     @Test
     void withoutAChallengeThereIsNoSuccessLine() {
         assertThat(prompts.credentialLines(false, false)).containsExactly(
-            "§cNUNCA COMPARTILHE A SUA SENHA COM NINGUÉM!",
+            "§c§lNUNCA COMPARTILHE A SUA SENHA COM NINGUÉM!",
             BLANK,
             "§eFaça o registro utilizando §b/registrar <senha> <senha>"
         );

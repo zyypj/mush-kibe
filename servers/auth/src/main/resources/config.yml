@@ -34,11 +34,11 @@ messages:
   challenge-failed: "&cVocê errou o desafio muitas vezes."
   complete-challenge-first: "&cComplete o desafio primeiro: digite o código em frente no chat."
   login:
-    - "&cNUNCA COMPARTILHE A SUA SENHA COM NINGUÉM!"
+    - "&c&lNUNCA COMPARTILHE A SUA SENHA COM NINGUÉM!"
     - ""
     - "&eFaça o login utilizando &b/logar <senha>"
   register:
-    - "&cNUNCA COMPARTILHE A SUA SENHA COM NINGUÉM!"
+    - "&c&lNUNCA COMPARTILHE A SUA SENHA COM NINGUÉM!"
     - ""
     - "&eFaça o registro utilizando &b/registrar <senha> <senha>"
   prompt-login: "&eFaça o login utilizando &b/logar <senha>"
