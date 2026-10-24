@@ -4,6 +4,7 @@ import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.command.LobbyCommand;
 import br.com.muxe.core.bukkit.command.MuxeAdminCommand;
 import br.com.muxe.core.bukkit.config.BukkitConfigSource;
+import br.com.muxe.core.bukkit.menu.MenuListener;
 import br.com.muxe.core.bukkit.monitor.BukkitServerLoad;
 import br.com.muxe.core.bukkit.monitor.TickMonitor;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
@@ -50,6 +51,7 @@ public final class CoreBukkitBootstrap {
         plugin.getServer().getServicesManager().register(MuxeCore.class, core, plugin, ServicePriority.Normal);
 
         plugin.getServer().getScheduler().runTaskTimer(plugin, new TickMonitor(load, runtime.metrics()), 1L, 1L);
+        plugin.getServer().getPluginManager().registerEvents(new MenuListener(), plugin);
         String lobbyGroup = config.getString("network.lobby-group", "lobby");
         bindCommand("muxe", new MuxeAdminCommand(core));
         bindCommand("lobby", new LobbyCommand(core, lobbyGroup));
