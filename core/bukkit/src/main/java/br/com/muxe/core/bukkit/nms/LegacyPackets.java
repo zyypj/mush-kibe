@@ -1,5 +1,6 @@
 package br.com.muxe.core.bukkit.nms;
 
+import com.google.gson.JsonObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -23,8 +24,14 @@ public final class LegacyPackets {
 
     public static boolean sendActionBar(Player player, String legacyText) {
         return Holder.HANDLES
-            .map(handles -> handles.send(player, () -> handles.chatPacket.newInstance(handles.component(legacyText), ACTION_BAR_POSITION)))
+            .map(handles -> handles.send(player, () -> handles.chatPacket.newInstance(handles.serialize.invoke(null, actionBarJson(legacyText)), ACTION_BAR_POSITION)))
             .orElse(false);
+    }
+
+    static String actionBarJson(String legacyText) {
+        JsonObject component = new JsonObject();
+        component.addProperty("text", legacyText == null ? "" : legacyText);
+        return component.toString();
     }
 
     public static boolean sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
