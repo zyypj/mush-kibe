@@ -198,6 +198,8 @@ Pacotes definidos em `core:common` (`br.com.muxe.core.common.network`). Pacotes 
 | `player.locate_request` | `PlayerLocateRequest` | proxy | standard, idade máxima 5 s | Pergunta onde um jogador está. |
 | `player.locate_response` | `PlayerLocateResponse` | quem pediu | standard, idade máxima 5 s | Resposta à anterior. |
 | `auth.authenticated` | `PlayerAuthenticatedPacket` | proxy | `DURABLE` 5 min, idade máxima 15 s | Um jogador se registrou ou fez login em um servidor de auth. |
+| `auth.status_request` | `AuthStatusRequest` | proxy | padrão, idade máxima 5 s | Pergunta se um jogador já está autenticado. |
+| `auth.status_response` | `AuthStatusResponse` | quem pediu | padrão, idade máxima 5 s | Resposta à pergunta acima, enviada só pelo proxy em que o jogador está. |
 
 ## Métricas
 

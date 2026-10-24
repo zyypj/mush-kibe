@@ -9,6 +9,7 @@ import br.com.muxe.core.common.config.source.MapConfigSource;
 import br.com.muxe.core.common.runtime.CoreRuntime;
 import br.com.muxe.core.common.runtime.PlatformHooks;
 import br.com.muxe.core.proxy.auth.AccessPolicy;
+import br.com.muxe.core.proxy.auth.AuthStatusResponder;
 import br.com.muxe.core.proxy.auth.AuthenticationGate;
 import br.com.muxe.core.proxy.config.AuthenticationSettings;
 import br.com.muxe.core.proxy.config.ProxyConfigFile;
@@ -65,6 +66,7 @@ public final class ProxyBootstrap {
         runtime.metrics().gauge("muxe_proxy_authenticated_players", gate::size);
 
         new ProxyPacketHandlers(proxy, gate, access, router, routing, sessions, messages, logger).register(runtime.packets());
+        new AuthStatusResponder(gate, playerId -> proxy.getPlayer(playerId).isPresent()).register(runtime.packets());
         proxy.getEventManager().register(plugin, new PreLoginListener(resolver, runtime.executors().io(), messages, runtime.metrics(), logger));
         proxy.getEventManager().register(plugin, new LoginListener(runtime.commands(), gate, sessions, messages, runtime.metrics(), logger));
         proxy.getEventManager().register(plugin, new ConnectionListener(gate, access, router, routing, messages));
