@@ -84,7 +84,7 @@ public final class AuthFlow {
             } else if (challengeEnabled) {
                 startChallenge(player, registered, challengeAnchor);
             } else {
-                askCredentials(player, registered);
+                askCredentials(player, registered, false);
             }
         });
     }
@@ -98,8 +98,7 @@ public final class AuthFlow {
         switch (answer.outcome()) {
             case PASSED -> {
                 renderer.untrack(playerId);
-                player.sendMessage(messages.get("challenge-passed"));
-                askCredentials(player, answer.registered());
+                askCredentials(player, answer.registered(), true);
             }
             case WRONG -> player.sendMessage(messages.get("challenge-wrong", "remaining", Integer.toString(answer.remainingAttempts())));
             case FAILED -> player.kickPlayer(messages.get("challenge-failed"));
@@ -172,9 +171,9 @@ public final class AuthFlow {
         prompts.challenge(player);
     }
 
-    private void askCredentials(Player player, boolean registered) {
+    private void askCredentials(Player player, boolean registered, boolean challengePassed) {
         sessions.set(player.getUniqueId(), registered ? AuthState.AWAITING_LOGIN : AuthState.AWAITING_REGISTER);
-        prompts.credentials(player, registered);
+        prompts.credentials(player, registered, challengePassed);
     }
 
     private String blockedReason(UUID playerId, String otherCommandKey) {

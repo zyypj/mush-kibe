@@ -67,8 +67,7 @@ public final class AuthSetupCommand implements CommandExecutor {
             return true;
         }
         if (action.equals("info")) {
-            player.sendMessage(messages.get("setup-info-spawn", "location", describe(locations.spawn())));
-            player.sendMessage(messages.get("setup-info-code", "location", describe(locations.challengeCode())));
+            messages.lines("setup-info", "spawn", describe(locations.spawn()), "code", describe(locations.challengeCode())).forEach(player::sendMessage);
             return true;
         }
         if (action.equals("limpar") && args.length == 2) {

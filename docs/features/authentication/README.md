@@ -48,11 +48,11 @@ Automatically authenticated players go straight to a lobby. Everyone else goes t
 
 1. On join the auth server asks the proxy whether the player is already authenticated (`auth.status_request`). If so, the challenge and password are skipped and the player sees `Você já está autenticado.` Otherwise the player is hidden from others, teleported to the configured spawn (or the world spawn). The player can walk around while authenticating.
 2. A random code (4 digits by default) is drawn with holograms at the configured code position, turned to face the player, or 7 blocks in front of the player when no position is configured. Each digit is a grid of `⬛` name tags, white on top, light green in the body and dark green at the bottom. The holograms are sent only to that player, so players never see each other's codes. The chat says:
-   - `DESAFIO:` / `Digite o código em frente no chat!`, with a hint that the code is in the holograms.
-   - The action bar repeats `Digite o código em frente no chat!` every second.
+   - `DESAFIO:` / `Digite o código em frente no chat!`, a blank line and a hint to enable holograms, all from the `challenge` list.
+   - The action bar repeats `Digite o código em frente no chat!` in yellow every second.
 3. The player types the code in the chat (case and spaces are ignored). Chat messages are never shown to other players.
 4. A wrong code generates a new one. After `challenge.max-attempts` wrong answers the player is kicked.
-5. The right code shows `Desafio completado com sucesso!` and moves to the password step.
+5. The right code moves to the password step. The chat shows the `login` or `register` list (the warning `NUNCA COMPARTILHE A SUA SENHA COM NINGUÉM!`, a blank line and the command to use) followed by `Desafio completado com sucesso!`.
 
 The code is never sent as text: each hologram only carries a `⬛`, so a bot has to rebuild the picture from the positions to read it. A new code replaces the holograms at once, and they are sent again every 3 seconds in case the client dropped them.
 
