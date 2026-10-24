@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -49,6 +50,13 @@ public final class AuthRestrictionListener implements Listener {
         if (!AuthProtection.mayRunCommand(isAuthenticated(player), event.getMessage())) {
             event.setCancelled(true);
             player.sendMessage(messages.get("blocked-command"));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onGameModeChange(PlayerGameModeChangeEvent event) {
+        if (!AuthProtection.allowsGameMode(event.getNewGameMode())) {
+            event.setCancelled(true);
         }
     }
 

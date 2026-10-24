@@ -64,6 +64,8 @@ O código nunca é enviado como texto: cada holograma só carrega um `⬛`, ent�
 - Em caso de sucesso: `Você se autenticou com sucesso!` (ou `Você se registrou com sucesso!`) e `Enviando ao lobby...`. O servidor de autenticação publica `auth.authenticated`; o proxy abre a passagem, **lembra a sessão de login** e envia o jogador para um lobby.
 - Um jogador que não termina em `security.login-timeout` é expulso.
 
+Todo jogador no servidor de autenticação fica no modo Aventura: ele é aplicado ao entrar e qualquer outro modo de jogo é cancelado.
+
 Enquanto não está autenticado, o jogador só pode andar, digitar o código no chat e usar `/logar` e `/registrar`. Ele não pode conversar com os outros, usar outros comandos, ver outros jogadores, interagir com blocos ou entidades (molduras, suportes de armadura, pinturas), usar baldes, largar ou pegar itens, abrir inventários, quebrar ou colocar blocos, levar dano ou perder fome. Quem cair abaixo de `protection.void-level` volta para o spawn. Depois de autenticar, os comandos são liberados para todos; construir e interagir são liberados só para jogadores com `muxe.auth.setup`. O chat continua fechado para todos no servidor de autenticação.
 
 ### 5. Configurando o servidor de auth (equipe)

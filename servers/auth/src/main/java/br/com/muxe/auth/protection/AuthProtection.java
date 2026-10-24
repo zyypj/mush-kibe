@@ -2,6 +2,7 @@ package br.com.muxe.auth.protection;
 
 import br.com.muxe.auth.command.AuthCommands;
 import java.util.Locale;
+import org.bukkit.GameMode;
 
 public final class AuthProtection {
 
@@ -14,6 +15,10 @@ public final class AuthProtection {
 
     public static boolean mayRunCommand(boolean authenticated, String commandLine) {
         return authenticated || AuthCommands.ALLOWED_LABELS.contains(label(commandLine));
+    }
+
+    public static boolean allowsGameMode(GameMode target) {
+        return target == GameMode.ADVENTURE;
     }
 
     public static boolean fellOut(double y, int voidLevel) {

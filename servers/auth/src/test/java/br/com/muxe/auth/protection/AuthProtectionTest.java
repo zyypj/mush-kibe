@@ -2,6 +2,7 @@ package br.com.muxe.auth.protection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.bukkit.GameMode;
 import org.junit.jupiter.api.Test;
 
 class AuthProtectionTest {
@@ -34,6 +35,14 @@ class AuthProtectionTest {
     @Test
     void authenticatedPlayersRunAnyCommand() {
         assertThat(AuthProtection.mayRunCommand(true, "/lobby")).isTrue();
+    }
+
+    @Test
+    void theAuthServerOnlyAllowsAdventure() {
+        assertThat(AuthProtection.allowsGameMode(GameMode.ADVENTURE)).isTrue();
+        assertThat(AuthProtection.allowsGameMode(GameMode.CREATIVE)).isFalse();
+        assertThat(AuthProtection.allowsGameMode(GameMode.SURVIVAL)).isFalse();
+        assertThat(AuthProtection.allowsGameMode(GameMode.SPECTATOR)).isFalse();
     }
 
     @Test
