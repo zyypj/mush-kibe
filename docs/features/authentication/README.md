@@ -46,7 +46,7 @@ Automatically authenticated players go straight to a lobby. Everyone else goes t
 
 ### 3. Challenge (auth server)
 
-1. On join the auth server asks the proxy whether the player is already authenticated (`auth.status_request`). If so, the challenge and password are skipped and the player sees `Você já está autenticado.` Otherwise the player is hidden from others, teleported to the configured spawn (or the world spawn) and frozen.
+1. On join the auth server asks the proxy whether the player is already authenticated (`auth.status_request`). If so, the challenge and password are skipped and the player sees `Você já está autenticado.` Otherwise the player is hidden from others, teleported to the configured spawn (or the world spawn). The player can walk around while authenticating.
 2. A random code (4 characters by default, without `0`, `O`, `1` and `I`) is drawn with particles at the configured code position, turned to face the player, or 4 blocks in front of the player when no position is configured. The chat says:
    - `DESAFIO:` / `Digite o código em frente no chat!`, with a hint to enable particles.
    - The action bar repeats `Digite o código em frente no chat!` every second.
@@ -64,7 +64,7 @@ The code is drawn with particles instead of text entities so simple bots cannot 
 - On success: `Você se autenticou com sucesso!` (or `Você se registrou com sucesso!`) and `Enviando ao lobby...`. The auth server publishes `auth.authenticated`; the proxy opens the gate, **remembers the login session** and sends the player to a lobby.
 - A player who does not finish in `security.login-timeout` is kicked.
 
-While unauthenticated, a player cannot move (only look around), chat, run other commands, interact, drop or pick up items, open inventories, break or place blocks, take damage or lose hunger. After authenticating, commands are released for everyone; moving, building and interacting are released only for players with `muxe.auth.setup`.
+While unauthenticated, a player can only walk, type the code in the chat and use `/logar` and `/registrar`. They cannot chat with others, run other commands, see other players, interact with blocks or entities (item frames, armor stands, paintings), use buckets, drop or pick up items, open inventories, break or place blocks, take damage or lose hunger. Falling below `protection.void-level` sends the player back to the spawn. After authenticating, commands are released for everyone; building and interacting are released only for players with `muxe.auth.setup`. Chat stays closed for everyone on the auth server.
 
 ### 5. Configuring the auth server (staff)
 
@@ -114,6 +114,7 @@ Proxy `config.yml`:
 | `challenge.max-attempts` | `3` | Wrong codes before the player is kicked. |
 | `challenge.distance` | `4` | Blocks between the player's eyes and the code. |
 | `reminder.interval` | `5s` | How often the password prompt and title are repeated. |
+| `protection.void-level` | `0` | Players below this height are sent back to the spawn. |
 | `locations.spawn` | not set | Written by `/authsetup spawn`: world, x, y, z, yaw, pitch. Without it, the world spawn is used. |
 | `locations.challenge-code` | not set | Written by `/authsetup codigo`. Without it, the code appears `challenge.distance` blocks in front of the player. |
 | `security.pbkdf2-iterations` | `600000` | PBKDF2-HMAC-SHA256 iterations for new hashes. Raising it upgrades old hashes at their next login. |
@@ -189,6 +190,8 @@ Plus `muxe_cqrs_handle_seconds` for the commands and queries above, `muxe_db_tra
 - [x] The auth server skips the flow only when the proxy says the player is authenticated; no answer or an answer about another player means not authenticated.
 - [x] A configured code position is turned to face the viewer; without it, the code appears in front of the player.
 - [ ] Staff can set the spawn and code position with `/authsetup` and preview it (checked in game).
+- [x] Only authenticated staff may interact; unauthenticated players only run the login commands, even with a `plugin:` prefix.
+- [ ] Unauthenticated players can walk but cannot interact, build, chat or see others (checked in game).
 
 ## Failures and recovery
 

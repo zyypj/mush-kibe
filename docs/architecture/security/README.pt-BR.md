@@ -40,7 +40,7 @@ Senhas:
 - Comparadas em tempo constante. Nunca registradas em log: comandos e records que guardam senhas sobrescrevem `toString`.
 - **Defina `commands.log: false` no `spigot.yml` do servidor de auth**, senão o Spigot imprime todo comando, incluindo `/login <senha>`, no console e nos logs.
 - Senhas erradas são limitadas por jogador (5 a cada 5 minutos por padrão); o jogador é expulso ao atingir o limite.
-- Jogadores não autenticados não podem se mover, falar no chat, usar outros comandos, interagir nem ver outros jogadores.
+- Jogadores não autenticados só podem andar, digitar o código do desafio e usar `/logar` e `/registrar`. Eles não podem falar no chat, usar outros comandos, interagir com blocos ou entidades, construir nem ver outros jogadores.
 
 ## Pacotes
 

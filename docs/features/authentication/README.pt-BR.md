@@ -46,7 +46,7 @@ Jogadores autenticados automaticamente vão direto para um lobby. Os demais vão
 
 ### 3. Desafio (servidor de autenticação)
 
-1. Ao entrar, o servidor de autenticação pergunta ao proxy se o jogador já está autenticado (`auth.status_request`). Se estiver, o desafio e a senha são pulados e o jogador vê `Você já está autenticado.` Caso contrário, o jogador fica escondido dos outros, é teleportado para o spawn configurado (ou o spawn do mundo) e fica parado.
+1. Ao entrar, o servidor de autenticação pergunta ao proxy se o jogador já está autenticado (`auth.status_request`). Se estiver, o desafio e a senha são pulados e o jogador vê `Você já está autenticado.` Caso contrário, o jogador fica escondido dos outros, é teleportado para o spawn configurado (ou o spawn do mundo). O jogador pode andar enquanto se autentica.
 2. Um código aleatório (4 caracteres por padrão, sem `0`, `O`, `1` e `I`) é desenhado com partículas na posição do código configurada, virado para o jogador, ou 4 blocos à frente do jogador quando nenhuma posição está configurada. O chat diz:
    - `DESAFIO:` / `Digite o código em frente no chat!`, com uma dica para ativar as partículas.
    - A action bar repete `Digite o código em frente no chat!` a cada segundo.
@@ -64,7 +64,7 @@ O código é desenhado com partículas em vez de entidades de texto, para que bo
 - Em caso de sucesso: `Você se autenticou com sucesso!` (ou `Você se registrou com sucesso!`) e `Enviando ao lobby...`. O servidor de autenticação publica `auth.authenticated`; o proxy abre a passagem, **lembra a sessão de login** e envia o jogador para um lobby.
 - Um jogador que não termina em `security.login-timeout` é expulso.
 
-Enquanto não está autenticado, o jogador não pode se mover (só olhar em volta), conversar, usar outros comandos, interagir, largar ou pegar itens, abrir inventários, quebrar ou colocar blocos, levar dano ou perder fome. Depois de autenticar, os comandos são liberados para todos; andar, construir e interagir são liberados só para jogadores com `muxe.auth.setup`.
+Enquanto não está autenticado, o jogador só pode andar, digitar o código no chat e usar `/logar` e `/registrar`. Ele não pode conversar com os outros, usar outros comandos, ver outros jogadores, interagir com blocos ou entidades (molduras, suportes de armadura, pinturas), usar baldes, largar ou pegar itens, abrir inventários, quebrar ou colocar blocos, levar dano ou perder fome. Quem cair abaixo de `protection.void-level` volta para o spawn. Depois de autenticar, os comandos são liberados para todos; construir e interagir são liberados só para jogadores com `muxe.auth.setup`. O chat continua fechado para todos no servidor de autenticação.
 
 ### 5. Configurando o servidor de auth (equipe)
 
@@ -114,6 +114,7 @@ As posições são salvas em `plugins/Muxe-Auth/config.yml`, em `locations`, e v
 | `challenge.max-attempts` | `3` | Códigos errados antes de o jogador ser expulso. |
 | `challenge.distance` | `4` | Blocos entre os olhos do jogador e o código. |
 | `reminder.interval` | `5s` | De quanto em quanto tempo o pedido de senha e o título se repetem. |
+| `protection.void-level` | `0` | Jogadores abaixo dessa altura voltam para o spawn. |
 | `locations.spawn` | não definido | Gravado por `/authsetup spawn`: mundo, x, y, z, yaw, pitch. Sem ele, é usado o spawn do mundo. |
 | `locations.challenge-code` | não definido | Gravado por `/authsetup codigo`. Sem ele, o código aparece `challenge.distance` blocos à frente do jogador. |
 | `security.pbkdf2-iterations` | `600000` | Iterações de PBKDF2-HMAC-SHA256 para novos hashes. Aumentar o valor atualiza os hashes antigos no próximo login. |
@@ -189,6 +190,8 @@ Além de `muxe_cqrs_handle_seconds` para os comandos e consultas acima, `muxe_db
 - [x] O servidor de autenticação só pula o fluxo quando o proxy diz que o jogador está autenticado; nenhuma resposta, ou uma resposta sobre outro jogador, significa não autenticado.
 - [x] Uma posição de código configurada fica virada para quem olha; sem ela, o código aparece na frente do jogador.
 - [ ] A equipe consegue definir o spawn e a posição do código com `/authsetup` e pré-visualizar (conferido no jogo).
+- [x] Só a equipe autenticada pode interagir; jogadores não autenticados só usam os comandos de login, mesmo com prefixo `plugin:`.
+- [ ] Jogadores não autenticados conseguem andar, mas não interagem, não constroem, não falam no chat e não veem os outros (conferido no jogo).
 
 ## Falhas e recuperação
 
