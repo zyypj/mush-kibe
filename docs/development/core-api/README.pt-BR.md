@@ -84,9 +84,27 @@ text.show(player, anchor, "A7KX");
 ```
 
 - Desenha texto com partículas de pó colorido, visível só para o `player`. As partículas duram cerca de um segundo, então chame `show` a cada poucos ticks enquanto o texto precisar ficar na tela.
-- `PixelFont.standard()` cobre `A-Z`, `0-9` e espaço, com 5×7 pixels cada. `layout(text)` devolve as posições dos pixels, que é o que os testes usam.
+- `PixelFont.standard()` cobre `A-Z`, `0-9` e espaço, com 5×7 pixels cada. Os dígitos são desenhados sem barras nem serifas, então `0` e `O` ficam iguais. `layout(text)` devolve as posições dos pixels, que é o que os testes usam.
 - `Anchors.inFrontOfEyes` posiciona o conteúdo na frente de onde o jogador está olhando, centralizado na linha dos olhos.
 - `ParticleColor` tem `GREEN`, `WHITE`, `AQUA`, `YELLOW`, ou qualquer valor RGB.
+
+### Hologramas de pixels
+
+Pacote `br.com.muxe.core.bukkit.hologram`.
+
+```java
+PixelHolograms holograms = PixelHolograms.standard();
+Location anchor = Anchors.inFrontOfEyes(player.getEyeLocation(), 7, holograms.height());
+SpawnedHologram hologram = holograms.show(player, anchor, "4829");
+hologram.resend();
+hologram.remove();
+```
+
+- Desenha texto como uma grade de hologramas de nome (`⬛`), um por pixel da `PixelFont`, visível só para o `player`. Os hologramas são suportes de armadura invisíveis enviados por pacote: eles nunca existem no servidor, os outros jogadores nunca os veem e ninguém consegue interagir com eles.
+- `HologramStyle.standard()` sombreia cada caractere: a linha de cima em branco (`&f`), o corpo em verde claro (`&a`) e a linha de baixo em verde escuro (`&2`). Dá para usar qualquer símbolo e quaisquer cores.
+- Os hologramas ficam até `remove()`. Chame `resend()` a cada poucos segundos enquanto eles precisarem ficar, caso o cliente os tenha descartado.
+- `PixelHolograms.layout(anchor, text)` devolve a posição e o nome de cada pixel, que é o que os testes usam. `ShadedLayout` faz o mesmo em unidades da grade, sem posições.
+- Os hologramas dependem das classes internas do servidor 1.8, acessadas por reflexão em `PacketHologramTransport`. Quando elas não existem, `isAvailable()` é `false` e `show` não desenha nada.
 
 ## Localizações
 
@@ -100,7 +118,7 @@ Location target = spawn.location().orElseGet(world::getSpawnLocation);
 
 - `StoredLocation`: mundo, coordenadas, yaw e pitch, lidos e gravados na configuração (`from`, `toMap`), convertidos para uma `Location` do Bukkit só quando o mundo está carregado, e `describe()` para mensagens da equipe.
 - `ConfigLocation`: uma `StoredLocation` salva em um caminho do `config.yml` de um plugin, gravada em disco a cada mudança. Implementa `LocationSlot`, então os serviços podem ser testados com uma posição em memória.
-- `Anchors.lookingAt(content, viewerEyes, height)`: posiciona um conteúdo, como um `ParticleText`, virado para quem o vê de outro lugar.
+- `Anchors.lookingAt(content, viewerEyes, height)`: posiciona um conteúdo, como um `ParticleText` ou um `PixelHolograms`, virado para quem o vê de outro lugar.
 
 ## Utilitários independentes de plataforma
 
