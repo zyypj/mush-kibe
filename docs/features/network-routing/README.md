@@ -13,7 +13,7 @@ How players are placed on servers and moved between them. Lives in `core:proxy` 
 ## How it works
 
 - **Gate:** a player is authenticated when the account is premium, when a [login session](../authentication/README.md#2-automatic-authentication-proxy-at-login) is resumed, or when the proxy receives `auth.authenticated` from a trusted auth server. Until then, every connection to a server outside the auth group is denied with `must-authenticate`.
-- **Initial server:** authenticated players start in the least loaded lobby; everyone else starts in the least loaded auth server that has room. If no server of that group is alive, the player is disconnected with `no-lobby-server` or `no-auth-server`.
+- **Initial server:** authenticated players start in the least loaded lobby; everyone else starts in the least loaded auth server that has room. If no lobby is alive, an authenticated player starts on the least loaded auth server instead and sees `no-lobby-server` once connected. A player with no server to join is disconnected with `no-lobby-server` or `no-auth-server`. Unauthenticated players never fall back to a lobby.
 - **After authenticating on the auth server:** the proxy sends the player to the least loaded lobby. If none is alive, the player stays on the auth server and sees `no-lobby-server`.
 - **Moving later:** any server can publish `player.connect` to send a player to a server id or to the least loaded server of a group. The proxy ignores it for unauthenticated players, and tells the player `no-server` when there is no destination.
 - **Least loaded:** among alive servers of the group with room, the one with fewest players; ties are broken by id.
