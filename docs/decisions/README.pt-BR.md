@@ -13,6 +13,7 @@ Registros curtos das decisões que moldam a arquitetura: o contexto, a decisão 
 | [0005](0005-signed-binary-envelopes.pt-BR.md) | Envelopes binários com codecs explícitos, assinados com HMAC-SHA256 | Aceita |
 | [0006](0006-cqrs-with-in-process-buses.pt-BR.md) | CQRS com barramentos assíncronos dentro do processo e valores `Result` | Aceita |
 | [0007](0007-jedis-as-redis-client.pt-BR.md) | Jedis como cliente do Redis | Aceita |
+| [0008](0008-packet-npcs-and-click-interception.pt-BR.md) | NPCs, hologramas e boss bars existem só em pacotes | Aceita |
 
 ## Escrevendo uma nova ADR
 

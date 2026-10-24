@@ -4,4 +4,6 @@ plugins {
 
 dependencies {
     api(projects.core.common)
+
+    compileOnly(libs.netty)
 }

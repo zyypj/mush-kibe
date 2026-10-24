@@ -2,6 +2,7 @@
 java = "25"
 spigot = "1.8.8-R0.1-SNAPSHOT"
 velocity = "4.3.0"
+netty = "4.0.23.Final"
 shadow = "9.6.1"
 hikari = "7.1.0"
 postgresql = "42.7.14"
@@ -14,6 +15,7 @@ testcontainers = "2.0.5"
 [libraries]
 spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
 velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
+netty = { module = "io.netty:netty-all", version.ref = "netty" }
 
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
