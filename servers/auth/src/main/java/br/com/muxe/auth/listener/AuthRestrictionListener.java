@@ -1,6 +1,8 @@
 package br.com.muxe.auth.listener;
 
 import br.com.muxe.auth.command.AuthCommands;
+import br.com.muxe.auth.command.AuthSetupCommand;
+import br.com.muxe.auth.session.AuthSessionRegistry;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import java.util.Locale;
 import org.bukkit.Location;
@@ -21,14 +23,23 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 
 public final class AuthRestrictionListener implements Listener {
 
+    private final AuthSessionRegistry sessions;
     private final MessageCatalog messages;
 
-    public AuthRestrictionListener(MessageCatalog messages) {
+    public AuthRestrictionListener(AuthSessionRegistry sessions, MessageCatalog messages) {
+        this.sessions = sessions;
         this.messages = messages;
+    }
+
+    private boolean isRestricted(Player player) {
+        return !sessions.isAuthenticated(player.getUniqueId()) || !player.hasPermission(AuthSetupCommand.PERMISSION);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCommand(PlayerCommandPreprocessEvent event) {
+        if (sessions.isAuthenticated(event.getPlayer().getUniqueId())) {
+            return;
+        }
         String label = event.getMessage().substring(1).split(" ", 2)[0].toLowerCase(Locale.ROOT);
         if (!AuthCommands.ALLOWED_LABELS.contains(label)) {
             event.setCancelled(true);
@@ -38,6 +49,9 @@ public final class AuthRestrictionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onMove(PlayerMoveEvent event) {
+        if (!isRestricted(event.getPlayer())) {
+            return;
+        }
         Location from = event.getFrom();
         Location to = event.getTo();
         if (to == null) {
@@ -65,31 +79,31 @@ public final class AuthRestrictionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInteract(PlayerInteractEvent event) {
-        event.setCancelled(true);
+        event.setCancelled(isRestricted(event.getPlayer()));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDrop(PlayerDropItemEvent event) {
-        event.setCancelled(true);
+        event.setCancelled(isRestricted(event.getPlayer()));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPickup(PlayerPickupItemEvent event) {
-        event.setCancelled(true);
+        event.setCancelled(isRestricted(event.getPlayer()));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClick(InventoryClickEvent event) {
-        event.setCancelled(true);
+        event.setCancelled(!(event.getWhoClicked() instanceof Player player) || isRestricted(player));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onBreak(BlockBreakEvent event) {
-        event.setCancelled(true);
+        event.setCancelled(isRestricted(event.getPlayer()));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlace(BlockPlaceEvent event) {
-        event.setCancelled(true);
+        event.setCancelled(isRestricted(event.getPlayer()));
     }
 }
