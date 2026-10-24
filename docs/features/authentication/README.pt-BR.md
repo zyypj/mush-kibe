@@ -48,11 +48,11 @@ Jogadores autenticados automaticamente vão direto para um lobby. Os demais vão
 
 1. Ao entrar, o servidor de autenticação pergunta ao proxy se o jogador já está autenticado (`auth.status_request`). Se estiver, o desafio e a senha são pulados e o jogador vê `Você já está autenticado.` Caso contrário, o jogador fica escondido dos outros, é teleportado para o spawn configurado (ou o spawn do mundo). O jogador pode andar enquanto se autentica.
 2. Um código aleatório (4 dígitos por padrão) é desenhado com hologramas na posição do código configurada, virado para o jogador, ou 7 blocos à frente do jogador quando nenhuma posição está configurada. Cada dígito é uma grade de nomes `⬛`, branca em cima, verde clara no corpo e verde escura embaixo. Os hologramas são enviados só para aquele jogador, então ninguém vê o código dos outros. O chat diz:
-   - `DESAFIO:` / `Digite o código em frente no chat!`, com uma dica de que o código está nos hologramas.
-   - A action bar repete `Digite o código em frente no chat!` a cada segundo.
+   - `DESAFIO:` / `Digite o código em frente no chat!`, uma linha em branco e uma dica para ativar os hologramas, tudo vindo da lista `challenge`.
+   - A action bar repete `Digite o código em frente no chat!` em amarelo a cada segundo.
 3. O jogador digita o código no chat (maiúsculas, minúsculas e espaços são ignorados). As mensagens do chat nunca aparecem para os outros jogadores.
 4. Um código errado gera um novo. Depois de `challenge.max-attempts` respostas erradas, o jogador é expulso.
-5. O código certo mostra `Desafio completado com sucesso!` e passa para a etapa de senha.
+5. O código certo passa para a etapa de senha. O chat mostra a lista `login` ou `register` (o aviso `NUNCA COMPARTILHE A SUA SENHA COM NINGUÉM!`, uma linha em branco e o comando a usar) seguida de `Desafio completado com sucesso!`.
 
 O código nunca é enviado como texto: cada holograma só carrega um `⬛`, então um bot precisa remontar a imagem a partir das posições para lê-lo. Um código novo substitui os hologramas na hora, e eles são reenviados a cada 3 segundos caso o cliente os tenha descartado.
 
