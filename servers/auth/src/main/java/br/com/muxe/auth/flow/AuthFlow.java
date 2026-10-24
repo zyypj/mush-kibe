@@ -29,6 +29,7 @@ import org.bukkit.entity.Player;
 public final class AuthFlow {
 
     private final MuxeCore core;
+    private final ProxyAuthenticationCheck proxyCheck;
     private final AuthSessionRegistry sessions;
     private final LoginAttemptLimiter limiter;
     private final ChallengeTracker challenges;
@@ -40,6 +41,7 @@ public final class AuthFlow {
 
     public AuthFlow(
         MuxeCore core,
+        ProxyAuthenticationCheck proxyCheck,
         AuthSessionRegistry sessions,
         LoginAttemptLimiter limiter,
         ChallengeTracker challenges,
@@ -50,6 +52,7 @@ public final class AuthFlow {
         Logger logger
     ) {
         this.core = core;
+        this.proxyCheck = proxyCheck;
         this.sessions = sessions;
         this.limiter = limiter;
         this.challenges = challenges;
@@ -63,6 +66,18 @@ public final class AuthFlow {
     public void begin(Player player, Location challengeAnchor) {
         UUID playerId = player.getUniqueId();
         sessions.set(playerId, AuthState.LOADING);
+        whenDone(player, proxyCheck.isAuthenticated(playerId), (authenticated, error) -> {
+            if (Boolean.TRUE.equals(authenticated)) {
+                sessions.set(playerId, AuthState.AUTHENTICATED);
+                player.sendMessage(messages.get("already-authenticated"));
+            } else {
+                askForCredentialsState(player, challengeAnchor);
+            }
+        });
+    }
+
+    private void askForCredentialsState(Player player, Location challengeAnchor) {
+        UUID playerId = player.getUniqueId();
         whenDone(player, core.queries().ask(new HasCredentialQuery(playerId)), (registered, error) -> {
             if (error != null) {
                 fail(player, error);
