@@ -47,14 +47,14 @@ Automatically authenticated players go straight to a lobby. Everyone else goes t
 ### 3. Challenge (auth server)
 
 1. On join the auth server asks the proxy whether the player is already authenticated (`auth.status_request`). If so, the challenge and password are skipped and the player sees `Você já está autenticado.` Otherwise the player is hidden from others, teleported to the configured spawn (or the world spawn). The player can walk around while authenticating.
-2. A random code (4 characters by default, without `0`, `O`, `1` and `I`) is drawn with particles at the configured code position, turned to face the player, or 4 blocks in front of the player when no position is configured. The chat says:
-   - `DESAFIO:` / `Digite o código em frente no chat!`, with a hint to enable particles.
+2. A random code (4 digits by default) is drawn with holograms at the configured code position, turned to face the player, or 7 blocks in front of the player when no position is configured. Each digit is a grid of `⬛` name tags, white on top, light green in the body and dark green at the bottom. The holograms are sent only to that player, so players never see each other's codes. The chat says:
+   - `DESAFIO:` / `Digite o código em frente no chat!`, with a hint that the code is in the holograms.
    - The action bar repeats `Digite o código em frente no chat!` every second.
 3. The player types the code in the chat (case and spaces are ignored). Chat messages are never shown to other players.
 4. A wrong code generates a new one. After `challenge.max-attempts` wrong answers the player is kicked.
 5. The right code shows `Desafio completado com sucesso!` and moves to the password step.
 
-The code is drawn with particles instead of text entities so simple bots cannot read it from the protocol.
+The code is never sent as text: each hologram only carries a `⬛`, so a bot has to rebuild the picture from the positions to read it. A new code replaces the holograms at once, and they are sent again every 3 seconds in case the client dropped them.
 
 ### 4. Password (auth server)
 
@@ -110,9 +110,9 @@ Proxy `config.yml`:
 | Key | Default | Description |
 |---|---|---|
 | `challenge.enabled` | `true` | Ask for the code before the password. |
-| `challenge.length` | `4` | Characters in the code. |
+| `challenge.length` | `4` | Digits in the code. |
 | `challenge.max-attempts` | `3` | Wrong codes before the player is kicked. |
-| `challenge.distance` | `4` | Blocks between the player's eyes and the code. |
+| `challenge.distance` | `7` | Blocks between the player's eyes and the code. |
 | `reminder.interval` | `5s` | How often the password prompt and title are repeated. |
 | `protection.void-level` | `0` | Players below this height are sent back to the spawn. |
 | `locations.spawn` | not set | Written by `/authsetup spawn`: world, x, y, z, yaw, pitch. Without it, the world spawn is used. |
@@ -171,7 +171,7 @@ Plus `muxe_cqrs_handle_seconds` for the commands and queries above, `muxe_db_tra
 
 - [Network routing](../network-routing/README.md): the proxy gate and the choice of the first server.
 - [Accounts](../accounts/README.md): the account and its premium flag.
-- Core helpers: `Title`, `ActionBar` and `ParticleText`, described in [Core API](../../development/core-api/README.md).
+- Core helpers: `Title`, `ActionBar` and `PixelHolograms`, described in [Core API](../../development/core-api/README.md).
 - Mojang profile API (`api.mojang.com/users/profiles/minecraft/<name>`).
 
 ## Acceptance criteria
@@ -180,7 +180,8 @@ Plus `muxe_cqrs_handle_seconds` for the commands and queries above, `muxe_db_tra
 - [x] Mojang answers are cached, cracked answers for less time than premium ones, and an unavailable cache does not block logins.
 - [x] A password login is resumed only for the same account, from the same IP, within the session duration, and the IP is stored hashed.
 - [x] The challenge accepts the right code ignoring case and spaces, renews the code after a wrong answer and fails after the maximum attempts.
-- [x] Codes only use unambiguous characters that the particle font can draw.
+- [x] Codes only use digits that the hologram font can draw.
+- [x] The code hologram is shown once per code, replaced when the code changes, sent again periodically and removed when the challenge ends.
 - [x] A new player can register; a registered player cannot register again; weak passwords are refused before hashing.
 - [x] The right password logs in and records the login time; the wrong one is refused; the limit blocks the player.
 - [ ] A premium player joins straight into a lobby without a password (checked in game).

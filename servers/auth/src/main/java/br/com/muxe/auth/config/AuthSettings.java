@@ -30,7 +30,7 @@ public record AuthSettings(
                 source.bool("challenge.enabled", true),
                 source.integer("challenge.length", 4),
                 source.integer("challenge.max-attempts", 3),
-                source.integer("challenge.distance", 4)
+                source.integer("challenge.distance", 7)
             ),
             source.duration("reminder.interval", Duration.ofSeconds(5)),
             source.integer("protection.void-level", 0)

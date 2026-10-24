@@ -4,7 +4,7 @@ import java.util.random.RandomGenerator;
 
 public final class ChallengeCodes {
 
-    public static final String ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    public static final String ALPHABET = "0123456789";
 
     private final RandomGenerator random;
     private final int length;

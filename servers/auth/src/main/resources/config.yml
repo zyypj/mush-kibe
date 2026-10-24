@@ -12,7 +12,7 @@ challenge:
   enabled: true
   length: 4
   max-attempts: 3
-  distance: 4
+  distance: 7
 
 reminder:
   interval: 5s
@@ -25,7 +25,7 @@ messages:
   players-only: "&cApenas jogadores podem usar este comando."
   challenge-header: "&e&lDESAFIO:"
   challenge-instruction: "&eDigite o &bcódigo &eem frente no &bchat&e!"
-  challenge-hint: "&7&o(É necessário ativar as partículas para visualizar corretamente)"
+  challenge-hint: "&7&o(O código aparece nos hologramas à sua frente)"
   challenge-action-bar: "&eDigite o código em frente no chat!"
   challenge-passed: "&aDesafio completado com sucesso!"
   challenge-wrong: "&cCódigo incorreto! Um novo código foi gerado. Tentativas restantes: &f{remaining}"

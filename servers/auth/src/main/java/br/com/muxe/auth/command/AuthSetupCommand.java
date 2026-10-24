@@ -2,7 +2,8 @@ package br.com.muxe.auth.command;
 
 import br.com.muxe.auth.flow.AuthFlow;
 import br.com.muxe.auth.setup.AuthLocations;
-import br.com.muxe.core.bukkit.effect.ParticleText;
+import br.com.muxe.core.bukkit.hologram.PixelHolograms;
+import br.com.muxe.core.bukkit.hologram.SpawnedHologram;
 import br.com.muxe.core.bukkit.location.LocationSlot;
 import br.com.muxe.core.bukkit.location.StoredLocation;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
@@ -13,24 +14,22 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public final class AuthSetupCommand implements CommandExecutor {
 
     public static final String NAME = "authsetup";
     public static final String PERMISSION = "muxe.auth.setup";
 
-    private static final String PREVIEW_CODE = "MUXE";
-    private static final long PREVIEW_PERIOD_TICKS = 4L;
-    private static final int PREVIEW_FRAMES = 50;
+    private static final String PREVIEW_CODE = "4829";
+    private static final long PREVIEW_TICKS = 200L;
 
     private final Plugin plugin;
     private final AuthFlow flow;
     private final AuthLocations locations;
-    private final ParticleText codeText;
+    private final PixelHolograms codeText;
     private final MessageCatalog messages;
 
-    public AuthSetupCommand(Plugin plugin, AuthFlow flow, AuthLocations locations, ParticleText codeText, MessageCatalog messages) {
+    public AuthSetupCommand(Plugin plugin, AuthFlow flow, AuthLocations locations, PixelHolograms codeText, MessageCatalog messages) {
         this.plugin = plugin;
         this.flow = flow;
         this.locations = locations;
@@ -96,18 +95,8 @@ public final class AuthSetupCommand implements CommandExecutor {
         Location viewerEyes = locations.spawnEyes(player.getEyeLocation());
         Location anchor = locations.challengeAnchor(viewerEyes, codeText.height());
         player.sendMessage(messages.get("setup-preview"));
-        new BukkitRunnable() {
-            private int frames;
-
-            @Override
-            public void run() {
-                if (!player.isOnline() || frames++ >= PREVIEW_FRAMES) {
-                    cancel();
-                    return;
-                }
-                codeText.show(player, anchor, PREVIEW_CODE);
-            }
-        }.runTaskTimer(plugin, 0L, PREVIEW_PERIOD_TICKS);
+        SpawnedHologram hologram = codeText.show(player, anchor, PREVIEW_CODE);
+        plugin.getServer().getScheduler().runTaskLater(plugin, hologram::remove, PREVIEW_TICKS);
     }
 
     private String describe(LocationSlot slot) {
