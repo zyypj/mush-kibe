@@ -4,6 +4,7 @@ import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cooldown.CooldownFormat;
 import br.com.muxe.core.common.cooldown.SpamDecision;
 import br.com.muxe.core.common.cooldown.SpamGuard;
+import br.com.muxe.lobby.build.BuildMode;
 import br.com.muxe.lobby.hotbar.HotbarAction;
 import br.com.muxe.lobby.hotbar.LobbyHotbar;
 import br.com.muxe.lobby.selector.LobbySelectorMenu;
@@ -23,13 +24,15 @@ public final class HotbarListener implements Listener {
     private final SpamGuard spam;
     private final VisibilityService visibility;
     private final LobbySelectorMenu selector;
+    private final BuildMode build;
     private final MessageCatalog messages;
 
-    public HotbarListener(LobbyHotbar hotbar, SpamGuard spam, VisibilityService visibility, LobbySelectorMenu selector, MessageCatalog messages) {
+    public HotbarListener(LobbyHotbar hotbar, SpamGuard spam, VisibilityService visibility, LobbySelectorMenu selector, BuildMode build, MessageCatalog messages) {
         this.hotbar = hotbar;
         this.spam = spam;
         this.visibility = visibility;
         this.selector = selector;
+        this.build = build;
         this.messages = messages;
     }
 
@@ -39,6 +42,9 @@ public final class HotbarListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
+        if (build.isBuilding(player)) {
+            return;
+        }
         Optional<HotbarAction> action = hotbar.actionFor(player.getInventory().getHeldItemSlot(), event.getItem());
         if (action.isEmpty()) {
             return;

@@ -9,7 +9,7 @@ O hub principal, onde os jogadores chegam depois de fazer login e escolhem um jo
 - Como jogador, quero chegar a um spawn limpo e seguro, ver a rede num relance e escolher o que jogar.
 - Como jogador, quero trocar de lobby principal e esconder os outros jogadores quando o lobby estiver cheio.
 - Como membro da equipe, quero voar no lobby e colocar NPCs que levam os jogadores a cada jogo.
-- Como construtor, quero editar o lobby com permissão, enquanto jogadores comuns não conseguem quebrá-lo.
+- Como construtor, quero entrar num modo de construção para editar o lobby, enquanto jogadores comuns não conseguem quebrá-lo.
 
 ## Como funciona
 
@@ -82,7 +82,15 @@ Ainda não existe sistema de amigos, então "Apenas amigos" esconde todo mundo. 
 
 ### Proteção
 
-Os jogadores não levam dano, não perdem fome, não quebram, não colocam, não largam nem pegam itens, nem movem itens no inventário; `muxe.lobby.build` libera tudo isso. A chuva é cancelada.
+Os jogadores não levam dano, não perdem fome, não quebram, não colocam, não largam nem pegam itens, nem movem itens no inventário. A chuva é cancelada.
+
+Os jogadores ficam sempre no modo Aventura: qualquer troca para outro modo de jogo é cancelada, exceto o Criativo para quem está no modo construção.
+
+### Modo construção
+
+- `/build on` (ou `/build` para alternar) limpa a hotbar, coloca no Criativo e deixa o jogador quebrar, colocar e mover itens. A action bar mostra `&aModo construção ativado` enquanto o modo estiver ligado.
+- `/build off` limpa a action bar, devolve os itens do lobby (com o corante de visibilidade atual), volta para o Aventura e devolve o voo para quem tem `muxe.lobby.fly`.
+- As ações da hotbar não fazem nada no modo construção. Sair do servidor encerra o modo; na próxima entrada o jogador volta no Aventura com os itens do lobby.
 
 ## Comandos
 
@@ -90,6 +98,7 @@ Os jogadores não levam dano, não perdem fome, não quebram, não colocam, não
 |---|---|---|
 | `/jogar <modo>` (`/play`) | Envia o jogador para um grupo de jogo. | Nenhuma |
 | `/setspawn` | Salva a posição atual como spawn do lobby. | `muxe.lobby.setspawn` |
+| `/build <on\|off>` | Liga ou desliga o modo construção; sem argumento, alterna. | `muxe.lobby.build` |
 | `/npc criar <id> <grupo> <skin> <nome>` | Cria um NPC onde você está. | `muxe.lobby.npc` |
 | `/npc mover <id>` | Move um NPC para onde você está. | `muxe.lobby.npc` |
 | `/npc skin <id> <skin>` | Troca a skin pela de um nome original. | `muxe.lobby.npc` |
@@ -102,7 +111,7 @@ Os jogadores não levam dano, não perdem fome, não quebram, não colocam, não
 | Permissão | Libera | Padrão |
 |---|---|---|
 | `muxe.lobby.fly` | Chegar acima do spawn, voando. | op |
-| `muxe.lobby.build` | Quebrar, colocar, largar e pegar itens, e mover itens no inventário. | op |
+| `muxe.lobby.build` | Usar `/build` para quebrar, colocar, largar e pegar itens no Criativo. | op |
 | `muxe.lobby.setspawn` | Usar `/setspawn`. | op |
 | `muxe.lobby.npc` | Usar `/npc`. | op |
 

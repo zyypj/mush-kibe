@@ -7,6 +7,9 @@ import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cooldown.SpamGuard;
 import br.com.muxe.core.common.persistence.migration.MigrationReport;
 import br.com.muxe.lobby.bossbar.LobbyBossBar;
+import br.com.muxe.lobby.build.BuildMode;
+import br.com.muxe.lobby.build.BuildSessions;
+import br.com.muxe.lobby.command.BuildCommand;
 import br.com.muxe.lobby.command.NpcCommand;
 import br.com.muxe.lobby.command.PlayCommand;
 import br.com.muxe.lobby.command.SetSpawnCommand;
@@ -63,6 +66,7 @@ public final class LobbyBootstrap {
         LobbyHotbar hotbar = new LobbyHotbar(settings.hotbar());
         VisibilityService visibility = new VisibilityService(core, FriendDirectory.NONE, hotbar, messages, plugin.getLogger());
         LobbySelectorMenu selector = new LobbySelectorMenu(core, settings.selector(), messages);
+        BuildMode build = new BuildMode(new BuildSessions(), hotbar, visibility, messages);
         LobbyScoreboard scoreboard = new LobbyScoreboard(core, settings.scoreboard(), PlayerInfoSource.fixed(settings.defaultInfo()));
         LobbyBossBar bossBar = new LobbyBossBar(BossBars.start(plugin), settings.bossBar());
         npcs = new LobbyNpcs(plugin, core, new NpcStore(new File(plugin.getDataFolder(), NPC_FILE), plugin.getLogger()), MojangSkins.standard(), spam, messages, settings.npcLines());
@@ -70,17 +74,19 @@ public final class LobbyBootstrap {
 
         PluginManager plugins = plugin.getServer().getPluginManager();
         plugins.registerEvents(new LobbyJoinListener(arrival, hotbar, scoreboard, bossBar, visibility), plugin);
-        plugins.registerEvents(new LobbyProtectionListener(arrival, settings.voidLevel()), plugin);
-        plugins.registerEvents(new HotbarListener(hotbar, spam, visibility, selector, messages), plugin);
+        plugins.registerEvents(new LobbyProtectionListener(arrival, build, settings.voidLevel()), plugin);
+        plugins.registerEvents(new HotbarListener(hotbar, spam, visibility, selector, build, messages), plugin);
 
         BukkitScheduler scheduler = plugin.getServer().getScheduler();
         long scoreboardPeriod = LobbySettings.ticks(settings.scoreboardInterval());
         scheduler.runTaskTimer(plugin, scoreboard, scoreboardPeriod, scoreboardPeriod);
         scheduler.runTaskTimer(plugin, bossBar, bossBar.period(), bossBar.period());
+        scheduler.runTaskTimer(plugin, build, BuildMode.ACTION_BAR_PERIOD_TICKS, BuildMode.ACTION_BAR_PERIOD_TICKS);
 
         bind("jogar", new PlayCommand(core, messages, settings.games()));
         bind("setspawn", new SetSpawnCommand(spawn, messages));
         bind(NpcCommand.NAME, new NpcCommand(core, npcs, messages));
+        bind(BuildCommand.NAME, new BuildCommand(build, messages));
     }
 
     public void disable() {

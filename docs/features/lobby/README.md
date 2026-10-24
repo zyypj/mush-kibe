@@ -9,7 +9,7 @@ The main hub, where players arrive after logging in and choose a game. Lives in 
 - As a player, I want to arrive at a clean, safe spawn, see the network at a glance and choose what to play.
 - As a player, I want to switch to another main lobby, and to hide other players when the lobby is crowded.
 - As a staff member, I want to fly in the lobby and to place NPCs that send players to each game.
-- As a builder, I want to edit the lobby with permission, while regular players cannot break it.
+- As a builder, I want to switch to a build mode to edit the lobby, while regular players cannot break it.
 
 ## How it works
 
@@ -82,7 +82,15 @@ There is no friend system yet, so "Only friends" hides everyone. Friends will co
 
 ### Protection
 
-Players cannot take damage, lose hunger, break, place, drop or pick up items, or move items in their inventory; `muxe.lobby.build` allows all of that. Rain is cancelled.
+Players cannot take damage, lose hunger, break, place, drop or pick up items, or move items in their inventory. Rain is cancelled.
+
+Players are always in Adventure mode: any change to another game mode is cancelled, except Creative for a player in build mode.
+
+### Build mode
+
+- `/build on` (or `/build` to toggle) clears the hotbar, switches to Creative and lets the player break, place and move items. The action bar shows `&aModo construção ativado` for as long as the mode is on.
+- `/build off` clears the action bar, gives the lobby items back (with the current visibility dye), returns to Adventure and restores flight for players with `muxe.lobby.fly`.
+- Hotbar actions do nothing in build mode. Leaving the server ends build mode; the next join starts in Adventure with the lobby items.
 
 ## Commands
 
@@ -90,6 +98,7 @@ Players cannot take damage, lose hunger, break, place, drop or pick up items, or
 |---|---|---|
 | `/jogar <mode>` (`/play`) | Sends the player to a game group. | None |
 | `/setspawn` | Saves the current position as the lobby spawn. | `muxe.lobby.setspawn` |
+| `/build <on\|off>` | Turns build mode on or off; without an argument it toggles. | `muxe.lobby.build` |
 | `/npc criar <id> <grupo> <skin> <nome>` | Creates an NPC where you stand. | `muxe.lobby.npc` |
 | `/npc mover <id>` | Moves an NPC to where you stand. | `muxe.lobby.npc` |
 | `/npc skin <id> <skin>` | Changes the skin to the one of an original player name. | `muxe.lobby.npc` |
@@ -102,7 +111,7 @@ Players cannot take damage, lose hunger, break, place, drop or pick up items, or
 | Permission | Grants | Default |
 |---|---|---|
 | `muxe.lobby.fly` | Arrive above the spawn, flying. | op |
-| `muxe.lobby.build` | Break, place, drop and pick up items, and move items in the inventory. | op |
+| `muxe.lobby.build` | Use `/build` to break, place, drop and pick up items in Creative. | op |
 | `muxe.lobby.setspawn` | Use `/setspawn`. | op |
 | `muxe.lobby.npc` | Use `/npc`. | op |
 

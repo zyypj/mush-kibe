@@ -1,7 +1,11 @@
 package br.com.muxe.lobby.listener;
 
+import br.com.muxe.lobby.build.BuildMode;
+import br.com.muxe.lobby.build.BuildRules;
 import br.com.muxe.lobby.spawn.ArrivalService;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -11,19 +15,21 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 public final class LobbyProtectionListener implements Listener {
 
-    public static final String BUILD_PERMISSION = "muxe.lobby.build";
-
     private final ArrivalService arrival;
+    private final BuildMode build;
     private final int voidLevel;
 
-    public LobbyProtectionListener(ArrivalService arrival, int voidLevel) {
+    public LobbyProtectionListener(ArrivalService arrival, BuildMode build, int voidLevel) {
         this.arrival = arrival;
+        this.build = build;
         this.voidLevel = voidLevel;
     }
 
@@ -41,35 +47,32 @@ public final class LobbyProtectionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onBreak(BlockBreakEvent event) {
-        if (!event.getPlayer().hasPermission(BUILD_PERMISSION)) {
-            event.setCancelled(true);
-        }
+        onlyWhileBuilding(event.getPlayer(), event);
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onPlace(BlockPlaceEvent event) {
-        if (!event.getPlayer().hasPermission(BUILD_PERMISSION)) {
-            event.setCancelled(true);
-        }
+        onlyWhileBuilding(event.getPlayer(), event);
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onDrop(PlayerDropItemEvent event) {
-        if (!event.getPlayer().hasPermission(BUILD_PERMISSION)) {
-            event.setCancelled(true);
-        }
+        onlyWhileBuilding(event.getPlayer(), event);
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onPickup(PlayerPickupItemEvent event) {
-        if (!event.getPlayer().hasPermission(BUILD_PERMISSION)) {
-            event.setCancelled(true);
-        }
+        onlyWhileBuilding(event.getPlayer(), event);
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getWhoClicked().hasPermission(BUILD_PERMISSION)) {
+        onlyWhileBuilding(event.getWhoClicked(), event);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onGameModeChange(PlayerGameModeChangeEvent event) {
+        if (!BuildRules.allowsGameMode(event.getNewGameMode(), build.isBuilding(event.getPlayer()))) {
             event.setCancelled(true);
         }
     }
@@ -84,7 +87,22 @@ public final class LobbyProtectionListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onFallIntoVoid(PlayerMoveEvent event) {
         if (event.getTo() != null && event.getTo().getY() < voidLevel) {
-            arrival.send(event.getPlayer());
+            Player player = event.getPlayer();
+            arrival.send(player);
+            if (build.isBuilding(player)) {
+                player.setAllowFlight(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        build.forget(event.getPlayer().getUniqueId());
+    }
+
+    private void onlyWhileBuilding(HumanEntity actor, Cancellable event) {
+        if (!(actor instanceof Player player) || !build.isBuilding(player)) {
+            event.setCancelled(true);
         }
     }
 }

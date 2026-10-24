@@ -78,6 +78,9 @@ class LobbySettingsTest {
         assertThat(messages.get("visibility-friends")).isEqualTo("§bVocê agora está vendo apenas seus amigos.");
         assertThat(messages.get("visibility-none")).isEqualTo("§cVocê escondeu todos os jogadores.");
         assertThat(messages.get("spam-cooldown", "seconds", "2,9")).isEqualTo("§cAguarde 2,9s para usar novamente.");
+        assertThat(messages.get("build-action-bar")).isEqualTo("§aModo construção ativado");
+        assertThat(messages.get("build-enabled")).isEqualTo("§aModo construção ativado.");
+        assertThat(messages.get("build-disabled")).isEqualTo("§cModo construção desativado.");
     }
 
     private static YamlConfiguration defaultConfig() {
