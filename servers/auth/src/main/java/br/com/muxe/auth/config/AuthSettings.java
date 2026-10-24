@@ -10,7 +10,10 @@ public record AuthSettings(
     Duration loginTimeout,
     int maxAttempts,
     Duration attemptWindow,
-    PasswordPolicy passwordPolicy
+    PasswordPolicy passwordPolicy,
+    ChallengeSettings challenge,
+    Duration reminderInterval,
+    int voidLevel
 ) {
 
     public static AuthSettings from(ConfigSource source) {
@@ -22,7 +25,18 @@ public record AuthSettings(
             new PasswordPolicy(
                 source.integer("password.min-length", 6),
                 source.integer("password.max-length", 64)
-            )
+            ),
+            new ChallengeSettings(
+                source.bool("challenge.enabled", true),
+                source.integer("challenge.length", 4),
+                source.integer("challenge.max-attempts", 3),
+                source.integer("challenge.distance", 7)
+            ),
+            source.duration("reminder.interval", Duration.ofSeconds(5)),
+            source.integer("protection.void-level", 0)
         );
+    }
+
+    public record ChallengeSettings(boolean enabled, int length, int maxAttempts, int distance) {
     }
 }

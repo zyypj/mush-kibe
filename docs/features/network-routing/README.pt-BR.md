@@ -12,9 +12,9 @@ Como os jogadores são colocados nos servidores e levados de um para outro. Fica
 
 ## Como funciona
 
-- **Servidor inicial:** o proxy escolhe o servidor de autenticação com menos jogadores que tenha vaga. Se nenhum estiver vivo, o jogador é desconectado com `no-auth-server`.
-- **Passagem:** até o proxy receber `auth.authenticated` de um servidor de autenticação confiável, toda conexão para um servidor fora do grupo de autenticação é negada com `must-authenticate`.
-- **Depois da autenticação:** o proxy envia o jogador para o lobby com menos jogadores. Se nenhum estiver vivo, o jogador continua no servidor de autenticação e vê `no-lobby-server`.
+- **Passagem:** um jogador é autenticado quando a conta é premium, quando uma [sessão de login](../authentication/README.pt-BR.md#2-autenticação-automática-proxy-no-login) é retomada, ou quando o proxy recebe `auth.authenticated` de um servidor de autenticação confiável. Até lá, toda conexão para um servidor fora do grupo de autenticação é negada com `must-authenticate`.
+- **Servidor inicial:** jogadores autenticados começam no lobby com menos jogadores; os demais começam no servidor de autenticação com menos jogadores que tenha vaga. Se nenhum lobby estiver vivo, o jogador autenticado começa no servidor de autenticação com menos jogadores e vê `no-lobby-server` assim que conecta. Um jogador sem servidor para entrar é desconectado com `no-lobby-server` ou `no-auth-server`. Jogadores não autenticados nunca caem num lobby.
+- **Depois de se autenticar no servidor de autenticação:** o proxy envia o jogador para o lobby com menos jogadores. Se nenhum estiver vivo, o jogador continua no servidor de autenticação e vê `no-lobby-server`.
 - **Mudando depois:** qualquer servidor pode publicar `player.connect` para enviar um jogador a um id de servidor ou ao servidor com menos jogadores de um grupo. O proxy ignora o pacote para jogadores não autenticados e avisa o jogador com `no-server` quando não há destino.
 - **Menos jogadores:** entre os servidores vivos do grupo que têm vaga, o que tem menos jogadores; empates são desfeitos pelo id.
 - **Desconexão:** a passagem esquece o jogador.
@@ -38,6 +38,7 @@ Não se aplica.
 | `routing.auth-group` | `auth` | Grupo dos servidores de autenticação. |
 | `routing.lobby-group` | `lobby` | Grupo para onde os jogadores vão depois de se autenticar. |
 | `messages.no-auth-server`, `no-lobby-server`, `no-server`, `must-authenticate` | Textos em português | Mensagens mostradas pelo proxy. |
+| `authentication.*` | veja [Autenticação](../authentication/README.pt-BR.md#configuração) | Detecção de premium e sessões de login. |
 
 `config.yml` do Muxe-Core:
 
@@ -74,6 +75,7 @@ Não se aplica. A passagem fica na memória do proxy.
 - [x] Só servidores de autenticação são confiáveis para autenticar jogadores.
 - [x] O servidor com menos jogadores e com vaga é escolhido, e servidores mortos são ignorados.
 - [ ] Depois do login o jogador chega a um lobby (conferido no jogo).
+- [ ] Jogadores premium e sessões retomadas começam direto em um lobby (conferido no jogo).
 
 ## Falhas e recuperação
 
@@ -84,4 +86,4 @@ Não se aplica. A passagem fica na memória do proxy.
 ## Limitações conhecidas
 
 - A escolha do servidor considera só a quantidade de jogadores; ainda não há noção de party, fila ou região.
-- Com vários proxies, um jogador autenticado em um proxy precisa se autenticar de novo se reconectar por outro.
+- Com vários proxies, a passagem fica na memória de cada proxy, mas as sessões de login ficam no Redis, então um jogador pirata que reconecta por outro proxy dentro da duração da sessão ainda entra.

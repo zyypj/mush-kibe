@@ -1,6 +1,7 @@
 package br.com.muxe.core.proxy.text;
 
 import br.com.muxe.core.common.config.source.ConfigSource;
+import java.util.Collection;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
@@ -15,7 +16,10 @@ public final class ProxyMessages {
     }
 
     public Component get(String key, String... placeholders) {
-        String text = source.string("messages." + key, "&cMissing message: " + key);
+        String path = "messages." + key;
+        String text = source.find(path)
+            .map(value -> value instanceof Collection<?> ? String.join("\n", source.stringList(path)) : String.valueOf(value))
+            .orElse("&cMissing message: " + key);
         for (int index = 0; index + 1 < placeholders.length; index += 2) {
             text = text.replace("{" + placeholders[index] + "}", placeholders[index + 1]);
         }

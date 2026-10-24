@@ -47,3 +47,7 @@ Early development. The platform (core, messaging, persistence, metrics, proxy ro
 - [CONTRIBUTING.md](CONTRIBUTING.md): branches, commits, documentation and pull requests.
 - [AGENTS.md](AGENTS.md): rules for AI agents working on this repository.
 - [SECURITY.md](SECURITY.md): how to report a vulnerability.
+
+## License
+
+[MIT](LICENSE). See also the [legal and clean-room policy](docs/legal/README.md).

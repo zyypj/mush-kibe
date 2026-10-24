@@ -25,6 +25,10 @@ public final class AuthSessionRegistry {
         return states.get(playerId) == AuthState.AUTHENTICATED;
     }
 
+    public Map<UUID, AuthState> snapshot() {
+        return Map.copyOf(states);
+    }
+
     public void remove(UUID playerId) {
         states.remove(playerId);
     }

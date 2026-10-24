@@ -13,15 +13,15 @@ import java.util.UUID;
 
 public final class PostgresAccountRepository implements AccountRepository {
 
-    private static final String SELECT = "SELECT id, username, first_seen_at, last_seen_at FROM core.accounts ";
+    private static final String SELECT = "SELECT id, username, premium, first_seen_at, last_seen_at FROM core.accounts ";
 
     private static final String FIND_BY_ID = SELECT + "WHERE id = ?";
 
     private static final String FIND_BY_USERNAME = SELECT + "WHERE LOWER(username) = LOWER(?)";
 
     private static final String UPSERT = """
-        INSERT INTO core.accounts (id, username, first_seen_at, last_seen_at)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO core.accounts (id, username, premium, first_seen_at, last_seen_at)
+        VALUES (?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE
         SET username = EXCLUDED.username, last_seen_at = EXCLUDED.last_seen_at
         """;
@@ -51,8 +51,9 @@ public final class PostgresAccountRepository implements AccountRepository {
         try (PreparedStatement statement = TransactionContext.connection().prepareStatement(UPSERT)) {
             statement.setObject(1, account.id());
             statement.setString(2, account.username());
-            statement.setTimestamp(3, Timestamp.from(account.firstSeenAt()));
-            statement.setTimestamp(4, Timestamp.from(account.lastSeenAt()));
+            statement.setBoolean(3, account.premium());
+            statement.setTimestamp(4, Timestamp.from(account.firstSeenAt()));
+            statement.setTimestamp(5, Timestamp.from(account.lastSeenAt()));
             statement.executeUpdate();
         } catch (SQLException exception) {
             throw new PersistenceException("account.save", exception);
@@ -67,6 +68,7 @@ public final class PostgresAccountRepository implements AccountRepository {
             return Optional.of(new Account(
                 rows.getObject("id", UUID.class),
                 rows.getString("username"),
+                rows.getBoolean("premium"),
                 rows.getTimestamp("first_seen_at").toInstant(),
                 rows.getTimestamp("last_seen_at").toInstant()
             ));

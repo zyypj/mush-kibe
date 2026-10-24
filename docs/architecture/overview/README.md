@@ -93,5 +93,6 @@ Player types /login senha  (auth server, main thread)
 | A packet | A record implementing `Packet` with a `static final PacketType<…> TYPE` (id, codec, delivery policy). Subscribe with `packets().subscribe(TYPE, handler)`. Document it in the feature. |
 | A command or query | A record implementing `Command<R>`/`Query<R>`, a handler class, and a registration in the feature's `*Module`. |
 | A table | A Flyway migration in `src/main/resources/db/migration/<module>/` and a repository in `infrastructure/postgres`. Run `migrations().migrate("<module>", classLoader)` on enable. |
+| A reusable helper | Add it to `core:bukkit` or `core:common` and document it in the [Core API](../../development/core-api/README.md). |
 | A metric | Ask `metrics()` for a counter, timer or gauge with a `muxe_` name, and document it in [Observability](../observability/README.md). |
 | A server plugin | A module under `servers/` or `minigames/`, a `*Bootstrap`, and one line in the root `build.gradle.kts`. See [Development](../../development/README.md). |

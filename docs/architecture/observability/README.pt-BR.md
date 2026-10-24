@@ -60,6 +60,18 @@ Labels: `type` é o id do pacote, `reason` o motivo da rejeição, `outcome` o r
 
 `bad_signature` acima de zero indica um servidor mal configurado ou alguém publicando no Redis sem o segredo: investigue.
 
+## Autenticação
+
+| Métrica | Tipo | O que mostra |
+|---|---|---|
+| `muxe_auth_login_modes_total{mode}` | counter | Modos de login decididos pelo proxy: `premium`, `cracked`, `undecided`. |
+| `muxe_auth_logins_total{mode}` | counter | Como os jogadores entraram: `premium`, `session` ou `password`. |
+| `muxe_auth_premium_lookups_total{result,source}` | counter | Consultas à Mojang por resultado (`premium`, `cracked`, `unknown`) e origem (`cache`, `remote`). |
+| `muxe_auth_challenges_total{outcome}` | counter | Respostas ao desafio anti-bot: `passed`, `wrong`, `failed`. |
+| `muxe_accounts_names_reclaimed_total` | counter | Nomes que um jogador premium tomou de outra conta. Cada um também é registrado no log com os dois ids. |
+
+Uma parcela crescente de `undecided` ou `unknown` indica que a Mojang está inacessível ou limitando as requisições do proxy.
+
 ## Aplicação
 
 | Métrica | Tipo | O que mostra |

@@ -165,8 +165,10 @@ export MUXE_MESSAGING_SECRET=...
 
 - O `server.id` precisa ser igual ao nome do servidor no `velocity.toml`.
 - Dê a cada servidor uma `metrics.port` diferente, ou desative as métricas.
-- No `velocity.toml`: `player-info-forwarding-mode = "legacy"` (servidores 1.8 não suportam o modern forwarding) e `online-mode = false` se você quiser jogadores em modo offline, como descrito em [Segurança](../architecture/security/README.pt-BR.md).
+- No `velocity.toml`: `player-info-forwarding-mode = "legacy"` (servidores 1.8 não suportam o modern forwarding) e `online-mode = false`. Jogadores premium são colocados em modo online individualmente pela Muxe, como descrito em [Autenticação](../features/authentication/README.pt-BR.md).
 - Em cada `spigot.yml`: `settings.bungeecord: true`. No servidor de autenticação, defina também `commands.log: false`, para que as senhas nunca cheguem ao console.
+- Em todo servidor Spigot, desligue as dimensões extras e a proteção do spawn: `allow-nether=false` e `spawn-protection=0` no `server.properties`, e `settings.allow-end: false` no `bukkit.yml`. Os servidores do Muxe usam um mundo só.
+- No lobby, chame o mundo de `lobby` com `level-name=lobby` no `server.properties`, e não de `world`, o padrão.
 - Copie `build/servers/<name>/plugins/*` para a pasta `plugins` de cada servidor.
 
 ### 4. Inicie tudo

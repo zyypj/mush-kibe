@@ -11,7 +11,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
 
-public final class RecordLoginHandler implements CommandHandler<RecordLoginCommand, Result<Account>> {
+public final class RecordLoginHandler implements CommandHandler<RecordLoginCommand, Result<RecordedLogin>> {
 
     private final AccountRepository accounts;
     private final Transactions transactions;
@@ -24,21 +24,25 @@ public final class RecordLoginHandler implements CommandHandler<RecordLoginComma
     }
 
     @Override
-    public Result<Account> handle(RecordLoginCommand command) {
+    public Result<RecordedLogin> handle(RecordLoginCommand command) {
         if (!Usernames.isValid(command.username())) {
             return Result.failure(AccountProblems.invalidUsername(command.username()));
         }
         return transactions.inTransaction("account.record_login", () -> {
-            Optional<Account> holder = accounts.findByUsername(command.username());
-            if (holder.isPresent() && !holder.get().id().equals(command.playerId())) {
+            Optional<Account> holder = accounts.findByUsername(command.username())
+                .filter(account -> !account.id().equals(command.playerId()));
+            if (holder.isPresent() && !command.premium()) {
                 return Result.failure(AccountProblems.nameCaseConflict(command.username(), holder.get().username()));
             }
+            holder.ifPresent(previous -> accounts.save(previous.withoutUsername()));
             Instant now = clock.instant();
             Account account = accounts.findById(command.playerId())
                 .map(existing -> existing.withLogin(command.username(), now))
-                .orElseGet(() -> Account.firstLogin(command.playerId(), command.username(), now));
+                .orElseGet(() -> Account.firstLogin(command.playerId(), command.username(), command.premium(), now));
             accounts.save(account);
-            return Result.success(account);
+            return Result.success(holder
+                .map(previous -> RecordedLogin.reclaiming(account, previous.id()))
+                .orElseGet(() -> RecordedLogin.of(account)));
         });
     }
 }

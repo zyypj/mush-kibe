@@ -93,5 +93,6 @@ Jogador digita /login senha  (servidor de auth, thread principal)
 | Um pacote | Um record que implementa `Packet` com um `static final PacketType<…> TYPE` (id, codec, política de entrega). Assine com `packets().subscribe(TYPE, handler)`. Documente-o na feature. |
 | Um comando ou consulta | Um record que implementa `Command<R>`/`Query<R>`, uma classe de handler e um registro no `*Module` da feature. |
 | Uma tabela | Uma migração Flyway em `src/main/resources/db/migration/<module>/` e um repositório em `infrastructure/postgres`. Rode `migrations().migrate("<module>", classLoader)` ao habilitar. |
+| Um utilitário reutilizável | Adicione-o ao `core:bukkit` ou ao `core:common` e documente-o na [API do core](../../development/core-api/README.pt-BR.md). |
 | Uma métrica | Peça a `metrics()` um counter, timer ou gauge com nome `muxe_`, e documente-a em [Observabilidade](../observability/README.pt-BR.md). |
 | Um plugin de servidor | Um módulo em `servers/` ou `minigames/`, um `*Bootstrap` e uma linha no `build.gradle.kts` da raiz. Veja [Desenvolvimento](../../development/README.pt-BR.md). |

@@ -8,6 +8,7 @@ Tudo sobre a Muxe está documentado aqui, em inglês e português. As regras de 
 
 - [Desenvolvimento](development/README.pt-BR.md): requisitos, módulos, regras de dependência, comandos de build e como rodar uma rede local.
 - [Convenções](development/conventions/README.pt-BR.md): estilo de Java, organização de pacotes, nomes, configuração e mensagens.
+- [API do core](development/core-api/README.pt-BR.md): o que o Muxe-Core oferece aos plugins, incluindo títulos, action bars e texto em partículas.
 - [Processo](process/README.pt-BR.md): como o trabalho é planejado e entregue, e o que significam "pronto para começar" e "concluído".
 - [Política legal e de sala limpa](legal/README.pt-BR.md): o que pode e o que não pode entrar neste repositório.
 
@@ -28,7 +29,7 @@ Tudo sobre a Muxe está documentado aqui, em inglês e português. As regras de 
 ## Features
 
 - [Contas](features/accounts/README.pt-BR.md): uma conta por jogador, criada no primeiro login.
-- [Autenticação](features/authentication/README.pt-BR.md): `/register` e `/login` no servidor de autenticação.
+- [Autenticação](features/authentication/README.pt-BR.md): login automático de premium, desafio anti-bot, `/registrar`, `/logar` e sessões de 2 horas.
 - [Roteamento da rede](features/network-routing/README.pt-BR.md): como o proxy escolhe servidores, o `/lobby` e a barreira de acesso.
 - [Administração da rede](features/network-admin/README.pt-BR.md): comandos `/muxe` para a equipe.
 - [Lobby](features/lobby/README.pt-BR.md): spawn, proteção e `/jogar`.
