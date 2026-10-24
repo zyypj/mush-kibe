@@ -47,14 +47,14 @@ Jogadores autenticados automaticamente vão direto para um lobby. Os demais vão
 ### 3. Desafio (servidor de autenticação)
 
 1. Ao entrar, o servidor de autenticação pergunta ao proxy se o jogador já está autenticado (`auth.status_request`). Se estiver, o desafio e a senha são pulados e o jogador vê `Você já está autenticado.` Caso contrário, o jogador fica escondido dos outros, é teleportado para o spawn configurado (ou o spawn do mundo). O jogador pode andar enquanto se autentica.
-2. Um código aleatório (4 caracteres por padrão, sem `0`, `O`, `1` e `I`) é desenhado com partículas na posição do código configurada, virado para o jogador, ou 4 blocos à frente do jogador quando nenhuma posição está configurada. O chat diz:
-   - `DESAFIO:` / `Digite o código em frente no chat!`, com uma dica para ativar as partículas.
+2. Um código aleatório (4 dígitos por padrão) é desenhado com hologramas na posição do código configurada, virado para o jogador, ou 7 blocos à frente do jogador quando nenhuma posição está configurada. Cada dígito é uma grade de nomes `⬛`, branca em cima, verde clara no corpo e verde escura embaixo. Os hologramas são enviados só para aquele jogador, então ninguém vê o código dos outros. O chat diz:
+   - `DESAFIO:` / `Digite o código em frente no chat!`, com uma dica de que o código está nos hologramas.
    - A action bar repete `Digite o código em frente no chat!` a cada segundo.
 3. O jogador digita o código no chat (maiúsculas, minúsculas e espaços são ignorados). As mensagens do chat nunca aparecem para os outros jogadores.
 4. Um código errado gera um novo. Depois de `challenge.max-attempts` respostas erradas, o jogador é expulso.
 5. O código certo mostra `Desafio completado com sucesso!` e passa para a etapa de senha.
 
-O código é desenhado com partículas em vez de entidades de texto, para que bots simples não consigam lê-lo pelo protocolo.
+O código nunca é enviado como texto: cada holograma só carrega um `⬛`, então um bot precisa remontar a imagem a partir das posições para lê-lo. Um código novo substitui os hologramas na hora, e eles são reenviados a cada 3 segundos caso o cliente os tenha descartado.
 
 ### 4. Senha (servidor de autenticação)
 
@@ -110,9 +110,9 @@ As posições são salvas em `plugins/Muxe-Auth/config.yml`, em `locations`, e v
 | Chave | Padrão | Descrição |
 |---|---|---|
 | `challenge.enabled` | `true` | Pede o código antes da senha. |
-| `challenge.length` | `4` | Quantidade de caracteres do código. |
+| `challenge.length` | `4` | Quantidade de dígitos do código. |
 | `challenge.max-attempts` | `3` | Códigos errados antes de o jogador ser expulso. |
-| `challenge.distance` | `4` | Blocos entre os olhos do jogador e o código. |
+| `challenge.distance` | `7` | Blocos entre os olhos do jogador e o código. |
 | `reminder.interval` | `5s` | De quanto em quanto tempo o pedido de senha e o título se repetem. |
 | `protection.void-level` | `0` | Jogadores abaixo dessa altura voltam para o spawn. |
 | `locations.spawn` | não definido | Gravado por `/authsetup spawn`: mundo, x, y, z, yaw, pitch. Sem ele, é usado o spawn do mundo. |
@@ -171,7 +171,7 @@ Além de `muxe_cqrs_handle_seconds` para os comandos e consultas acima, `muxe_db
 
 - [Roteamento da rede](../network-routing/README.pt-BR.md): a passagem do proxy e a escolha do primeiro servidor.
 - [Contas](../accounts/README.pt-BR.md): a conta e a sua marca de premium.
-- Utilitários do core: `Title`, `ActionBar` e `ParticleText`, descritos na [API do core](../../development/core-api/README.pt-BR.md).
+- Utilitários do core: `Title`, `ActionBar` e `PixelHolograms`, descritos na [API do core](../../development/core-api/README.pt-BR.md).
 - API de perfis da Mojang (`api.mojang.com/users/profiles/minecraft/<name>`).
 
 ## Critérios de aceitação
@@ -180,7 +180,8 @@ Além de `muxe_cqrs_handle_seconds` para os comandos e consultas acima, `muxe_db
 - [x] As respostas da Mojang ficam em cache, as piratas por menos tempo que as premium, e um cache indisponível não bloqueia logins.
 - [x] Um login com senha só é retomado para a mesma conta, do mesmo IP, dentro da duração da sessão, e o IP é guardado como hash.
 - [x] O desafio aceita o código certo ignorando maiúsculas, minúsculas e espaços, renova o código depois de uma resposta errada e falha depois do máximo de tentativas.
-- [x] Os códigos só usam caracteres sem ambiguidade que a fonte de partículas consegue desenhar.
+- [x] Os códigos só usam dígitos que a fonte dos hologramas consegue desenhar.
+- [x] O holograma do código aparece uma vez por código, é trocado quando o código muda, é reenviado periodicamente e some quando o desafio termina.
 - [x] Um jogador novo consegue se registrar; um jogador registrado não pode se registrar de novo; senhas fracas são recusadas antes do hash.
 - [x] A senha certa faz login e registra o horário do login; a errada é recusada; o limite bloqueia o jogador.
 - [ ] Um jogador premium entra direto em um lobby, sem senha (conferido no jogo).

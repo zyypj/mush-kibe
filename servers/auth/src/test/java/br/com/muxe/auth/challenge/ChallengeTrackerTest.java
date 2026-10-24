@@ -13,12 +13,12 @@ class ChallengeTrackerTest {
     private final UUID player = UUID.randomUUID();
 
     @Test
-    void codesUseOnlyUnambiguousCharactersTheFontCanDraw() {
+    void codesUseOnlyDigitsTheFontCanDraw() {
         ChallengeCodes codes = new ChallengeCodes(new Random(7), 6);
 
         for (int attempt = 0; attempt < 200; attempt++) {
             String code = codes.next();
-            assertThat(code).hasSize(6).doesNotContain("0", "O", "1", "I");
+            assertThat(code).hasSize(6).containsOnlyDigits();
             assertThat(PixelFont.standard().supportsAll(code)).isTrue();
         }
     }

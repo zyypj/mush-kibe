@@ -3,6 +3,7 @@ package br.com.muxe.auth.bootstrap;
 import br.com.muxe.auth.challenge.ChallengeCodes;
 import br.com.muxe.auth.challenge.ChallengeRenderer;
 import br.com.muxe.auth.challenge.ChallengeTracker;
+import br.com.muxe.auth.challenge.HologramChallengeScreen;
 import br.com.muxe.auth.command.AuthCommands;
 import br.com.muxe.auth.command.AuthSetupCommand;
 import br.com.muxe.auth.config.AuthSettings;
@@ -21,9 +22,9 @@ import br.com.muxe.auth.session.LoginAttemptLimiter;
 import br.com.muxe.auth.setup.AuthLocations;
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.config.BukkitConfigSource;
-import br.com.muxe.core.bukkit.effect.ParticleColor;
-import br.com.muxe.core.bukkit.effect.ParticleText;
+import br.com.muxe.core.bukkit.hologram.PixelHolograms;
 import br.com.muxe.core.bukkit.location.ConfigLocation;
+import br.com.muxe.core.bukkit.nms.PacketHologramTransport;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.persistence.migration.MigrationReport;
 import java.security.SecureRandom;
@@ -70,8 +71,11 @@ public final class AuthBootstrap {
         AuthSettings.ChallengeSettings challenge = settings.challenge();
         AuthSessionRegistry sessions = new AuthSessionRegistry();
         ChallengeTracker tracker = new ChallengeTracker(new ChallengeCodes(random, challenge.length()), challenge.maxAttempts());
-        ParticleText codeText = ParticleText.standard(ParticleColor.GREEN);
-        ChallengeRenderer renderer = new ChallengeRenderer(tracker, codeText);
+        PixelHolograms codeText = PixelHolograms.standard();
+        if (!PacketHologramTransport.isAvailable()) {
+            plugin.getLogger().warning("Packet holograms are unavailable, the challenge code will not be drawn");
+        }
+        ChallengeRenderer renderer = new ChallengeRenderer(tracker, new HologramChallengeScreen(codeText));
         long reminderSeconds = Math.max(1, settings.reminderInterval().getSeconds());
         AuthPrompts prompts = new AuthPrompts(messages, (int) ((reminderSeconds + 1) * TICKS_PER_SECOND));
         LoginAttemptLimiter limiter = new LoginAttemptLimiter(core.clock(), settings.maxAttempts(), settings.attemptWindow());
