@@ -13,10 +13,19 @@ commands:
       - play
   setspawn:
     description: Sets the lobby spawn at your position.
+  npc:
+    description: Creates and manages the game NPCs of the lobby.
+    usage: /npc <criar|mover|skin|nome|remover|listar>
 permissions:
   muxe.lobby.build:
-    description: Allows building, breaking and dropping items in the lobby.
+    description: Allows building, breaking, dropping and picking up items and moving items in the inventory.
     default: op
   muxe.lobby.setspawn:
     description: Allows /setspawn.
+    default: op
+  muxe.lobby.fly:
+    description: Arrives 5 blocks above the spawn with flight enabled.
+    default: op
+  muxe.lobby.npc:
+    description: Allows /npc.
     default: op

@@ -6,9 +6,133 @@ play:
 protection:
   void-level: 0
 
+arrival:
+  fly-height: 5
+
+spam:
+  max-clicks: 3
+  window: 1s
+  cooldown: 3s
+
+bossbar:
+  interval: 500ms
+  frames:
+    - "&e&lMUXE"
+    - "&6&lMUXE"
+
+scoreboard:
+  title: "&b&lMUXE"
+  update-interval: 1s
+  default-tag: "&7Membro"
+  default-credits: 0
+  lines:
+    - ""
+    - "&fTag: {tag}"
+    - "&fCréditos: &d{credits}"
+    - ""
+    - "&fLobby: &a#{lobby}"
+    - "&fJogadores: &b{players}"
+    - ""
+    - "&amuxe.com.br"
+
+hotbar:
+  game-selector:
+    slot: 1
+    item:
+      material: COMPASS
+      name: "&aSelecionar jogo"
+  profile:
+    slot: 2
+    item:
+      material: SKULL_ITEM
+      data: 3
+      name: "&aMeu perfil"
+  cosmetics:
+    slot: 5
+    item:
+      material: CHEST
+      name: "&aCosméticos"
+  visibility:
+    slot: 8
+    all:
+      material: INK_SACK
+      data: 10
+      name: "&fJogadores: &aAtivados"
+    friends:
+      material: INK_SACK
+      data: 6
+      name: "&fJogadores: &bApenas amigos"
+    none:
+      material: INK_SACK
+      data: 8
+      name: "&fJogadores: &7Desativados"
+  lobby-selector:
+    slot: 9
+    item:
+      material: NETHER_STAR
+      name: "&aSelecionar lobby"
+
+lobby-selector:
+  group: lobby
+  title: "Selecionar lobby ({page}/{pages})"
+  current:
+    material: STAINED_GLASS_PANE
+    data: 5
+    name: "&aLobby Principal #{number}"
+    lore:
+      - "&fJogadores &a{online}/{max}"
+  other:
+    material: STAINED_GLASS_PANE
+    data: 7
+    name: "&aLobby Principal #{number}"
+    lore:
+      - "&fJogadores &a{online}/{max}"
+  previous-page:
+    material: ARROW
+    name: "&aPágina anterior"
+  next-page:
+    material: ARROW
+    name: "&aPróxima página"
+
+npcs:
+  lines:
+    - "&b&l{name}"
+    - "&e{players} jogando"
+
 messages:
   play-usage: "&eUso: /jogar <modo>. Modos: &f{games}"
   play-unknown: "&cModo desconhecido. Modos: &f{games}"
   play-connecting: "&7Procurando uma sala de &b{game}&7..."
   play-failed: "&cNão foi possível entrar agora. Tente novamente."
   spawn-set: "&aSpawn do lobby definido."
+  spam-cooldown: "&cAguarde {seconds}s para usar novamente."
+  visibility-all: "&aVocê agora está vendo todos os jogadores."
+  visibility-friends: "&bVocê agora está vendo apenas seus amigos."
+  visibility-none: "&cVocê escondeu todos os jogadores."
+  lobby-current: "&cVocê já está conectado neste lobby."
+  lobby-full: "&cEste lobby está cheio."
+  lobby-connecting: "&7Conectando você ao &aLobby Principal #{number}&7..."
+  lobby-failed: "&cNão foi possível trocar de lobby agora. Tente novamente."
+  npc-connecting: "&7Procurando uma sala de &b{name}&7..."
+  npc-unavailable: "&cNenhuma sala de &f{name} &cdisponível no momento."
+  npc-usage:
+    - "&eUso do /npc:"
+    - "&f/npc criar <id> <grupo> <skin> <nome> &7- cria um NPC onde você está"
+    - "&f/npc mover <id> &7- move o NPC para onde você está"
+    - "&f/npc skin <id> <skin> &7- troca a skin pelo nick de um jogador original"
+    - "&f/npc nome <id> <nome> &7- troca o nome mostrado no holograma"
+    - "&f/npc remover <id> &7- remove o NPC"
+    - "&f/npc listar &7- lista os NPCs"
+  npc-invalid-id: "&cO id precisa ter só letras minúsculas, números, - e _."
+  npc-exists: "&cJá existe um NPC com o id &f{id}&c."
+  npc-unknown: "&cNão existe NPC com o id &f{id}&c."
+  npc-fetching-skin: "&7Buscando a skin de &f{skin}&7..."
+  npc-skin-missing: "&eSkin de &f{skin} &enão encontrada. O NPC fica com a skin padrão."
+  npc-created: "&aNPC &f{id} &acriado. Ele leva ao grupo &f{group}&a."
+  npc-moved: "&aNPC &f{id} &amovido para onde você está."
+  npc-skin-changed: "&aSkin do NPC &f{id} &atrocada para &f{skin}&a."
+  npc-renamed: "&aNPC &f{id} &aagora se chama &f{name}&a."
+  npc-removed: "&aNPC &f{id} &aremovido."
+  npc-list-empty: "&7Nenhum NPC criado. Use &f/npc criar&7."
+  npc-list-header: "&eNPCs ({count}):"
+  npc-list-line: "&8- &f{id} &7→ &b{group} &7({name}, skin {skin}) &8{location}"
