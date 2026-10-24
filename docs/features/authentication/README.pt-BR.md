@@ -64,7 +64,9 @@ O código nunca é enviado como texto: cada holograma só carrega um `⬛`, ent�
 - Em caso de sucesso: `Você se autenticou com sucesso!` (ou `Você se registrou com sucesso!`) e `Enviando ao lobby...`. O servidor de autenticação publica `auth.authenticated`; o proxy abre a passagem, **lembra a sessão de login** e envia o jogador para um lobby.
 - Um jogador que não termina em `security.login-timeout` é expulso.
 
-Enquanto não está autenticado, o jogador só pode andar, digitar o código no chat e usar `/logar` e `/registrar`. Ele não pode conversar com os outros, usar outros comandos, ver outros jogadores, interagir com blocos ou entidades (molduras, suportes de armadura, pinturas), usar baldes, largar ou pegar itens, abrir inventários, quebrar ou colocar blocos, levar dano ou perder fome. Quem cair abaixo de `protection.void-level` volta para o spawn. Depois de autenticar, os comandos são liberados para todos; construir e interagir são liberados só para jogadores com `muxe.auth.setup`. O chat continua fechado para todos no servidor de autenticação.
+Todo jogador no servidor de autenticação fica no modo Aventura: ele é aplicado ao entrar e o Muxe-Core cancela qualquer outro modo de jogo, exceto o Criativo no modo construção.
+
+Enquanto não está autenticado, o jogador só pode andar, digitar o código no chat e usar `/logar` e `/registrar`. Ele não pode conversar com os outros, usar outros comandos, ver outros jogadores, interagir com blocos ou entidades (molduras, suportes de armadura, pinturas), usar baldes, largar ou pegar itens, abrir inventários, quebrar ou colocar blocos, levar dano ou perder fome. Quem cair abaixo de `protection.void-level` volta para o spawn. Depois de autenticar, os comandos são liberados para todos; construir e interagir são liberados só para quem está no modo construção (`/build`, que exige `muxe.build`). O modo construção só começa no servidor de autenticação depois que o jogador está autenticado, então um cliente pirata usando o nome de alguém da equipe nunca o herda. O chat continua fechado para todos no servidor de autenticação.
 
 ### 5. Configurando o servidor de auth (equipe)
 
@@ -91,7 +93,7 @@ As posições são salvas em `plugins/Muxe-Auth/config.yml`, em `locations`, e v
 
 | Permissão | Libera | Padrão |
 |---|---|---|
-| `muxe.auth.setup` | `/authsetup`, e andar, construir e interagir no servidor de autenticação depois do login. Só vale depois que o jogador está autenticado, então um cliente pirata usando o nome de um operador não ganha nada. | op |
+| `muxe.auth.setup` | `/authsetup`, depois do login. Só vale depois que o jogador está autenticado, então um cliente pirata usando o nome de um operador não ganha nada. | op |
 
 ## Configuração
 

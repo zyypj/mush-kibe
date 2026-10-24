@@ -1,6 +1,7 @@
 package br.com.muxe.core.bukkit.bootstrap;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
+import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cqrs.command.CommandBus;
@@ -24,12 +25,19 @@ final class BukkitMuxeCore implements MuxeCore {
     private final Executor mainThread;
     private final NetworkGateway network;
     private final MessageCatalog messages;
+    private final BuildMode buildMode;
 
-    BukkitMuxeCore(CoreRuntime runtime, Executor mainThread, NetworkGateway network, MessageCatalog messages) {
+    BukkitMuxeCore(CoreRuntime runtime, Executor mainThread, NetworkGateway network, MessageCatalog messages, BuildMode buildMode) {
         this.runtime = runtime;
         this.mainThread = mainThread;
         this.network = network;
         this.messages = messages;
+        this.buildMode = buildMode;
+    }
+
+    @Override
+    public BuildMode buildMode() {
+        return buildMode;
     }
 
     @Override

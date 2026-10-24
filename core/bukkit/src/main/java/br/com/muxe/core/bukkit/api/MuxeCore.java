@@ -1,5 +1,6 @@
 package br.com.muxe.core.bukkit.api;
 
+import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cqrs.command.CommandBus;
@@ -59,4 +60,6 @@ public interface MuxeCore {
     Clock clock();
 
     MessageCatalog messages();
+
+    BuildMode buildMode();
 }

@@ -13,6 +13,7 @@ How players are placed on servers and moved between them. Lives in `core:proxy` 
 ## How it works
 
 - **Gate:** a player is authenticated when the account is premium, when a [login session](../authentication/README.md#2-automatic-authentication-proxy-at-login) is resumed, or when the proxy receives `auth.authenticated` from a trusted auth server. Until then, every connection to a server outside the auth group is denied with `must-authenticate`.
+- **Closed network:** while no auth server is alive, nobody can log in, not even premium players or resumed sessions. The proxy refuses the login before anything else runs, so the player sees the `no-auth-server` screen on "Failed to connect to the server" and no account is recorded.
 - **Initial server:** authenticated players start in the least loaded lobby; everyone else starts in the least loaded auth server that has room. If no lobby is alive, an authenticated player starts on the least loaded auth server instead and sees `no-lobby-server` once connected. A player with no server to join is disconnected with `no-lobby-server` or `no-auth-server`. Unauthenticated players never fall back to a lobby.
 - **After authenticating on the auth server:** the proxy sends the player to the least loaded lobby. If none is alive, the player stays on the auth server and sees `no-lobby-server`.
 - **Moving later:** any server can publish `player.connect` to send a player to a server id or to the least loaded server of a group. The proxy ignores it for unauthenticated players, and tells the player `no-server` when there is no destination.
@@ -37,7 +38,8 @@ Proxy `config.yml`:
 |---|---|---|
 | `routing.auth-group` | `auth` | Group of the auth servers. |
 | `routing.lobby-group` | `lobby` | Group players are sent to after authenticating. |
-| `messages.no-auth-server`, `no-lobby-server`, `no-server`, `must-authenticate` | Portuguese texts | Messages shown by the proxy. |
+| `messages.no-auth-server` | Six-line screen: could not connect, reason, retry hint, a blank line, where to follow the news and the team's Discord | Shown when the login is refused because no auth server is alive. A YAML list, one item per line. |
+| `messages.no-lobby-server`, `no-server`, `must-authenticate` | Portuguese texts | Messages shown by the proxy. |
 | `authentication.*` | see [Authentication](../authentication/README.md#configuration) | Premium detection and login sessions. |
 
 Muxe-Core `config.yml`:
@@ -74,11 +76,13 @@ None. The gate lives in the proxy's memory.
 - [x] Authenticated players can reach every server.
 - [x] Only auth servers are trusted to authenticate players.
 - [x] The least loaded server with room is chosen, and dead servers are ignored.
+- [x] While no auth server is alive the network refuses every login, and a full auth server still counts as up.
 - [ ] After login the player arrives in a lobby (checked in game).
 - [ ] Premium players and resumed sessions start directly in a lobby (checked in game).
 
 ## Failures and recovery
 
+- **No auth server alive:** logins are refused for everyone with `no-auth-server`; players already online stay where they are. Logins open again within seconds of an auth server reporting its status.
 - **No server of the target group alive:** the player stays where they are and sees a message.
 - **Redis down:** routing requests from servers fail; players stay on their current server. The directory recovers within seconds of the reconnection.
 - **Proxy restart:** players reconnect and authenticate again.

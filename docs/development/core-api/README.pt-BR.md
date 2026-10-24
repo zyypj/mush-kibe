@@ -121,6 +121,161 @@ hologram.remove();
 - `PixelHolograms.layout(anchor, text)` devolve a posição e o nome de cada pixel, que é o que os testes usam. `ShadedLayout` faz o mesmo em unidades da grade, sem posições.
 - Os hologramas dependem das classes internas do servidor 1.8, acessadas por reflexão em `PacketHologramTransport`. Quando elas não existem, `isAvailable()` é `false` e `show` não desenha nada.
 
+### Hologramas de texto
+
+```java
+TextHolograms holograms = TextHolograms.standard();
+SpawnedHologram hologram = holograms.show(player, top, List.of("&b&lSKYWARS", "&e37 jogando"));
+```
+
+- As linhas descem a partir de `top`, a 0,28 bloco uma da outra. Uma linha vazia mantém o espaço e não mostra nada. `height(lines)` diz a altura do texto.
+- Mesmo transporte dos hologramas de pixels: suportes de armadura invisíveis enviados só para o `player`.
+
+## Itens
+
+Pacote `br.com.muxe.core.bukkit.item`.
+
+```java
+ItemStack star = ItemBuilder.of(Material.NETHER_STAR)
+    .name("&aSelecionar lobby")
+    .lore("&7Clique para abrir")
+    .addLoreIf(player.hasPermission("muxe.vip"), "&6Vantagem VIP")
+    .glow()
+    .build();
+
+ItemStack head = ItemBuilder.skull().name("&aMeu perfil").skullOwner(player.getName()).build();
+ItemStack pane = ItemBuilder.from(config.getConfigurationSection("lobby-selector.current"))
+    .replacing("number", "3", "online", "32", "max", "60")
+    .build();
+```
+
+- O `ItemBuilder` é imutável: cada método devolve um builder novo, então um modelo pode ser compartilhado e preenchido várias vezes.
+- Cobre material e data, quantidade, nome e lore (com cores `&`), `addLore`, `addLoreIf`, encantamentos, `glow()`, `unbreakable()`, `color` de couro, cabeças por dono (`skullOwner`) ou por textura (`skullTexture`, base64), e a troca de `{placeholder}` no nome e na lore com `replacing`.
+- As flags do item ficam escondidas por padrão; `showFlags()` mostra.
+- `ItemBuilder.from(section)` lê os mesmos campos da configuração:
+
+```yaml
+item:
+  material: LEATHER_CHESTPLATE
+  data: 0
+  amount: 1
+  name: "&cPeitoral"
+  lore:
+    - "&7Uma linha"
+  glow: true
+  unbreakable: true
+  hide-flags: true
+  color: "#FF5555"
+  skull-owner: Notch
+  skull-texture: "base64..."
+  enchantments:
+    DURABILITY: 3
+```
+
+- O `build()` precisa de um servidor rodando. O resto são dados simples, então os testes verificam os builders diretamente.
+
+## Menus
+
+Pacote `br.com.muxe.core.bukkit.menu`. O Muxe-Core registra o listener, então qualquer plugin pode abrir menus.
+
+```java
+Menu menu = Menu.builder("&8Perfil").rows(3)
+    .border(ItemBuilder.of(Material.STAINED_GLASS_PANE, 15).name(" "))
+    .button(1, 4, ItemBuilder.skull().name("&a" + player.getName()).skullOwner(player.getName()), context -> context.close())
+    .button(22, ItemBuilder.of(Material.BARRIER).name("&cFechar"), ClickContext::close)
+    .onClose(viewer -> viewer.sendMessage("Até mais!"))
+    .build();
+menu.open(player);
+```
+
+- Os botões vão por slot ou por linha e coluna (`Slots.of(row, column)`). `border` faz a moldura do menu, `fill` cobre os slots vazios; os botões sempre têm prioridade.
+- Os cliques recebem um `ClickContext`: o jogador, o tipo de clique (`isLeftClick`, `isRightClick`, `isShiftClick`), o slot e ações para `close()`, `open(outroMenu)`, `update(slot, button)` ou `updateIcon(icon)` com o menu aberto.
+- Todo clique dentro de um menu é cancelado: os jogadores nunca pegam nem largam itens dele.
+- Os títulos são traduzidos e cortados nos 32 caracteres que a 1.8 permite.
+
+### Menus paginados
+
+```java
+PaginatedMenu lobbies = PaginatedMenu.builder("Selecionar lobby ({page}/{pages})")
+    .items(buttons)
+    .previous(ItemBuilder.of(Material.ARROW).name("&aPágina anterior"))
+    .next(ItemBuilder.of(Material.ARROW).name("&aPróxima página"))
+    .build();
+lobbies.open(player, 1);
+```
+
+- Até 21 itens por página, 7 por linha, cada linha centralizada (`MenuLayout.centered`): um item fica no meio, dois ficam à esquerda do centro, como no seletor de lobby.
+- O menu mantém uma linha vazia acima e abaixo dos itens. As setas ficam nas pontas da última linha e só aparecem quando há página para ir.
+- `slots(list)` coloca os itens em slots fixos, `rows(n)` fixa a altura, `extra(slot, button)` adiciona um botão em todas as páginas e `fill(icon)` cobre os slots vazios.
+- `page(n)` monta o menu sem abrir, que é o que os testes usam.
+
+## Scoreboard
+
+Pacote `br.com.muxe.core.bukkit.scoreboard`.
+
+```java
+Sidebar sidebar = Sidebar.create(player);
+sidebar.title("&b&lMUXE");
+sidebar.lines(List.of("", "&fJogadores: &b2211", "", "&amuxe.com.br"));
+```
+
+- Uma scoreboard por jogador, com até 15 linhas. Cada linha fica em um time, então atualizar uma linha nunca faz a sidebar piscar; só as linhas que mudaram são enviadas.
+- Linhas de até uns 30 caracteres visíveis são divididas entre o prefixo e o sufixo do time (16 caracteres cada na 1.8), levando a cor junto (`SidebarText.split`). Linhas em branco funcionam.
+- `scoreboard()` expõe a scoreboard do Bukkit para outros times, como o que esconde o nome dos NPCs.
+
+## Boss bar
+
+Pacote `br.com.muxe.core.bukkit.bossbar`.
+
+```java
+BossBars bars = BossBars.start(plugin);
+BossBarFrames frames = new BossBarFrames(List.of("&e&lMUXE", "&6&lMUXE"), 10);
+bars.show(player, frames.at(tick));
+```
+
+- A 1.8 não tem API de boss bar: a barra é um wither invisível enviado só para o jogador, mantido 32 blocos à frente dos olhos para continuar à vista. Ela acompanha o jogador a cada 2 ticks quando ele anda ou vira.
+- `show` renomeia a barra quando ela já está na tela. A barra é criada de novo depois de um respawn ou de uma troca de mundo.
+- `BossBarFrames` transforma uma lista de textos e um período em ticks no quadro de qualquer tick, para títulos animados.
+
+## NPCs
+
+Pacote `br.com.muxe.core.bukkit.npc`.
+
+```java
+NpcService npcs = NpcService.start(plugin, npc -> List.of("&b&lSKYWARS", "&e37 jogando"));
+npcs.onClick((player, npc) -> player.sendMessage("Clicou em " + npc.id()));
+npcs.put(new Npc("skywars", location, Optional.of(skin)));
+
+MojangSkins.standard().byName("Notch").thenAccept(found -> ...);
+```
+
+- Os NPCs são jogadores que só existem em pacotes: são enviados para cada jogador a até 48 blocos e removidos além de 64. Eles ficam no tab por 2 segundos para o cliente carregar a skin, e o nome em cima deles é escondido com um time; o texto acima deles é um holograma de texto.
+- Os cliques são lidos da rede: o `PacketInterceptor` adiciona um handler do Netty na conexão de cada jogador e avisa sobre o `PacketPlayInUseEntity`, porque o servidor ignora cliques em entidades que ele não conhece. O tratamento do clique roda na main thread.
+- `MojangSkins` busca a skin assinada de um nome original (`api.mojang.com` e `sessionserver.mojang.com`). Guarde o resultado em vez de buscar a cada inicialização.
+- Veja a [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.pt-BR.md).
+
+## Modo construção
+
+Pacote `br.com.muxe.core.bukkit.buildmode`. O Muxe-Core registra o `/build <on|off>` (permissão `muxe.build`) em todos os servidores.
+
+```java
+BuildMode build = MuxeCore.get().buildMode();
+if (build.isBuilding(player)) { ... }
+build.addHook(new BuildModeHook() {
+    @Override
+    public boolean allows(Player player) { return authenticated(player); }
+
+    @Override
+    public void left(Player player) { giveItemsBack(player); }
+});
+```
+
+- **Ligado:** limpa o inventário, coloca no Criativo e repete `build-action-bar` na action bar a cada segundo.
+- **Desligado:** limpa o inventário e a action bar e volta para o Aventura nos tipos de `build-mode.adventure-only`, ou para o modo de jogo padrão do servidor nos outros. Depois os hooks devolvem os itens.
+- O estado fica no Redis (`muxe:build:<uuid>`) por `build-mode.duration` (6 horas), renovado a cada entrada num servidor. Quem liga o modo continua com ele ao trocar de servidor; quem não tem `muxe.build` o perde na próxima entrada.
+- Nos tipos de `adventure-only` (`LOBBY` e `AUTH`), qualquer modo de jogo que não seja Aventura é cancelado, exceto o Criativo no modo construção (`BuildRules.allowsGameMode`).
+- Os plugins só leem `isBuilding` para decidir o que o jogador pode fazer. Um hook pode recusar o modo construção (`allows`), como o servidor de autenticação faz antes do login, e reagir a `entered` e `left`.
+
 ## Localizações
 
 Pacote `br.com.muxe.core.bukkit.location`.
@@ -145,6 +300,7 @@ No `core:common`, usáveis também no proxy:
 | `ExpiringStore` | Dados chave-valor de curta duração no Redis (`RedisExpiringStore`), em memória nos testes (`InMemoryExpiringStore` nas test fixtures). |
 | `MetricRegistry`, `Tags` | Counters, timers e gauges. |
 | `ConfigSource`, `DurationParser`, `SecretResolver` | Leitura de configuração, durações (`5s`) e segredos (`env:`, `file:`). |
+| `SpamGuard`, `CooldownFormat` | Anti-spam de cliques: um número de usos dentro de uma janela inicia um cooldown (`3` usos em `1s` iniciam `3s`), e o tempo restante aparece como `2,9`. |
 
 ## Adicionando um utilitário
 

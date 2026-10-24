@@ -36,10 +36,35 @@ metrics:
 startup:
   shutdown-on-failure: true
 
+build-mode:
+  duration: 6h
+  adventure-only:
+    - LOBBY
+    - AUTH
+
+join-greeting:
+  server-kinds:
+    - LOBBY
+  delay: 500ms
+  sound: LEVEL_UP
+  volume: 1.0
+  pitch: 1.0
+  fade-in: 10
+  stay: 50
+  fade-out: 20
+
 messages:
   no-permission: "&cVocê não tem permissão para isso."
   players-only: "&cApenas jogadores podem usar este comando."
-  connecting: "&7Conectando você a &b{destination}&7..."
+  join-title: "&b&lMUXE"
+  join-subtitle: "&eBoas-vindas!"
+  build-usage: "&eUso: /build <on|off>"
+  build-enabled: "&aModo construção ativado."
+  build-disabled: "&cModo construção desativado."
+  build-already-on: "&cVocê já está no modo construção."
+  build-already-off: "&cVocê não está no modo construção."
+  build-not-allowed: "&cVocê não pode entrar no modo construção agora."
+  build-action-bar: "&aModo construção ativado"
   connect-failed: "&cNão foi possível enviar você agora. Tente novamente em instantes."
   admin:
     usage: "&eUso: /muxe <servers|find <jogador>|metrics>"

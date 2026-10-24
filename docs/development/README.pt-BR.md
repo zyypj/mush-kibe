@@ -114,7 +114,7 @@ As regras ficam em [`build-logic/src/main/kotlin/ModuleRules.kt`](../../build-lo
 |---|---|---|
 | `api` | Uma biblioteca expõe os tipos da dependência na própria API pública. | Sim |
 | `implementation` | A dependência é usada internamente. | Sim |
-| `compileOnly` | O servidor já fornece em tempo de execução: a API do Spigot, a API do Velocity ou o Muxe-Core. | Não |
+| `compileOnly` | O servidor já fornece em tempo de execução: a API do Spigot, a API do Velocity, o Muxe-Core ou o Netty do servidor 1.8 (usado pelo `core:bukkit` para ler cliques em entidades). | Não |
 
 - **Bibliotecas de terceiros são realocadas** para `br.com.muxe.libs`, para nunca conflitarem com outro plugin. A realocação é aplicada em todo jar de plugin, inclusive nos que só referenciam o Muxe-Core, para que as referências deles apontem para as mesmas classes realocadas. A lista fica em `Relocations`, no [`ServerPlugins.kt`](../../build-logic/src/main/kotlin/ServerPlugins.kt).
 - **Os arquivos de serviço são mesclados** (`META-INF/services`), o que o Flyway e o driver do PostgreSQL precisam depois da realocação.

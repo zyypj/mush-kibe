@@ -114,7 +114,7 @@ The rules live in [`build-logic/src/main/kotlin/ModuleRules.kt`](../../build-log
 |---|---|---|
 | `api` | A library exposes the dependency's types in its own public API. | Yes |
 | `implementation` | The dependency is used internally. | Yes |
-| `compileOnly` | The server already provides it at runtime: the Spigot API, the Velocity API or Muxe-Core. | No |
+| `compileOnly` | The server already provides it at runtime: the Spigot API, the Velocity API, Muxe-Core, or the Netty of the 1.8 server (used by `core:bukkit` to read entity clicks). | No |
 
 - **Third-party libraries are relocated** to `br.com.muxe.libs`, so they never clash with another plugin. Relocation is applied to every plugin jar, including those that only reference Muxe-Core, so their references point to the same relocated classes. The list lives in `Relocations` in [`ServerPlugins.kt`](../../build-logic/src/main/kotlin/ServerPlugins.kt).
 - **Service files are merged** (`META-INF/services`), which Flyway and the PostgreSQL driver need after relocation.

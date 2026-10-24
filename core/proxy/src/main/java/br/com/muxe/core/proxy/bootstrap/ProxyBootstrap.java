@@ -16,6 +16,7 @@ import br.com.muxe.core.proxy.config.ProxyConfigFile;
 import br.com.muxe.core.proxy.config.RoutingSettings;
 import br.com.muxe.core.proxy.listener.ConnectionListener;
 import br.com.muxe.core.proxy.listener.LoginListener;
+import br.com.muxe.core.proxy.listener.NetworkGateListener;
 import br.com.muxe.core.proxy.listener.PreLoginListener;
 import br.com.muxe.core.proxy.load.ProxyServerLoad;
 import br.com.muxe.core.proxy.login.LoginModeResolver;
@@ -23,6 +24,7 @@ import br.com.muxe.core.proxy.packet.ProxyPacketHandlers;
 import br.com.muxe.core.proxy.premium.CachedPremiumLookup;
 import br.com.muxe.core.proxy.premium.MojangPremiumLookup;
 import br.com.muxe.core.proxy.premium.PremiumLookup;
+import br.com.muxe.core.proxy.routing.NetworkGate;
 import br.com.muxe.core.proxy.routing.ServerRouter;
 import br.com.muxe.core.proxy.session.LoginSessions;
 import br.com.muxe.core.proxy.text.ProxyMessages;
@@ -68,6 +70,7 @@ public final class ProxyBootstrap {
         new ProxyPacketHandlers(proxy, gate, access, router, routing, sessions, messages, logger).register(runtime.packets());
         new AuthStatusResponder(gate, playerId -> proxy.getPlayer(playerId).isPresent()).register(runtime.packets());
         proxy.getEventManager().register(plugin, new PreLoginListener(resolver, runtime.executors().io(), messages, runtime.metrics(), logger));
+        proxy.getEventManager().register(plugin, new NetworkGateListener(new NetworkGate(runtime.directory(), routing), messages));
         proxy.getEventManager().register(plugin, new LoginListener(runtime.commands(), gate, sessions, messages, runtime.metrics(), logger));
         proxy.getEventManager().register(plugin, new ConnectionListener(gate, access, router, routing, messages));
 

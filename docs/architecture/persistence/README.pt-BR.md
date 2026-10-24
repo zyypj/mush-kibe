@@ -55,6 +55,7 @@ return transactions.inTransaction("account.record_login", () -> {
 |---|---|---|
 | `core` | `core:common` | `accounts` (V1), `accounts.premium` (V2), `accounts.username` anulável para nomes liberados (V3) |
 | `auth` | `servers:auth` | `credentials` |
+| `lobby` | `servers:lobby` | `player_settings` (visibilidade dos jogadores no lobby) |
 
 ## Tipos de dados
 

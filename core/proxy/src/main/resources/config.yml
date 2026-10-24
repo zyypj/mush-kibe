@@ -42,7 +42,13 @@ metrics:
   port: 9410
 
 messages:
-  no-auth-server: "&cNenhum servidor de autenticação disponível. Tente novamente em instantes."
+  no-auth-server:
+    - "&cNão foi possível te conectar ao servidor."
+    - "&cMotivo: Servidores de Autenticação Desligados"
+    - "&cTente novamente em alguns minutos."
+    - ""
+    - "&eAcompanhe as notícias em: &bmuxe.com.br"
+    - "&cO problema continua? Avise a equipe em &bdiscord.muxe.com.br"
   no-lobby-server: "&cNenhum lobby disponível no momento. Use /lobby em instantes."
   no-server: "&cNenhum servidor disponível para &f{destination}&c."
   must-authenticate: "&cFaça login antes de trocar de servidor."
