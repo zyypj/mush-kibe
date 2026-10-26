@@ -16,6 +16,11 @@ commands:
   npc:
     description: Creates and manages the game NPCs of the lobby.
     usage: /npc <criar|mover|skin|nome|remover|listar>
+  loja:
+    description: Opens the shop, or moves its cash register.
+    usage: /loja [caixa]
+    aliases:
+      - shop
 permissions:
   muxe.lobby.setspawn:
     description: Allows /setspawn.
@@ -25,4 +30,7 @@ permissions:
     default: op
   muxe.lobby.npc:
     description: Allows /npc.
+    default: op
+  muxe.lobby.shop:
+    description: Allows /loja caixa to move the shop cash register.
     default: op

@@ -6,6 +6,7 @@ import br.com.muxe.lobby.hotbar.HotbarSettings;
 import br.com.muxe.lobby.profile.PlayerInfo;
 import br.com.muxe.lobby.scoreboard.ScoreboardTemplate;
 import br.com.muxe.lobby.selector.SelectorSettings;
+import br.com.muxe.lobby.shop.ShopSettings;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +25,8 @@ public record LobbySettings(
     PlayerInfo defaultInfo,
     HotbarSettings hotbar,
     SelectorSettings selector,
-    List<String> npcLines
+    List<String> npcLines,
+    ShopSettings shop
 ) {
 
     private static final long MILLIS_PER_TICK = 50;
@@ -43,7 +45,8 @@ public record LobbySettings(
             new PlayerInfo(config.getString("scoreboard.default-tag", "&7Membro"), config.getLong("scoreboard.default-credits", 0)),
             HotbarSettings.from(section(config, "hotbar")),
             SelectorSettings.from(section(config, "lobby-selector")),
-            config.getStringList("npcs.lines")
+            config.getStringList("npcs.lines"),
+            ShopSettings.from(section(config, "shop"))
         );
     }
 

@@ -10,6 +10,7 @@ O hub principal, onde os jogadores chegam depois de fazer login e escolhem um jo
 - Como jogador, quero trocar de lobby principal e esconder os outros jogadores quando o lobby estiver cheio.
 - Como membro da equipe, quero voar no lobby e colocar NPCs que levam os jogadores a cada jogo.
 - Como construtor, quero entrar num modo de construção para editar o lobby, enquanto jogadores comuns não conseguem quebrá-lo.
+- Como jogador, quero ver a loja e começar a compra de um rank, créditos ou medalhas.
 
 ## Como funciona
 
@@ -80,6 +81,19 @@ Ainda não existe sistema de amigos, então "Apenas amigos" esconde todo mundo. 
 - Clicar (esquerdo ou direito) manda o jogador para o servidor com menos jogadores do grupo, ou avisa que não há sala disponível.
 - Os NPCs existem só em pacotes, aparecem para jogadores a até 48 blocos e não ficam no tab. Veja a [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.pt-BR.md).
 
+### Loja
+
+- O `/loja` (`/shop`) abre a loja na aba **Ranks**. Clicar na caixa registradora ou no vendedor ao lado abre a página do produto em destaque (`shop.featured-product`, **Enderlore**).
+- A caixa registradora é feita de 8 cabeças em suportes de armadura pequenos e invisíveis, com um holograma de 5 linhas em cima (`LOJA`, `RANK ENDERLORE`, `13% DE DESCONTO!`, o preço e `Clique para comprar!`), um vendedor NPC e dois corantes roxos que giram em volta dele. Ela fica em `shop.register.location`, no mesmo lugar do mapa de referência; o `/loja caixa` a move para onde você está.
+- Todo menu da loja tem 6 linhas, as abas **Ranks**, **Ultra+**, **Créditos**, **Medalhas** e **Meus pedidos** na primeira linha (a aba aberta brilha), painéis cinza na segunda linha com um painel verde-limão embaixo da aba aberta, e os produtos na quarta linha (slots 28, 30, 32 e 34). A prévia das medalhas mostra o nome do próprio jogador.
+- Um clique esquerdo num produto com `&eBotão esquerdo: &fComprar` começa a compra:
+  1. **Compra: Método de pagamento**: Pix ou cartão de crédito, um resumo do pedido e **Voltar**.
+  2. **Compra: Código de apoiador**: usar um código de apoiador ou não. Usar fecha o menu e pede o código no chat (`cancelar` cancela, 60 segundos para responder). Os códigos ainda não são validados.
+  3. **Compra: Carregando...**: um painel verde-limão gira em volta do meio do menu por 3 segundos.
+  4. O menu fecha e a mensagem de pagamento é enviada, centralizada como a referência, com `&cClique aqui para fazer o pagamento via o site.` abrindo o `shop.checkout.payment-url`.
+- A página do produto em destaque mostra o produto e os métodos de pagamento direto, e depois segue os mesmos passos.
+- Nada é cobrado nem entregue ainda: nenhum pedido é criado, então **Meus pedidos** sempre mostra `&cNenhum pedido encontrado!`. Os papéis de **Vantagens** e os produtos **Ultra+** (que exigem Ultra) ainda não fazem nada.
+
 ### Proteção
 
 Os jogadores não levam dano, não perdem fome, não quebram, não colocam, não largam nem pegam itens, nem movem itens no inventário. A chuva é cancelada.
@@ -107,6 +121,8 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 | `/npc nome <id> <nome>` | Troca o nome mostrado acima do NPC. | `muxe.lobby.npc` |
 | `/npc remover <id>` | Remove um NPC. | `muxe.lobby.npc` |
 | `/npc listar` | Lista os NPCs. | `muxe.lobby.npc` |
+| `/loja` (`/shop`) | Abre a loja. | Nenhuma |
+| `/loja caixa` | Move a caixa registradora da loja para onde você está. | `muxe.lobby.shop` |
 
 ## Permissões
 
@@ -116,6 +132,7 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 | `muxe.build` | Usar o `/build` (Muxe-Core) para quebrar, colocar, largar e pegar itens no Criativo. | op |
 | `muxe.lobby.setspawn` | Usar `/setspawn`. | op |
 | `muxe.lobby.npc` | Usar `/npc`. | op |
+| `muxe.lobby.shop` | Usar `/loja caixa`. | op |
 
 ## Configuração
 
@@ -135,6 +152,16 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 | `lobby-selector.group` | `lobby` | Grupo listado no seletor. |
 | `lobby-selector.title`, `current`, `other`, `previous-page`, `next-page` | Veja acima | Título e itens do seletor. Placeholders: `{page}`, `{pages}`, `{number}`, `{online}`, `{max}`. |
 | `npcs.lines` | `&b&l{name}`, `&e{players} jogando` | Linhas acima de cada NPC. |
+| `shop.title`, `shop.default-category`, `shop.featured-product` | `Loja: {name}`, `ranks`, `enderlore` | Título dos menus, a aba que o `/loja` abre e o produto que a caixa registradora abre. |
+| `shop.panes.other`, `shop.panes.current` | Painéis cinza e verde-limão | Segunda linha dos menus da loja. |
+| `shop.categories.<id>` | Ranks, Ultra+, Créditos, Medalhas, Meus pedidos | `name`, `tab-slot`, `tab` (item), `products` e `extras` (itens que não fazem nada, como os papéis de **Vantagens**). |
+| `shop.categories.<id>.products.<id>` | Veja a config | `slot`, `price` (mostrado na compra), `purchasable` (padrão `true`), `item`, e `page` (`name`, `item`) para um produto com página própria. `{player}` na lore vira o nome do jogador. |
+| `shop.checkout.*` | Títulos e itens de referência | `method-title`, `supporter-title`, `loading-title`, `pix`, `card`, `summary`, `back`, `use-code`, `skip-code` (placeholders `{product}`, `{price}`, `{menu}`), `code-timeout` (`60s`), `payment-url`, `chat-center` (`114`). |
+| `shop.checkout.loading.*` | `150ms`, `3s`, painéis verde-limão e cinza | De quanto em quanto tempo o painel verde anda, quanto tempo o carregamento dura e os dois painéis. |
+| `shop.register.location` | `lobby` 7.5, 33, -9.5, yaw 180 | Onde ficam a caixa registradora e o vendedor. Gravado pelo `/loja caixa`. |
+| `shop.register.labels` | As 5 linhas do holograma | `text` e `height` acima da posição. |
+| `shop.register.seller` | Ligado, com uma skin fixa | O vendedor NPC (`enabled`, `skin.value`, `skin.signature`). |
+| `shop.register.parts` | 8 cabeças e 2 corantes | Suportes de exibição: `x`, `y`, `z` (deslocamento), `yaw`, `small`, `arms`, `helmet`, `hand`, `head-pose`, `right-arm-pose`, `motion` (`spin` em graus por tick, `bob-height`, `bob-period` em ticks, `phase`). |
 | `spawn.*` | não definido | Escrito pelo `/setspawn`. |
 | `messages.*` | Textos em português | Mensagens deste plugin; as mensagens compartilhadas vêm do Muxe-Core. |
 
@@ -183,7 +210,10 @@ As métricas de servidor Spigot do Muxe-Core, mais `muxe_db_transaction_seconds{
 - [x] A boss bar alterna `&e&lMUXE` e `&6&lMUXE` a cada 10 ticks, e a scoreboard preenche as linhas de referência.
 - [x] A escolha de visibilidade é salva no PostgreSQL e lida de volta.
 - [x] Os NPCs sobrevivem a ser salvos e lidos do `npcs.yml`; entradas quebradas são puladas.
+- [x] Os menus da loja seguem o layout de referência: abas, painéis, produtos, a página em destaque e os três menus de compra, com o **Voltar** levando ao menu de onde a compra veio.
+- [x] O painel do carregamento anda em volta do slot do meio, e a mensagem de pagamento fica centralizada como a referência.
 - [ ] Boss bar, scoreboard, hotbar, seletor, visibilidade e cliques nos NPCs funcionam no jogo (conferido no jogo).
+- [ ] A caixa registradora, os corantes girando e a compra inteira funcionam no jogo (conferido no jogo).
 
 ## Falhas e recuperação
 
@@ -197,3 +227,5 @@ As métricas de servidor Spigot do Muxe-Core, mais `muxe_db_transaction_seconds{
 - Os itens de seleção de jogo, perfil e cosméticos ainda não fazem nada.
 - Tags, créditos e amigos ainda não existem; a scoreboard mostra valores padrão e "Apenas amigos" esconde todo mundo.
 - Os NPCs olham sempre para a mesma direção.
+- A loja ainda não vende nada: não há pedidos, pagamentos, validação de código de apoiador nem ranks, e os papéis de **Vantagens** não fazem nada.
+- A caixa registradora guarda as peças nos eixos do mundo, então movê-la com o `/loja caixa` não a gira.

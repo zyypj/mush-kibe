@@ -10,6 +10,7 @@ The main hub, where players arrive after logging in and choose a game. Lives in 
 - As a player, I want to switch to another main lobby, and to hide other players when the lobby is crowded.
 - As a staff member, I want to fly in the lobby and to place NPCs that send players to each game.
 - As a builder, I want to switch to a build mode to edit the lobby, while regular players cannot break it.
+- As a player, I want to browse the shop and start buying a rank, credits or medals.
 
 ## How it works
 
@@ -80,6 +81,19 @@ There is no friend system yet, so "Only friends" hides everyone. Friends will co
 - Clicking (left or right) sends the player to the least loaded server of the group, or says that no room is available.
 - NPCs exist only in packets, are shown to players within 48 blocks and do not appear in the tab list. See [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.md).
 
+### Shop
+
+- `/loja` (`/shop`) opens the shop on the **Ranks** tab. Clicking the cash register or the seller next to it opens the page of the featured product (`shop.featured-product`, **Enderlore**).
+- The cash register is made of 8 heads on small invisible armor stands, with a 5-line hologram above it (`LOJA`, `RANK ENDERLORE`, `13% DE DESCONTO!`, the price and `Clique para comprar!`), a seller NPC and two purple dyes that spin around the seller. It stands at `shop.register.location`, the same place as in the reference map; `/loja caixa` moves it to where you stand.
+- Every shop menu has 6 rows, the tabs **Ranks**, **Ultra+**, **Créditos**, **Medalhas** and **Meus pedidos** in the first row (the open tab glows), gray panes in the second row with a lime pane under the open tab, and the products in the fourth row (slots 28, 30, 32 and 34). Medal previews show the player's own name.
+- A left click on a product with `&eBotão esquerdo: &fComprar` starts the checkout:
+  1. **Compra: Método de pagamento**: Pix or credit card, a summary of the order and **Voltar**.
+  2. **Compra: Código de apoiador**: use a supporter code or not. Using one closes the menu and asks for the code in the chat (`cancelar` cancels, 60 seconds to answer). Codes are not checked yet.
+  3. **Compra: Carregando...**: a lime pane spins around the middle of the menu for 3 seconds.
+  4. The menu closes and the payment message is sent, centered like the reference, with `&cClique aqui para fazer o pagamento via o site.` opening `shop.checkout.payment-url`.
+- The featured product page shows the product and the payment methods directly, then follows the same steps.
+- Nothing is charged or delivered yet: no order is created, so **Meus pedidos** always shows `&cNenhum pedido encontrado!`. The **Vantagens** papers and the **Ultra+** products (which require Ultra) do nothing yet.
+
 ### Protection
 
 Players cannot take damage, lose hunger, break, place, drop or pick up items, or move items in their inventory. Rain is cancelled.
@@ -107,6 +121,8 @@ Players are always in Adventure mode: any change to another game mode is cancell
 | `/npc nome <id> <nome>` | Changes the name shown above the NPC. | `muxe.lobby.npc` |
 | `/npc remover <id>` | Removes an NPC. | `muxe.lobby.npc` |
 | `/npc listar` | Lists the NPCs. | `muxe.lobby.npc` |
+| `/loja` (`/shop`) | Opens the shop. | None |
+| `/loja caixa` | Moves the shop cash register to where you stand. | `muxe.lobby.shop` |
 
 ## Permissions
 
@@ -116,6 +132,7 @@ Players are always in Adventure mode: any change to another game mode is cancell
 | `muxe.build` | Use `/build` (Muxe-Core) to break, place, drop and pick up items in Creative. | op |
 | `muxe.lobby.setspawn` | Use `/setspawn`. | op |
 | `muxe.lobby.npc` | Use `/npc`. | op |
+| `muxe.lobby.shop` | Use `/loja caixa`. | op |
 
 ## Configuration
 
@@ -135,6 +152,16 @@ Players are always in Adventure mode: any change to another game mode is cancell
 | `lobby-selector.group` | `lobby` | Group listed in the selector. |
 | `lobby-selector.title`, `current`, `other`, `previous-page`, `next-page` | See above | Selector title and items. Placeholders: `{page}`, `{pages}`, `{number}`, `{online}`, `{max}`. |
 | `npcs.lines` | `&b&l{name}`, `&e{players} jogando` | Lines above every NPC. |
+| `shop.title`, `shop.default-category`, `shop.featured-product` | `Loja: {name}`, `ranks`, `enderlore` | Menu title, the tab `/loja` opens and the product the cash register opens. |
+| `shop.panes.other`, `shop.panes.current` | Gray and lime panes | Second row of the shop menus. |
+| `shop.categories.<id>` | Ranks, Ultra+, Créditos, Medalhas, Meus pedidos | `name`, `tab-slot`, `tab` (item), `products` and `extras` (items that do nothing, such as the **Vantagens** papers). |
+| `shop.categories.<id>.products.<id>` | See the config | `slot`, `price` (shown in the checkout), `purchasable` (default `true`), `item`, and `page` (`name`, `item`) for a product that has its own page. `{player}` in the lore becomes the player's name. |
+| `shop.checkout.*` | Reference titles and items | `method-title`, `supporter-title`, `loading-title`, `pix`, `card`, `summary`, `back`, `use-code`, `skip-code` (placeholders `{product}`, `{price}`, `{menu}`), `code-timeout` (`60s`), `payment-url`, `chat-center` (`114`). |
+| `shop.checkout.loading.*` | `150ms`, `3s`, lime and gray panes | How often the lime pane moves, how long the loading lasts, and the two panes. |
+| `shop.register.location` | `lobby` 7.5, 33, -9.5, yaw 180 | Where the cash register and the seller stand. Written by `/loja caixa`. |
+| `shop.register.labels` | The 5 hologram lines | `text` and `height` above the location. |
+| `shop.register.seller` | Enabled, with a fixed skin | The seller NPC (`enabled`, `skin.value`, `skin.signature`). |
+| `shop.register.parts` | 8 heads and 2 dyes | Display stands: `x`, `y`, `z` (offset), `yaw`, `small`, `arms`, `helmet`, `hand`, `head-pose`, `right-arm-pose`, `motion` (`spin` degrees per tick, `bob-height`, `bob-period` ticks, `phase`). |
 | `spawn.*` | not set | Written by `/setspawn`. |
 | `messages.*` | Portuguese texts | Messages of this plugin; shared messages come from Muxe-Core. |
 
@@ -183,7 +210,10 @@ The Spigot server metrics of Muxe-Core, plus `muxe_db_transaction_seconds{operat
 - [x] The boss bar alternates `&e&lMUXE` and `&6&lMUXE` every 10 ticks, and the scoreboard fills the reference lines.
 - [x] The visibility choice is saved in PostgreSQL and read back.
 - [x] NPCs survive being saved to and read from `npcs.yml`; broken entries are skipped.
+- [x] The shop menus follow the reference layout: tabs, panes, products, the featured page and the three checkout menus, with **Voltar** returning to the menu the checkout came from.
+- [x] The loading pane goes around the middle slot, and the payment message is centered like the reference.
 - [ ] Boss bar, scoreboard, hotbar, selector, visibility and NPC clicks work in game (checked in game).
+- [ ] The cash register, its spinning dyes and the whole checkout work in game (checked in game).
 
 ## Failures and recovery
 
@@ -197,3 +227,5 @@ The Spigot server metrics of Muxe-Core, plus `muxe_db_transaction_seconds{operat
 - The game selector, profile and cosmetics items do nothing yet.
 - Tags, credits and friends do not exist yet; the scoreboard shows default values and "Only friends" hides everyone.
 - NPCs look in a fixed direction.
+- The shop does not sell anything yet: there are no orders, payments, supporter code checks or ranks, and the **Vantagens** papers do nothing.
+- The cash register keeps its parts in world axes, so moving it with `/loja caixa` does not turn it.

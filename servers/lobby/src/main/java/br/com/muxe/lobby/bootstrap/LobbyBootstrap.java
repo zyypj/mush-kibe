@@ -4,6 +4,7 @@ import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.bossbar.BossBars;
 import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.npc.skin.MojangSkins;
+import br.com.muxe.core.bukkit.prompt.ChatPrompts;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cooldown.SpamGuard;
 import br.com.muxe.core.common.persistence.migration.MigrationReport;
@@ -11,6 +12,7 @@ import br.com.muxe.lobby.bossbar.LobbyBossBar;
 import br.com.muxe.lobby.command.NpcCommand;
 import br.com.muxe.lobby.command.PlayCommand;
 import br.com.muxe.lobby.command.SetSpawnCommand;
+import br.com.muxe.lobby.command.ShopCommand;
 import br.com.muxe.lobby.config.LobbySettings;
 import br.com.muxe.lobby.hotbar.LobbyBuildHook;
 import br.com.muxe.lobby.hotbar.LobbyHotbar;
@@ -22,6 +24,8 @@ import br.com.muxe.lobby.npc.NpcStore;
 import br.com.muxe.lobby.profile.PlayerInfoSource;
 import br.com.muxe.lobby.scoreboard.LobbyScoreboard;
 import br.com.muxe.lobby.selector.LobbySelectorMenu;
+import br.com.muxe.lobby.shop.ShopService;
+import br.com.muxe.lobby.shop.register.ShopRegister;
 import br.com.muxe.lobby.spawn.ArrivalService;
 import br.com.muxe.lobby.spawn.SpawnService;
 import br.com.muxe.lobby.visibility.VisibilityModule;
@@ -43,6 +47,8 @@ public final class LobbyBootstrap {
 
     private final JavaPlugin plugin;
     private LobbyNpcs npcs;
+    private ShopService shop;
+    private ShopRegister register;
 
     public LobbyBootstrap(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -71,6 +77,9 @@ public final class LobbyBootstrap {
         LobbyBossBar bossBar = new LobbyBossBar(BossBars.start(plugin), settings.bossBar());
         npcs = new LobbyNpcs(plugin, core, new NpcStore(new File(plugin.getDataFolder(), NPC_FILE), plugin.getLogger()), MojangSkins.standard(), spam, messages, settings.npcLines());
         npcs.load();
+        shop = new ShopService(plugin, settings.shop(), messages, ChatPrompts.start(plugin, core.clock()), spam);
+        register = new ShopRegister(plugin, settings.shop().register(), shop::openFeatured);
+        register.place();
 
         PluginManager plugins = plugin.getServer().getPluginManager();
         plugins.registerEvents(new LobbyJoinListener(arrival, hotbar, scoreboard, bossBar, visibility), plugin);
@@ -85,11 +94,18 @@ public final class LobbyBootstrap {
         bind("jogar", new PlayCommand(core, messages, settings.games()));
         bind("setspawn", new SetSpawnCommand(spawn, messages));
         bind(NpcCommand.NAME, new NpcCommand(core, npcs, messages));
+        bind(ShopCommand.NAME, new ShopCommand(shop, register, messages));
     }
 
     public void disable() {
         if (npcs != null) {
             npcs.stop();
+        }
+        if (register != null) {
+            register.stop();
+        }
+        if (shop != null) {
+            shop.stop();
         }
     }
 
