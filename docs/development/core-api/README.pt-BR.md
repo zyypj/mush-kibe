@@ -86,6 +86,25 @@ messages:
     - "&7&o(É necessário ativar os hologramas para visualizar corretamente)"
 ```
 
+### Linhas de chat centralizadas e clicáveis
+
+```java
+ChatLines.send(player, messages.lines("shop-payment"), CenteredText.DEFAULT_CENTER, "https://muxe.com.br/loja");
+```
+
+- Uma linha que começa com `<center>` ganha espaços para que o meio dela fique no pixel indicado do chat (`CenteredText.DEFAULT_CENTER` é 114, o meio de uma linha de 57 espaços riscados). As larguras seguem a fonte padrão do 1.8; o negrito soma um pixel por caractere.
+- Uma linha que começa com `<link>` abre a URL quando clicada. As duas marcações podem ser usadas juntas.
+
+### Perguntas no chat
+
+```java
+ChatPrompts prompts = ChatPrompts.start(plugin, core.clock());
+prompts.ask(player, Duration.ofSeconds(60), code -> apply(code), () -> cancelled(), () -> expired());
+```
+
+- A próxima mensagem do jogador no chat vira a resposta e não aparece no chat. Digitar `cancelar` cancela; depois do tempo limite roda o callback de expiração. As respostas chegam na main thread.
+- A lista de espera é o `PendingPrompts` do `core:common`, testado com um `MutableClock`.
+
 ## Efeitos
 
 Pacote `br.com.muxe.core.bukkit.effect`.
@@ -150,7 +169,7 @@ ItemStack pane = ItemBuilder.from(config.getConfigurationSection("lobby-selector
 ```
 
 - O `ItemBuilder` é imutável: cada método devolve um builder novo, então um modelo pode ser compartilhado e preenchido várias vezes.
-- Cobre material e data, quantidade, nome e lore (com cores `&`), `addLore`, `addLoreIf`, encantamentos, `glow()`, `unbreakable()`, `color` de couro, cabeças por dono (`skullOwner`) ou por textura (`skullTexture`, base64), e a troca de `{placeholder}` no nome e na lore com `replacing`.
+- Cobre material e data, quantidade, nome e lore (com cores `&`), `addLore`, `addLoreIf`, encantamentos, `glow()`, `unbreakable()`, `color` de couro, cabeças por dono (`skullOwner`) ou por textura (`skullTexture`: o valor em base64, a URL da textura ou só o hash depois de `textures.minecraft.net/texture/`), e a troca de `{placeholder}` no nome e na lore com `replacing`.
 - As flags do item ficam escondidas por padrão; `showFlags()` mostra.
 - `ItemBuilder.from(section)` lê os mesmos campos da configuração:
 
@@ -167,7 +186,7 @@ item:
   hide-flags: true
   color: "#FF5555"
   skull-owner: Notch
-  skull-texture: "base64..."
+  skull-texture: "d545b0ddd82cc4fd2eac64e445bee91b4706408514f71594d18c4b90a5491d74"
   enchantments:
     DURABILITY: 3
 ```
@@ -250,9 +269,29 @@ MojangSkins.standard().byName("Notch").thenAccept(found -> ...);
 ```
 
 - Os NPCs são jogadores que só existem em pacotes: são enviados para cada jogador a até 48 blocos e removidos além de 64. Eles ficam no tab por 2 segundos para o cliente carregar a skin, e o nome em cima deles é escondido com um time; o texto acima deles é um holograma de texto.
-- Os cliques são lidos da rede: o `PacketInterceptor` adiciona um handler do Netty na conexão de cada jogador e avisa sobre o `PacketPlayInUseEntity`, porque o servidor ignora cliques em entidades que ele não conhece. O tratamento do clique roda na main thread.
+- Os cliques são lidos da rede: o `PacketInterceptor` adiciona um handler do Netty na conexão de cada jogador e avisa sobre o `PacketPlayInUseEntity`, porque o servidor ignora cliques em entidades que ele não conhece. Cada interceptador tem um nome de handler próprio, então vários serviços (NPCs, suportes de exibição) podem ler cliques ao mesmo tempo. O tratamento do clique roda na main thread.
 - `MojangSkins` busca a skin assinada de um nome original (`api.mojang.com` e `sessionserver.mojang.com`). Guarde o resultado em vez de buscar a cada inicialização.
 - Veja a [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.pt-BR.md).
+
+## Suportes de exibição
+
+Pacote `br.com.muxe.core.bukkit.display`.
+
+```java
+DisplayService displays = DisplayService.start(plugin);
+displays.onClick((player, display) -> openShop(player));
+displays.put(new Display("shop", anchor, List.of(
+    new DisplayStand(0.19, -0.03, -0.81, 0f, true, false, Optional.of(ItemBuilder.skull().skullTexture(hash)), Optional.empty(),
+        StandPose.ZERO, StandPose.ZERO, StandMotion.NONE),
+    new DisplayStand(0, -0.1, 0, 115f, false, true, Optional.empty(), Optional.of(ItemBuilder.of(Material.INK_SACK, 5).glow()),
+        StandPose.ZERO, new StandPose(0, 90, 90), new StandMotion(4.5, 0.09, 40, 180))
+), List.of(new DisplayLabel("&b&lLOJA", 3.6))));
+```
+
+- Suportes de armadura invisíveis que só existem em pacotes, como os NPCs: aparecem a até 48 blocos e somem além de 64. Cada suporte tem um deslocamento em relação à âncora, um yaw, tamanho pequeno ou normal, braços, um capacete e um item na mão, as poses da cabeça e do braço direito (em graus) e um movimento.
+- O `StandMotion` gira o suporte em `degreesPerTick` e o faz subir e descer (`bobHeight` blocos a cada `bobPeriodTicks`, deslocado por `phaseDegrees`). Os suportes que se movem são atualizados a cada tick.
+- Os rótulos são hologramas de texto numa altura acima da âncora (a altura do próprio texto).
+- Clicar em qualquer suporte roda o tratamento de clique na main thread. Os deslocamentos usam os eixos do mundo: mover a âncora move a exibição inteira sem girá-la.
 
 ## Modo construção
 
@@ -301,6 +340,7 @@ No `core:common`, usáveis também no proxy:
 | `MetricRegistry`, `Tags` | Counters, timers e gauges. |
 | `ConfigSource`, `DurationParser`, `SecretResolver` | Leitura de configuração, durações (`5s`) e segredos (`env:`, `file:`). |
 | `SpamGuard`, `CooldownFormat` | Anti-spam de cliques: um número de usos dentro de uma janela inicia um cooldown (`3` usos em `1s` iniciam `3s`), e o tempo restante aparece como `2,9`. |
+| `PendingPrompts` | Jogadores esperando para responder algo no chat, cada um com um prazo (usado pelo `ChatPrompts`). |
 
 ## Adicionando um utilitário
 

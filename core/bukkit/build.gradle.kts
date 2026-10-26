@@ -6,4 +6,6 @@ dependencies {
     api(projects.core.common)
 
     compileOnly(libs.netty)
+
+    testImplementation(libs.netty)
 }

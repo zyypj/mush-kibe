@@ -86,6 +86,25 @@ messages:
     - "&7&o(É necessário ativar os hologramas para visualizar corretamente)"
 ```
 
+### Centered and clickable chat lines
+
+```java
+ChatLines.send(player, messages.lines("shop-payment"), CenteredText.DEFAULT_CENTER, "https://muxe.com.br/loja");
+```
+
+- A line that starts with `<center>` is padded with spaces so its middle sits on the given pixel of the chat (`CenteredText.DEFAULT_CENTER` is 114, the middle of a line of 57 struck-through spaces). Widths follow the 1.8 default font; bold adds one pixel per character.
+- A line that starts with `<link>` opens the URL when clicked. Both markers can be combined.
+
+### Chat prompts
+
+```java
+ChatPrompts prompts = ChatPrompts.start(plugin, core.clock());
+prompts.ask(player, Duration.ofSeconds(60), code -> apply(code), () -> cancelled(), () -> expired());
+```
+
+- The next chat message of the player is taken as the answer and never reaches the chat. Typing `cancelar` cancels; after the timeout the expired callback runs. Answers are delivered on the main thread.
+- The waiting list is `PendingPrompts` in `core:common`, tested with a `MutableClock`.
+
 ## Effects
 
 Package `br.com.muxe.core.bukkit.effect`.
@@ -150,7 +169,7 @@ ItemStack pane = ItemBuilder.from(config.getConfigurationSection("lobby-selector
 ```
 
 - `ItemBuilder` is immutable: every method returns a new builder, so a template can be shared and filled in many times.
-- Covers material and data, amount, name and lore (with `&` colors), `addLore`, `addLoreIf`, enchantments, `glow()`, `unbreakable()`, leather `color`, skulls by owner (`skullOwner`) or by texture (`skullTexture`, base64), and `{placeholder}` replacement in name and lore with `replacing`.
+- Covers material and data, amount, name and lore (with `&` colors), `addLore`, `addLoreIf`, enchantments, `glow()`, `unbreakable()`, leather `color`, skulls by owner (`skullOwner`) or by texture (`skullTexture`: the base64 value, the texture URL or just the hash after `textures.minecraft.net/texture/`), and `{placeholder}` replacement in name and lore with `replacing`.
 - Item flags are hidden by default; `showFlags()` shows them.
 - `ItemBuilder.from(section)` reads the same fields from configuration:
 
@@ -167,7 +186,7 @@ item:
   hide-flags: true
   color: "#FF5555"
   skull-owner: Notch
-  skull-texture: "base64..."
+  skull-texture: "d545b0ddd82cc4fd2eac64e445bee91b4706408514f71594d18c4b90a5491d74"
   enchantments:
     DURABILITY: 3
 ```
@@ -250,9 +269,29 @@ MojangSkins.standard().byName("Notch").thenAccept(found -> ...);
 ```
 
 - NPCs are players that only exist in packets: they are sent to each player within 48 blocks and removed beyond 64. They stay in the tab list for 2 seconds so the client loads the skin, and their name tag is hidden with a team; the text above them is a text hologram.
-- Clicks are read from the network: `PacketInterceptor` adds a Netty handler to each player's connection and reports `PacketPlayInUseEntity`, because the server ignores clicks on entities it does not know. The click handler runs on the main thread.
+- Clicks are read from the network: `PacketInterceptor` adds a Netty handler to each player's connection and reports `PacketPlayInUseEntity`, because the server ignores clicks on entities it does not know. Every interceptor gets its own handler name, so several services (NPCs, display stands) can read clicks at once. The click handler runs on the main thread.
 - `MojangSkins` finds the signed skin of an original player name (`api.mojang.com` and `sessionserver.mojang.com`). Store the result instead of asking on every start.
 - See [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.md).
+
+## Display stands
+
+Package `br.com.muxe.core.bukkit.display`.
+
+```java
+DisplayService displays = DisplayService.start(plugin);
+displays.onClick((player, display) -> openShop(player));
+displays.put(new Display("shop", anchor, List.of(
+    new DisplayStand(0.19, -0.03, -0.81, 0f, true, false, Optional.of(ItemBuilder.skull().skullTexture(hash)), Optional.empty(),
+        StandPose.ZERO, StandPose.ZERO, StandMotion.NONE),
+    new DisplayStand(0, -0.1, 0, 115f, false, true, Optional.empty(), Optional.of(ItemBuilder.of(Material.INK_SACK, 5).glow()),
+        StandPose.ZERO, new StandPose(0, 90, 90), new StandMotion(4.5, 0.09, 40, 180))
+), List.of(new DisplayLabel("&b&lLOJA", 3.6))));
+```
+
+- Invisible armor stands that only exist in packets, like the NPCs: shown within 48 blocks, removed beyond 64. Each stand has an offset from the anchor, a yaw, small or full size, arms, a helmet and an item in the hand, the head and right arm poses (in degrees) and a motion.
+- `StandMotion` spins the stand by `degreesPerTick` and bobs it up and down (`bobHeight` blocks over `bobPeriodTicks`, shifted by `phaseDegrees`). Moving stands are updated every tick.
+- Labels are text holograms at a height above the anchor (the height of the text itself).
+- Clicking any stand runs the click handler on the main thread. Offsets are in world axes: moving the anchor moves the whole display without turning it.
 
 ## Build mode
 
@@ -301,6 +340,7 @@ In `core:common`, usable on the proxy too:
 | `MetricRegistry`, `Tags` | Counters, timers and gauges. |
 | `ConfigSource`, `DurationParser`, `SecretResolver` | Reading configuration, durations (`5s`) and secrets (`env:`, `file:`). |
 | `SpamGuard`, `CooldownFormat` | Anti-spam for clicks: a number of uses inside a window starts a cooldown (`3` uses in `1s` start `3s`), and the remaining time is shown as `2,9`. |
+| `PendingPrompts` | Players waiting to answer something in the chat, each with a deadline (used by `ChatPrompts`). |
 
 ## Adding a helper
 

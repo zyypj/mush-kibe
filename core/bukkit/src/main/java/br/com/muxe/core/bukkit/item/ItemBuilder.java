@@ -65,7 +65,7 @@ public final class ItemBuilder {
         this.hideFlags = hideFlags;
         this.color = color;
         this.skullOwner = skullOwner;
-        this.skullTexture = skullTexture;
+        this.skullTexture = SkullTexture.value(skullTexture);
     }
 
     public static ItemBuilder of(Material material) {

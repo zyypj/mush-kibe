@@ -7,6 +7,7 @@ import io.netty.channel.ChannelPipeline;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,15 +20,22 @@ import org.bukkit.plugin.Plugin;
 
 public final class PacketInterceptor implements Listener {
 
-    private static final String HANDLER = "muxe_entity_use";
+    private static final String HANDLER_PREFIX = "muxe_entity_use_";
+    private static final AtomicInteger NEXT_ID = new AtomicInteger();
     private static final String MINECRAFT_HANDLER = "packet_handler";
 
     private final Handles handles;
     private final EntityUseListener listener;
+    private final String handler;
 
     private PacketInterceptor(Handles handles, EntityUseListener listener) {
         this.handles = handles;
         this.listener = listener;
+        this.handler = handlerName(NEXT_ID.incrementAndGet());
+    }
+
+    static String handlerName(int id) {
+        return HANDLER_PREFIX + id;
     }
 
     public static Optional<PacketInterceptor> start(Plugin plugin, EntityUseListener listener) {
@@ -56,16 +64,16 @@ public final class PacketInterceptor implements Listener {
     private void inject(Player player) {
         handles.channel(player).ifPresent(channel -> channel.eventLoop().execute(() -> {
             ChannelPipeline pipeline = channel.pipeline();
-            if (pipeline.get(HANDLER) == null && pipeline.get(MINECRAFT_HANDLER) != null) {
-                pipeline.addBefore(MINECRAFT_HANDLER, HANDLER, new UseHandler(player));
+            if (pipeline.get(handler) == null && pipeline.get(MINECRAFT_HANDLER) != null) {
+                pipeline.addBefore(MINECRAFT_HANDLER, handler, new UseHandler(player));
             }
         }));
     }
 
     private void eject(Player player) {
         handles.channel(player).ifPresent(channel -> channel.eventLoop().execute(() -> {
-            if (channel.pipeline().get(HANDLER) != null) {
-                channel.pipeline().remove(HANDLER);
+            if (channel.pipeline().get(handler) != null) {
+                channel.pipeline().remove(handler);
             }
         }));
     }
