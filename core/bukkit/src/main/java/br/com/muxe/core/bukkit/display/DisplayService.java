@@ -152,12 +152,18 @@ public final class DisplayService implements Listener {
         }
     }
 
+    static boolean countsAsClick(EntityUse use) {
+        return use != EntityUse.INTERACT;
+    }
+
     private void onUse(Player player, int entityId, EntityUse use) {
-        if (use == EntityUse.INTERACT_AT) {
+        if (!countsAsClick(use)) {
             return;
         }
+        Map<String, SpawnedHologram> seen = viewers.getOrDefault(player.getUniqueId(), Map.of());
         for (Placed placed : displays.values()) {
-            if (placed.owns(entityId)) {
+            SpawnedHologram labels = seen.get(placed.display().id());
+            if (placed.owns(entityId) || labels != null && labels.owns(entityId)) {
                 plugin.getServer().getScheduler().runTask(plugin, () -> {
                     if (player.isOnline()) {
                         clickHandler.accept(player, placed.display());

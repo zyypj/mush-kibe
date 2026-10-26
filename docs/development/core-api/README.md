@@ -284,14 +284,14 @@ displays.put(new Display("shop", anchor, List.of(
     new DisplayStand(0.19, -0.03, -0.81, 0f, true, false, Optional.of(ItemBuilder.skull().skullTexture(hash)), Optional.empty(),
         StandPose.ZERO, StandPose.ZERO, StandMotion.NONE),
     new DisplayStand(0, -0.1, 0, 115f, false, true, Optional.empty(), Optional.of(ItemBuilder.of(Material.INK_SACK, 5).glow()),
-        StandPose.ZERO, new StandPose(0, 90, 90), new StandMotion(4.5, 0.09, 40, 180))
+        StandPose.ZERO, new StandPose(0, 90, 90), new StandMotion(4.5, 0.5, 40, 180))
 ), List.of(new DisplayLabel("&b&lLOJA", 3.6))));
 ```
 
 - Invisible armor stands that only exist in packets, like the NPCs: shown within 48 blocks, removed beyond 64. Each stand has an offset from the anchor, a yaw, small or full size, arms, a helmet and an item in the hand, the head and right arm poses (in degrees) and a motion.
 - `StandMotion` spins the stand by `degreesPerTick` and bobs it up and down (`bobHeight` blocks over `bobPeriodTicks`, shifted by `phaseDegrees`). Moving stands are updated every tick.
 - Labels are text holograms at a height above the anchor (the height of the text itself).
-- Clicking any stand runs the click handler on the main thread. Offsets are in world axes: moving the anchor moves the whole display without turning it.
+- Clicking any stand or label, with either button, runs the click handler once on the main thread. A right click on an armor stand only sends `INTERACT_AT`, so that is the action that counts. Offsets are in world axes: moving the anchor moves the whole display without turning it.
 
 ## Build mode
 

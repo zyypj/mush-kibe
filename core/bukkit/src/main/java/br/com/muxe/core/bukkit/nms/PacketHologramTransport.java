@@ -190,6 +190,16 @@ public final class PacketHologramTransport implements HologramTransport {
             }
 
             @Override
+            public boolean owns(int entityId) {
+                for (int id : ids) {
+                    if (id == entityId) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
             public void remove() {
                 if (removed) {
                     return;

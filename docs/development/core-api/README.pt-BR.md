@@ -284,14 +284,14 @@ displays.put(new Display("shop", anchor, List.of(
     new DisplayStand(0.19, -0.03, -0.81, 0f, true, false, Optional.of(ItemBuilder.skull().skullTexture(hash)), Optional.empty(),
         StandPose.ZERO, StandPose.ZERO, StandMotion.NONE),
     new DisplayStand(0, -0.1, 0, 115f, false, true, Optional.empty(), Optional.of(ItemBuilder.of(Material.INK_SACK, 5).glow()),
-        StandPose.ZERO, new StandPose(0, 90, 90), new StandMotion(4.5, 0.09, 40, 180))
+        StandPose.ZERO, new StandPose(0, 90, 90), new StandMotion(4.5, 0.5, 40, 180))
 ), List.of(new DisplayLabel("&b&lLOJA", 3.6))));
 ```
 
 - Suportes de armadura invisíveis que só existem em pacotes, como os NPCs: aparecem a até 48 blocos e somem além de 64. Cada suporte tem um deslocamento em relação à âncora, um yaw, tamanho pequeno ou normal, braços, um capacete e um item na mão, as poses da cabeça e do braço direito (em graus) e um movimento.
 - O `StandMotion` gira o suporte em `degreesPerTick` e o faz subir e descer (`bobHeight` blocos a cada `bobPeriodTicks`, deslocado por `phaseDegrees`). Os suportes que se movem são atualizados a cada tick.
 - Os rótulos são hologramas de texto numa altura acima da âncora (a altura do próprio texto).
-- Clicar em qualquer suporte roda o tratamento de clique na main thread. Os deslocamentos usam os eixos do mundo: mover a âncora move a exibição inteira sem girá-la.
+- Clicar em qualquer suporte ou rótulo, com qualquer botão, roda o tratamento de clique uma vez na main thread. O botão direito num suporte de armadura só envia `INTERACT_AT`, então é essa a ação que conta. Os deslocamentos usam os eixos do mundo: mover a âncora move a exibição inteira sem girá-la.
 
 ## Modo construção
 
