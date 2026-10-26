@@ -284,7 +284,7 @@ displays.put(new Display("shop", anchor, List.of(
     new DisplayStand(0.19, -0.03, -0.81, 0f, true, false, Optional.of(ItemBuilder.skull().skullTexture(hash)), Optional.empty(),
         StandPose.ZERO, StandPose.ZERO, StandMotion.NONE),
     new DisplayStand(0, -0.1, 0, 115f, false, true, Optional.empty(), Optional.of(ItemBuilder.of(Material.INK_SACK, 5).glow()),
-        StandPose.ZERO, new StandPose(0, 90, 90), new StandMotion(4.5, 0.5, 40, 180))
+        StandPose.ZERO, new StandPose(0, 90, 90), new StandMotion(4.5, 0.25, 40, 180))
 ), List.of(new DisplayLabel("&b&lLOJA", 3.6))));
 ```
 

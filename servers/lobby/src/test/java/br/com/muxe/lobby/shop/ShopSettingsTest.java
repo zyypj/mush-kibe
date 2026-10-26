@@ -100,7 +100,7 @@ class ShopSettingsTest {
         assertThat(heads).filteredOn(part -> part.headPose().x() == -45).hasSize(2);
         assertThat(dyes).hasSize(2).allMatch(part -> part.arms() && part.motion().moves());
         assertThat(Math.abs(dyes.get(0).yaw() - dyes.get(1).yaw())).isCloseTo(180f, within(0.01f));
-        assertThat(dyes).allSatisfy(dye -> assertThat(2 * dye.motion().bobHeight()).isCloseTo(1.0, within(1e-9)));
+        assertThat(dyes).allSatisfy(dye -> assertThat(2 * dye.motion().bobHeight()).isCloseTo(0.5, within(1e-9)));
         assertThat(register.seller()).isTrue();
         assertThat(register.sellerSkin()).isPresent();
     }

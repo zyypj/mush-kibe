@@ -730,7 +730,7 @@ shop:
           glow: true
         motion:
           spin: 4.5
-          bob-height: 0.5
+          bob-height: 0.25
           bob-period: 40
           phase: 0
       item-2:
@@ -749,7 +749,7 @@ shop:
           glow: true
         motion:
           spin: 4.5
-          bob-height: 0.5
+          bob-height: 0.25
           bob-period: 40
           phase: 180
 
