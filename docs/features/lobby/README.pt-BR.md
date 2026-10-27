@@ -8,9 +8,8 @@ O hub principal, onde os jogadores chegam depois de fazer login e escolhem um jo
 
 - Como jogador, quero chegar a um spawn limpo e seguro, ver a rede num relance e escolher o que jogar.
 - Como jogador, quero trocar de lobby principal e esconder os outros jogadores quando o lobby estiver cheio.
-- Como membro da equipe, quero voar no lobby e colocar NPCs que levam os jogadores a cada jogo.
+- Como membro da equipe, quero voar no lobby.
 - Como construtor, quero entrar num modo de construção para editar o lobby, enquanto jogadores comuns não conseguem quebrá-lo.
-- Como jogador, quero ver a loja e começar a compra de um rank, créditos ou medalhas.
 
 ## Como funciona
 
@@ -53,7 +52,7 @@ muxe.com.br
 | 9 | Estrela do Nether | `&aSelecionar lobby` | Abre o seletor de lobby |
 
 - Os itens são usados com o botão direito. Eles não podem ser movidos, largados nem pegos.
-- Usar itens ou NPCs três vezes dentro de `spam.window` (1 segundo) bloqueia o uso por `spam.cooldown` (3 segundos). Enquanto isso, o jogador vê `&cAguarde 2,9s para usar novamente.`
+- Usar os itens da hotbar três vezes dentro de `spam.window` (1 segundo) bloqueia o uso por `spam.cooldown` (3 segundos). Enquanto isso, o jogador vê `&cAguarde 2,9s para usar novamente.`
 
 ### Seletor de lobby
 
@@ -74,25 +73,9 @@ O corante alterna entre três opções e a escolha fica salva, então ela acompa
 
 Ainda não existe sistema de amigos, então "Apenas amigos" esconde todo mundo. Os amigos virão do `FriendDirectory`.
 
-### NPCs dos jogos
+### NPCs, hologramas e loja
 
-- A equipe coloca NPCs com `/npc criar <id> <grupo> <skin> <nome>` onde estiver. A skin é a de um nome original, buscada na Mojang uma vez e guardada.
-- Acima de cada NPC, as linhas de `npcs.lines` mostram o nome do jogo e quantos jogadores estão no grupo dele.
-- Clicar (esquerdo ou direito) manda o jogador para o servidor com menos jogadores do grupo, ou avisa que não há sala disponível.
-- Os NPCs existem só em pacotes, aparecem para jogadores a até 48 blocos e não ficam no tab. Veja a [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.pt-BR.md).
-
-### Loja
-
-- O `/loja` (`/shop`) abre a loja na aba **Ranks**. Clicar na caixa registradora ou no vendedor ao lado abre a página do produto em destaque (`shop.featured-product`, **Enderlore**).
-- A caixa registradora é feita de 8 cabeças em suportes de armadura pequenos e invisíveis, com um holograma de 5 linhas em cima (`LOJA`, `RANK ENDERLORE`, `13% DE DESCONTO!`, o preço e `Clique para comprar!`), um vendedor NPC e dois corantes roxos que giram em volta dele. Ela fica em `shop.register.location`, no mesmo lugar do mapa de referência; o `/loja caixa` a move para onde você está.
-- Todo menu da loja tem 6 linhas, as abas **Ranks**, **Ultra+**, **Créditos**, **Medalhas** e **Meus pedidos** na primeira linha (a aba aberta brilha), painéis cinza na segunda linha com um painel verde-limão embaixo da aba aberta, e os produtos na quarta linha (slots 28, 30, 32 e 34). A prévia das medalhas mostra o nome do próprio jogador.
-- Um clique esquerdo num produto com `&eBotão esquerdo: &fComprar` começa a compra:
-  1. **Compra: Método de pagamento**: Pix ou cartão de crédito, um resumo do pedido e **Voltar**.
-  2. **Compra: Código de apoiador**: usar um código de apoiador ou não. Usar fecha o menu e pede o código no chat (`cancelar` cancela, 60 segundos para responder). Os códigos ainda não são validados.
-  3. **Compra: Carregando...**: um painel verde-limão gira em volta do meio do menu por 3 segundos.
-  4. O menu fecha e a mensagem de pagamento é enviada, centralizada como a referência, com `&cClique aqui para fazer o pagamento via o site.` abrindo o `shop.checkout.payment-url`.
-- A página do produto em destaque mostra o produto e os métodos de pagamento direto, e depois segue os mesmos passos.
-- Nada é cobrado nem entregue ainda: nenhum pedido é criado, então **Meus pedidos** sempre mostra `&cNenhum pedido encontrado!`. Os papéis de **Vantagens** e os produtos **Ultra+** (que exigem Ultra) ainda não fazem nada.
+NPCs, hologramas e a loja com as caixas registradoras vêm do Muxe-Core e funcionam em todos os servidores, não só aqui. O que a equipe coloca num lobby aparece em todos os lobbys do grupo `lobby`. Veja [NPCs e hologramas](../npcs-and-holograms/README.pt-BR.md) e [Loja](../shop/README.pt-BR.md).
 
 ### Proteção
 
@@ -115,14 +98,6 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 | `/jogar <modo>` (`/play`) | Envia o jogador para um grupo de jogo. | Nenhuma |
 | `/setspawn` | Salva a posição atual como spawn do lobby. | `muxe.lobby.setspawn` |
 | `/build <on\|off>` | Liga ou desliga o modo construção em qualquer servidor; sem argumento, alterna. Vem do Muxe-Core. | `muxe.build` |
-| `/npc criar <id> <grupo> <skin> <nome>` | Cria um NPC onde você está. | `muxe.lobby.npc` |
-| `/npc mover <id>` | Move um NPC para onde você está. | `muxe.lobby.npc` |
-| `/npc skin <id> <skin>` | Troca a skin pela de um nome original. | `muxe.lobby.npc` |
-| `/npc nome <id> <nome>` | Troca o nome mostrado acima do NPC. | `muxe.lobby.npc` |
-| `/npc remover <id>` | Remove um NPC. | `muxe.lobby.npc` |
-| `/npc listar` | Lista os NPCs. | `muxe.lobby.npc` |
-| `/loja` (`/shop`) | Abre a loja. | Nenhuma |
-| `/loja caixa` | Move a caixa registradora da loja para onde você está. | `muxe.lobby.shop` |
 
 ## Permissões
 
@@ -131,8 +106,6 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 | `muxe.lobby.fly` | Chegar acima do spawn, voando. | op |
 | `muxe.build` | Usar o `/build` (Muxe-Core) para quebrar, colocar, largar e pegar itens no Criativo. | op |
 | `muxe.lobby.setspawn` | Usar `/setspawn`. | op |
-| `muxe.lobby.npc` | Usar `/npc`. | op |
-| `muxe.lobby.shop` | Usar `/loja caixa`. | op |
 
 ## Configuração
 
@@ -143,7 +116,7 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 | `play.games` | `skywars`, `bedwars` | Grupos permitidos no `/jogar`. |
 | `protection.void-level` | `0` | Altura abaixo da qual o jogador volta ao spawn. |
 | `arrival.fly-height` | `5` | Blocos acima do spawn para quem tem `muxe.lobby.fly`. |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam dos itens da hotbar e dos NPCs. |
+| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam dos itens da hotbar. Os NPCs e as caixas registradoras usam o do Muxe-Core. |
 | `bossbar.frames`, `bossbar.interval` | `&e&lMUXE`, `&6&lMUXE`, `500ms` | Textos da boss bar e quanto tempo cada um fica. |
 | `scoreboard.title`, `scoreboard.lines` | Veja acima | Texto da scoreboard. Placeholders: `{tag}`, `{credits}`, `{lobby}`, `{players}`. |
 | `scoreboard.update-interval` | `1s` | De quanto em quanto tempo a scoreboard é atualizada. |
@@ -151,17 +124,6 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 | `hotbar.<item>.slot`, `hotbar.<item>.item` | Veja acima | Slot (1 a 9) e item de cada item da hotbar. `hotbar.visibility` tem um item por opção (`all`, `friends`, `none`). |
 | `lobby-selector.group` | `lobby` | Grupo listado no seletor. |
 | `lobby-selector.title`, `current`, `other`, `previous-page`, `next-page` | Veja acima | Título e itens do seletor. Placeholders: `{page}`, `{pages}`, `{number}`, `{online}`, `{max}`. |
-| `npcs.lines` | `&b&l{name}`, `&e{players} jogando` | Linhas acima de cada NPC. |
-| `shop.title`, `shop.default-category`, `shop.featured-product` | `Loja: {name}`, `ranks`, `enderlore` | Título dos menus, a aba que o `/loja` abre e o produto que a caixa registradora abre. |
-| `shop.panes.other`, `shop.panes.current` | Painéis cinza e verde-limão | Segunda linha dos menus da loja. |
-| `shop.categories.<id>` | Ranks, Ultra+, Créditos, Medalhas, Meus pedidos | `name`, `tab-slot`, `tab` (item), `products` e `extras` (itens que não fazem nada, como os papéis de **Vantagens**). |
-| `shop.categories.<id>.products.<id>` | Veja a config | `slot`, `price` (mostrado na compra), `purchasable` (padrão `true`), `item`, e `page` (`name`, `item`) para um produto com página própria. `{player}` na lore vira o nome do jogador. |
-| `shop.checkout.*` | Títulos e itens de referência | `method-title`, `supporter-title`, `loading-title`, `pix`, `card`, `summary`, `back`, `use-code`, `skip-code` (placeholders `{product}`, `{price}`, `{menu}`), `code-timeout` (`60s`), `payment-url`, `chat-center` (`114`). |
-| `shop.checkout.loading.*` | `150ms`, `3s`, painéis verde-limão e cinza | De quanto em quanto tempo o painel verde anda, quanto tempo o carregamento dura e os dois painéis. |
-| `shop.register.location` | `lobby` 7.5, 33, -9.5, yaw 180 | Onde ficam a caixa registradora e o vendedor. Gravado pelo `/loja caixa`. |
-| `shop.register.labels` | As 5 linhas do holograma | `text` e `height` acima da posição. |
-| `shop.register.seller` | Ligado, com uma skin fixa | O vendedor NPC (`enabled`, `skin.value`, `skin.signature`). |
-| `shop.register.parts` | 8 cabeças e 2 corantes | Suportes de exibição: `x`, `y`, `z` (deslocamento), `yaw`, `small`, `arms`, `helmet`, `hand`, `head-pose`, `right-arm-pose`, `motion` (`spin` em graus por tick, `bob-height`, `bob-period` em ticks, `phase`). |
 | `spawn.*` | não definido | Escrito pelo `/setspawn`. |
 | `messages.*` | Textos em português | Mensagens deste plugin; as mensagens compartilhadas vêm do Muxe-Core. |
 
@@ -175,13 +137,13 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 | `join-greeting.fade-in`, `stay`, `fade-out` | `10`, `50`, `20` | Tempos do título em ticks. |
 | `messages.join-title`, `messages.join-subtitle` | `&b&lMUXE`, `&eBoas-vindas!` | Título e subtítulo da saudação. |
 
-Os itens usam o [formato do `ItemBuilder`](../../development/core-api/README.pt-BR.md#itens). Os NPCs ficam salvos em `plugins/Muxe-Lobby/npcs.yml` pelo `/npc`.
+Os itens usam o [formato do `ItemBuilder`](../../development/core-api/README.pt-BR.md#itens). As chaves dos NPCs, dos hologramas e da loja ficam no `plugins/Muxe-Core/config.yml`, descritas em [NPCs e hologramas](../npcs-and-holograms/README.pt-BR.md#configuração) e [Loja](../shop/README.pt-BR.md#configuração).
 
 ## Pacotes
 
 | Id | Destino | Política | Propósito |
 |---|---|---|---|
-| `player.connect` | proxy | padrão | Enviado pelo `/jogar`, pelos NPCs e pelo seletor de lobby. |
+| `player.connect` | proxy | padrão | Enviado pelo `/jogar` e pelo seletor de lobby. |
 
 ## Dados
 
@@ -198,7 +160,8 @@ As métricas de servidor Spigot do Muxe-Core, mais `muxe_db_transaction_seconds{
 ## Integrações
 
 - O [Roteamento da rede](../network-routing/README.pt-BR.md) traz os jogadores para cá depois do login e os move para outros lobbys e jogos.
-- A [API do core](../../development/core-api/README.pt-BR.md) fornece a boss bar, a scoreboard, os menus, os itens, os hologramas e os NPCs.
+- A [API do core](../../development/core-api/README.pt-BR.md) fornece a boss bar, a scoreboard, os menus e os itens.
+- [NPCs e hologramas](../npcs-and-holograms/README.pt-BR.md) e a [Loja](../shop/README.pt-BR.md) vêm do Muxe-Core e são colocados no lobby por comando.
 
 ## Critérios de aceitação
 
@@ -209,23 +172,16 @@ As métricas de servidor Spigot do Muxe-Core, mais `muxe_db_transaction_seconds{
 - [x] A saudação de entrada só fica ativa em servidores `LOBBY`, com o título e o subtítulo de referência.
 - [x] A boss bar alterna `&e&lMUXE` e `&6&lMUXE` a cada 10 ticks, e a scoreboard preenche as linhas de referência.
 - [x] A escolha de visibilidade é salva no PostgreSQL e lida de volta.
-- [x] Os NPCs sobrevivem a ser salvos e lidos do `npcs.yml`; entradas quebradas são puladas.
-- [x] Os menus da loja seguem o layout de referência: abas, painéis, produtos, a página em destaque e os três menus de compra, com o **Voltar** levando ao menu de onde a compra veio.
-- [x] O painel do carregamento anda em volta do slot do meio, e a mensagem de pagamento fica centralizada como a referência.
-- [ ] Boss bar, scoreboard, hotbar, seletor, visibilidade e cliques nos NPCs funcionam no jogo (conferido no jogo).
-- [ ] A caixa registradora, os corantes girando e a compra inteira funcionam no jogo (conferido no jogo).
+- [ ] Boss bar, scoreboard, hotbar, seletor e visibilidade funcionam no jogo (conferido no jogo).
 
 ## Falhas e recuperação
 
-- Proxy ou Redis indisponíveis: o `/jogar`, o seletor e os NPCs mostram uma mensagem de falha e o jogador continua no lobby.
+- Proxy ou Redis indisponíveis: o `/jogar` e o seletor mostram uma mensagem de falha e o jogador continua no lobby.
 - PostgreSQL indisponível: a visibilidade começa como "mostrar todos" e as mudanças não são salvas; o lobby continua funcionando.
-- Internos do servidor ausentes (outra versão de servidor): boss bar, NPCs ou hologramas são pulados com um aviso cada.
-- Mundo do spawn ou do NPC ausente: usa-se o spawn do mundo principal e o NPC não aparece.
+- Internos do servidor ausentes (outra versão de servidor): a boss bar é pulada com um aviso.
+- Mundo do spawn ausente: usa-se o spawn do mundo principal.
 
 ## Limitações conhecidas
 
 - Os itens de seleção de jogo, perfil e cosméticos ainda não fazem nada.
 - Tags, créditos e amigos ainda não existem; a scoreboard mostra valores padrão e "Apenas amigos" esconde todo mundo.
-- Os NPCs olham sempre para a mesma direção.
-- A loja ainda não vende nada: não há pedidos, pagamentos, validação de código de apoiador nem ranks, e os papéis de **Vantagens** não fazem nada.
-- A caixa registradora guarda as peças nos eixos do mundo, então movê-la com o `/loja caixa` não a gira.

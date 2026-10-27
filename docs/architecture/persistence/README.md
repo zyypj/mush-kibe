@@ -53,7 +53,7 @@ return transactions.inTransaction("account.record_login", () -> {
 
 | Schema | Owner | Tables |
 |---|---|---|
-| `core` | `core:common` | `accounts` (V1), `accounts.premium` (V2), nullable `accounts.username` for released names (V3) |
+| `core` | `core:common` | `accounts` (V1), `accounts.premium` (V2), nullable `accounts.username` for released names (V3), `npc_placements`, `hologram_placements`, `register_placements` (placed per server group) and `shop_promotion` (one row for the network) (V4) |
 | `auth` | `servers:auth` | `credentials` |
 | `lobby` | `servers:lobby` | `player_settings` (player visibility in the lobby) |
 

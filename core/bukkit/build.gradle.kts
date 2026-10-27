@@ -8,4 +8,5 @@ dependencies {
     compileOnly(libs.netty)
 
     testImplementation(libs.netty)
+    testImplementation(testFixtures(projects.core.common))
 }

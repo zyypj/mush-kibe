@@ -291,7 +291,19 @@ displays.put(new Display("shop", anchor, List.of(
 - Invisible armor stands that only exist in packets, like the NPCs: shown within 48 blocks, removed beyond 64. Each stand has an offset from the anchor, a yaw, small or full size, arms, a helmet and an item in the hand, the head and right arm poses (in degrees) and a motion.
 - `StandMotion` spins the stand by `degreesPerTick` and bobs it up and down (`bobHeight` blocks over `bobPeriodTicks`, shifted by `phaseDegrees`). Moving stands are updated every tick.
 - Labels are text holograms at a height above the anchor (the height of the text itself).
+- `LabelStack` turns a list of lines into labels. `LabelStack.downward(lines, top, spacing)` keeps the first line at `top` and puts each next one `spacing` lower, as placed holograms do. `LabelStack.upward(lines, bottom, gaps, spacing)` keeps the last line at `bottom` and goes up using `gaps` from the bottom, then `spacing`, as the shop cash registers do. Blank lines keep their space.
 - Clicking any stand or label, with either button, runs the click handler once on the main thread. A right click on an armor stand only sends `INTERACT_AT`, so that is the action that counts. Offsets are in world axes: moving the anchor moves the whole display without turning it.
+
+## Placements
+
+Packages `br.com.muxe.core.common.placement` and `br.com.muxe.core.bukkit.placement`.
+
+Muxe-Core itself places the NPCs, holograms and shop cash registers that staff create with `/npc`, `/holograma` and `/loja caixa`, on every server, as described in [NPCs and holograms](../../features/npcs-and-holograms/README.md). Plugins do not need their own NPC or hologram storage: staff place them by command.
+
+- `Placement` is sealed: `NpcPlacement`, `HologramPlacement` and `RegisterPlacement`, each with a server group, an id and a `Position`. `Placements` holds everything of a group.
+- `PlacementSync` loads the placements of this server's group on startup, saves and removes them through `SavePlacementCommand` and `RemovePlacementCommand`, publishes `placement.changed` to the group, and reloads with `FindPlacementsQuery` when that packet arrives. Listeners registered with `onChange` run on the main thread.
+- `Reconciler<T>` compares the wanted list with what is shown, by id, and returns only what was added or changed and what was removed, so a reload never respawns what did not change.
+- `PlacementImport` reads `plugins/Muxe-Core/import.yml` once on startup.
 
 ## Build mode
 

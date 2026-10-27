@@ -291,7 +291,19 @@ displays.put(new Display("shop", anchor, List.of(
 - Suportes de armadura invisíveis que só existem em pacotes, como os NPCs: aparecem a até 48 blocos e somem além de 64. Cada suporte tem um deslocamento em relação à âncora, um yaw, tamanho pequeno ou normal, braços, um capacete e um item na mão, as poses da cabeça e do braço direito (em graus) e um movimento.
 - O `StandMotion` gira o suporte em `degreesPerTick` e o faz subir e descer (`bobHeight` blocos a cada `bobPeriodTicks`, deslocado por `phaseDegrees`). Os suportes que se movem são atualizados a cada tick.
 - Os rótulos são hologramas de texto numa altura acima da âncora (a altura do próprio texto).
+- O `LabelStack` transforma uma lista de linhas em rótulos. O `LabelStack.downward(lines, top, spacing)` mantém a primeira linha em `top` e põe cada linha seguinte `spacing` mais baixo, como fazem os hologramas colocados. O `LabelStack.upward(lines, bottom, gaps, spacing)` mantém a última linha em `bottom` e sobe usando os `gaps` de baixo para cima, e depois o `spacing`, como fazem as caixas registradoras da loja. Linhas em branco mantêm o espaço.
 - Clicar em qualquer suporte ou rótulo, com qualquer botão, roda o tratamento de clique uma vez na main thread. O botão direito num suporte de armadura só envia `INTERACT_AT`, então é essa a ação que conta. Os deslocamentos usam os eixos do mundo: mover a âncora move a exibição inteira sem girá-la.
+
+## Posicionamentos
+
+Pacotes `br.com.muxe.core.common.placement` e `br.com.muxe.core.bukkit.placement`.
+
+O próprio Muxe-Core coloca os NPCs, os hologramas e as caixas registradoras da loja que a equipe cria com `/npc`, `/holograma` e `/loja caixa`, em todos os servidores, como descrito em [NPCs e hologramas](../../features/npcs-and-holograms/README.pt-BR.md). Os plugins não precisam de armazenamento próprio de NPCs ou hologramas: a equipe os coloca por comando.
+
+- O `Placement` é selado: `NpcPlacement`, `HologramPlacement` e `RegisterPlacement`, cada um com um grupo de servidores, um id e uma `Position`. O `Placements` guarda tudo de um grupo.
+- O `PlacementSync` carrega o que foi colocado no grupo deste servidor ao ligar, salva e remove pelo `SavePlacementCommand` e pelo `RemovePlacementCommand`, publica `placement.changed` para o grupo, e recarrega com a `FindPlacementsQuery` quando esse pacote chega. Os ouvintes registrados com `onChange` rodam na main thread.
+- O `Reconciler<T>` compara a lista desejada com o que está aparecendo, por id, e devolve só o que foi adicionado ou mudou e o que foi removido, então recarregar nunca recria o que não mudou.
+- O `PlacementImport` lê o `plugins/Muxe-Core/import.yml` uma vez ao ligar.
 
 ## Modo construção
 

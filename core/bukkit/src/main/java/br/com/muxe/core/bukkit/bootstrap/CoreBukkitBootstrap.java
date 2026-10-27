@@ -34,6 +34,7 @@ public final class CoreBukkitBootstrap {
 
     private final JavaPlugin plugin;
     private CoreRuntime runtime;
+    private PlacedFeatures features;
 
     public CoreBukkitBootstrap(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -79,6 +80,7 @@ public final class CoreBukkitBootstrap {
         bindCommand("muxe", new MuxeAdminCommand(core));
         bindCommand("lobby", new LobbyCommand(core, lobbyGroup));
         bindCommand("build", new BuildCommand(buildMode, messages));
+        features = PlacedFeatures.start(plugin, core, config, this::bindCommand);
 
         plugin.getLogger().info("Muxe-Core ready as " + settings.server().id() + " (" + settings.server().group() + ")");
     }
@@ -94,6 +96,10 @@ public final class CoreBukkitBootstrap {
     }
 
     public void disable() {
+        if (features != null) {
+            features.stop();
+            features = null;
+        }
         plugin.getServer().getServicesManager().unregisterAll(plugin);
         if (runtime != null) {
             runtime.close();

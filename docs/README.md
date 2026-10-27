@@ -33,6 +33,8 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 - [Network routing](features/network-routing/README.md): how the proxy picks servers, `/lobby` and the access gate.
 - [Network administration](features/network-admin/README.md): `/muxe` commands for staff.
 - [Lobby](features/lobby/README.md): spawn, protection and `/jogar`.
+- [NPCs and holograms](features/npcs-and-holograms/README.md): NPCs and text holograms placed by command and shared by the server group.
+- [Shop](features/shop/README.md): `/loja`, the checkout menus, cash registers and the network promotion.
 - [SkyWars](features/skywars/README.md): plugin skeleton and modes.
 - [BedWars](features/bedwars/README.md): plugin skeleton and modes.
 

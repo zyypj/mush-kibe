@@ -15,10 +15,33 @@ commands:
     aliases:
       - hub
       - l
+  npc:
+    description: Creates and manages the NPCs of this server group.
+    usage: /npc <criar|acao|mover|skin|nome|remover|listar>
+  holograma:
+    description: Creates and manages the holograms of this server group.
+    usage: /holograma <criar|adicionar|linha|removerlinha|ver|mover|remover|listar>
+    aliases:
+      - hologram
+      - holo
+  loja:
+    description: Opens the shop, or manages its cash registers and promotion.
+    usage: /loja [caixa|vendedor|promocao]
+    aliases:
+      - shop
 permissions:
   muxe.admin:
     description: Allows /muxe.
     default: op
   muxe.build:
     description: Allows /build, which switches to creative to build and break on any server.
+    default: op
+  muxe.npc:
+    description: Allows /npc.
+    default: op
+  muxe.hologram:
+    description: Allows /holograma.
+    default: op
+  muxe.shop.manage:
+    description: Allows /loja caixa, /loja vendedor and /loja promocao.
     default: op
