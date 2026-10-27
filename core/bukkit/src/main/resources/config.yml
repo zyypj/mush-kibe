@@ -73,6 +73,317 @@ holograms:
   top: 2.0
   line-spacing: 0.28
 
+hotbar:
+  server-kinds:
+    - LOBBY
+  game-selector:
+    slot: 1
+    item:
+      material: COMPASS
+      name: "&aSelecionar jogo"
+  profile:
+    slot: 2
+    item:
+      material: SKULL_ITEM
+      data: 3
+      name: "&aMeu perfil"
+  cosmetics:
+    slot: 5
+    item:
+      material: CHEST
+      name: "&aCosméticos"
+  visibility:
+    slot: 8
+    all:
+      material: INK_SACK
+      data: 10
+      name: "&fJogadores: &aAtivados"
+    friends:
+      material: INK_SACK
+      data: 12
+      name: "&fJogadores: &bApenas amigos"
+    none:
+      material: INK_SACK
+      data: 8
+      name: "&fJogadores: &7Desativados"
+  lobby-selector:
+    slot: 9
+    item:
+      material: NETHER_STAR
+      name: "&aSelecionar lobby"
+      glow: true
+
+menus:
+  game-selector:
+    title: "Selecionar jogo"
+    rows: 4
+    buttons:
+      bedwars:
+        slot: 10
+        game: bedwars
+        item:
+          material: BED
+          name: "&b&lBED WARS"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      hg:
+        slot: 11
+        game: hg
+        item:
+          material: MUSHROOM_SOUP
+          name: "&b&lHG"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      duels:
+        slot: 12
+        game: duels
+        item:
+          material: DIAMOND_SWORD
+          name: "&b&lDUELS"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      pvp:
+        slot: 13
+        game: pvp
+        item:
+          material: IRON_CHESTPLATE
+          name: "&b&lPVP"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      skywars:
+        slot: 14
+        game: skywars
+        item:
+          material: EYE_OF_ENDER
+          name: "&b&lSKY WARS"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      thebridge:
+        slot: 15
+        game: thebridge
+        item:
+          material: STAINED_CLAY
+          name: "&b&lTHE BRIDGE"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      ctf:
+        slot: 16
+        game: ctf
+        item:
+          material: WOOL
+          data: 14
+          name: "&b&lCTF"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      party:
+        slot: 19
+        game: party
+        item:
+          material: CAKE
+          name: "&b&lPARTY"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      murder:
+        slot: 20
+        game: murder
+        item:
+          material: REDSTONE
+          name: "&b&lMURDER"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      quickbuilders:
+        slot: 21
+        game: quickbuilders
+        item:
+          material: DIAMOND_PICKAXE
+          name: "&b&lQUICK BUILDERS"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      buildbattle:
+        slot: 22
+        game: buildbattle
+        item:
+          material: WORKBENCH
+          name: "&b&lBUILD BATTLE"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      hideandseek:
+        slot: 23
+        game: hideandseek
+        item:
+          material: MELON_BLOCK
+          name: "&b&lHIDE AND SEEK"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      treinoponte:
+        slot: 24
+        game: treinoponte
+        item:
+          material: EXP_BOTTLE
+          name: "&b&lTREINO: PONTE"
+          glow: true
+          lore:
+            - " "
+            - "&aClique para entrar!"
+      nascomandou:
+        slot: 25
+        game: nascomandou
+        item:
+          material: STICK
+          name: "&b&lNASCÓ MANDOU"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      custom-room:
+        slot: 35
+        shop: ultra-plus
+        item:
+          material: BREWING_STAND_ITEM
+          name: "&aSala customizada (/salacustom)"
+          lore:
+            - "&7Crie a sua própria sala"
+            - "&7para jogar com amigos."
+            - " "
+            - "&7Exclusivo para &d&lULTRA&6+"
+            - " "
+            - "&eClique para comprar."
+  profile:
+    title: "Meu perfil"
+    rows: 6
+    default-credits: 0
+    first-login:
+      format: "dd/MM/yyyy HH:mm"
+      time-zone: America/Sao_Paulo
+      unknown: "-"
+    head:
+      slot: 13
+      item:
+        material: SKULL_ITEM
+        data: 3
+        name: "&7{player}"
+        lore:
+          - " "
+          - "&7Primeiro login: {first-login}"
+          - "&7Créditos: &d{credits}"
+    buttons:
+      friends:
+        slot: 29
+        item:
+          material: COOKIE
+          name: "&aAmigos"
+          lore:
+            - "&7Veja e gerencie suas amizades."
+            - " "
+            - "&eClique para ver mais."
+      statistics:
+        slot: 30
+        item:
+          material: PAPER
+          name: "&aVer estatísticas"
+          lore:
+            - "&7Veja suas estatísticas"
+            - "&7de todos os jogos."
+            - " "
+            - "&eClique para ver mais."
+      preferences:
+        slot: 31
+        item:
+          material: DIODE
+          name: "&aPreferências"
+          lore:
+            - "&7Alterar suas preferências."
+            - " "
+            - "&eClique para ver mais."
+      medals:
+        slot: 32
+        item:
+          material: DOUBLE_PLANT
+          name: "&aMedalhas"
+          lore:
+            - "&7Veja e selecione medalhas."
+            - " "
+            - "&eClique para ver mais."
+      skin:
+        slot: 33
+        item:
+          material: ITEM_FRAME
+          name: "&aSua skin"
+          lore:
+            - "&7Altere sua skin atual."
+            - " "
+            - "&eClique para ver mais."
+      nick:
+        slot: 39
+        shop: ultra-plus
+        item:
+          material: NAME_TAG
+          name: "&aNick (/nick)"
+          lore:
+            - "&7Escolha um disfarce"
+            - "&7para usar no servidor."
+            - " "
+            - "&7Exclusivo para &d&lULTRA&6+"
+            - " "
+            - "&eClique para comprar."
+      ultra-plus:
+        slot: 41
+        item:
+          material: INK_SACK
+          data: 13
+          name: "&aMenu do &dUltra&6+"
+          lore:
+            - "&7Confira as customizações"
+            - "&7do Ultra+."
+            - " "
+            - "&7Exclusivo para &d&lULTRA&6+"
+            - " "
+            - "&eClique para ver mais."
+  lobby-selector:
+    title: "Selecionar lobby ({page}/{pages})"
+    current:
+      material: STAINED_GLASS_PANE
+      data: 5
+      name: "&aLobby Principal #{number}"
+      lore:
+        - "&fJogadores &a{online}/{max}"
+    other:
+      material: STAINED_GLASS_PANE
+      data: 7
+      name: "&aLobby Principal #{number}"
+      lore:
+        - "&fJogadores &a{online}/{max}"
+    previous-page:
+      material: ARROW
+      name: "&aPágina anterior"
+    next-page:
+      material: ARROW
+      name: "&aPróxima página"
+
 shop:
   server-kinds:
     - LOBBY
@@ -735,8 +1046,14 @@ messages:
   connect-failed: "&cNão foi possível enviar você agora. Tente novamente em instantes."
   placement-failed: "&cNão foi possível salvar agora. Tente novamente em instantes."
   spam-cooldown: "&cAguarde {seconds}s para usar novamente."
-  npc-connecting: "&7Procurando uma sala de &b{name}&7..."
-  npc-unavailable: "&cNenhuma sala de &f{name} &cdisponível no momento."
+  game-connecting: "&7Procurando uma sala de &b{name}&7..."
+  game-unavailable: "&cNenhuma sala de &f{name} &cdisponível no momento."
+  visibility-all: "&aVocê agora está vendo todos os jogadores."
+  visibility-friends: "&bVocê agora está vendo apenas seus amigos."
+  visibility-none: "&cVocê escondeu todos os jogadores."
+  lobby-current: "&cVocê já está conectado neste lobby."
+  lobby-full: "&cEste lobby está cheio."
+  lobby-failed: "&cNão foi possível trocar de lobby agora. Tente novamente."
   npc-usage:
     - "&eUso do /npc:"
     - "&f/npc criar <id> <ação> <skin> <nome> &7- cria um NPC onde você está"

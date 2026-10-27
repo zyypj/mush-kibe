@@ -32,7 +32,8 @@ Tudo sobre a Muxe está documentado aqui, em inglês e português. As regras de 
 - [Autenticação](features/authentication/README.pt-BR.md): login automático de premium, desafio anti-bot, `/registrar`, `/logar` e sessões de 2 horas.
 - [Roteamento da rede](features/network-routing/README.pt-BR.md): como o proxy escolhe servidores, o `/lobby` e a barreira de acesso.
 - [Administração da rede](features/network-admin/README.pt-BR.md): comandos `/muxe` para a equipe.
-- [Lobby](features/lobby/README.pt-BR.md): spawn, proteção e `/jogar`.
+- [Lobby](features/lobby/README.pt-BR.md): spawn, voo, proteção, scoreboard, boss bar e `/jogar`.
+- [Hotbar](features/hotbar/README.pt-BR.md): a hotbar dos lobbys, do Muxe-Core, com o seletor de jogo, o perfil, o seletor de lobby e a visibilidade dos jogadores.
 - [NPCs e hologramas](features/npcs-and-holograms/README.pt-BR.md): NPCs e hologramas de texto colocados por comando e compartilhados pelo grupo de servidores.
 - [Loja](features/shop/README.pt-BR.md): `/loja`, os menus de compra, as caixas registradoras e a promoção da rede.
 - [SkyWars](features/skywars/README.pt-BR.md): esqueleto do plugin e modos.

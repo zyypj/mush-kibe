@@ -9,11 +9,6 @@ protection:
 arrival:
   fly-height: 5
 
-spam:
-  max-clicks: 3
-  window: 1s
-  cooldown: 3s
-
 bossbar:
   interval: 500ms
   frames:
@@ -35,75 +30,9 @@ scoreboard:
     - ""
     - "&amuxe.com.br"
 
-hotbar:
-  game-selector:
-    slot: 1
-    item:
-      material: COMPASS
-      name: "&aSelecionar jogo"
-  profile:
-    slot: 2
-    item:
-      material: SKULL_ITEM
-      data: 3
-      name: "&aMeu perfil"
-  cosmetics:
-    slot: 5
-    item:
-      material: CHEST
-      name: "&aCosméticos"
-  visibility:
-    slot: 8
-    all:
-      material: INK_SACK
-      data: 10
-      name: "&fJogadores: &aAtivados"
-    friends:
-      material: INK_SACK
-      data: 6
-      name: "&fJogadores: &bApenas amigos"
-    none:
-      material: INK_SACK
-      data: 8
-      name: "&fJogadores: &7Desativados"
-  lobby-selector:
-    slot: 9
-    item:
-      material: NETHER_STAR
-      name: "&aSelecionar lobby"
-
-lobby-selector:
-  group: lobby
-  title: "Selecionar lobby ({page}/{pages})"
-  current:
-    material: STAINED_GLASS_PANE
-    data: 5
-    name: "&aLobby Principal #{number}"
-    lore:
-      - "&fJogadores &a{online}/{max}"
-  other:
-    material: STAINED_GLASS_PANE
-    data: 7
-    name: "&aLobby Principal #{number}"
-    lore:
-      - "&fJogadores &a{online}/{max}"
-  previous-page:
-    material: ARROW
-    name: "&aPágina anterior"
-  next-page:
-    material: ARROW
-    name: "&aPróxima página"
-
 messages:
   play-usage: "&eUso: /jogar <modo>. Modos: &f{games}"
   play-unknown: "&cModo desconhecido. Modos: &f{games}"
   play-connecting: "&7Procurando uma sala de &b{game}&7..."
   play-failed: "&cNão foi possível entrar agora. Tente novamente."
   spawn-set: "&aSpawn do lobby definido."
-  spam-cooldown: "&cAguarde {seconds}s para usar novamente."
-  visibility-all: "&aVocê agora está vendo todos os jogadores."
-  visibility-friends: "&bVocê agora está vendo apenas seus amigos."
-  visibility-none: "&cVocê escondeu todos os jogadores."
-  lobby-current: "&cVocê já está conectado neste lobby."
-  lobby-full: "&cEste lobby está cheio."
-  lobby-failed: "&cNão foi possível trocar de lobby agora. Tente novamente."

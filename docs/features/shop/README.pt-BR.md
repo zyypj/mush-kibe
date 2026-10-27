@@ -92,7 +92,7 @@ Os ids usam letras minúsculas, números, `-` e `_`, com até 32 caracteres. Os 
 | `shop.register.labels.spacing` | `0.28125` | Espaço das linhas além dos `gaps`. |
 | `shop.register.seller-skin` | Uma skin fixa | `value` e `signature` do vendedor NPC. |
 | `shop.register.parts` | 8 cabeças e 2 corantes | Suportes de exibição: `x`, `y`, `z` (deslocamento), `yaw`, `small`, `arms`, `helmet`, `hand`, `head-pose`, `right-arm-pose`, `motion` (`spin` em graus por tick, `bob-height`, `bob-period` em ticks, `phase`). |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam compartilhado pelos cliques nas caixas, nos vendedores e nos NPCs. |
+| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam compartilhado pelos cliques nas caixas, nos vendedores, nos NPCs e na hotbar. |
 | `messages.shop-*`, `messages.placement-failed`, `messages.spam-cooldown` | Textos em português | Mensagens da loja, das caixas e da promoção. |
 
 `shop.featured-product`, `shop.register.location`, `shop.register.labels.line-N` e `shop.register.seller.enabled` não existem mais: as caixas são colocadas por comando e a promoção substitui o produto em destaque. Os itens usam o [formato do `ItemBuilder`](../../development/core-api/README.pt-BR.md#itens).

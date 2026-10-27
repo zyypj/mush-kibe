@@ -126,8 +126,9 @@ Sem argumentos, ou com um argumento errado, cada comando mostra o seu uso.
 | `npcs.lines.none` | `&b&l{name}` | Linhas acima dos NPCs sem ação. |
 | `holograms.top` | `2.0` | Altura da primeira linha do holograma acima de onde ele foi criado. |
 | `holograms.line-spacing` | `0.28` | Espaço entre as linhas do holograma. |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam dos cliques nos NPCs e nas caixas registradoras. |
+| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam dos cliques nos NPCs, nas caixas registradoras e na hotbar. |
 | `messages.npc-*`, `messages.hologram-*`, `messages.placement-failed`, `messages.spam-cooldown` | Textos em português | Respostas dos comandos, listas de uso e mensagens de clique. |
+| `messages.game-connecting`, `messages.game-unavailable` | `&7Procurando uma sala de &b{name}&7...`, `&cNenhuma sala de &f{name} &cdisponível no momento.` | Mostradas ao clicar num NPC de jogo, compartilhadas com o [seletor de jogo](../hotbar/README.pt-BR.md#seletor-de-jogo). Substituem `npc-connecting` e `npc-unavailable`. |
 
 O `/npc` não grava mais o `plugins/Muxe-Lobby/npcs.yml`; use o `import.yml` para trazer os NPCs antigos.
 
@@ -156,7 +157,7 @@ Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha co
 
 ## Integrações
 
-- A [API do core](../../development/core-api/README.pt-BR.md) fornece o `NpcService`, o `MojangSkins`, o `DisplayService` e o `LabelStack`.
+- A [API do core](../../development/core-api/README.pt-BR.md) fornece o `NpcService`, o `MojangSkins`, o `DisplayService`, o `LabelStack`, o `GameConnector` (compartilhado com o [seletor de jogo](../hotbar/README.pt-BR.md#seletor-de-jogo)) e o `ShopAccess`.
 - A [Loja](../shop/README.pt-BR.md) usa o mesmo armazenamento e a mesma sincronização para as caixas registradoras, e os NPCs da loja a abrem.
 - O [Roteamento da rede](../network-routing/README.pt-BR.md) move os jogadores que clicam num NPC de jogo.
 

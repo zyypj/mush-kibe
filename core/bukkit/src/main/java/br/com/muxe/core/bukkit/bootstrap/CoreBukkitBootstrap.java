@@ -81,6 +81,7 @@ public final class CoreBukkitBootstrap {
         bindCommand("lobby", new LobbyCommand(core, lobbyGroup));
         bindCommand("build", new BuildCommand(buildMode, messages));
         features = PlacedFeatures.start(plugin, core, config, this::bindCommand);
+        HotbarFeatures.start(plugin, core, config, features);
 
         plugin.getLogger().info("Muxe-Core ready as " + settings.server().id() + " (" + settings.server().group() + ")");
     }

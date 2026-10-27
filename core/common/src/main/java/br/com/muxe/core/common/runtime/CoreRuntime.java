@@ -45,6 +45,8 @@ import br.com.muxe.core.common.shop.ShopModule;
 import br.com.muxe.core.common.shop.infrastructure.postgres.PostgresPromotionRepository;
 import br.com.muxe.core.common.store.ExpiringStore;
 import br.com.muxe.core.common.store.redis.RedisExpiringStore;
+import br.com.muxe.core.common.visibility.VisibilityModule;
+import br.com.muxe.core.common.visibility.infrastructure.postgres.PostgresVisibilityRepository;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.time.Clock;
@@ -228,6 +230,7 @@ public final class CoreRuntime implements AutoCloseable {
             AccountModule.register(commands, queries, new PostgresAccountRepository(), transactions, clock);
             PlacementModule.register(commands, queries, new PostgresPlacementRepository(), transactions);
             ShopModule.register(commands, queries, new PostgresPromotionRepository(), transactions, clock);
+            VisibilityModule.register(commands, queries, new PostgresVisibilityRepository(), transactions, clock);
 
             ServerHeartbeat heartbeat = closer.register(new ServerHeartbeat(packets, identity, hooks.serverLoad(), directory, executors.scheduler(), clock, logger));
             transport.addConnectionListener(new ConnectionListener() {

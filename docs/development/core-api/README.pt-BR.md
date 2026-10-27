@@ -163,7 +163,7 @@ ItemStack star = ItemBuilder.of(Material.NETHER_STAR)
     .build();
 
 ItemStack head = ItemBuilder.skull().name("&aMeu perfil").skullOwner(player.getName()).build();
-ItemStack pane = ItemBuilder.from(config.getConfigurationSection("lobby-selector.current"))
+ItemStack pane = ItemBuilder.from(config.getConfigurationSection("menus.lobby-selector.current"))
     .replacing("number", "3", "online", "32", "max", "60")
     .build();
 ```
@@ -227,6 +227,42 @@ lobbies.open(player, 1);
 - O menu mantém uma linha vazia acima e abaixo dos itens. As setas ficam nas pontas da última linha e só aparecem quando há página para ir.
 - `slots(list)` coloca os itens em slots fixos, `rows(n)` fixa a altura, `extra(slot, button)` adiciona um botão em todas as páginas e `fill(icon)` cobre os slots vazios.
 - `page(n)` monta o menu sem abrir, que é o que os testes usam.
+
+### Botões configurados
+
+Pacote `br.com.muxe.core.bukkit.menu.button`. Botões cujo slot, item e ação vêm da configuração.
+
+```java
+List<ConfiguredButton> buttons = ConfiguredButton.list(config.getConfigurationSection("menus.game-selector.buttons"));
+ConfiguredButton.requireFit(buttons, 4);
+ButtonActions actions = new ButtonActions(games, shopAccess);
+Menu.Builder menu = Menu.builder("Selecionar jogo").rows(4);
+for (ConfiguredButton button : buttons) {
+    menu.button(button.slot(), button.item(), context -> actions.run(context, button));
+}
+```
+
+```yaml
+buttons:
+  skywars:
+    slot: 14
+    game: skywars
+    item:
+      material: EYE_OF_ENDER
+      name: "&b&lSKY WARS"
+  nick:
+    slot: 39
+    shop: ultra-plus
+    item:
+      material: NAME_TAG
+      name: "&aNick (/nick)"
+```
+
+- Cada botão tem um `slot` (um slot do inventário, de 0 a 53), um `item` no [formato do `ItemBuilder`](#itens) e, opcionalmente, uma ação.
+- O `ButtonAction` é `NONE`, `GAME` (`game: <grupo de servidores>`) ou `SHOP` (`shop: <id da categoria>`, vazio para a categoria padrão).
+- O `ButtonActions.run` fecha o menu e conecta o jogador pelo [`GameConnector`](#conector-de-jogos) no `GAME`, e abre a loja pelo [`ShopAccess`](#acesso-à-loja) no `SHOP`. O `players(action)` dá os jogadores do grupo de um botão `GAME`, para o `{players}`.
+- O `requireFit(buttons, rows)` recusa um botão fora das linhas do menu e dois botões no mesmo slot, então uma configuração errada falha ao ligar.
+- O seletor de jogo e o perfil da [Hotbar](../../features/hotbar/README.pt-BR.md) são montados assim.
 
 ## Scoreboard
 
@@ -326,6 +362,39 @@ build.addHook(new BuildModeHook() {
 - O estado fica no Redis (`muxe:build:<uuid>`) por `build-mode.duration` (6 horas), renovado a cada entrada num servidor. Quem liga o modo continua com ele ao trocar de servidor; quem não tem `muxe.build` o perde na próxima entrada.
 - Nos tipos de `adventure-only` (`LOBBY` e `AUTH`), qualquer modo de jogo que não seja Aventura é cancelado, exceto o Criativo no modo construção (`BuildRules.allowsGameMode`).
 - Os plugins só leem `isBuilding` para decidir o que o jogador pode fazer. Um hook pode recusar o modo construção (`allows`), como o servidor de autenticação faz antes do login, e reagir a `entered` e `left`.
+
+## Hotbar
+
+Pacote `br.com.muxe.core.bukkit.hotbar`. O próprio Muxe-Core dá a hotbar dos lobbys nos tipos de servidor de `hotbar.server-kinds` (`LOBBY` por padrão), como descrito em [Hotbar](../../features/hotbar/README.pt-BR.md). Os plugins não a criam.
+
+- Ao entrar, ele limpa o inventário e a armadura, dá os cinco itens, seleciona o slot 1 e aplica a visibilidade do jogador (`VisibilityService` em `br.com.muxe.core.bukkit.visibility`, apoiado no `ChangeVisibilityCommand` e na `FindVisibilityQuery` de `br.com.muxe.core.common.visibility`).
+- O `HotbarBuildHook` devolve a hotbar quando o jogador sai do modo construção. Um plugin só adiciona um hook para o que mais precisar, como o lobby faz para devolver o voo.
+- O lobby de um jogo recebe a mesma hotbar rodando com um tipo listado em `hotbar.server-kinds`; o seu seletor de lobby lista os servidores do seu próprio grupo.
+
+## Conector de jogos
+
+Pacote `br.com.muxe.core.bukkit.network`.
+
+```java
+GameConnector games = new GameConnector(core.servers(), core.network(), core.mainThread(), core.messages());
+int playing = games.players("skywars");
+games.connect(player, "skywars", "Sky Wars");
+```
+
+- `players(group)` soma os jogadores online dos servidores vivos do grupo.
+- `connect` responde `game-unavailable` quando o grupo não tem servidor vivo. Senão, mostra `game-connecting` e pede ao proxy que mande o jogador para o servidor com menos jogadores do grupo, com `connect-failed` se isso falhar.
+- Os NPCs de jogo e o seletor de jogo o usam, então os dois mostram as mesmas mensagens.
+
+## Acesso à loja
+
+Pacote `br.com.muxe.core.bukkit.shop`.
+
+```java
+shopAccess.open(player, "ultra-plus");
+```
+
+- Abre a [loja](../../features/shop/README.pt-BR.md) numa categoria; uma categoria vazia ou desconhecida abre a `shop.default-category`. Quando a loja está desligada neste tipo de servidor, responde `shop-unavailable`.
+- O Muxe-Core o cria ao ligar. Os NPCs de loja e os botões `shop` o usam.
 
 ## Localizações
 

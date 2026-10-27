@@ -53,9 +53,9 @@ return transactions.inTransaction("account.record_login", () -> {
 
 | Schema | Dono | Tabelas |
 |---|---|---|
-| `core` | `core:common` | `accounts` (V1), `accounts.premium` (V2), `accounts.username` anulável para nomes liberados (V3), `npc_placements`, `hologram_placements`, `register_placements` (colocados por grupo de servidores) e `shop_promotion` (uma linha para a rede) (V4) |
+| `core` | `core:common` | `accounts` (V1), `accounts.premium` (V2), `accounts.username` anulável para nomes liberados (V3), `npc_placements`, `hologram_placements`, `register_placements` (colocados por grupo de servidores) e `shop_promotion` (uma linha para a rede) (V4), `player_visibility` (a escolha de visibilidade de cada jogador, copiada da antiga `lobby.player_settings`) (V5) |
 | `auth` | `servers:auth` | `credentials` |
-| `lobby` | `servers:lobby` | `player_settings` (visibilidade dos jogadores no lobby) |
+| `lobby` | `servers:lobby` | Nenhuma. A `player_settings` (V1) foi apagada pela V2 depois que as suas linhas foram para `core.player_visibility`. |
 
 ## Tipos de dados
 

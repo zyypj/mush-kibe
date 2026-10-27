@@ -163,7 +163,7 @@ ItemStack star = ItemBuilder.of(Material.NETHER_STAR)
     .build();
 
 ItemStack head = ItemBuilder.skull().name("&aMeu perfil").skullOwner(player.getName()).build();
-ItemStack pane = ItemBuilder.from(config.getConfigurationSection("lobby-selector.current"))
+ItemStack pane = ItemBuilder.from(config.getConfigurationSection("menus.lobby-selector.current"))
     .replacing("number", "3", "online", "32", "max", "60")
     .build();
 ```
@@ -227,6 +227,42 @@ lobbies.open(player, 1);
 - The menu keeps one empty row above and below the items. The arrows sit at the ends of the last row and only appear when there is a page to go to.
 - `slots(list)` places items in fixed slots instead, `rows(n)` fixes the height, `extra(slot, button)` adds a button to every page and `fill(icon)` covers the empty slots.
 - `page(n)` builds the menu without opening it, which is what tests use.
+
+### Configured buttons
+
+Package `br.com.muxe.core.bukkit.menu.button`. Buttons whose slot, item and action come from configuration.
+
+```java
+List<ConfiguredButton> buttons = ConfiguredButton.list(config.getConfigurationSection("menus.game-selector.buttons"));
+ConfiguredButton.requireFit(buttons, 4);
+ButtonActions actions = new ButtonActions(games, shopAccess);
+Menu.Builder menu = Menu.builder("Selecionar jogo").rows(4);
+for (ConfiguredButton button : buttons) {
+    menu.button(button.slot(), button.item(), context -> actions.run(context, button));
+}
+```
+
+```yaml
+buttons:
+  skywars:
+    slot: 14
+    game: skywars
+    item:
+      material: EYE_OF_ENDER
+      name: "&b&lSKY WARS"
+  nick:
+    slot: 39
+    shop: ultra-plus
+    item:
+      material: NAME_TAG
+      name: "&aNick (/nick)"
+```
+
+- Each button has a `slot` (an inventory slot, 0 to 53), an `item` in the [`ItemBuilder` format](#items) and, optionally, an action.
+- `ButtonAction` is `NONE`, `GAME` (`game: <server group>`) or `SHOP` (`shop: <category id>`, empty for the default category).
+- `ButtonActions.run` closes the menu and connects the player through the [`GameConnector`](#game-connector) for `GAME`, and opens the shop through [`ShopAccess`](#shop-access) for `SHOP`. `players(action)` gives the players of a `GAME` button's group, for `{players}`.
+- `requireFit(buttons, rows)` refuses a button outside the menu's rows and two buttons in the same slot, so a wrong configuration fails on startup.
+- The game selector and the profile of the [Hotbar](../../features/hotbar/README.md) are built this way.
 
 ## Scoreboard
 
@@ -326,6 +362,39 @@ build.addHook(new BuildModeHook() {
 - The state lives in Redis (`muxe:build:<uuid>`) for `build-mode.duration` (6 hours), renewed on every server join. A player who turns it on keeps it when moving to another server; players without `muxe.build` lose it on their next join.
 - On `adventure-only` kinds (`LOBBY` and `AUTH`), any game mode other than Adventure is cancelled, except Creative in build mode (`BuildRules.allowsGameMode`).
 - Plugins only read `isBuilding` to decide what a player may do. A hook can refuse build mode (`allows`), as the auth server does before login, and react to `entered` and `left`.
+
+## Hotbar
+
+Package `br.com.muxe.core.bukkit.hotbar`. Muxe-Core gives the lobby hotbar by itself on the server kinds of `hotbar.server-kinds` (`LOBBY` by default), as described in [Hotbar](../../features/hotbar/README.md). Plugins do not create it.
+
+- On join it clears the inventory and the armor, gives the five items, selects slot 1 and applies the player's visibility (`VisibilityService` in `br.com.muxe.core.bukkit.visibility`, backed by `ChangeVisibilityCommand` and `FindVisibilityQuery` in `br.com.muxe.core.common.visibility`).
+- `HotbarBuildHook` gives the hotbar back when a player leaves build mode. A plugin only adds a hook for what else it needs, as the lobby does to give flight back.
+- A game's lobby gets the same hotbar by running with a kind listed in `hotbar.server-kinds`; its lobby selector lists the servers of its own group.
+
+## Game connector
+
+Package `br.com.muxe.core.bukkit.network`.
+
+```java
+GameConnector games = new GameConnector(core.servers(), core.network(), core.mainThread(), core.messages());
+int playing = games.players("skywars");
+games.connect(player, "skywars", "Sky Wars");
+```
+
+- `players(group)` sums the online players of the group's live servers.
+- `connect` answers `game-unavailable` when the group has no live server. Otherwise it shows `game-connecting` and asks the proxy to send the player to the least loaded server of the group, with `connect-failed` if that fails.
+- Game NPCs and the game selector use it, so both show the same messages.
+
+## Shop access
+
+Package `br.com.muxe.core.bukkit.shop`.
+
+```java
+shopAccess.open(player, "ultra-plus");
+```
+
+- Opens the [shop](../../features/shop/README.md) on a category; an empty or unknown category opens `shop.default-category`. When the shop is off on this server kind, it answers `shop-unavailable`.
+- Muxe-Core creates it on startup. Shop NPCs and `shop` buttons use it.
 
 ## Locations
 

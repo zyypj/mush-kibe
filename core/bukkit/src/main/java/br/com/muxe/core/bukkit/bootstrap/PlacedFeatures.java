@@ -9,11 +9,13 @@ import br.com.muxe.core.bukkit.hologram.TextHolograms;
 import br.com.muxe.core.bukkit.hologram.placed.PlacedHolograms;
 import br.com.muxe.core.bukkit.npc.placed.NpcLines;
 import br.com.muxe.core.bukkit.npc.placed.PlacedNpcs;
+import br.com.muxe.core.bukkit.network.GameConnector;
 import br.com.muxe.core.bukkit.npc.skin.MojangSkins;
 import br.com.muxe.core.bukkit.placement.PlacementImport;
 import br.com.muxe.core.bukkit.placement.PlacementSync;
 import br.com.muxe.core.bukkit.prompt.ChatPrompts;
 import br.com.muxe.core.bukkit.shop.Shop;
+import br.com.muxe.core.bukkit.shop.ShopAccess;
 import br.com.muxe.core.bukkit.shop.ShopService;
 import br.com.muxe.core.bukkit.shop.ShopSettings;
 import br.com.muxe.core.bukkit.shop.promotion.ShopPromotion;
@@ -36,12 +38,18 @@ final class PlacedFeatures {
     private final PlacedNpcs npcs;
     private final PlacedHolograms holograms;
     private final Optional<Shop> shop;
+    private final SpamGuard spam;
+    private final GameConnector games;
+    private final ShopAccess shopAccess;
 
-    private PlacedFeatures(PlacementSync placements, PlacedNpcs npcs, PlacedHolograms holograms, Optional<Shop> shop) {
+    private PlacedFeatures(PlacementSync placements, PlacedNpcs npcs, PlacedHolograms holograms, Optional<Shop> shop, SpamGuard spam, GameConnector games, ShopAccess shopAccess) {
         this.placements = placements;
         this.npcs = npcs;
         this.holograms = holograms;
         this.shop = shop;
+        this.spam = spam;
+        this.games = games;
+        this.shopAccess = shopAccess;
     }
 
     static PlacedFeatures start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, BiConsumer<String, CommandExecutor> bind) {
@@ -61,8 +69,9 @@ final class PlacedFeatures {
             plugin.getLogger().warning("The shop is off: config.yml has no '" + SHOP_SECTION + "' section");
         }
         Optional<Shop> shop = shopSettings.filter(settings -> settings.appliesTo(core.identity().kind())).map(settings -> shop(plugin, core, settings, spam));
-        PlacedNpcs npcs = new PlacedNpcs(plugin, core, NpcLines.from(config.getConfigurationSection("npcs.lines")), spam, messages,
-            player -> shop.ifPresentOrElse(found -> found.service().open(player), () -> player.sendMessage(messages.get("shop-unavailable"))));
+        GameConnector games = new GameConnector(core.servers(), core.network(), core.mainThread(), messages);
+        ShopAccess shopAccess = new ShopAccess(shop.map(Shop::service), messages);
+        PlacedNpcs npcs = new PlacedNpcs(plugin, games, NpcLines.from(config.getConfigurationSection("npcs.lines")), spam, messages, shopAccess::open);
         PlacedHolograms holograms = new PlacedHolograms(plugin,
             config.getDouble("holograms.top", 2.0),
             config.getDouble("holograms.line-spacing", TextHolograms.DEFAULT_LINE_SPACING));
@@ -78,7 +87,19 @@ final class PlacedFeatures {
         bind.accept(NpcCommand.NAME, new NpcCommand(placements, MojangSkins.standard(), core.mainThread(), messages, reply));
         bind.accept(HologramCommand.NAME, new HologramCommand(placements, messages, reply));
         bind.accept(ShopCommand.NAME, new ShopCommand(shop, placements, messages, reply));
-        return new PlacedFeatures(placements, npcs, holograms, shop);
+        return new PlacedFeatures(placements, npcs, holograms, shop, spam, games, shopAccess);
+    }
+
+    SpamGuard spam() {
+        return spam;
+    }
+
+    GameConnector games() {
+        return games;
+    }
+
+    ShopAccess shopAccess() {
+        return shopAccess;
     }
 
     void stop() {

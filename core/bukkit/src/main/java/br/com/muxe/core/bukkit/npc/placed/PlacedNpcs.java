@@ -1,6 +1,6 @@
 package br.com.muxe.core.bukkit.npc.placed;
 
-import br.com.muxe.core.bukkit.api.MuxeCore;
+import br.com.muxe.core.bukkit.network.GameConnector;
 import br.com.muxe.core.bukkit.npc.Npc;
 import br.com.muxe.core.bukkit.npc.NpcService;
 import br.com.muxe.core.bukkit.npc.NpcSkin;
@@ -12,7 +12,6 @@ import br.com.muxe.core.common.cooldown.SpamDecision;
 import br.com.muxe.core.common.cooldown.SpamGuard;
 import br.com.muxe.core.common.placement.domain.NpcPlacement;
 import br.com.muxe.core.common.placement.domain.SkinTexture;
-import br.com.muxe.core.common.server.directory.ServerStatus;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +24,7 @@ import org.bukkit.plugin.Plugin;
 public final class PlacedNpcs {
 
     private final Plugin plugin;
-    private final MuxeCore core;
+    private final GameConnector games;
     private final NpcLines lines;
     private final SpamGuard spam;
     private final MessageCatalog messages;
@@ -34,9 +33,9 @@ public final class PlacedNpcs {
     private final Reconciler<NpcPlacement> shown = new Reconciler<>(NpcPlacement::id);
     private final Map<String, NpcPlacement> byId = new ConcurrentHashMap<>();
 
-    public PlacedNpcs(Plugin plugin, MuxeCore core, NpcLines lines, SpamGuard spam, MessageCatalog messages, Consumer<Player> openShop) {
+    public PlacedNpcs(Plugin plugin, GameConnector games, NpcLines lines, SpamGuard spam, MessageCatalog messages, Consumer<Player> openShop) {
         this.plugin = plugin;
-        this.core = core;
+        this.games = games;
         this.lines = lines;
         this.spam = spam;
         this.messages = messages;
@@ -80,14 +79,7 @@ public final class PlacedNpcs {
         if (placement == null) {
             return List.of();
         }
-        return lines.render(placement, playersIn(placement.action().target()));
-    }
-
-    private int playersIn(String group) {
-        if (group.isEmpty()) {
-            return 0;
-        }
-        return core.servers().aliveInGroup(group).stream().mapToInt(ServerStatus::onlinePlayers).sum();
+        return lines.render(placement, games.players(placement.action().target()));
     }
 
     private void clicked(Player player, Npc npc) {
@@ -105,7 +97,7 @@ public final class PlacedNpcs {
             }
             case GAME -> {
                 if (allowed(player)) {
-                    connect(player, placement);
+                    games.connect(player, placement.action().target(), placement.name());
                 }
             }
         }
@@ -117,19 +109,5 @@ public final class PlacedNpcs {
             player.sendMessage(messages.get("spam-cooldown", "seconds", CooldownFormat.seconds(decision.remaining())));
         }
         return decision.allowed();
-    }
-
-    private void connect(Player player, NpcPlacement placement) {
-        String group = placement.action().target();
-        String name = placement.name();
-        if (core.servers().leastLoaded(group).isEmpty()) {
-            player.sendMessage(messages.get("npc-unavailable", "name", name));
-            return;
-        }
-        player.sendMessage(messages.get("npc-connecting", "name", name));
-        core.network().connectToGroup(player.getUniqueId(), group).exceptionally(error -> {
-            core.mainThread().execute(() -> player.sendMessage(messages.get("connect-failed")));
-            return null;
-        });
     }
 }

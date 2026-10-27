@@ -32,7 +32,8 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 - [Authentication](features/authentication/README.md): premium auto-login, anti-bot challenge, `/registrar`, `/logar` and 2-hour sessions.
 - [Network routing](features/network-routing/README.md): how the proxy picks servers, `/lobby` and the access gate.
 - [Network administration](features/network-admin/README.md): `/muxe` commands for staff.
-- [Lobby](features/lobby/README.md): spawn, protection and `/jogar`.
+- [Lobby](features/lobby/README.md): spawn, flight, protection, scoreboard, boss bar and `/jogar`.
+- [Hotbar](features/hotbar/README.md): the lobby hotbar from Muxe-Core, with the game selector, profile, lobby selector and player visibility.
 - [NPCs and holograms](features/npcs-and-holograms/README.md): NPCs and text holograms placed by command and shared by the server group.
 - [Shop](features/shop/README.md): `/loja`, the checkout menus, cash registers and the network promotion.
 - [SkyWars](features/skywars/README.md): plugin skeleton and modes.

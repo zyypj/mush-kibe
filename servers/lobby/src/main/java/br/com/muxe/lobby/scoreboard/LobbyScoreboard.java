@@ -2,8 +2,8 @@ package br.com.muxe.lobby.scoreboard;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.scoreboard.Sidebar;
+import br.com.muxe.core.bukkit.selector.lobby.LobbyNumber;
 import br.com.muxe.lobby.profile.PlayerInfoSource;
-import br.com.muxe.lobby.selector.LobbyNumber;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;

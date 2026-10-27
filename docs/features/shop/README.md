@@ -92,7 +92,7 @@ Ids use lowercase letters, digits, `-` and `_`, up to 32 characters. Line number
 | `shop.register.labels.spacing` | `0.28125` | Space for lines beyond the gaps. |
 | `shop.register.seller-skin` | A fixed skin | `value` and `signature` of the seller NPC. |
 | `shop.register.parts` | 8 heads and 2 dyes | Display stands: `x`, `y`, `z` (offset), `yaw`, `small`, `arms`, `helmet`, `hand`, `head-pose`, `right-arm-pose`, `motion` (`spin` degrees per tick, `bob-height`, `bob-period` ticks, `phase`). |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam shared by register, seller and NPC clicks. |
+| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam shared by register, seller, NPC and hotbar clicks. |
 | `messages.shop-*`, `messages.placement-failed`, `messages.spam-cooldown` | Portuguese texts | Shop, register and promotion messages. |
 
 `shop.featured-product`, `shop.register.location`, `shop.register.labels.line-N` and `shop.register.seller.enabled` no longer exist: registers are placed by command and the promotion replaces the featured product. Items use the [`ItemBuilder` format](../../development/core-api/README.md#items).

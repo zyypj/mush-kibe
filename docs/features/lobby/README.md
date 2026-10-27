@@ -4,10 +4,11 @@
 
 The main hub, where players arrive after logging in and choose a game. Lives in `servers:lobby` (`Muxe-Lobby`). The network can run several lobbies (`lobby-1`, `lobby-2`, …), all in the `lobby` group; each game will also have its own lobby servers.
 
+The lobby plugin handles the spawn and arrival, flight, protection, the scoreboard, the boss bar and `/jogar`. The hotbar, its menus (game selector, profile, lobby selector) and the player visibility come from Muxe-Core, so every lobby of the network gets them: see [Hotbar](../hotbar/README.md).
+
 ## User stories
 
 - As a player, I want to arrive at a clean, safe spawn, see the network at a glance and choose what to play.
-- As a player, I want to switch to another main lobby, and to hide other players when the lobby is crowded.
 - As a staff member, I want to fly in the lobby.
 - As a builder, I want to switch to a build mode to edit the lobby, while regular players cannot break it.
 
@@ -16,11 +17,11 @@ The main hub, where players arrive after logging in and choose a game. Lives in 
 ### Arrival
 
 - After logging in, the proxy sends the player to the least loaded lobby (see [Network routing](../network-routing/README.md)).
-- On join: Adventure mode, inventory and armor cleared, full health and hunger, experience reset, then teleported to the configured spawn (or the main world's spawn).
+- On join: Adventure mode, full health and hunger, experience reset, then teleported to the configured spawn (or the main world's spawn). Muxe-Core clears the inventory and the armor and gives the [hotbar](../hotbar/README.md).
 - Players with `muxe.lobby.fly` arrive `arrival.fly-height` blocks (5) above the spawn, already flying. Everyone else arrives on the spawn. Falling below `protection.void-level` sends the player back the same way.
 - Join and quit messages are hidden.
 - Half a second after joining, the player hears a level-up sound and sees the title `&b&lMUXE` with the subtitle `&eBoas-vindas!`. This greeting comes from Muxe-Core and runs on every `LOBBY` server, never on auth or game servers.
-- Switching lobbies in the selector, or using `/lobby`, shows no "connecting" message: the player is just moved.
+- Switching lobbies in the [lobby selector](../hotbar/README.md#lobby-selector), or using `/lobby`, shows no "connecting" message: the player is just moved.
 
 ### Boss bar and scoreboard
 
@@ -41,37 +42,9 @@ muxe.com.br
 - `{lobby}` is the number at the end of the server id (`lobby-4` shows `#4`), and `{players}` counts every player on the network's Spigot servers. Lines refresh every `scoreboard.update-interval`.
 - There is no tag or credit system yet: every player shows `scoreboard.default-tag` and `scoreboard.default-credits`. The values come from `PlayerInfoSource`, where those systems will plug in.
 
-### Hotbar
+### Hotbar, menus and player visibility
 
-| Slot | Item | Name | Action |
-|---|---|---|---|
-| 1 | Compass | `&aSelecionar jogo` | None yet |
-| 2 | Player's head | `&aMeu perfil` | None yet |
-| 5 | Chest | `&aCosméticos` | None yet |
-| 8 | Dye | `&fJogadores: …` | Player visibility, see below |
-| 9 | Nether star | `&aSelecionar lobby` | Opens the lobby selector |
-
-- Items are used with a right click. They cannot be moved, dropped or taken.
-- Using hotbar items three times within `spam.window` (1 second) blocks them for `spam.cooldown` (3 seconds). While blocked, the player sees `&cAguarde 2,9s para usar novamente.`
-
-### Lobby selector
-
-- Title `Selecionar lobby (1/1)`. Every live lobby of `lobby-selector.group` appears in number order, centered on the middle row: one stained glass pane each, lime for the lobby the player is in, gray for the others.
-- Each pane is named `&aLobby Principal #<number>` with the lore `&fJogadores &a<online>/<max>`.
-- Clicking another lobby sends the player there through the proxy. Clicking the current lobby or a full one only shows a message.
-- More than 21 lobbies spread over pages with arrows.
-
-### Player visibility
-
-The dye cycles through three options and the choice is saved, so it follows the player to every lobby:
-
-| Option | Item | Message |
-|---|---|---|
-| Show everyone | Lime dye, `&fJogadores: &aAtivados` | `&aVocê agora está vendo todos os jogadores.` |
-| Only friends | Cyan dye, `&fJogadores: &bApenas amigos` | `&bVocê agora está vendo apenas seus amigos.` |
-| Hide everyone | Gray dye, `&fJogadores: &7Desativados` | `&cVocê escondeu todos os jogadores.` |
-
-There is no friend system yet, so "Only friends" hides everyone. Friends will come from `FriendDirectory`.
+The hotbar items (game selector, profile, cosmetics, visibility dye and lobby selector), the menus they open and the saved player visibility come from Muxe-Core and are the same on every lobby. See [Hotbar](../hotbar/README.md).
 
 ### NPCs, holograms and shop
 
@@ -79,7 +52,7 @@ NPCs, holograms and the shop with its cash registers come from Muxe-Core and wor
 
 ### Protection
 
-Players cannot take damage, lose hunger, break, place, drop or pick up items, or move items in their inventory. Rain is cancelled.
+Players cannot take damage, lose hunger, break, place, drop or pick up items, or move items in their inventory, so the hotbar stays in place. Rain is cancelled.
 
 Players are always in Adventure mode: any change to another game mode is cancelled, except Creative for a player in build mode.
 
@@ -88,7 +61,7 @@ Players are always in Adventure mode: any change to another game mode is cancell
 `/build` comes from Muxe-Core and works on every server, as described in the [Core API](../../development/core-api/README.md#build-mode). In the lobby:
 
 - `/build on` clears the hotbar, switches to Creative and lets the player break, place and move items, with `&aModo construção ativado` in the action bar for as long as the mode is on.
-- `/build off` gives the lobby items back (with the current visibility dye), returns to Adventure and lets players with `muxe.lobby.fly` fly again.
+- `/build off` returns to Adventure. Muxe-Core gives the hotbar back (with the current visibility dye) and the lobby lets players with `muxe.lobby.fly` fly again (`FlightBuildHook`).
 - Build mode follows the player to the other servers: moving to another lobby keeps it on. Hotbar actions do nothing while it is on.
 
 ## Commands
@@ -103,7 +76,7 @@ Players are always in Adventure mode: any change to another game mode is cancell
 
 | Permission | Grants | Default |
 |---|---|---|
-| `muxe.lobby.fly` | Arrive above the spawn, flying. | op |
+| `muxe.lobby.fly` | Arrive above the spawn, flying, and fly again after build mode. | op |
 | `muxe.build` | Use `/build` (Muxe-Core) to break, place, drop and pick up items in Creative. | op |
 | `muxe.lobby.setspawn` | Use `/setspawn`. | op |
 
@@ -116,16 +89,14 @@ Players are always in Adventure mode: any change to another game mode is cancell
 | `play.games` | `skywars`, `bedwars` | Groups allowed in `/jogar`. |
 | `protection.void-level` | `0` | Y below which players are sent back to spawn. |
 | `arrival.fly-height` | `5` | Blocks above the spawn for players with `muxe.lobby.fly`. |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam for hotbar items. NPCs and cash registers use the one of Muxe-Core. |
 | `bossbar.frames`, `bossbar.interval` | `&e&lMUXE`, `&6&lMUXE`, `500ms` | Boss bar texts and how long each one stays. |
 | `scoreboard.title`, `scoreboard.lines` | See above | Scoreboard text. Placeholders: `{tag}`, `{credits}`, `{lobby}`, `{players}`. |
 | `scoreboard.update-interval` | `1s` | How often the scoreboard refreshes. |
 | `scoreboard.default-tag`, `scoreboard.default-credits` | `&7Membro`, `0` | Shown until tags and credits exist. |
-| `hotbar.<item>.slot`, `hotbar.<item>.item` | See above | Slot (1 to 9) and item of each hotbar item. `hotbar.visibility` has one item per option (`all`, `friends`, `none`). |
-| `lobby-selector.group` | `lobby` | Group listed in the selector. |
-| `lobby-selector.title`, `current`, `other`, `previous-page`, `next-page` | See above | Selector title and items. Placeholders: `{page}`, `{pages}`, `{number}`, `{online}`, `{max}`. |
 | `spawn.*` | not set | Written by `/setspawn`. |
-| `messages.*` | Portuguese texts | Messages of this plugin; shared messages come from Muxe-Core. |
+| `messages.*` | Portuguese texts | Messages of `/jogar` and `/setspawn`; shared messages come from Muxe-Core. |
+
+`spam`, `hotbar`, `lobby-selector` and the visibility and lobby selector messages are no longer read from this file: they live in `plugins/Muxe-Core/config.yml`, described in [Hotbar](../hotbar/README.md#configuration).
 
 `plugins/Muxe-Core/config.yml`:
 
@@ -137,51 +108,43 @@ Players are always in Adventure mode: any change to another game mode is cancell
 | `join-greeting.fade-in`, `stay`, `fade-out` | `10`, `50`, `20` | Title timings in ticks. |
 | `messages.join-title`, `messages.join-subtitle` | `&b&lMUXE`, `&eBoas-vindas!` | Title and subtitle of the greeting. |
 
-Items use the [`ItemBuilder` format](../../development/core-api/README.md#items). The keys of NPCs, holograms and the shop are in `plugins/Muxe-Core/config.yml`, described in [NPCs and holograms](../npcs-and-holograms/README.md#configuration) and [Shop](../shop/README.md#configuration).
+The keys of the hotbar and its menus, NPCs, holograms and the shop are in `plugins/Muxe-Core/config.yml` too, described in [Hotbar](../hotbar/README.md#configuration), [NPCs and holograms](../npcs-and-holograms/README.md#configuration) and [Shop](../shop/README.md#configuration).
 
 ## Packets
 
 | Id | Target | Policy | Purpose |
 |---|---|---|---|
-| `player.connect` | proxy | standard | Sent by `/jogar` and the lobby selector. |
+| `player.connect` | proxy | standard | Sent by `/jogar`. |
 
 ## Data
 
-| Table | Content |
-|---|---|
-| `lobby.player_settings` | `player_id`, `visibility` (`ALL`, `FRIENDS`, `NONE`), `updated_at`. Written when a player changes the visibility, read on join. |
-
-Commands and queries: `ChangeVisibilityCommand`, `FindVisibilityQuery` (players without a row see everyone).
+The `lobby` schema has no tables. The lobby migration `V2__drop_player_settings.sql` drops `lobby.player_settings`: the player visibility moved to `core.player_visibility` (see [Hotbar](../hotbar/README.md#data)). Muxe-Core starts before the lobby and copies the rows first.
 
 ## Metrics
 
-The Spigot server metrics of Muxe-Core, plus `muxe_db_transaction_seconds{operation="lobby.change_visibility"|"lobby.find_visibility"}`.
+The Spigot server metrics of Muxe-Core. The visibility metrics moved with it and are listed in [Hotbar](../hotbar/README.md#metrics).
 
 ## Integrations
 
 - [Network routing](../network-routing/README.md) brings players here after login and moves them to other lobbies and games.
-- The [Core API](../../development/core-api/README.md) provides the boss bar, scoreboard, menus and items.
+- The [Core API](../../development/core-api/README.md) provides the boss bar and the scoreboard.
+- The [Hotbar](../hotbar/README.md), with its menus and the player visibility, comes from Muxe-Core.
 - [NPCs and holograms](../npcs-and-holograms/README.md) and the [Shop](../shop/README.md) come from Muxe-Core and are placed in the lobby by command.
 
 ## Acceptance criteria
 
 - [x] Players with the fly permission arrive 5 blocks above the spawn, flying; others arrive on it.
-- [x] The hotbar items sit in slots 1, 2, 5, 8 and 9 with the reference names, and the visibility dye cycles through the three options.
-- [x] The lobby selector lists lobbies in number order, centered, lime for the current one and gray for the others, with the reference name and lore.
-- [x] Three quick uses start a 3-second cooldown with the remaining time as `2,9`.
 - [x] The join greeting is enabled only on `LOBBY` servers, with the reference title and subtitle.
 - [x] The boss bar alternates `&e&lMUXE` and `&6&lMUXE` every 10 ticks, and the scoreboard fills the reference lines.
-- [x] The visibility choice is saved in PostgreSQL and read back.
-- [ ] Boss bar, scoreboard, hotbar, selector and visibility work in game (checked in game).
+- [ ] Boss bar, scoreboard and flight after build mode work in game (checked in game).
 
 ## Failures and recovery
 
-- Proxy or Redis unavailable: `/jogar` and the selector show a failure message and the player stays in the lobby.
-- PostgreSQL unavailable: the visibility starts as "show everyone" and changes are not saved; the lobby keeps working.
+- Proxy or Redis unavailable: `/jogar` shows a failure message and the player stays in the lobby.
 - Server internals missing (another server version): the boss bar is skipped with one warning.
 - Configured spawn world missing: the main world's spawn is used.
 
 ## Known limitations
 
-- The game selector, profile and cosmetics items do nothing yet.
-- Tags, credits and friends do not exist yet; the scoreboard shows default values and "Only friends" hides everyone.
+- Tags and credits do not exist yet; the scoreboard shows default values.
+- The limits of the hotbar and its menus are listed in [Hotbar](../hotbar/README.md#known-limitations).

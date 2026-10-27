@@ -4,10 +4,11 @@
 
 O hub principal, onde os jogadores chegam depois de fazer login e escolhem um jogo. Fica no `servers:lobby` (`Muxe-Lobby`). A rede pode ter vários lobbys (`lobby-1`, `lobby-2`, …), todos no grupo `lobby`; cada jogo também terá os seus próprios servidores de lobby.
 
+O plugin do lobby cuida do spawn e da chegada, do voo, da proteção, da scoreboard, da boss bar e do `/jogar`. A hotbar, os seus menus (seletor de jogo, perfil, seletor de lobby) e a visibilidade dos jogadores vêm do Muxe-Core, então todo lobby da rede os recebe: veja [Hotbar](../hotbar/README.pt-BR.md).
+
 ## Histórias de usuário
 
 - Como jogador, quero chegar a um spawn limpo e seguro, ver a rede num relance e escolher o que jogar.
-- Como jogador, quero trocar de lobby principal e esconder os outros jogadores quando o lobby estiver cheio.
 - Como membro da equipe, quero voar no lobby.
 - Como construtor, quero entrar num modo de construção para editar o lobby, enquanto jogadores comuns não conseguem quebrá-lo.
 
@@ -16,11 +17,11 @@ O hub principal, onde os jogadores chegam depois de fazer login e escolhem um jo
 ### Chegada
 
 - Depois do login, o proxy manda o jogador para o lobby com menos jogadores (veja [Roteamento da rede](../network-routing/README.pt-BR.md)).
-- Ao entrar: modo Aventura, inventário e armadura limpos, vida e fome cheias, experiência zerada, e teleporte para o spawn configurado (ou o spawn do mundo principal).
+- Ao entrar: modo Aventura, vida e fome cheias, experiência zerada, e teleporte para o spawn configurado (ou o spawn do mundo principal). O Muxe-Core limpa o inventário e a armadura e dá a [hotbar](../hotbar/README.pt-BR.md).
 - Quem tem `muxe.lobby.fly` chega `arrival.fly-height` blocos (5) acima do spawn, já voando. Os outros chegam no spawn. Cair abaixo de `protection.void-level` manda o jogador de volta do mesmo jeito.
 - As mensagens de entrada e saída ficam escondidas.
 - Meio segundo depois de entrar, o jogador ouve um som de level up e vê o título `&b&lMUXE` com o subtítulo `&eBoas-vindas!`. Essa saudação vem do Muxe-Core e acontece em todo servidor `LOBBY`, nunca nos servidores de autenticação ou de jogo.
-- Trocar de lobby pelo seletor, ou usar `/lobby`, não mostra mensagem de "conectando": o jogador só é movido.
+- Trocar de lobby pelo [seletor de lobby](../hotbar/README.pt-BR.md#seletor-de-lobby), ou usar `/lobby`, não mostra mensagem de "conectando": o jogador só é movido.
 
 ### Boss bar e scoreboard
 
@@ -41,37 +42,9 @@ muxe.com.br
 - `{lobby}` é o número no fim do id do servidor (`lobby-4` mostra `#4`), e `{players}` conta todos os jogadores nos servidores Spigot da rede. As linhas são atualizadas a cada `scoreboard.update-interval`.
 - Ainda não existe sistema de tag nem de créditos: todo jogador mostra `scoreboard.default-tag` e `scoreboard.default-credits`. Os valores vêm do `PlayerInfoSource`, onde esses sistemas vão se plugar.
 
-### Hotbar
+### Hotbar, menus e visibilidade dos jogadores
 
-| Slot | Item | Nome | Ação |
-|---|---|---|---|
-| 1 | Bússola | `&aSelecionar jogo` | Nenhuma por enquanto |
-| 2 | Cabeça do jogador | `&aMeu perfil` | Nenhuma por enquanto |
-| 5 | Baú | `&aCosméticos` | Nenhuma por enquanto |
-| 8 | Corante | `&fJogadores: …` | Visibilidade dos jogadores, veja abaixo |
-| 9 | Estrela do Nether | `&aSelecionar lobby` | Abre o seletor de lobby |
-
-- Os itens são usados com o botão direito. Eles não podem ser movidos, largados nem pegos.
-- Usar os itens da hotbar três vezes dentro de `spam.window` (1 segundo) bloqueia o uso por `spam.cooldown` (3 segundos). Enquanto isso, o jogador vê `&cAguarde 2,9s para usar novamente.`
-
-### Seletor de lobby
-
-- Título `Selecionar lobby (1/1)`. Todo lobby vivo de `lobby-selector.group` aparece em ordem de número, centralizado na linha do meio: um painel de vidro para cada, verde-limão para o lobby onde o jogador está e cinza para os outros.
-- Cada painel se chama `&aLobby Principal #<número>`, com a lore `&fJogadores &a<online>/<máximo>`.
-- Clicar em outro lobby manda o jogador para lá pelo proxy. Clicar no lobby atual ou num lobby cheio só mostra uma mensagem.
-- Mais de 21 lobbys se dividem em páginas com setas.
-
-### Visibilidade dos jogadores
-
-O corante alterna entre três opções e a escolha fica salva, então ela acompanha o jogador em todos os lobbys:
-
-| Opção | Item | Mensagem |
-|---|---|---|
-| Mostrar todos | Corante verde-limão, `&fJogadores: &aAtivados` | `&aVocê agora está vendo todos os jogadores.` |
-| Apenas amigos | Corante ciano, `&fJogadores: &bApenas amigos` | `&bVocê agora está vendo apenas seus amigos.` |
-| Esconder todos | Corante cinza, `&fJogadores: &7Desativados` | `&cVocê escondeu todos os jogadores.` |
-
-Ainda não existe sistema de amigos, então "Apenas amigos" esconde todo mundo. Os amigos virão do `FriendDirectory`.
+Os itens da hotbar (seletor de jogo, perfil, cosméticos, corante de visibilidade e seletor de lobby), os menus que eles abrem e a visibilidade salva dos jogadores vêm do Muxe-Core e são iguais em todos os lobbys. Veja [Hotbar](../hotbar/README.pt-BR.md).
 
 ### NPCs, hologramas e loja
 
@@ -79,7 +52,7 @@ NPCs, hologramas e a loja com as caixas registradoras vêm do Muxe-Core e funcio
 
 ### Proteção
 
-Os jogadores não levam dano, não perdem fome, não quebram, não colocam, não largam nem pegam itens, nem movem itens no inventário. A chuva é cancelada.
+Os jogadores não levam dano, não perdem fome, não quebram, não colocam, não largam nem pegam itens, nem movem itens no inventário, então a hotbar fica no lugar. A chuva é cancelada.
 
 Os jogadores ficam sempre no modo Aventura: qualquer troca para outro modo de jogo é cancelada, exceto o Criativo para quem está no modo construção.
 
@@ -88,7 +61,7 @@ Os jogadores ficam sempre no modo Aventura: qualquer troca para outro modo de jo
 O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na [API do core](../../development/core-api/README.pt-BR.md#modo-construção). No lobby:
 
 - `/build on` limpa a hotbar, coloca no Criativo e deixa o jogador quebrar, colocar e mover itens, com `&aModo construção ativado` na action bar enquanto o modo estiver ligado.
-- `/build off` devolve os itens do lobby (com o corante de visibilidade atual), volta para o Aventura e deixa quem tem `muxe.lobby.fly` voar de novo.
+- `/build off` volta para o Aventura. O Muxe-Core devolve a hotbar (com o corante de visibilidade atual) e o lobby deixa quem tem `muxe.lobby.fly` voar de novo (`FlightBuildHook`).
 - O modo construção acompanha o jogador nos outros servidores: ir para outro lobby mantém o modo ligado. As ações da hotbar não fazem nada enquanto ele estiver ligado.
 
 ## Comandos
@@ -103,7 +76,7 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 
 | Permissão | Libera | Padrão |
 |---|---|---|
-| `muxe.lobby.fly` | Chegar acima do spawn, voando. | op |
+| `muxe.lobby.fly` | Chegar acima do spawn, voando, e voar de novo depois do modo construção. | op |
 | `muxe.build` | Usar o `/build` (Muxe-Core) para quebrar, colocar, largar e pegar itens no Criativo. | op |
 | `muxe.lobby.setspawn` | Usar `/setspawn`. | op |
 
@@ -116,16 +89,14 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 | `play.games` | `skywars`, `bedwars` | Grupos permitidos no `/jogar`. |
 | `protection.void-level` | `0` | Altura abaixo da qual o jogador volta ao spawn. |
 | `arrival.fly-height` | `5` | Blocos acima do spawn para quem tem `muxe.lobby.fly`. |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam dos itens da hotbar. Os NPCs e as caixas registradoras usam o do Muxe-Core. |
 | `bossbar.frames`, `bossbar.interval` | `&e&lMUXE`, `&6&lMUXE`, `500ms` | Textos da boss bar e quanto tempo cada um fica. |
 | `scoreboard.title`, `scoreboard.lines` | Veja acima | Texto da scoreboard. Placeholders: `{tag}`, `{credits}`, `{lobby}`, `{players}`. |
 | `scoreboard.update-interval` | `1s` | De quanto em quanto tempo a scoreboard é atualizada. |
 | `scoreboard.default-tag`, `scoreboard.default-credits` | `&7Membro`, `0` | Mostrados até existirem tags e créditos. |
-| `hotbar.<item>.slot`, `hotbar.<item>.item` | Veja acima | Slot (1 a 9) e item de cada item da hotbar. `hotbar.visibility` tem um item por opção (`all`, `friends`, `none`). |
-| `lobby-selector.group` | `lobby` | Grupo listado no seletor. |
-| `lobby-selector.title`, `current`, `other`, `previous-page`, `next-page` | Veja acima | Título e itens do seletor. Placeholders: `{page}`, `{pages}`, `{number}`, `{online}`, `{max}`. |
 | `spawn.*` | não definido | Escrito pelo `/setspawn`. |
-| `messages.*` | Textos em português | Mensagens deste plugin; as mensagens compartilhadas vêm do Muxe-Core. |
+| `messages.*` | Textos em português | Mensagens do `/jogar` e do `/setspawn`; as mensagens compartilhadas vêm do Muxe-Core. |
+
+`spam`, `hotbar`, `lobby-selector` e as mensagens de visibilidade e do seletor de lobby não são mais lidos deste arquivo: eles ficam no `plugins/Muxe-Core/config.yml`, descritos em [Hotbar](../hotbar/README.pt-BR.md#configuração).
 
 `plugins/Muxe-Core/config.yml`:
 
@@ -137,51 +108,43 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 | `join-greeting.fade-in`, `stay`, `fade-out` | `10`, `50`, `20` | Tempos do título em ticks. |
 | `messages.join-title`, `messages.join-subtitle` | `&b&lMUXE`, `&eBoas-vindas!` | Título e subtítulo da saudação. |
 
-Os itens usam o [formato do `ItemBuilder`](../../development/core-api/README.pt-BR.md#itens). As chaves dos NPCs, dos hologramas e da loja ficam no `plugins/Muxe-Core/config.yml`, descritas em [NPCs e hologramas](../npcs-and-holograms/README.pt-BR.md#configuração) e [Loja](../shop/README.pt-BR.md#configuração).
+As chaves da hotbar e dos seus menus, dos NPCs, dos hologramas e da loja também ficam no `plugins/Muxe-Core/config.yml`, descritas em [Hotbar](../hotbar/README.pt-BR.md#configuração), [NPCs e hologramas](../npcs-and-holograms/README.pt-BR.md#configuração) e [Loja](../shop/README.pt-BR.md#configuração).
 
 ## Pacotes
 
 | Id | Destino | Política | Propósito |
 |---|---|---|---|
-| `player.connect` | proxy | padrão | Enviado pelo `/jogar` e pelo seletor de lobby. |
+| `player.connect` | proxy | padrão | Enviado pelo `/jogar`. |
 
 ## Dados
 
-| Tabela | Conteúdo |
-|---|---|
-| `lobby.player_settings` | `player_id`, `visibility` (`ALL`, `FRIENDS`, `NONE`), `updated_at`. Gravada quando o jogador troca a visibilidade e lida ao entrar. |
-
-Comandos e consultas: `ChangeVisibilityCommand`, `FindVisibilityQuery` (quem não tem linha vê todo mundo).
+O schema `lobby` não tem tabelas. A migração do lobby `V2__drop_player_settings.sql` apaga a `lobby.player_settings`: a visibilidade dos jogadores foi para `core.player_visibility` (veja [Hotbar](../hotbar/README.pt-BR.md#dados)). O Muxe-Core inicia antes do lobby e copia as linhas primeiro.
 
 ## Métricas
 
-As métricas de servidor Spigot do Muxe-Core, mais `muxe_db_transaction_seconds{operation="lobby.change_visibility"|"lobby.find_visibility"}`.
+As métricas de servidor Spigot do Muxe-Core. As métricas de visibilidade foram junto com ela e estão em [Hotbar](../hotbar/README.pt-BR.md#métricas).
 
 ## Integrações
 
 - O [Roteamento da rede](../network-routing/README.pt-BR.md) traz os jogadores para cá depois do login e os move para outros lobbys e jogos.
-- A [API do core](../../development/core-api/README.pt-BR.md) fornece a boss bar, a scoreboard, os menus e os itens.
+- A [API do core](../../development/core-api/README.pt-BR.md) fornece a boss bar e a scoreboard.
+- A [Hotbar](../hotbar/README.pt-BR.md), com os seus menus e a visibilidade dos jogadores, vem do Muxe-Core.
 - [NPCs e hologramas](../npcs-and-holograms/README.pt-BR.md) e a [Loja](../shop/README.pt-BR.md) vêm do Muxe-Core e são colocados no lobby por comando.
 
 ## Critérios de aceitação
 
 - [x] Quem tem a permissão de voar chega 5 blocos acima do spawn, voando; os outros chegam nele.
-- [x] Os itens da hotbar ficam nos slots 1, 2, 5, 8 e 9 com os nomes de referência, e o corante de visibilidade alterna entre as três opções.
-- [x] O seletor de lobby lista os lobbys em ordem de número, centralizados, verde-limão para o atual e cinza para os outros, com o nome e a lore de referência.
-- [x] Três usos rápidos iniciam um cooldown de 3 segundos com o tempo restante como `2,9`.
 - [x] A saudação de entrada só fica ativa em servidores `LOBBY`, com o título e o subtítulo de referência.
 - [x] A boss bar alterna `&e&lMUXE` e `&6&lMUXE` a cada 10 ticks, e a scoreboard preenche as linhas de referência.
-- [x] A escolha de visibilidade é salva no PostgreSQL e lida de volta.
-- [ ] Boss bar, scoreboard, hotbar, seletor e visibilidade funcionam no jogo (conferido no jogo).
+- [ ] Boss bar, scoreboard e o voo depois do modo construção funcionam no jogo (conferido no jogo).
 
 ## Falhas e recuperação
 
-- Proxy ou Redis indisponíveis: o `/jogar` e o seletor mostram uma mensagem de falha e o jogador continua no lobby.
-- PostgreSQL indisponível: a visibilidade começa como "mostrar todos" e as mudanças não são salvas; o lobby continua funcionando.
+- Proxy ou Redis indisponíveis: o `/jogar` mostra uma mensagem de falha e o jogador continua no lobby.
 - Internos do servidor ausentes (outra versão de servidor): a boss bar é pulada com um aviso.
 - Mundo do spawn ausente: usa-se o spawn do mundo principal.
 
 ## Limitações conhecidas
 
-- Os itens de seleção de jogo, perfil e cosméticos ainda não fazem nada.
-- Tags, créditos e amigos ainda não existem; a scoreboard mostra valores padrão e "Apenas amigos" esconde todo mundo.
+- Tags e créditos ainda não existem; a scoreboard mostra valores padrão.
+- As limitações da hotbar e dos seus menus estão em [Hotbar](../hotbar/README.pt-BR.md#limitações-conhecidas).
