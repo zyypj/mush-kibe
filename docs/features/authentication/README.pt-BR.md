@@ -40,7 +40,7 @@ Quando uma conexão começa, o proxy decide o seu **modo de login**:
 Depois que a conta é registrada, o proxy autentica o jogador na hora quando:
 
 - a conta é **premium**, ou
-- o jogador tem uma **sessão de login** válida: ele fez login com senha há menos de `authentication.session-duration` (24 horas por padrão), com a mesma conta e do mesmo IP.
+- o jogador tem uma **sessão de login** válida: ele fez login com senha há menos de `authentication.session-duration` (24 horas por padrão), com a mesma conta e do mesmo IP. Retomar a sessão não a renova: ela sempre termina `session-duration` depois do login com senha.
 
 Jogadores autenticados automaticamente vão direto para um lobby. Os demais vão para um servidor de autenticação.
 

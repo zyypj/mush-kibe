@@ -40,7 +40,7 @@ When a connection starts, the proxy decides its **login mode**:
 After the account is recorded, the proxy authenticates the player immediately when:
 
 - the account is **premium**, or
-- the player has a valid **login session**: they logged in with a password less than `authentication.session-duration` ago (24 hours by default), with the same account and from the same IP.
+- the player has a valid **login session**: they logged in with a password less than `authentication.session-duration` ago (24 hours by default), with the same account and from the same IP. Resuming a session does not extend it: it always ends `session-duration` after the password login.
 
 Automatically authenticated players go straight to a lobby. Everyone else goes to an auth server.
 
