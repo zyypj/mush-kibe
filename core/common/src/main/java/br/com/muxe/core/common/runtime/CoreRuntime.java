@@ -35,6 +35,8 @@ import br.com.muxe.core.common.persistence.migration.MigrationRunner;
 import br.com.muxe.core.common.persistence.transaction.JdbcTransactions;
 import br.com.muxe.core.common.persistence.transaction.Transactions;
 import br.com.muxe.core.common.redis.RedisConnector;
+import br.com.muxe.core.common.parkour.ParkourModule;
+import br.com.muxe.core.common.parkour.infrastructure.postgres.PostgresParkourRecordRepository;
 import br.com.muxe.core.common.placement.PlacementModule;
 import br.com.muxe.core.common.placement.infrastructure.postgres.PostgresPlacementRepository;
 import br.com.muxe.core.common.server.ServerIdentity;
@@ -229,6 +231,7 @@ public final class CoreRuntime implements AutoCloseable {
             queries = new SimpleQueryBus(executors.io(), middlewares);
             AccountModule.register(commands, queries, new PostgresAccountRepository(), transactions, clock);
             PlacementModule.register(commands, queries, new PostgresPlacementRepository(), transactions);
+            ParkourModule.register(commands, queries, new PostgresParkourRecordRepository(), transactions, clock);
             ShopModule.register(commands, queries, new PostgresPromotionRepository(), transactions, clock);
             VisibilityModule.register(commands, queries, new PostgresVisibilityRepository(), transactions, clock);
 

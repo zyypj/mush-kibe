@@ -4,5 +4,6 @@ public enum PlacementKind {
     NPC,
     HOLOGRAM,
     REGISTER,
-    SOCIAL_HEAD
+    SOCIAL_HEAD,
+    PARKOUR
 }

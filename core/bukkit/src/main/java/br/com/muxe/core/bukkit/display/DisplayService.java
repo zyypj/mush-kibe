@@ -1,5 +1,6 @@
 package br.com.muxe.core.bukkit.display;
 
+import br.com.muxe.core.bukkit.hologram.HologramPixel;
 import br.com.muxe.core.bukkit.hologram.HologramTransport;
 import br.com.muxe.core.bukkit.hologram.SpawnedHologram;
 import br.com.muxe.core.bukkit.nms.EntityUse;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,6 +38,7 @@ public final class DisplayService implements Listener {
     private final BukkitTask task;
     private volatile BiConsumer<Player, Display> clickHandler = (player, display) -> {
     };
+    private volatile BiFunction<Player, String, String> labelText = (viewer, text) -> text;
     private long tick;
 
     private DisplayService(Plugin plugin, PacketStandTransport stands, HologramTransport holograms) {
@@ -53,6 +56,24 @@ public final class DisplayService implements Listener {
 
     public void onClick(BiConsumer<Player, Display> handler) {
         this.clickHandler = handler;
+    }
+
+    public void labelText(BiFunction<Player, String, String> resolver) {
+        this.labelText = resolver;
+    }
+
+    public void refresh(Player viewer) {
+        Map<String, SpawnedHologram> seen = viewers.get(viewer.getUniqueId());
+        if (seen == null) {
+            return;
+        }
+        for (Map.Entry<String, SpawnedHologram> entry : seen.entrySet()) {
+            Placed placed = displays.get(entry.getKey());
+            if (placed != null) {
+                entry.getValue().remove();
+                entry.setValue(holograms.spawn(viewer, labelPixels(viewer, placed)));
+            }
+        }
     }
 
     public void put(Display display) {
@@ -142,7 +163,11 @@ public final class DisplayService implements Listener {
 
     private SpawnedHologram show(Player viewer, Placed placed) {
         placed.bodies().forEach(body -> body.body().show(viewer));
-        return holograms.spawn(viewer, placed.display().labelPixels());
+        return holograms.spawn(viewer, labelPixels(viewer, placed));
+    }
+
+    private List<HologramPixel> labelPixels(Player viewer, Placed placed) {
+        return placed.display().labelPixels(text -> labelText.apply(viewer, text));
     }
 
     private void hide(Player viewer, Placed placed, SpawnedHologram labels) {

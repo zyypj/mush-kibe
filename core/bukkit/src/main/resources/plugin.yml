@@ -24,6 +24,10 @@ commands:
     aliases:
       - hologram
       - holo
+  parkour:
+    description: Places the start, checkpoints and end of this server group's parkour.
+    usage: /parkour <inicio|checkpoint|fim|remover|listar>
+    permission: muxe.parkour
   redes:
     description: Places the social media heads of this server group.
     usage: /redes <criar|mover|remover|listar>
@@ -44,6 +48,9 @@ permissions:
     default: op
   muxe.hologram:
     description: Allows /holograma.
+    default: op
+  muxe.parkour:
+    description: Allows /parkour.
     default: op
   muxe.social:
     description: Allows /redes.

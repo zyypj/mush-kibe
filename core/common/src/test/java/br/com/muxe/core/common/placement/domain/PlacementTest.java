@@ -68,7 +68,7 @@ class PlacementTest {
     @Test
     void placementsAreFoundById() {
         RegisterPlacement register = new RegisterPlacement("lobby", "caixa", SPAWN, Optional.empty());
-        Placements placements = new Placements(List.of(), List.of(), List.of(register), List.of());
+        Placements placements = new Placements(List.of(), List.of(), List.of(register), List.of(), List.of());
 
         assertThat(placements.register("caixa")).contains(register);
         assertThat(placements.npc("caixa")).isEmpty();
@@ -79,7 +79,7 @@ class PlacementTest {
     void socialHeadsAreFoundByIdAndMove() {
         SocialHeadPlacement head = new SocialHeadPlacement("lobby", "redes", SPAWN);
         Position elsewhere = new Position("lobby", 4, 34, -10, 90, 0);
-        Placements placements = new Placements(List.of(), List.of(), List.of(), List.of(head));
+        Placements placements = new Placements(List.of(), List.of(), List.of(), List.of(head), List.of());
 
         assertThat(placements.socialHead("redes")).contains(head);
         assertThat(placements.register("redes")).isEmpty();

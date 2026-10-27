@@ -6,6 +6,8 @@ import br.com.muxe.core.common.cqrs.bus.SimpleCommandBus;
 import br.com.muxe.core.common.cqrs.bus.SimpleQueryBus;
 import br.com.muxe.core.common.placement.PlacementModule;
 import br.com.muxe.core.common.placement.domain.HologramPlacement;
+import br.com.muxe.core.common.placement.domain.ParkourPoint;
+import br.com.muxe.core.common.placement.domain.ParkourPointPlacement;
 import br.com.muxe.core.common.placement.domain.PlacementKind;
 import br.com.muxe.core.common.placement.domain.Placements;
 import br.com.muxe.core.common.placement.domain.Position;
@@ -78,6 +80,19 @@ class PlacementSyncTest {
 
         lobby2.remove(PlacementKind.SOCIAL_HEAD, "redes").join();
         assertThat(lobby1.current().socialHeads()).isEmpty();
+    }
+
+    @Test
+    void aParkourPointPlacedOnOneLobbyAppearsOnTheOther() {
+        PlacementSync lobby1 = server("lobby-1", "lobby");
+        PlacementSync lobby2 = server("lobby-2", "lobby");
+        ParkourPointPlacement start = new ParkourPointPlacement("lobby", ParkourPoint.start(), SPAWN);
+
+        lobby1.save(start).join();
+        assertThat(lobby2.current().parkourPoint(ParkourPoint.start())).contains(start);
+
+        lobby2.remove(PlacementKind.PARKOUR, "start").join();
+        assertThat(lobby1.current().parkourPoints()).isEmpty();
     }
 
     @Test

@@ -4,6 +4,7 @@ import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.command.AsyncReply;
 import br.com.muxe.core.bukkit.command.HologramCommand;
 import br.com.muxe.core.bukkit.command.NpcCommand;
+import br.com.muxe.core.bukkit.command.ParkourCommand;
 import br.com.muxe.core.bukkit.command.ShopCommand;
 import br.com.muxe.core.bukkit.command.SocialHeadCommand;
 import br.com.muxe.core.bukkit.hologram.TextHolograms;
@@ -11,6 +12,8 @@ import br.com.muxe.core.bukkit.hologram.placed.PlacedHolograms;
 import br.com.muxe.core.bukkit.npc.placed.NpcLines;
 import br.com.muxe.core.bukkit.npc.placed.PlacedNpcs;
 import br.com.muxe.core.bukkit.network.GameConnector;
+import br.com.muxe.core.bukkit.parkour.Parkour;
+import br.com.muxe.core.bukkit.parkour.ParkourSettings;
 import br.com.muxe.core.bukkit.npc.skin.MojangSkins;
 import br.com.muxe.core.bukkit.placement.PlacementImport;
 import br.com.muxe.core.bukkit.placement.PlacementSync;
@@ -37,6 +40,7 @@ final class PlacedFeatures {
 
     private static final String SHOP_SECTION = "shop";
     private static final String SOCIAL_SECTION = "social-heads";
+    private static final String PARKOUR_SECTION = "parkour";
 
     private final PlacementSync placements;
     private final PlacedNpcs npcs;
@@ -46,8 +50,19 @@ final class PlacedFeatures {
     private final GameConnector games;
     private final ShopAccess shopAccess;
     private final Optional<SocialHeads> socialHeads;
+    private final Optional<Parkour> parkour;
 
-    private PlacedFeatures(PlacementSync placements, PlacedNpcs npcs, PlacedHolograms holograms, Optional<Shop> shop, SpamGuard spam, GameConnector games, ShopAccess shopAccess, Optional<SocialHeads> socialHeads) {
+    private PlacedFeatures(
+        PlacementSync placements,
+        PlacedNpcs npcs,
+        PlacedHolograms holograms,
+        Optional<Shop> shop,
+        SpamGuard spam,
+        GameConnector games,
+        ShopAccess shopAccess,
+        Optional<SocialHeads> socialHeads,
+        Optional<Parkour> parkour
+    ) {
         this.placements = placements;
         this.npcs = npcs;
         this.holograms = holograms;
@@ -56,6 +71,7 @@ final class PlacedFeatures {
         this.games = games;
         this.shopAccess = shopAccess;
         this.socialHeads = socialHeads;
+        this.parkour = parkour;
     }
 
     static PlacedFeatures start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, BiConsumer<String, CommandExecutor> bind) {
@@ -83,11 +99,13 @@ final class PlacedFeatures {
             config.getDouble("holograms.line-spacing", TextHolograms.DEFAULT_LINE_SPACING));
 
         Optional<SocialHeads> socialHeads = socialHeads(plugin, core, config, spam);
+        Optional<Parkour> parkour = parkour(plugin, core, config, spam);
 
         placements.onChange(current -> {
             npcs.show(current.npcs());
             holograms.show(current.holograms());
             socialHeads.ifPresent(heads -> heads.show(current.socialHeads()));
+            parkour.ifPresent(course -> course.show(current.parkourPoints()));
         });
         shop.ifPresent(found -> found.start(placements));
         placements.start().thenRun(() -> PlacementImport.run(plugin.getDataFolder(), placements, plugin.getLogger()));
@@ -97,7 +115,8 @@ final class PlacedFeatures {
         bind.accept(HologramCommand.NAME, new HologramCommand(placements, messages, reply));
         bind.accept(ShopCommand.NAME, new ShopCommand(shop, placements, messages, reply));
         bind.accept(SocialHeadCommand.NAME, new SocialHeadCommand(placements, messages, reply));
-        return new PlacedFeatures(placements, npcs, holograms, shop, spam, games, shopAccess, socialHeads);
+        bind.accept(ParkourCommand.NAME, new ParkourCommand(placements, messages, reply));
+        return new PlacedFeatures(placements, npcs, holograms, shop, spam, games, shopAccess, socialHeads, parkour);
     }
 
     SpamGuard spam() {
@@ -118,6 +137,7 @@ final class PlacedFeatures {
         holograms.stop();
         shop.ifPresent(Shop::stop);
         socialHeads.ifPresent(SocialHeads::stop);
+        parkour.ifPresent(Parkour::stop);
     }
 
     private static Optional<SocialHeads> socialHeads(JavaPlugin plugin, MuxeCore core, FileConfiguration config, SpamGuard spam) {
@@ -130,6 +150,17 @@ final class PlacedFeatures {
         plugin.getServer().getPluginManager().registerEvents(heads, plugin);
         plugin.getServer().getScheduler().runTaskTimer(plugin, heads, SocialHeads.CHECK_PERIOD_TICKS, SocialHeads.CHECK_PERIOD_TICKS);
         return Optional.of(heads);
+    }
+
+    private static Optional<Parkour> parkour(JavaPlugin plugin, MuxeCore core, FileConfiguration config, SpamGuard spam) {
+        if (!config.isSet(PARKOUR_SECTION)) {
+            plugin.getLogger().warning("The parkour is off: config.yml has no '" + PARKOUR_SECTION + "' section");
+            return Optional.empty();
+        }
+        ParkourSettings settings = ParkourSettings.from(Objects.requireNonNull(config.getConfigurationSection(PARKOUR_SECTION)));
+        Parkour parkour = new Parkour(plugin, settings, core.identity().group(), core.commands(), core.queries(), core.mainThread(), core.messages(), spam, core.clock());
+        plugin.getServer().getPluginManager().registerEvents(parkour, plugin);
+        return Optional.of(parkour);
     }
 
     private static Shop shop(JavaPlugin plugin, MuxeCore core, ShopSettings settings, SpamGuard spam) {

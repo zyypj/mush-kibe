@@ -5,6 +5,8 @@ import br.com.muxe.core.common.persistence.transaction.TransactionContext;
 import br.com.muxe.core.common.placement.domain.HologramPlacement;
 import br.com.muxe.core.common.placement.domain.NpcAction;
 import br.com.muxe.core.common.placement.domain.NpcPlacement;
+import br.com.muxe.core.common.placement.domain.ParkourPoint;
+import br.com.muxe.core.common.placement.domain.ParkourPointPlacement;
 import br.com.muxe.core.common.placement.domain.Placement;
 import br.com.muxe.core.common.placement.domain.PlacementKind;
 import br.com.muxe.core.common.placement.domain.PlacementRepository;
@@ -37,6 +39,8 @@ public final class PostgresPlacementRepository implements PlacementRepository {
         + ", seller_world, seller_x, seller_y, seller_z, seller_yaw, seller_pitch FROM core.register_placements WHERE server_group = ? ORDER BY id";
 
     private static final String FIND_SOCIAL_HEADS = "SELECT id, " + POSITION + " FROM core.social_head_placements WHERE server_group = ? ORDER BY id";
+
+    private static final String FIND_PARKOUR_POINTS = "SELECT id, " + POSITION + " FROM core.parkour_placements WHERE server_group = ? ORDER BY id";
 
     private static final String SAVE_NPC = """
         INSERT INTO core.npc_placements (server_group, id, world, x, y, z, yaw, pitch, name, action, action_target, skin_name, skin_value, skin_signature)
@@ -71,11 +75,24 @@ public final class PostgresPlacementRepository implements PlacementRepository {
         SET world = EXCLUDED.world, x = EXCLUDED.x, y = EXCLUDED.y, z = EXCLUDED.z, yaw = EXCLUDED.yaw, pitch = EXCLUDED.pitch
         """;
 
+    private static final String SAVE_PARKOUR_POINT = """
+        INSERT INTO core.parkour_placements (server_group, id, world, x, y, z, yaw, pitch)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (server_group, id) DO UPDATE
+        SET world = EXCLUDED.world, x = EXCLUDED.x, y = EXCLUDED.y, z = EXCLUDED.z, yaw = EXCLUDED.yaw, pitch = EXCLUDED.pitch
+        """;
+
     @Override
     public Placements findByGroup(String group) {
         try {
             Connection connection = TransactionContext.connection();
-            return new Placements(npcs(connection, group), holograms(connection, group), registers(connection, group), socialHeads(connection, group));
+            return new Placements(
+                npcs(connection, group),
+                holograms(connection, group),
+                registers(connection, group),
+                socialHeads(connection, group),
+                parkourPoints(connection, group)
+            );
         } catch (SQLException exception) {
             throw new PersistenceException("placement.find_by_group", exception);
         }
@@ -90,6 +107,7 @@ public final class PostgresPlacementRepository implements PlacementRepository {
                 case HologramPlacement hologram -> saveHologram(connection, hologram);
                 case RegisterPlacement register -> saveRegister(connection, register);
                 case SocialHeadPlacement head -> saveSocialHead(connection, head);
+                case ParkourPointPlacement point -> saveParkourPoint(connection, point);
             }
         } catch (SQLException exception) {
             throw new PersistenceException("placement.save", exception);
@@ -103,6 +121,7 @@ public final class PostgresPlacementRepository implements PlacementRepository {
             case HOLOGRAM -> "core.hologram_placements";
             case REGISTER -> "core.register_placements";
             case SOCIAL_HEAD -> "core.social_head_placements";
+            case PARKOUR -> "core.parkour_placements";
         };
         try (PreparedStatement statement = TransactionContext.connection().prepareStatement("DELETE FROM " + table + " WHERE server_group = ? AND id = ?")) {
             statement.setString(1, group);
@@ -178,6 +197,21 @@ public final class PostgresPlacementRepository implements PlacementRepository {
         return heads;
     }
 
+    private static List<ParkourPointPlacement> parkourPoints(Connection connection, String group) throws SQLException {
+        List<ParkourPointPlacement> points = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(FIND_PARKOUR_POINTS)) {
+            statement.setString(1, group);
+            try (ResultSet rows = statement.executeQuery()) {
+                while (rows.next()) {
+                    String id = rows.getString("id");
+                    ParkourPoint point = ParkourPoint.parse(id).orElseThrow(() -> new SQLException("Unknown parkour point id: " + id));
+                    points.add(new ParkourPointPlacement(group, point, position(rows, "")));
+                }
+            }
+        }
+        return points;
+    }
+
     private static void saveNpc(Connection connection, NpcPlacement npc) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(SAVE_NPC)) {
             statement.setString(1, npc.group());
@@ -227,6 +261,15 @@ public final class PostgresPlacementRepository implements PlacementRepository {
             statement.setString(1, head.group());
             statement.setString(2, head.id());
             setPosition(statement, 3, head.position());
+            statement.executeUpdate();
+        }
+    }
+
+    private static void saveParkourPoint(Connection connection, ParkourPointPlacement point) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(SAVE_PARKOUR_POINT)) {
+            statement.setString(1, point.group());
+            statement.setString(2, point.id());
+            setPosition(statement, 3, point.position());
             statement.executeUpdate();
         }
     }

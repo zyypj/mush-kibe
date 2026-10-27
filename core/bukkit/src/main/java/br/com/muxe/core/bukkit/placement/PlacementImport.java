@@ -4,6 +4,8 @@ import br.com.muxe.core.bukkit.config.BukkitConfigSource;
 import br.com.muxe.core.bukkit.location.StoredLocation;
 import br.com.muxe.core.common.placement.domain.NpcAction;
 import br.com.muxe.core.common.placement.domain.NpcPlacement;
+import br.com.muxe.core.common.placement.domain.ParkourPoint;
+import br.com.muxe.core.common.placement.domain.ParkourPointPlacement;
 import br.com.muxe.core.common.placement.domain.Placement;
 import br.com.muxe.core.common.placement.domain.Position;
 import br.com.muxe.core.common.placement.domain.RegisterPlacement;
@@ -51,6 +53,21 @@ public final class PlacementImport {
                 }
             }
         }
+        ConfigurationSection parkour = root.getConfigurationSection("parkour");
+        if (parkour != null) {
+            parkourPoint(parkour, "start", ParkourPoint.start(), group, logger).ifPresent(placements::add);
+            ConfigurationSection checkpoints = parkour.getConfigurationSection("checkpoints");
+            if (checkpoints != null) {
+                for (String number : checkpoints.getKeys(false)) {
+                    try {
+                        parkourPoint(checkpoints, number, ParkourPoint.checkpoint(Integer.parseInt(number)), group, logger).ifPresent(placements::add);
+                    } catch (RuntimeException exception) {
+                        logger.warning("Skipping parkour checkpoint '" + number + "' of " + FILE + ": " + exception.getMessage());
+                    }
+                }
+            }
+            parkourPoint(parkour, "end", ParkourPoint.end(), group, logger).ifPresent(placements::add);
+        }
         return placements;
     }
 
@@ -76,7 +93,7 @@ public final class PlacementImport {
             if (!file.renameTo(new File(dataFolder, FILE + DONE_SUFFIX))) {
                 logger.warning("Imported " + FILE + " but could not rename it; delete it to avoid importing it again");
             }
-            logger.info("Imported " + placements.size() + " NPCs and registers from " + FILE + " into group '" + sync.group() + "'");
+            logger.info("Imported " + placements.size() + " NPCs, registers and parkour points from " + FILE + " into group '" + sync.group() + "'");
         });
     }
 
@@ -92,6 +109,18 @@ public final class PlacementImport {
             section.getString("skin-name", ""),
             skin
         );
+    }
+
+    private static Optional<ParkourPointPlacement> parkourPoint(ConfigurationSection section, String key, ParkourPoint point, String group, Logger logger) {
+        if (!section.isConfigurationSection(key)) {
+            return Optional.empty();
+        }
+        try {
+            return position(section, key).map(position -> new ParkourPointPlacement(group, point, position));
+        } catch (RuntimeException exception) {
+            logger.warning("Skipping parkour point '" + point.id() + "' of " + FILE + ": " + exception.getMessage());
+            return Optional.empty();
+        }
     }
 
     private static Optional<Position> position(ConfigurationSection section, String path) {

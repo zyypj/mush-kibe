@@ -2,6 +2,7 @@ package br.com.muxe.core.common.testing;
 
 import br.com.muxe.core.common.placement.domain.HologramPlacement;
 import br.com.muxe.core.common.placement.domain.NpcPlacement;
+import br.com.muxe.core.common.placement.domain.ParkourPointPlacement;
 import br.com.muxe.core.common.placement.domain.Placement;
 import br.com.muxe.core.common.placement.domain.PlacementKind;
 import br.com.muxe.core.common.placement.domain.PlacementRepository;
@@ -23,6 +24,7 @@ public final class InMemoryPlacementRepository implements PlacementRepository {
         List<HologramPlacement> holograms = new ArrayList<>();
         List<RegisterPlacement> registers = new ArrayList<>();
         List<SocialHeadPlacement> socialHeads = new ArrayList<>();
+        List<ParkourPointPlacement> parkourPoints = new ArrayList<>();
         for (Placement placement : placements.values()) {
             if (!placement.group().equals(group)) {
                 continue;
@@ -32,9 +34,10 @@ public final class InMemoryPlacementRepository implements PlacementRepository {
                 case HologramPlacement hologram -> holograms.add(hologram);
                 case RegisterPlacement register -> registers.add(register);
                 case SocialHeadPlacement head -> socialHeads.add(head);
+                case ParkourPointPlacement point -> parkourPoints.add(point);
             }
         }
-        return new Placements(npcs, holograms, registers, socialHeads);
+        return new Placements(npcs, holograms, registers, socialHeads, parkourPoints);
     }
 
     @Override

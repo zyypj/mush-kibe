@@ -4,6 +4,7 @@ import br.com.muxe.core.bukkit.hologram.HologramPixel;
 import br.com.muxe.core.bukkit.text.Colors;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.UnaryOperator;
 import org.bukkit.Location;
 
 public record Display(String id, Location anchor, List<DisplayStand> stands, List<DisplayLabel> labels) {
@@ -17,9 +18,13 @@ public record Display(String id, Location anchor, List<DisplayStand> stands, Lis
     }
 
     public List<HologramPixel> labelPixels() {
+        return labelPixels(UnaryOperator.identity());
+    }
+
+    public List<HologramPixel> labelPixels(UnaryOperator<String> text) {
         return labels.stream()
-            .filter(label -> !Colors.translate(label.text()).isEmpty())
-            .map(label -> new HologramPixel(anchor.clone().add(0, label.height(), 0), Colors.translate(label.text())))
+            .map(label -> new HologramPixel(anchor.clone().add(0, label.height(), 0), Colors.translate(text.apply(label.text()))))
+            .filter(pixel -> !pixel.name().isEmpty())
             .toList();
     }
 }

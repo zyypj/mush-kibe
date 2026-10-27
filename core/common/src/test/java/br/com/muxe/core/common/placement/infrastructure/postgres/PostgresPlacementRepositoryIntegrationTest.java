@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import br.com.muxe.core.common.concurrent.MainThreadGuard;
 import br.com.muxe.core.common.metrics.simple.SimpleMetricRegistry;
+import br.com.muxe.core.common.parkour.infrastructure.postgres.PostgresParkourRecordRepository;
 import br.com.muxe.core.common.persistence.database.Database;
 import br.com.muxe.core.common.persistence.database.DatabaseConfig;
 import br.com.muxe.core.common.persistence.migration.MigrationRunner;
@@ -11,6 +12,8 @@ import br.com.muxe.core.common.persistence.transaction.JdbcTransactions;
 import br.com.muxe.core.common.placement.domain.HologramPlacement;
 import br.com.muxe.core.common.placement.domain.NpcAction;
 import br.com.muxe.core.common.placement.domain.NpcPlacement;
+import br.com.muxe.core.common.placement.domain.ParkourPoint;
+import br.com.muxe.core.common.placement.domain.ParkourPointPlacement;
 import br.com.muxe.core.common.placement.domain.Placement;
 import br.com.muxe.core.common.placement.domain.PlacementKind;
 import br.com.muxe.core.common.placement.domain.Placements;
@@ -88,6 +91,42 @@ class PostgresPlacementRepositoryIntegrationTest {
         assertThat(transactions.readOnly("test.find", () -> repository.findByGroup(group)).socialHeads()).containsExactly(moved);
         assertThat(transactions.inTransaction("test.remove", () -> repository.remove(PlacementKind.SOCIAL_HEAD, group, "redes"))).isTrue();
         assertThat(transactions.readOnly("test.find", () -> repository.findByGroup(group)).socialHeads()).isEmpty();
+    }
+
+    @Test
+    void parkourPointsAreStoredMovedAndRemoved() {
+        String group = group();
+        ParkourPointPlacement start = new ParkourPointPlacement(group, ParkourPoint.start(), SPAWN);
+        ParkourPointPlacement checkpoint = new ParkourPointPlacement(group, ParkourPoint.checkpoint(2), new Position("lobby", -56.5, 87, -58.5, 0, 0));
+        ParkourPointPlacement end = new ParkourPointPlacement(group, ParkourPoint.end(), new Position("lobby", 48.5, 118, -73.5, 0, 0));
+        ParkourPointPlacement movedEnd = end.movedTo(new Position("lobby", 50.5, 118, -73.5, 90, 0));
+        save(start, checkpoint, end, movedEnd);
+
+        assertThat(transactions.readOnly("test.find", () -> repository.findByGroup(group)).parkourPoints())
+            .containsExactlyInAnyOrder(start, checkpoint, movedEnd);
+        assertThat(transactions.inTransaction("test.remove", () -> repository.remove(PlacementKind.PARKOUR, group, "checkpoint-2"))).isTrue();
+        assertThat(transactions.readOnly("test.find", () -> repository.findByGroup(group)).parkourPoints()).containsExactlyInAnyOrder(start, movedEnd);
+    }
+
+    @Test
+    void aParkourRecordOnlyGetsBetter() {
+        PostgresParkourRecordRepository records = new PostgresParkourRecordRepository();
+        String group = group();
+        UUID player = UUID.randomUUID();
+
+        transactions.inTransaction("test.save", () -> {
+            records.save(group, player, Duration.ofMillis(298_902), Instant.parse("2026-10-27T20:00:00Z"));
+            records.save(group, player, Duration.ofMillis(400_000), Instant.parse("2026-10-27T20:05:00Z"));
+            return null;
+        });
+        assertThat(transactions.readOnly("test.find", () -> records.best(group, player))).contains(Duration.ofMillis(298_902));
+
+        transactions.inTransaction("test.save", () -> {
+            records.save(group, player, Duration.ofMillis(194_002), Instant.parse("2026-10-27T20:10:00Z"));
+            return null;
+        });
+        assertThat(transactions.readOnly("test.find", () -> records.best(group, player))).contains(Duration.ofMillis(194_002));
+        assertThat(transactions.readOnly("test.find", () -> records.best(group(), player))).isEmpty();
     }
 
     @Test

@@ -75,6 +75,19 @@ class DisplayTest {
         assertThat(pixels.get(1).location().getY()).isCloseTo(35.25, within(1e-9));
     }
 
+    @Test
+    void labelsCanBeFilledInForEachViewer() {
+        Display display = new Display("parkour", anchor, List.of(), List.of(
+            new DisplayLabel("&b&lPARKOUR", 2.075),
+            new DisplayLabel("&eRecorde pessoal: &7{record}", 1.2625)
+        ));
+
+        List<HologramPixel> pixels = display.labelPixels(text -> text.replace("{record}", "3m 14,002s"));
+
+        assertThat(pixels).extracting(HologramPixel::name).containsExactly("§b§lPARKOUR", "§eRecorde pessoal: §73m 14,002s");
+        assertThat(display.labelPixels(text -> text.startsWith("&e") ? "" : text)).hasSize(1);
+    }
+
     private static DisplayStand stand(double x, double y, double z, float yaw, StandMotion motion) {
         return new DisplayStand(x, y, z, yaw, true, false, Optional.empty(), Optional.empty(), StandPose.ZERO, StandPose.ZERO, motion);
     }

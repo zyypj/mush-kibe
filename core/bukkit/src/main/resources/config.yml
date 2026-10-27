@@ -106,6 +106,52 @@ social-heads:
         - "&c&lYOUTUBE:"
         - "&fhttps://www.youtube.com/@muxe"
 
+parkour:
+  no-record: "..."
+  items:
+    restart:
+      slot: 4
+      item:
+        material: RECORD_9
+        name: "&aReiniciar Parkour"
+        hide-flags: false
+    checkpoint:
+      slot: 5
+      item:
+        material: GOLD_PLATE
+        name: "&aVoltar ao Checkpoint"
+    stop:
+      slot: 6
+      item:
+        material: REDSTONE
+        name: "&aParar Parkour"
+  holograms:
+    start:
+      - text: "&b&lPARKOUR"
+        height: 2.075
+      - text: "&aInício"
+        height: 1.79375
+      - text: "&eRecorde pessoal: &7{record}"
+        height: 1.2625
+    checkpoint:
+      - text: "&b&lPARKOUR"
+        height: 1.54375
+      - text: "&eCheckpoint &a#{number}"
+        height: 1.2625
+    end:
+      - text: "&b&lPARKOUR"
+        height: 1.54375
+      - text: "&cFim"
+        height: 1.2625
+  finish-firework:
+    type: BALL_LARGE
+    colors:
+      - "#55FF55"
+      - "#55FFFF"
+      - "#FF5555"
+    flicker: false
+    trail: false
+
 hotbar:
   server-kinds:
     - LOBBY
@@ -1151,6 +1197,30 @@ messages:
   social-list-empty: "&7Nenhuma cabeça de redes sociais. Use &f/redes criar&7."
   social-list-header: "&eCabeças de redes sociais do grupo &f{group} &e({count}):"
   social-list-line: "&8- &f{id} &8{location}"
+  parkour-started: "&b&lPARKOUR &aIniciado!"
+  parkour-restarted: "&b&lPARKOUR &aTemporizador reiniciado!"
+  parkour-checkpoint: "&b&lPARKOUR &aVocê completou o &echeckpoint #{number} &aem &7{time}&a!"
+  parkour-returned: "&b&lPARKOUR &aVocê voltou para o checkpoint #{number}."
+  parkour-finished: "&b&lPARKOUR &aVocê finalizou o &eparkour &aem &7{time}&a!"
+  parkour-new-record: "&b&lPARKOUR &eVocê atingiu um novo &brecorde! &a{previous} &7-> &a{time}"
+  parkour-stopped: "&b&lPARKOUR &cVocê saiu do parkour."
+  parkour-usage:
+    - "&eUso do /parkour:"
+    - "&f/parkour inicio &7- marca o início no bloco onde você está"
+    - "&f/parkour checkpoint <número> &7- marca um checkpoint no bloco onde você está"
+    - "&f/parkour fim &7- marca o fim no bloco onde você está"
+    - "&f/parkour remover <inicio|fim|número> &7- remove um ponto"
+    - "&f/parkour listar &7- lista os pontos deste grupo"
+  parkour-invalid-point: "&cUse inicio, fim ou o número do checkpoint (1 ou mais)."
+  parkour-saved: "&aPonto &f{point} &ado parkour marcado onde você está."
+  parkour-unknown: "&cO parkour deste grupo não tem &f{point}&c."
+  parkour-removed: "&aPonto &f{point} &aremovido do parkour."
+  parkour-list-empty: "&7O parkour deste grupo não tem pontos. Use &f/parkour inicio&7."
+  parkour-list-header: "&ePontos do parkour do grupo &f{group} &e({count}):"
+  parkour-list-line: "&8- &f{point} &8{location}"
+  parkour-point-start: "início"
+  parkour-point-end: "fim"
+  parkour-point-checkpoint: "checkpoint #{number}"
   hologram-lines-header: "&eHolograma &f{id} &8{location}"
   hologram-lines-line: "&8{line}. &r{text}"
   shop-unavailable: "&cA loja não está disponível neste servidor."
