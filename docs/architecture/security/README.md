@@ -27,7 +27,7 @@ The network accepts players without a Minecraft account (offline mode), so the p
 - **Premium names** (an existing premium account, or any name that exists at Mojang, even if a cracked account registered it here first) are forced into online mode: Velocity verifies the session with Mojang, so a cracked client cannot use a premium name. Premium players are authenticated without a password.
 - **Names follow the Mojang-verified identity:** a premium login takes its name from any other account, and a renamed premium player keeps the same account because the Mojang UUID does not change. See [Accounts](../../features/accounts/README.md#name-ownership).
 - **Cracked names** go to an auth server, solve a code drawn with holograms (anti-bot) and then register or log in with a password.
-- **Login sessions:** after a password login, the proxy keeps the SHA-256 of the player id and IP in Redis for 2 hours. A reconnection of the same account from the same IP within that time is authenticated without a password. The raw IP is never stored.
+- **Login sessions:** after a password login, the proxy keeps the SHA-256 of the player id and IP in Redis for 24 hours. A reconnection of the same account from the same IP within that time is authenticated without a password. The raw IP is never stored.
 - If Mojang cannot be reached, new names are refused instead of being registered as cracked.
 - Until a player is authenticated, the proxy **denies every connection to a server outside the auth group**, and ignores `player.connect` packets for that player.
 - The proxy only accepts `auth.authenticated` from an origin that its server directory knows as an `AUTH` server of the auth group.

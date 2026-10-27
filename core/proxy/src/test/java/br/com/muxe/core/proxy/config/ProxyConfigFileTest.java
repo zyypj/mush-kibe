@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import br.com.muxe.core.common.config.source.MapConfigSource;
 import br.com.muxe.core.proxy.text.ProxyMessages;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.util.Map;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -29,6 +31,14 @@ class ProxyConfigFileTest {
         );
 
         assertThat(messages.get("no-auth-server")).isEqualTo(LegacyComponentSerializer.legacyAmpersand().deserialize(expected));
+    }
+
+    @Test
+    void aPasswordLoginIsRememberedForADay() {
+        MapConfigSource config = ProxyConfigFile.load(folder);
+
+        assertThat(AuthenticationSettings.from(config).sessionDuration()).isEqualTo(Duration.ofHours(24));
+        assertThat(AuthenticationSettings.from(new MapConfigSource(Map.of())).sessionDuration()).isEqualTo(Duration.ofHours(24));
     }
 
     @Test

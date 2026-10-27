@@ -29,7 +29,7 @@ Tudo sobre a Muxe está documentado aqui, em inglês e português. As regras de 
 ## Features
 
 - [Contas](features/accounts/README.pt-BR.md): uma conta por jogador, criada no primeiro login.
-- [Autenticação](features/authentication/README.pt-BR.md): login automático de premium, desafio anti-bot, `/registrar`, `/logar` e sessões de 2 horas.
+- [Autenticação](features/authentication/README.pt-BR.md): login automático de premium, desafio anti-bot, `/registrar`, `/logar` e sessões de 24 horas.
 - [Roteamento da rede](features/network-routing/README.pt-BR.md): como o proxy escolhe servidores, o `/lobby` e a barreira de acesso.
 - [Administração da rede](features/network-admin/README.pt-BR.md): comandos `/muxe` para a equipe.
 - [Lobby](features/lobby/README.pt-BR.md): spawn, voo, proteção, scoreboard, boss bar e `/jogar`.

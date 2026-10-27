@@ -40,7 +40,7 @@ When a connection starts, the proxy decides its **login mode**:
 After the account is recorded, the proxy authenticates the player immediately when:
 
 - the account is **premium**, or
-- the player has a valid **login session**: they logged in with a password less than `authentication.session-duration` ago (2 hours by default), with the same account and from the same IP.
+- the player has a valid **login session**: they logged in with a password less than `authentication.session-duration` ago (24 hours by default), with the same account and from the same IP.
 
 Automatically authenticated players go straight to a lobby. Everyone else goes to an auth server.
 
@@ -105,7 +105,7 @@ Proxy `config.yml`:
 | `authentication.premium-lookup-timeout` | `3s` | Timeout of the Mojang lookup. |
 | `authentication.premium-cache` | `6h` | How long "premium" answers from Mojang are cached in Redis. |
 | `authentication.cracked-cache` | `10m` | How long "not premium" answers are cached. Short, so a name that becomes premium is protected quickly. |
-| `authentication.session-duration` | `2h` | How long a password login is remembered for the same account and IP. |
+| `authentication.session-duration` | `24h` | How long a password login is remembered for the same account and IP. |
 
 `plugins/Muxe-Auth/config.yml`:
 

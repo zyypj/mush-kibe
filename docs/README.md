@@ -29,7 +29,7 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 ## Features
 
 - [Accounts](features/accounts/README.md): one account per player, created on the first login.
-- [Authentication](features/authentication/README.md): premium auto-login, anti-bot challenge, `/registrar`, `/logar` and 2-hour sessions.
+- [Authentication](features/authentication/README.md): premium auto-login, anti-bot challenge, `/registrar`, `/logar` and 24-hour sessions.
 - [Network routing](features/network-routing/README.md): how the proxy picks servers, `/lobby` and the access gate.
 - [Network administration](features/network-admin/README.md): `/muxe` commands for staff.
 - [Lobby](features/lobby/README.md): spawn, flight, protection, scoreboard, boss bar and `/jogar`.

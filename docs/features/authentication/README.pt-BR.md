@@ -40,7 +40,7 @@ Quando uma conexão começa, o proxy decide o seu **modo de login**:
 Depois que a conta é registrada, o proxy autentica o jogador na hora quando:
 
 - a conta é **premium**, ou
-- o jogador tem uma **sessão de login** válida: ele fez login com senha há menos de `authentication.session-duration` (2 horas por padrão), com a mesma conta e do mesmo IP.
+- o jogador tem uma **sessão de login** válida: ele fez login com senha há menos de `authentication.session-duration` (24 horas por padrão), com a mesma conta e do mesmo IP.
 
 Jogadores autenticados automaticamente vão direto para um lobby. Os demais vão para um servidor de autenticação.
 
@@ -105,7 +105,7 @@ As posições são salvas em `plugins/Muxe-Auth/config.yml`, em `locations`, e v
 | `authentication.premium-lookup-timeout` | `3s` | Tempo limite da consulta à Mojang. |
 | `authentication.premium-cache` | `6h` | Por quanto tempo as respostas "premium" da Mojang ficam em cache no Redis. |
 | `authentication.cracked-cache` | `10m` | Por quanto tempo as respostas "não premium" ficam em cache. É curto, para que um nome que vira premium fique protegido rápido. |
-| `authentication.session-duration` | `2h` | Por quanto tempo um login com senha é lembrado para a mesma conta e o mesmo IP. |
+| `authentication.session-duration` | `24h` | Por quanto tempo um login com senha é lembrado para a mesma conta e o mesmo IP. |
 
 `plugins/Muxe-Auth/config.yml`:
 
