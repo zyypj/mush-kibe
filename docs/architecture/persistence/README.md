@@ -53,7 +53,7 @@ return transactions.inTransaction("account.record_login", () -> {
 
 | Schema | Owner | Tables |
 |---|---|---|
-| `core` | `core:common` | `accounts` (V1), `accounts.premium` (V2), nullable `accounts.username` for released names (V3), `npc_placements`, `hologram_placements`, `register_placements` (placed per server group) and `shop_promotion` (one row for the network) (V4), `player_visibility` (each player's visibility choice, copied from the old `lobby.player_settings`) (V5) |
+| `core` | `core:common` | `accounts` (V1), `accounts.premium` (V2), nullable `accounts.username` for released names (V3), `npc_placements`, `hologram_placements`, `register_placements` (placed per server group) and `shop_promotion` (one row for the network) (V4), `player_visibility` (each player's visibility choice, copied from the old `lobby.player_settings`) (V5), `social_head_placements` (social media heads placed per server group) (V6) |
 | `auth` | `servers:auth` | `credentials` |
 | `lobby` | `servers:lobby` | None. `player_settings` (V1) was dropped by V2 after its rows moved to `core.player_visibility`. |
 

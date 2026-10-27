@@ -171,6 +171,7 @@ ItemStack pane = ItemBuilder.from(config.getConfigurationSection("menus.lobby-se
 - `ItemBuilder` is immutable: every method returns a new builder, so a template can be shared and filled in many times.
 - Covers material and data, amount, name and lore (with `&` colors), `addLore`, `addLoreIf`, enchantments, `glow()`, `unbreakable()`, leather `color`, skulls by owner (`skullOwner`) or by texture (`skullTexture`: the base64 value, the texture URL or just the hash after `textures.minecraft.net/texture/`), and `{placeholder}` replacement in name and lore with `replacing`.
 - Item flags are hidden by default; `showFlags()` shows them.
+- `SkullTextures.apply(Skull, Optional<String>)` (package `br.com.muxe.core.bukkit.nms`) puts a texture on a head block already placed in the world; an empty texture gives the default head. Pass the value from `SkullTexture.value(...)`, then call `skull.update(...)`. The [social media heads](../../features/social-heads/README.md) use it.
 - `ItemBuilder.from(section)` reads the same fields from configuration:
 
 ```yaml
@@ -192,6 +193,10 @@ item:
 ```
 
 - `build()` needs a running server. Everything else is plain data, so tests check builders directly.
+
+### Block updates
+
+`BlockUpdates.resend(Block)` (package `br.com.muxe.core.bukkit.nms`) sends a block again to the players who see it, for changes the client does not pick up by itself, such as a new texture on a head block. It does nothing when the server internals are missing.
 
 ## Menus
 
@@ -334,9 +339,9 @@ displays.put(new Display("shop", anchor, List.of(
 
 Packages `br.com.muxe.core.common.placement` and `br.com.muxe.core.bukkit.placement`.
 
-Muxe-Core itself places the NPCs, holograms and shop cash registers that staff create with `/npc`, `/holograma` and `/loja caixa`, on every server, as described in [NPCs and holograms](../../features/npcs-and-holograms/README.md). Plugins do not need their own NPC or hologram storage: staff place them by command.
+Muxe-Core itself places the NPCs, holograms, shop cash registers and social media heads that staff create with `/npc`, `/holograma`, `/loja caixa` and `/redes`, on every server, as described in [NPCs and holograms](../../features/npcs-and-holograms/README.md). Plugins do not need their own NPC or hologram storage: staff place them by command.
 
-- `Placement` is sealed: `NpcPlacement`, `HologramPlacement` and `RegisterPlacement`, each with a server group, an id and a `Position`. `Placements` holds everything of a group.
+- `Placement` is sealed: `NpcPlacement`, `HologramPlacement`, `RegisterPlacement` and `SocialHeadPlacement` (see [Social media heads](../../features/social-heads/README.md)), each with a server group, an id and a `Position`. `Placements` holds everything of a group.
 - `PlacementSync` loads the placements of this server's group on startup, saves and removes them through `SavePlacementCommand` and `RemovePlacementCommand`, publishes `placement.changed` to the group, and reloads with `FindPlacementsQuery` when that packet arrives. Listeners registered with `onChange` run on the main thread.
 - `Reconciler<T>` compares the wanted list with what is shown, by id, and returns only what was added or changed and what was removed, so a reload never respawns what did not change.
 - `PlacementImport` reads `plugins/Muxe-Core/import.yml` once on startup.

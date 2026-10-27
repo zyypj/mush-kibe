@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
+import org.bukkit.block.Skull;
 import org.bukkit.inventory.meta.SkullMeta;
 
 public final class SkullTextures {
@@ -17,6 +18,10 @@ public final class SkullTextures {
 
     public static boolean apply(SkullMeta meta, String texture) {
         return Holder.HANDLES.map(handles -> handles.apply(meta, texture)).orElse(false);
+    }
+
+    public static boolean apply(Skull skull, Optional<String> texture) {
+        return Holder.HANDLES.map(handles -> handles.apply(skull, texture.orElse(null))).orElse(false);
     }
 
     private static final class Holder {
@@ -46,14 +51,17 @@ public final class SkullTextures {
             }
         }
 
-        private boolean apply(SkullMeta meta, String texture) {
+        private boolean apply(Object target, String texture) {
             try {
-                Object gameProfile = profile.newInstance(UUID.nameUUIDFromBytes(texture.getBytes(StandardCharsets.UTF_8)), null);
-                Object map = properties.invoke(gameProfile);
-                map.getClass().getMethod("put", Object.class, Object.class).invoke(map, "textures", property.newInstance("textures", texture));
-                Field field = meta.getClass().getDeclaredField("profile");
+                Object gameProfile = null;
+                if (texture != null) {
+                    gameProfile = profile.newInstance(UUID.nameUUIDFromBytes(texture.getBytes(StandardCharsets.UTF_8)), null);
+                    Object map = properties.invoke(gameProfile);
+                    map.getClass().getMethod("put", Object.class, Object.class).invoke(map, "textures", property.newInstance("textures", texture));
+                }
+                Field field = target.getClass().getDeclaredField("profile");
                 field.setAccessible(true);
-                field.set(meta, gameProfile);
+                field.set(target, gameProfile);
                 return true;
             } catch (ReflectiveOperationException | RuntimeException exception) {
                 Bukkit.getLogger().log(Level.FINE, "[Muxe] Could not apply a skull texture", exception);

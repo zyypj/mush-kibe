@@ -24,6 +24,9 @@ commands:
     aliases:
       - hologram
       - holo
+  redes:
+    description: Places the social media heads of this server group.
+    usage: /redes <criar|mover|remover|listar>
   loja:
     description: Opens the shop, or manages its cash registers and promotion.
     usage: /loja [caixa|vendedor|promocao]
@@ -41,6 +44,9 @@ permissions:
     default: op
   muxe.hologram:
     description: Allows /holograma.
+    default: op
+  muxe.social:
+    description: Allows /redes.
     default: op
   muxe.shop.manage:
     description: Allows /loja caixa, /loja vendedor and /loja promocao.

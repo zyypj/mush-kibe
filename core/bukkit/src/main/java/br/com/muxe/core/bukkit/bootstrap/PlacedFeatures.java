@@ -5,6 +5,7 @@ import br.com.muxe.core.bukkit.command.AsyncReply;
 import br.com.muxe.core.bukkit.command.HologramCommand;
 import br.com.muxe.core.bukkit.command.NpcCommand;
 import br.com.muxe.core.bukkit.command.ShopCommand;
+import br.com.muxe.core.bukkit.command.SocialHeadCommand;
 import br.com.muxe.core.bukkit.hologram.TextHolograms;
 import br.com.muxe.core.bukkit.hologram.placed.PlacedHolograms;
 import br.com.muxe.core.bukkit.npc.placed.NpcLines;
@@ -20,6 +21,8 @@ import br.com.muxe.core.bukkit.shop.ShopService;
 import br.com.muxe.core.bukkit.shop.ShopSettings;
 import br.com.muxe.core.bukkit.shop.promotion.ShopPromotion;
 import br.com.muxe.core.bukkit.shop.register.ShopRegisters;
+import br.com.muxe.core.bukkit.social.SocialHeadSettings;
+import br.com.muxe.core.bukkit.social.SocialHeads;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.config.source.DurationParser;
 import br.com.muxe.core.common.cooldown.SpamGuard;
@@ -33,6 +36,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 final class PlacedFeatures {
 
     private static final String SHOP_SECTION = "shop";
+    private static final String SOCIAL_SECTION = "social-heads";
 
     private final PlacementSync placements;
     private final PlacedNpcs npcs;
@@ -41,8 +45,9 @@ final class PlacedFeatures {
     private final SpamGuard spam;
     private final GameConnector games;
     private final ShopAccess shopAccess;
+    private final Optional<SocialHeads> socialHeads;
 
-    private PlacedFeatures(PlacementSync placements, PlacedNpcs npcs, PlacedHolograms holograms, Optional<Shop> shop, SpamGuard spam, GameConnector games, ShopAccess shopAccess) {
+    private PlacedFeatures(PlacementSync placements, PlacedNpcs npcs, PlacedHolograms holograms, Optional<Shop> shop, SpamGuard spam, GameConnector games, ShopAccess shopAccess, Optional<SocialHeads> socialHeads) {
         this.placements = placements;
         this.npcs = npcs;
         this.holograms = holograms;
@@ -50,6 +55,7 @@ final class PlacedFeatures {
         this.spam = spam;
         this.games = games;
         this.shopAccess = shopAccess;
+        this.socialHeads = socialHeads;
     }
 
     static PlacedFeatures start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, BiConsumer<String, CommandExecutor> bind) {
@@ -76,9 +82,12 @@ final class PlacedFeatures {
             config.getDouble("holograms.top", 2.0),
             config.getDouble("holograms.line-spacing", TextHolograms.DEFAULT_LINE_SPACING));
 
+        Optional<SocialHeads> socialHeads = socialHeads(plugin, core, config, spam);
+
         placements.onChange(current -> {
             npcs.show(current.npcs());
             holograms.show(current.holograms());
+            socialHeads.ifPresent(heads -> heads.show(current.socialHeads()));
         });
         shop.ifPresent(found -> found.start(placements));
         placements.start().thenRun(() -> PlacementImport.run(plugin.getDataFolder(), placements, plugin.getLogger()));
@@ -87,7 +96,8 @@ final class PlacedFeatures {
         bind.accept(NpcCommand.NAME, new NpcCommand(placements, MojangSkins.standard(), core.mainThread(), messages, reply));
         bind.accept(HologramCommand.NAME, new HologramCommand(placements, messages, reply));
         bind.accept(ShopCommand.NAME, new ShopCommand(shop, placements, messages, reply));
-        return new PlacedFeatures(placements, npcs, holograms, shop, spam, games, shopAccess);
+        bind.accept(SocialHeadCommand.NAME, new SocialHeadCommand(placements, messages, reply));
+        return new PlacedFeatures(placements, npcs, holograms, shop, spam, games, shopAccess, socialHeads);
     }
 
     SpamGuard spam() {
@@ -107,6 +117,19 @@ final class PlacedFeatures {
         npcs.stop();
         holograms.stop();
         shop.ifPresent(Shop::stop);
+        socialHeads.ifPresent(SocialHeads::stop);
+    }
+
+    private static Optional<SocialHeads> socialHeads(JavaPlugin plugin, MuxeCore core, FileConfiguration config, SpamGuard spam) {
+        if (!config.isSet(SOCIAL_SECTION)) {
+            plugin.getLogger().warning("The social heads are off: config.yml has no '" + SOCIAL_SECTION + "' section");
+            return Optional.empty();
+        }
+        SocialHeadSettings settings = SocialHeadSettings.from(Objects.requireNonNull(config.getConfigurationSection(SOCIAL_SECTION)));
+        SocialHeads heads = new SocialHeads(plugin, settings, spam, core.messages(), core.clock());
+        plugin.getServer().getPluginManager().registerEvents(heads, plugin);
+        plugin.getServer().getScheduler().runTaskTimer(plugin, heads, SocialHeads.CHECK_PERIOD_TICKS, SocialHeads.CHECK_PERIOD_TICKS);
+        return Optional.of(heads);
     }
 
     private static Shop shop(JavaPlugin plugin, MuxeCore core, ShopSettings settings, SpamGuard spam) {

@@ -15,7 +15,7 @@ NPCs and text holograms that staff place by command, on any server. They live in
 
 ### Shared by the server group
 
-- Every NPC, hologram and shop [cash register](../shop/README.md#cash-registers) belongs to a server group (`server.group` in the Muxe-Core config). Every server of that group shows the same ones; other groups have their own. Ids are unique inside a group.
+- Every NPC, hologram, shop [cash register](../shop/README.md#cash-registers) and [social media head](../social-heads/README.md) belongs to a server group (`server.group` in the Muxe-Core config). Every server of that group shows the same ones; other groups have their own. Ids are unique inside a group.
 - Ids use lowercase letters, digits, `-` and `_`, up to 32 characters.
 - A command saves the change in PostgreSQL (`SavePlacementCommand` or `RemovePlacementCommand`). Then the server where it ran reloads the group's placements and publishes `placement.changed` to the group; every other server of the group reloads them from PostgreSQL (`FindPlacementsQuery`). A server ignores its own packets, so it never reloads twice.
 - On startup each server loads the placements of its group, so a server that starts later shows what was placed before.
@@ -126,7 +126,7 @@ Without arguments, or with a wrong one, each command shows its usage.
 | `npcs.lines.none` | `&b&l{name}` | Lines above NPCs without an action. |
 | `holograms.top` | `2.0` | Height of the first hologram line above where it was created. |
 | `holograms.line-spacing` | `0.28` | Space between hologram lines. |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam for NPC, cash register and hotbar clicks. |
+| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam for NPC, cash register, hotbar and social media head clicks. |
 | `messages.npc-*`, `messages.hologram-*`, `messages.placement-failed`, `messages.spam-cooldown` | Portuguese texts | Command answers, usage lists and click messages. |
 | `messages.game-connecting`, `messages.game-unavailable` | `&7Procurando uma sala de &b{name}&7...`, `&cNenhuma sala de &f{name} &cdisponível no momento.` | Shown when a game NPC is clicked, shared with the [game selector](../hotbar/README.md#game-selector). They replace `npc-connecting` and `npc-unavailable`. |
 
@@ -146,8 +146,9 @@ Without arguments, or with a wrong one, each command shows its usage.
 | `core.npc_placements` | `server_group`, `id`, position (`world`, `x`, `y`, `z`, `yaw`, `pitch`), `name`, `action` (`NONE`, `GAME`, `SHOP`), `action_target` (the game group, empty otherwise), `skin_name`, `skin_value`, `skin_signature`. |
 | `core.hologram_placements` | `server_group`, `id`, position, `lines` (text array, empty string for a blank line). |
 | `core.register_placements` | Cash registers, see [Shop](../shop/README.md#data). |
+| `core.social_head_placements` | Social media heads, see [Social media heads](../social-heads/README.md#data). |
 
-The primary key of each table is `(server_group, id)`. Created by the core migration `V4__create_placements_and_promotion.sql`.
+The primary key of each table is `(server_group, id)`. Created by the core migration `V4__create_placements_and_promotion.sql`, except `core.social_head_placements`, created by `V6__create_social_head_placements.sql`.
 
 Commands and queries: `SavePlacementCommand`, `RemovePlacementCommand` (fails with `placement.not_found` when the id does not exist), `FindPlacementsQuery(group)`, registered by `PlacementModule`.
 
@@ -159,6 +160,7 @@ Commands and queries: `SavePlacementCommand`, `RemovePlacementCommand` (fails wi
 
 - The [Core API](../../development/core-api/README.md) provides `NpcService`, `MojangSkins`, `DisplayService`, `LabelStack`, `GameConnector` (shared with the [game selector](../hotbar/README.md#game-selector)) and `ShopAccess`.
 - The [Shop](../shop/README.md) uses the same storage and sync for its cash registers, and shop NPCs open it.
+- The [social media heads](../social-heads/README.md) are another placement kind (`SOCIAL_HEAD`) with the same storage and sync.
 - [Network routing](../network-routing/README.md) moves the players that click a game NPC.
 
 ## Acceptance criteria

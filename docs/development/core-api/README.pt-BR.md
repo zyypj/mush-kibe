@@ -171,6 +171,7 @@ ItemStack pane = ItemBuilder.from(config.getConfigurationSection("menus.lobby-se
 - O `ItemBuilder` é imutável: cada método devolve um builder novo, então um modelo pode ser compartilhado e preenchido várias vezes.
 - Cobre material e data, quantidade, nome e lore (com cores `&`), `addLore`, `addLoreIf`, encantamentos, `glow()`, `unbreakable()`, `color` de couro, cabeças por dono (`skullOwner`) ou por textura (`skullTexture`: o valor em base64, a URL da textura ou só o hash depois de `textures.minecraft.net/texture/`), e a troca de `{placeholder}` no nome e na lore com `replacing`.
 - As flags do item ficam escondidas por padrão; `showFlags()` mostra.
+- O `SkullTextures.apply(Skull, Optional<String>)` (pacote `br.com.muxe.core.bukkit.nms`) põe uma textura num bloco de cabeça já colocado no mundo; uma textura vazia dá a cabeça padrão. Passe o valor de `SkullTexture.value(...)` e depois chame `skull.update(...)`. As [cabeças de redes sociais](../../features/social-heads/README.pt-BR.md) o usam.
 - `ItemBuilder.from(section)` lê os mesmos campos da configuração:
 
 ```yaml
@@ -192,6 +193,10 @@ item:
 ```
 
 - O `build()` precisa de um servidor rodando. O resto são dados simples, então os testes verificam os builders diretamente.
+
+### Atualização de blocos
+
+O `BlockUpdates.resend(Block)` (pacote `br.com.muxe.core.bukkit.nms`) envia um bloco de novo para os jogadores que o veem, para mudanças que o cliente não percebe sozinho, como uma textura nova num bloco de cabeça. Ele não faz nada quando os internos do servidor estão ausentes.
 
 ## Menus
 
@@ -334,9 +339,9 @@ displays.put(new Display("shop", anchor, List.of(
 
 Pacotes `br.com.muxe.core.common.placement` e `br.com.muxe.core.bukkit.placement`.
 
-O próprio Muxe-Core coloca os NPCs, os hologramas e as caixas registradoras da loja que a equipe cria com `/npc`, `/holograma` e `/loja caixa`, em todos os servidores, como descrito em [NPCs e hologramas](../../features/npcs-and-holograms/README.pt-BR.md). Os plugins não precisam de armazenamento próprio de NPCs ou hologramas: a equipe os coloca por comando.
+O próprio Muxe-Core coloca os NPCs, os hologramas, as caixas registradoras da loja e as cabeças de redes sociais que a equipe cria com `/npc`, `/holograma`, `/loja caixa` e `/redes`, em todos os servidores, como descrito em [NPCs e hologramas](../../features/npcs-and-holograms/README.pt-BR.md). Os plugins não precisam de armazenamento próprio de NPCs ou hologramas: a equipe os coloca por comando.
 
-- O `Placement` é selado: `NpcPlacement`, `HologramPlacement` e `RegisterPlacement`, cada um com um grupo de servidores, um id e uma `Position`. O `Placements` guarda tudo de um grupo.
+- O `Placement` é selado: `NpcPlacement`, `HologramPlacement`, `RegisterPlacement` e `SocialHeadPlacement` (veja [Cabeças de redes sociais](../../features/social-heads/README.pt-BR.md)), cada um com um grupo de servidores, um id e uma `Position`. O `Placements` guarda tudo de um grupo.
 - O `PlacementSync` carrega o que foi colocado no grupo deste servidor ao ligar, salva e remove pelo `SavePlacementCommand` e pelo `RemovePlacementCommand`, publica `placement.changed` para o grupo, e recarrega com a `FindPlacementsQuery` quando esse pacote chega. Os ouvintes registrados com `onChange` rodam na main thread.
 - O `Reconciler<T>` compara a lista desejada com o que está aparecendo, por id, e devolve só o que foi adicionado ou mudou e o que foi removido, então recarregar nunca recria o que não mudou.
 - O `PlacementImport` lê o `plugins/Muxe-Core/import.yml` uma vez ao ligar.

@@ -12,6 +12,7 @@ import br.com.muxe.core.common.placement.domain.Placements;
 import br.com.muxe.core.common.placement.domain.Position;
 import br.com.muxe.core.common.placement.domain.RegisterPlacement;
 import br.com.muxe.core.common.placement.domain.SkinTexture;
+import br.com.muxe.core.common.placement.domain.SocialHeadPlacement;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,6 +35,8 @@ public final class PostgresPlacementRepository implements PlacementRepository {
 
     private static final String FIND_REGISTERS = "SELECT id, " + POSITION
         + ", seller_world, seller_x, seller_y, seller_z, seller_yaw, seller_pitch FROM core.register_placements WHERE server_group = ? ORDER BY id";
+
+    private static final String FIND_SOCIAL_HEADS = "SELECT id, " + POSITION + " FROM core.social_head_placements WHERE server_group = ? ORDER BY id";
 
     private static final String SAVE_NPC = """
         INSERT INTO core.npc_placements (server_group, id, world, x, y, z, yaw, pitch, name, action, action_target, skin_name, skin_value, skin_signature)
@@ -61,11 +64,18 @@ public final class PostgresPlacementRepository implements PlacementRepository {
             seller_z = EXCLUDED.seller_z, seller_yaw = EXCLUDED.seller_yaw, seller_pitch = EXCLUDED.seller_pitch
         """;
 
+    private static final String SAVE_SOCIAL_HEAD = """
+        INSERT INTO core.social_head_placements (server_group, id, world, x, y, z, yaw, pitch)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (server_group, id) DO UPDATE
+        SET world = EXCLUDED.world, x = EXCLUDED.x, y = EXCLUDED.y, z = EXCLUDED.z, yaw = EXCLUDED.yaw, pitch = EXCLUDED.pitch
+        """;
+
     @Override
     public Placements findByGroup(String group) {
         try {
             Connection connection = TransactionContext.connection();
-            return new Placements(npcs(connection, group), holograms(connection, group), registers(connection, group));
+            return new Placements(npcs(connection, group), holograms(connection, group), registers(connection, group), socialHeads(connection, group));
         } catch (SQLException exception) {
             throw new PersistenceException("placement.find_by_group", exception);
         }
@@ -79,6 +89,7 @@ public final class PostgresPlacementRepository implements PlacementRepository {
                 case NpcPlacement npc -> saveNpc(connection, npc);
                 case HologramPlacement hologram -> saveHologram(connection, hologram);
                 case RegisterPlacement register -> saveRegister(connection, register);
+                case SocialHeadPlacement head -> saveSocialHead(connection, head);
             }
         } catch (SQLException exception) {
             throw new PersistenceException("placement.save", exception);
@@ -91,6 +102,7 @@ public final class PostgresPlacementRepository implements PlacementRepository {
             case NPC -> "core.npc_placements";
             case HOLOGRAM -> "core.hologram_placements";
             case REGISTER -> "core.register_placements";
+            case SOCIAL_HEAD -> "core.social_head_placements";
         };
         try (PreparedStatement statement = TransactionContext.connection().prepareStatement("DELETE FROM " + table + " WHERE server_group = ? AND id = ?")) {
             statement.setString(1, group);
@@ -153,6 +165,19 @@ public final class PostgresPlacementRepository implements PlacementRepository {
         return registers;
     }
 
+    private static List<SocialHeadPlacement> socialHeads(Connection connection, String group) throws SQLException {
+        List<SocialHeadPlacement> heads = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(FIND_SOCIAL_HEADS)) {
+            statement.setString(1, group);
+            try (ResultSet rows = statement.executeQuery()) {
+                while (rows.next()) {
+                    heads.add(new SocialHeadPlacement(group, rows.getString("id"), position(rows, "")));
+                }
+            }
+        }
+        return heads;
+    }
+
     private static void saveNpc(Connection connection, NpcPlacement npc) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(SAVE_NPC)) {
             statement.setString(1, npc.group());
@@ -193,6 +218,15 @@ public final class PostgresPlacementRepository implements PlacementRepository {
                 statement.setNull(13, Types.REAL);
                 statement.setNull(14, Types.REAL);
             }
+            statement.executeUpdate();
+        }
+    }
+
+    private static void saveSocialHead(Connection connection, SocialHeadPlacement head) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(SAVE_SOCIAL_HEAD)) {
+            statement.setString(1, head.group());
+            statement.setString(2, head.id());
+            setPosition(statement, 3, head.position());
             statement.executeUpdate();
         }
     }

@@ -73,6 +73,39 @@ holograms:
   top: 2.0
   line-spacing: 0.28
 
+social-heads:
+  interval: 1m
+  label-height: 0.5125
+  networks:
+    instagram:
+      label: "&d@muxe"
+      message:
+        - "&d&lINSTAGRAM:"
+        - "&fhttps://www.instagram.com/muxe/"
+    twitch:
+      label: "&5@muxe"
+      texture: "8e8e38b532051fce3b3b7212f4ed1dd4b52ed976abdd286d9132c5b3a54db123"
+      message:
+        - "&5&lTWITCH:"
+        - "&fhttps://twitch.tv/muxe"
+    tiktok:
+      label: "&b@muxe"
+      texture: "d49286f0bbec44102d7a992c8a5d9c5501280dc9ca1917494fc84b0f63031410"
+      message:
+        - "&b&lTIKTOK:"
+        - "&fhttps://tiktok.com/@muxe"
+    twitter:
+      label: "&b@muxe"
+      message:
+        - "&b&lTWITTER:"
+        - "&fhttps://twitter.com/muxe"
+    youtube:
+      label: "&c@muxe"
+      texture: "ffb6ce188b84bdf96985a356bf3f485416f33d3b6dfce3a3fc144e77fe8dbb25"
+      message:
+        - "&c&lYOUTUBE:"
+        - "&fhttps://www.youtube.com/@muxe"
+
 hotbar:
   server-kinds:
     - LOBBY
@@ -1103,6 +1136,21 @@ messages:
   hologram-list-empty: "&7Nenhum holograma criado. Use &f/holograma criar&7."
   hologram-list-header: "&eHologramas do grupo &f{group} &e({count}):"
   hologram-list-line: "&8- &f{id} &7({lines} linhas) &8{location}"
+  social-usage:
+    - "&eUso do /redes:"
+    - "&f/redes criar <id> &7- coloca uma cabeça de redes sociais onde você está, olhando para onde você olha"
+    - "&f/redes mover <id> &7- move a cabeça para onde você está"
+    - "&f/redes remover <id> &7- remove a cabeça"
+    - "&f/redes listar &7- lista as cabeças deste grupo"
+  social-invalid-id: "&cO id precisa ter só letras minúsculas, números, - e _."
+  social-exists: "&cJá existe uma cabeça de redes sociais com o id &f{id}&c."
+  social-unknown: "&cNão existe cabeça de redes sociais com o id &f{id}&c."
+  social-created: "&aCabeça de redes sociais &f{id} &acolocada."
+  social-moved: "&aCabeça de redes sociais &f{id} &amovida para onde você está."
+  social-removed: "&aCabeça de redes sociais &f{id} &aremovida."
+  social-list-empty: "&7Nenhuma cabeça de redes sociais. Use &f/redes criar&7."
+  social-list-header: "&eCabeças de redes sociais do grupo &f{group} &e({count}):"
+  social-list-line: "&8- &f{id} &8{location}"
   hologram-lines-header: "&eHolograma &f{id} &8{location}"
   hologram-lines-line: "&8{line}. &r{text}"
   shop-unavailable: "&cA loja não está disponível neste servidor."

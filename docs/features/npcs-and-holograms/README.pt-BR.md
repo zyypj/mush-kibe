@@ -15,7 +15,7 @@ NPCs e hologramas de texto que a equipe coloca por comando, em qualquer servidor
 
 ### Compartilhados pelo grupo de servidores
 
-- Todo NPC, holograma e [caixa registradora](../shop/README.pt-BR.md#caixas-registradoras) da loja pertence a um grupo de servidores (`server.group` na config do Muxe-Core). Todos os servidores desse grupo mostram os mesmos; os outros grupos têm os seus. Os ids são únicos dentro de um grupo.
+- Todo NPC, holograma, [caixa registradora](../shop/README.pt-BR.md#caixas-registradoras) da loja e [cabeça de redes sociais](../social-heads/README.pt-BR.md) pertence a um grupo de servidores (`server.group` na config do Muxe-Core). Todos os servidores desse grupo mostram os mesmos; os outros grupos têm os seus. Os ids são únicos dentro de um grupo.
 - Os ids usam letras minúsculas, números, `-` e `_`, com até 32 caracteres.
 - Um comando salva a mudança no PostgreSQL (`SavePlacementCommand` ou `RemovePlacementCommand`). Depois, o servidor onde ele rodou recarrega o que foi colocado no grupo e publica `placement.changed` para o grupo; todos os outros servidores do grupo recarregam do PostgreSQL (`FindPlacementsQuery`). Um servidor ignora os próprios pacotes, então nunca recarrega duas vezes.
 - Ao ligar, cada servidor carrega o que foi colocado no seu grupo, então um servidor que liga depois mostra o que já tinha sido colocado.
@@ -126,7 +126,7 @@ Sem argumentos, ou com um argumento errado, cada comando mostra o seu uso.
 | `npcs.lines.none` | `&b&l{name}` | Linhas acima dos NPCs sem ação. |
 | `holograms.top` | `2.0` | Altura da primeira linha do holograma acima de onde ele foi criado. |
 | `holograms.line-spacing` | `0.28` | Espaço entre as linhas do holograma. |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam dos cliques nos NPCs, nas caixas registradoras e na hotbar. |
+| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam dos cliques nos NPCs, nas caixas registradoras, na hotbar e nas cabeças de redes sociais. |
 | `messages.npc-*`, `messages.hologram-*`, `messages.placement-failed`, `messages.spam-cooldown` | Textos em português | Respostas dos comandos, listas de uso e mensagens de clique. |
 | `messages.game-connecting`, `messages.game-unavailable` | `&7Procurando uma sala de &b{name}&7...`, `&cNenhuma sala de &f{name} &cdisponível no momento.` | Mostradas ao clicar num NPC de jogo, compartilhadas com o [seletor de jogo](../hotbar/README.pt-BR.md#seletor-de-jogo). Substituem `npc-connecting` e `npc-unavailable`. |
 
@@ -146,8 +146,9 @@ O `/npc` não grava mais o `plugins/Muxe-Lobby/npcs.yml`; use o `import.yml` par
 | `core.npc_placements` | `server_group`, `id`, posição (`world`, `x`, `y`, `z`, `yaw`, `pitch`), `name`, `action` (`NONE`, `GAME`, `SHOP`), `action_target` (o grupo do jogo, vazio nos outros casos), `skin_name`, `skin_value`, `skin_signature`. |
 | `core.hologram_placements` | `server_group`, `id`, posição, `lines` (array de texto, string vazia para uma linha em branco). |
 | `core.register_placements` | Caixas registradoras, veja [Loja](../shop/README.pt-BR.md#dados). |
+| `core.social_head_placements` | Cabeças de redes sociais, veja [Cabeças de redes sociais](../social-heads/README.pt-BR.md#dados). |
 
-A chave primária de cada tabela é `(server_group, id)`. Criadas pela migração do core `V4__create_placements_and_promotion.sql`.
+A chave primária de cada tabela é `(server_group, id)`. Criadas pela migração do core `V4__create_placements_and_promotion.sql`, menos a `core.social_head_placements`, criada pela `V6__create_social_head_placements.sql`.
 
 Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha com `placement.not_found` quando o id não existe), `FindPlacementsQuery(group)`, registrados pelo `PlacementModule`.
 
@@ -159,6 +160,7 @@ Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha co
 
 - A [API do core](../../development/core-api/README.pt-BR.md) fornece o `NpcService`, o `MojangSkins`, o `DisplayService`, o `LabelStack`, o `GameConnector` (compartilhado com o [seletor de jogo](../hotbar/README.pt-BR.md#seletor-de-jogo)) e o `ShopAccess`.
 - A [Loja](../shop/README.pt-BR.md) usa o mesmo armazenamento e a mesma sincronização para as caixas registradoras, e os NPCs da loja a abrem.
+- As [cabeças de redes sociais](../social-heads/README.pt-BR.md) são outro tipo de posicionamento (`SOCIAL_HEAD`) com o mesmo armazenamento e a mesma sincronização.
 - O [Roteamento da rede](../network-routing/README.pt-BR.md) move os jogadores que clicam num NPC de jogo.
 
 ## Critérios de aceitação

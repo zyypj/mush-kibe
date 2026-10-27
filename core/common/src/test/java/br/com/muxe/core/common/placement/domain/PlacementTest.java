@@ -68,10 +68,23 @@ class PlacementTest {
     @Test
     void placementsAreFoundById() {
         RegisterPlacement register = new RegisterPlacement("lobby", "caixa", SPAWN, Optional.empty());
-        Placements placements = new Placements(List.of(), List.of(), List.of(register));
+        Placements placements = new Placements(List.of(), List.of(), List.of(register), List.of());
 
         assertThat(placements.register("caixa")).contains(register);
         assertThat(placements.npc("caixa")).isEmpty();
         assertThat(register.withSeller(Optional.of(SPAWN)).seller()).contains(SPAWN);
+    }
+
+    @Test
+    void socialHeadsAreFoundByIdAndMove() {
+        SocialHeadPlacement head = new SocialHeadPlacement("lobby", "redes", SPAWN);
+        Position elsewhere = new Position("lobby", 4, 34, -10, 90, 0);
+        Placements placements = new Placements(List.of(), List.of(), List.of(), List.of(head));
+
+        assertThat(placements.socialHead("redes")).contains(head);
+        assertThat(placements.register("redes")).isEmpty();
+        assertThat(head.movedTo(elsewhere).position()).isEqualTo(elsewhere);
+        assertThat(head.kind()).isEqualTo(PlacementKind.SOCIAL_HEAD);
+        assertThatThrownBy(() -> new SocialHeadPlacement("lobby", "Redes!", SPAWN)).isInstanceOf(IllegalArgumentException.class);
     }
 }

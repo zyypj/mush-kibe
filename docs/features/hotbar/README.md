@@ -28,7 +28,7 @@ On a server whose kind is in `hotbar.server-kinds` (only `LOBBY` by default; aut
 | 9 | Nether star, glowing | `&aSelecionar lobby` | Opens the lobby selector |
 
 - Items are used with a right click, in the air or on a block. An item only acts in its own slot and with its own material.
-- Right clicks share the anti-spam of Muxe-Core (`spam.*`) with NPCs and cash registers: three uses within 1 second block them for 3 seconds with `&cAguarde 2,9s para usar novamente.`
+- Right clicks share the anti-spam of Muxe-Core (`spam.*`) with NPCs, cash registers and social media heads: three uses within 1 second block them for 3 seconds with `&cAguarde 2,9s para usar novamente.`
 - Hotbar items do nothing while the player is in [build mode](../../development/core-api/README.md#build-mode). When a staff member leaves build mode, the hotbar comes back, with the current visibility dye.
 - Keeping the items in place (no moving, dropping or taking them) is the job of the server's protection; on the main lobby, the [Lobby](../lobby/README.md#protection) does it.
 - If `config.yml` has no `hotbar` section, Muxe-Core logs `The hotbar is off: config.yml has no 'hotbar' section` and gives no hotbar.
@@ -99,7 +99,7 @@ None.
 | `hotbar.<item>.slot`, `hotbar.<item>.item` | See above | Slot (1 to 9) and item of `game-selector`, `profile`, `cosmetics` and `lobby-selector`. The profile item gets the player's skin. |
 | `hotbar.visibility.slot` | `8` | Slot of the visibility dye. |
 | `hotbar.visibility.all`, `friends`, `none` | See above | One item per visibility option. |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam shared by hotbar, NPC and cash register clicks. |
+| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam shared by hotbar, NPC, cash register and social media head clicks. |
 
 Two hotbar items in the same slot stop the core from starting.
 

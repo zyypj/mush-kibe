@@ -10,6 +10,7 @@ import br.com.muxe.core.common.placement.domain.PlacementKind;
 import br.com.muxe.core.common.placement.domain.Placements;
 import br.com.muxe.core.common.placement.domain.Position;
 import br.com.muxe.core.common.placement.domain.RegisterPlacement;
+import br.com.muxe.core.common.placement.domain.SocialHeadPlacement;
 import br.com.muxe.core.common.result.Result;
 import br.com.muxe.core.common.server.ServerKind;
 import br.com.muxe.core.common.testing.DirectTransactions;
@@ -64,6 +65,19 @@ class PlacementSyncTest {
         assertThat(removed.isSuccess()).isTrue();
         assertThat(missing.isFailure()).isTrue();
         assertThat(lobby2.current().holograms()).isEmpty();
+    }
+
+    @Test
+    void aSocialHeadPlacedOnOneLobbyAppearsOnTheOtherAndCanBeRemoved() {
+        PlacementSync lobby1 = server("lobby-1", "lobby");
+        PlacementSync lobby2 = server("lobby-2", "lobby");
+        SocialHeadPlacement head = new SocialHeadPlacement("lobby", "redes", SPAWN);
+
+        lobby1.save(head).join();
+        assertThat(lobby2.current().socialHeads()).containsExactly(head);
+
+        lobby2.remove(PlacementKind.SOCIAL_HEAD, "redes").join();
+        assertThat(lobby1.current().socialHeads()).isEmpty();
     }
 
     @Test

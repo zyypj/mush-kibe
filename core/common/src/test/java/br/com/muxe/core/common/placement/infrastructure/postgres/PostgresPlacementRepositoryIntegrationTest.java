@@ -17,6 +17,7 @@ import br.com.muxe.core.common.placement.domain.Placements;
 import br.com.muxe.core.common.placement.domain.Position;
 import br.com.muxe.core.common.placement.domain.RegisterPlacement;
 import br.com.muxe.core.common.placement.domain.SkinTexture;
+import br.com.muxe.core.common.placement.domain.SocialHeadPlacement;
 import br.com.muxe.core.common.shop.domain.Promotion;
 import br.com.muxe.core.common.shop.infrastructure.postgres.PostgresPromotionRepository;
 import java.time.Duration;
@@ -66,13 +67,27 @@ class PostgresPlacementRepositoryIntegrationTest {
         HologramPlacement hologram = new HologramPlacement(group, "boas-vindas", SPAWN, List.of("&b&lMUXE", "", "&eBem-vindo!"));
         RegisterPlacement register = new RegisterPlacement(group, "caixa", SPAWN, Optional.of(new Position("lobby", 8, 33, -10, 0, 0)));
         RegisterPlacement alone = new RegisterPlacement(group, "sem-vendedor", SPAWN, Optional.empty());
+        SocialHeadPlacement head = new SocialHeadPlacement(group, "redes", SPAWN);
 
-        save(npc, plain, hologram, register, alone);
+        save(npc, plain, hologram, register, alone, head);
 
         Placements found = transactions.readOnly("test.find", () -> repository.findByGroup(group));
         assertThat(found.npcs()).containsExactly(plain, npc);
         assertThat(found.holograms()).containsExactly(hologram);
         assertThat(found.registers()).containsExactly(register, alone);
+        assertThat(found.socialHeads()).containsExactly(head);
+    }
+
+    @Test
+    void aSocialHeadCanBeMovedAndRemoved() {
+        String group = group();
+        SocialHeadPlacement head = new SocialHeadPlacement(group, "redes", SPAWN);
+        SocialHeadPlacement moved = head.movedTo(new Position("lobby", 4, 34, -10, 90, 0));
+        save(head, moved);
+
+        assertThat(transactions.readOnly("test.find", () -> repository.findByGroup(group)).socialHeads()).containsExactly(moved);
+        assertThat(transactions.inTransaction("test.remove", () -> repository.remove(PlacementKind.SOCIAL_HEAD, group, "redes"))).isTrue();
+        assertThat(transactions.readOnly("test.find", () -> repository.findByGroup(group)).socialHeads()).isEmpty();
     }
 
     @Test
