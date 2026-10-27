@@ -28,8 +28,9 @@ Num servidor cujo tipo está em `hotbar.server-kinds` (só `LOBBY` por padrão; 
 | 9 | Estrela do Nether, brilhando | `&aSelecionar lobby` | Abre o seletor de lobby |
 
 - Os itens são usados com o botão direito, no ar ou num bloco. Um item só age no seu próprio slot e com o seu próprio material.
-- Os cliques com o botão direito usam o anti-spam do Muxe-Core (`spam.*`), o mesmo dos NPCs, das caixas registradoras e das cabeças de redes sociais: três usos dentro de 1 segundo bloqueiam por 3 segundos com `&cAguarde 2,9s para usar novamente.`
+- Os cliques com o botão direito usam o anti-spam do Muxe-Core (`spam.*`), o mesmo dos NPCs, das caixas registradoras, das cabeças de redes sociais e dos itens do parkour: três usos dentro de 1 segundo bloqueiam por 3 segundos com `&cAguarde 2,9s para usar novamente.`
 - Os itens da hotbar não fazem nada enquanto o jogador está no [modo construção](../../development/core-api/README.pt-BR.md#modo-construção). Quando um membro da equipe sai do modo construção, a hotbar volta, com o corante da visibilidade atual.
+- Enquanto o jogador faz o [parkour](../parkour/README.pt-BR.md), os slots 4 a 6 ficam com os itens do parkour (`Reiniciar Parkour`, `Voltar ao Checkpoint`, `Parar Parkour`): o baú de cosméticos do slot 5 é guardado e volta quando a corrida acaba.
 - Manter os itens no lugar (sem mover, largar nem pegar) é papel da proteção do servidor; no lobby principal, o [Lobby](../lobby/README.pt-BR.md#proteção) faz isso.
 - Se o `config.yml` não tiver a seção `hotbar`, o Muxe-Core registra `The hotbar is off: config.yml has no 'hotbar' section` no log e não dá hotbar.
 
@@ -99,7 +100,7 @@ Nenhuma.
 | `hotbar.<item>.slot`, `hotbar.<item>.item` | Veja acima | Slot (1 a 9) e item de `game-selector`, `profile`, `cosmetics` e `lobby-selector`. O item do perfil recebe a skin do jogador. |
 | `hotbar.visibility.slot` | `8` | Slot do corante de visibilidade. |
 | `hotbar.visibility.all`, `friends`, `none` | Veja acima | Um item por opção de visibilidade. |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam compartilhado pelos cliques na hotbar, nos NPCs, nas caixas registradoras e nas cabeças de redes sociais. |
+| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam compartilhado pelos cliques na hotbar, nos NPCs, nas caixas registradoras, nas cabeças de redes sociais e nos itens do parkour. |
 
 Dois itens da hotbar no mesmo slot impedem o core de iniciar.
 
@@ -206,6 +207,7 @@ O perfil lê a conta com `FindAccountQuery`.
 - A [Loja](../shop/README.pt-BR.md) abre pelos botões `shop`.
 - As [Contas](../accounts/README.pt-BR.md) dão o primeiro login mostrado no perfil.
 - O [Lobby](../lobby/README.pt-BR.md) mantém os itens no lugar e devolve o voo depois do modo construção.
+- O [Parkour](../parkour/README.pt-BR.md) usa os slots 4 a 6 durante a corrida.
 
 ## Critérios de aceitação
 

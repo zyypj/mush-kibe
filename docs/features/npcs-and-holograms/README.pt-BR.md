@@ -15,7 +15,7 @@ NPCs e hologramas de texto que a equipe coloca por comando, em qualquer servidor
 
 ### Compartilhados pelo grupo de servidores
 
-- Todo NPC, holograma, [caixa registradora](../shop/README.pt-BR.md#caixas-registradoras) da loja e [cabeça de redes sociais](../social-heads/README.pt-BR.md) pertence a um grupo de servidores (`server.group` na config do Muxe-Core). Todos os servidores desse grupo mostram os mesmos; os outros grupos têm os seus. Os ids são únicos dentro de um grupo.
+- Todo NPC, holograma, [caixa registradora](../shop/README.pt-BR.md#caixas-registradoras) da loja, [cabeça de redes sociais](../social-heads/README.pt-BR.md) e ponto do [parkour](../parkour/README.pt-BR.md) pertence a um grupo de servidores (`server.group` na config do Muxe-Core). Todos os servidores desse grupo mostram os mesmos; os outros grupos têm os seus. Os ids são únicos dentro de um grupo.
 - Os ids usam letras minúsculas, números, `-` e `_`, com até 32 caracteres.
 - Um comando salva a mudança no PostgreSQL (`SavePlacementCommand` ou `RemovePlacementCommand`). Depois, o servidor onde ele rodou recarrega o que foi colocado no grupo e publica `placement.changed` para o grupo; todos os outros servidores do grupo recarregam do PostgreSQL (`FindPlacementsQuery`). Um servidor ignora os próprios pacotes, então nunca recarrega duas vezes.
 - Ao ligar, cada servidor carrega o que foi colocado no seu grupo, então um servidor que liga depois mostra o que já tinha sido colocado.
@@ -47,7 +47,7 @@ NPCs e hologramas de texto que a equipe coloca por comando, em qualquer servidor
 
 ### Importando o que já existia
 
-Ao ligar, se o `plugins/Muxe-Core/import.yml` existir, o Muxe-Core o importa para o grupo do servidor e o renomeia para `import.yml.done`. Ele lê NPCs no formato antigo do `npcs.yml` do lobby em `npcs:` (cole o arquivo antigo ali, um nível para dentro, já que o arquivo antigo os guardava na raiz; o `group` vira a ação, então um grupo de jogo dá um NPC de jogo) e caixas registradoras em `registers:`:
+Ao ligar, se o `plugins/Muxe-Core/import.yml` existir, o Muxe-Core o importa para o grupo do servidor e o renomeia para `import.yml.done`. Ele lê NPCs no formato antigo do `npcs.yml` do lobby em `npcs:` (cole o arquivo antigo ali, um nível para dentro, já que o arquivo antigo os guardava na raiz; o `group` vira a ação, então um grupo de jogo dá um NPC de jogo), as caixas registradoras em `registers:` e o início, os checkpoints (identificados pelo número) e o fim do [parkour](../parkour/README.pt-BR.md#montando-um-percurso) em `parkour:` (cada ponto com `world`, `x`, `y`, `z`, `yaw` e `pitch`):
 
 ```yaml
 npcs:
@@ -126,7 +126,7 @@ Sem argumentos, ou com um argumento errado, cada comando mostra o seu uso.
 | `npcs.lines.none` | `&b&l{name}` | Linhas acima dos NPCs sem ação. |
 | `holograms.top` | `2.0` | Altura da primeira linha do holograma acima de onde ele foi criado. |
 | `holograms.line-spacing` | `0.28` | Espaço entre as linhas do holograma. |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam dos cliques nos NPCs, nas caixas registradoras, na hotbar e nas cabeças de redes sociais. |
+| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam dos cliques nos NPCs, nas caixas registradoras, na hotbar, nas cabeças de redes sociais e nos itens do parkour. |
 | `messages.npc-*`, `messages.hologram-*`, `messages.placement-failed`, `messages.spam-cooldown` | Textos em português | Respostas dos comandos, listas de uso e mensagens de clique. |
 | `messages.game-connecting`, `messages.game-unavailable` | `&7Procurando uma sala de &b{name}&7...`, `&cNenhuma sala de &f{name} &cdisponível no momento.` | Mostradas ao clicar num NPC de jogo, compartilhadas com o [seletor de jogo](../hotbar/README.pt-BR.md#seletor-de-jogo). Substituem `npc-connecting` e `npc-unavailable`. |
 
@@ -147,8 +147,9 @@ O `/npc` não grava mais o `plugins/Muxe-Lobby/npcs.yml`; use o `import.yml` par
 | `core.hologram_placements` | `server_group`, `id`, posição, `lines` (array de texto, string vazia para uma linha em branco). |
 | `core.register_placements` | Caixas registradoras, veja [Loja](../shop/README.pt-BR.md#dados). |
 | `core.social_head_placements` | Cabeças de redes sociais, veja [Cabeças de redes sociais](../social-heads/README.pt-BR.md#dados). |
+| `core.parkour_placements` | Pontos do parkour, veja [Parkour](../parkour/README.pt-BR.md#dados). |
 
-A chave primária de cada tabela é `(server_group, id)`. Criadas pela migração do core `V4__create_placements_and_promotion.sql`, menos a `core.social_head_placements`, criada pela `V6__create_social_head_placements.sql`.
+A chave primária de cada tabela é `(server_group, id)`. Criadas pela migração do core `V4__create_placements_and_promotion.sql`, menos a `core.social_head_placements`, criada pela `V6__create_social_head_placements.sql`, e a `core.parkour_placements`, criada pela `V7__create_parkour.sql`.
 
 Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha com `placement.not_found` quando o id não existe), `FindPlacementsQuery(group)`, registrados pelo `PlacementModule`.
 
@@ -161,6 +162,7 @@ Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha co
 - A [API do core](../../development/core-api/README.pt-BR.md) fornece o `NpcService`, o `MojangSkins`, o `DisplayService`, o `LabelStack`, o `GameConnector` (compartilhado com o [seletor de jogo](../hotbar/README.pt-BR.md#seletor-de-jogo)) e o `ShopAccess`.
 - A [Loja](../shop/README.pt-BR.md) usa o mesmo armazenamento e a mesma sincronização para as caixas registradoras, e os NPCs da loja a abrem.
 - As [cabeças de redes sociais](../social-heads/README.pt-BR.md) são outro tipo de posicionamento (`SOCIAL_HEAD`) com o mesmo armazenamento e a mesma sincronização.
+- O início, os checkpoints e o fim do [parkour](../parkour/README.pt-BR.md) são outro tipo de posicionamento (`PARKOUR`) com o mesmo armazenamento, a mesma sincronização e o mesmo `import.yml`.
 - O [Roteamento da rede](../network-routing/README.pt-BR.md) move os jogadores que clicam num NPC de jogo.
 
 ## Critérios de aceitação
@@ -172,7 +174,7 @@ Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha co
 - [x] Só o que mudou é mostrado de novo, e o que sumiu é removido.
 - [x] As linhas dos NPCs são preenchidas por ação com `{name}` e `{players}`.
 - [x] As linhas do holograma descem a partir da primeira linha, que nunca se move.
-- [x] O formato antigo do `npcs.yml` e as caixas são lidos do `import.yml` para o grupo do servidor.
+- [x] O formato antigo do `npcs.yml`, as caixas e os pontos do parkour são lidos do `import.yml` para o grupo do servidor.
 - [ ] Colocar, editar e clicar em NPCs e hologramas funciona no jogo, e a mudança aparece num segundo servidor do grupo (conferido no jogo).
 
 ## Falhas e recuperação

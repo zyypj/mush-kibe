@@ -19,6 +19,7 @@ The lobby plugin handles the spawn and arrival, flight, protection, the scoreboa
 - After logging in, the proxy sends the player to the least loaded lobby (see [Network routing](../network-routing/README.md)).
 - On join: Adventure mode, full health and hunger, experience reset, then teleported to the configured spawn (or the main world's spawn). Muxe-Core clears the inventory and the armor and gives the [hotbar](../hotbar/README.md).
 - Players with `muxe.lobby.fly` arrive `arrival.fly-height` blocks (5) above the spawn, already flying. Everyone else arrives on the spawn. Falling below `protection.void-level` sends the player back the same way.
+- The [parkour](../parkour/README.md) turns flight off while a player runs it and gives it back when the run ends.
 - Join and quit messages are hidden.
 - Half a second after joining, the player hears a level-up sound and sees the title `&b&lMUXE` with the subtitle `&eBoas-vindas!`. This greeting comes from Muxe-Core and runs on every `LOBBY` server, never on auth or game servers.
 - Switching lobbies in the [lobby selector](../hotbar/README.md#lobby-selector), or using `/lobby`, shows no "connecting" message: the player is just moved.
@@ -130,6 +131,7 @@ The Spigot server metrics of Muxe-Core. The visibility metrics moved with it and
 - The [Core API](../../development/core-api/README.md) provides the boss bar and the scoreboard.
 - The [Hotbar](../hotbar/README.md), with its menus and the player visibility, comes from Muxe-Core.
 - [NPCs and holograms](../npcs-and-holograms/README.md) and the [Shop](../shop/README.md) come from Muxe-Core and are placed in the lobby by command.
+- The [Parkour](../parkour/README.md) comes from Muxe-Core; staff mark its points in the lobby by command.
 
 ## Acceptance criteria
 

@@ -30,7 +30,7 @@ A player head placed in the world that shows, one at a time, the social networks
 &fhttps://www.instagram.com/muxe/
 ```
 
-- Clicks share the anti-spam of Muxe-Core (`spam.*`) with NPCs, cash registers and the hotbar: three clicks within 1 second block them for 3 seconds with `&cAguarde 2,9s para usar novamente.`
+- Clicks share the anti-spam of Muxe-Core (`spam.*`) with NPCs, cash registers, the hotbar and the parkour items: three clicks within 1 second block them for 3 seconds with `&cAguarde 2,9s para usar novamente.`
 - Clicking the head never places or breaks anything: the click is cancelled.
 
 ### Shared by the server group
@@ -88,7 +88,7 @@ social-heads:
 | `social-heads.networks.<id>.label` | `&d@muxe`, `&5@muxe`, `&b@muxe`, `&b@muxe`, `&c@muxe` | Text of the label above the head. |
 | `social-heads.networks.<id>.texture` | Twitch, TikTok and YouTube only | Head texture: the hash after `textures.minecraft.net/texture/`, the texture URL or the base64 value, as `skull-texture` on [items](../../development/core-api/README.md#items). Without it, the default player head. |
 | `social-heads.networks.<id>.message` | Name of the network and its link | Chat lines sent on click. |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam shared with NPCs, cash registers and the hotbar. |
+| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam shared with NPCs, cash registers, the hotbar and the parkour items. |
 
 Without a `social-heads` section, heads are off on that server: the core logs `The social heads are off: config.yml has no 'social-heads' section`, shows no head and ignores clicks. `/redes` still saves placements, which the other servers of the group show. An empty `networks` or an `interval` that is not positive is an error on startup.
 

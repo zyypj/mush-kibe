@@ -36,6 +36,7 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 - [Hotbar](features/hotbar/README.md): the lobby hotbar from Muxe-Core, with the game selector, profile, lobby selector and player visibility.
 - [NPCs and holograms](features/npcs-and-holograms/README.md): NPCs and text holograms placed by command and shared by the server group.
 - [Social media heads](features/social-heads/README.md): a player head that cycles through the network's social media and sends the link on click, shared by the server group.
+- [Parkour](features/parkour/README.md): a timed lobby parkour with checkpoints, items to restart or go back, and a personal record per map, shared by the server group.
 - [Shop](features/shop/README.md): `/loja`, the checkout menus, cash registers and the network promotion.
 - [SkyWars](features/skywars/README.md): plugin skeleton and modes.
 - [BedWars](features/bedwars/README.md): plugin skeleton and modes.

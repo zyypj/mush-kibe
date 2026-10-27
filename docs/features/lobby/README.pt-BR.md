@@ -19,6 +19,7 @@ O plugin do lobby cuida do spawn e da chegada, do voo, da proteção, da scorebo
 - Depois do login, o proxy manda o jogador para o lobby com menos jogadores (veja [Roteamento da rede](../network-routing/README.pt-BR.md)).
 - Ao entrar: modo Aventura, vida e fome cheias, experiência zerada, e teleporte para o spawn configurado (ou o spawn do mundo principal). O Muxe-Core limpa o inventário e a armadura e dá a [hotbar](../hotbar/README.pt-BR.md).
 - Quem tem `muxe.lobby.fly` chega `arrival.fly-height` blocos (5) acima do spawn, já voando. Os outros chegam no spawn. Cair abaixo de `protection.void-level` manda o jogador de volta do mesmo jeito.
+- O [parkour](../parkour/README.pt-BR.md) desliga o voo enquanto o jogador faz a corrida e o devolve quando ela acaba.
 - As mensagens de entrada e saída ficam escondidas.
 - Meio segundo depois de entrar, o jogador ouve um som de level up e vê o título `&b&lMUXE` com o subtítulo `&eBoas-vindas!`. Essa saudação vem do Muxe-Core e acontece em todo servidor `LOBBY`, nunca nos servidores de autenticação ou de jogo.
 - Trocar de lobby pelo [seletor de lobby](../hotbar/README.pt-BR.md#seletor-de-lobby), ou usar `/lobby`, não mostra mensagem de "conectando": o jogador só é movido.
@@ -130,6 +131,7 @@ As métricas de servidor Spigot do Muxe-Core. As métricas de visibilidade foram
 - A [API do core](../../development/core-api/README.pt-BR.md) fornece a boss bar e a scoreboard.
 - A [Hotbar](../hotbar/README.pt-BR.md), com os seus menus e a visibilidade dos jogadores, vem do Muxe-Core.
 - [NPCs e hologramas](../npcs-and-holograms/README.pt-BR.md) e a [Loja](../shop/README.pt-BR.md) vêm do Muxe-Core e são colocados no lobby por comando.
+- O [Parkour](../parkour/README.pt-BR.md) vem do Muxe-Core; a equipe marca os pontos dele no lobby por comando.
 
 ## Critérios de aceitação
 

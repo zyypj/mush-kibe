@@ -150,6 +150,19 @@ SpawnedHologram hologram = holograms.show(player, top, List.of("&b&lSKYWARS", "&
 - As linhas descem a partir de `top`, a 0,28 bloco uma da outra. Uma linha vazia mantém o espaço e não mostra nada. `height(lines)` diz a altura do texto.
 - Mesmo transporte dos hologramas de pixels: suportes de armadura invisíveis enviados só para o `player`.
 
+### Explosão de fogo de artifício
+
+```java
+FireworkEffect effect = FireworkBurst.effect(config.getConfigurationSection("parkour.finish-firework"));
+FireworkBurst.explode(plugin, location, effect);
+```
+
+- O `explode(plugin, location, effect)` cria um fogo de artifício com esse efeito em `location` e o faz estourar ali mesmo 2 ticks depois (`DETONATE_AFTER_TICKS`), em vez de subir. Todos por perto o veem.
+- O `effect(section)` lê um efeito da config: `type` (um `FireworkEffect.Type`, `BALL_LARGE` por padrão), `colors` (pelo menos uma), `fade-colors`, `flicker` e `trail` (os dois `false` por padrão). Uma seção sem cores é um erro.
+- O `color(hex)` lê uma cor escrita como `#RRGGBB` (o `#` é opcional).
+- A explosão depende das classes internas do servidor 1.8, acessadas por reflexão. Quando elas não existem, um aviso vai para o log uma vez e o fogo de artifício sobe um pouco antes de explodir.
+- O [parkour](../../features/parkour/README.pt-BR.md) o usa quando um jogador termina.
+
 ## Itens
 
 Pacote `br.com.muxe.core.bukkit.item`.
@@ -332,6 +345,7 @@ displays.put(new Display("shop", anchor, List.of(
 - Suportes de armadura invisíveis que só existem em pacotes, como os NPCs: aparecem a até 48 blocos e somem além de 64. Cada suporte tem um deslocamento em relação à âncora, um yaw, tamanho pequeno ou normal, braços, um capacete e um item na mão, as poses da cabeça e do braço direito (em graus) e um movimento.
 - O `StandMotion` gira o suporte em `degreesPerTick` e o faz subir e descer (`bobHeight` blocos a cada `bobPeriodTicks`, deslocado por `phaseDegrees`). Os suportes que se movem são atualizados a cada tick.
 - Os rótulos são hologramas de texto numa altura acima da âncora (a altura do próprio texto).
+- O `labelText((viewer, text) -> ...)` muda o texto dos rótulos para cada jogador antes de enviá-lo, então uma mesma exibição pode mostrar algo diferente para cada um, como o recorde pessoal do [parkour](../../features/parkour/README.pt-BR.md). O `refresh(player)` reenvia os rótulos para aquele jogador depois que o que ele deve ver mudou. O `Display.labelPixels(UnaryOperator<String>)` aplica a mesma mudança às linhas de uma exibição.
 - O `LabelStack` transforma uma lista de linhas em rótulos. O `LabelStack.downward(lines, top, spacing)` mantém a primeira linha em `top` e põe cada linha seguinte `spacing` mais baixo, como fazem os hologramas colocados. O `LabelStack.upward(lines, bottom, gaps, spacing)` mantém a última linha em `bottom` e sobe usando os `gaps` de baixo para cima, e depois o `spacing`, como fazem as caixas registradoras da loja. Linhas em branco mantêm o espaço.
 - Clicar em qualquer suporte ou rótulo, com qualquer botão, roda o tratamento de clique uma vez na main thread. O botão direito num suporte de armadura só envia `INTERACT_AT`, então é essa a ação que conta. Os deslocamentos usam os eixos do mundo: mover a âncora move a exibição inteira sem girá-la.
 
@@ -339,12 +353,12 @@ displays.put(new Display("shop", anchor, List.of(
 
 Pacotes `br.com.muxe.core.common.placement` e `br.com.muxe.core.bukkit.placement`.
 
-O próprio Muxe-Core coloca os NPCs, os hologramas, as caixas registradoras da loja e as cabeças de redes sociais que a equipe cria com `/npc`, `/holograma`, `/loja caixa` e `/redes`, em todos os servidores, como descrito em [NPCs e hologramas](../../features/npcs-and-holograms/README.pt-BR.md). Os plugins não precisam de armazenamento próprio de NPCs ou hologramas: a equipe os coloca por comando.
+O próprio Muxe-Core coloca os NPCs, os hologramas, as caixas registradoras da loja, as cabeças de redes sociais e os pontos do parkour que a equipe cria com `/npc`, `/holograma`, `/loja caixa`, `/redes` e `/parkour`, em todos os servidores, como descrito em [NPCs e hologramas](../../features/npcs-and-holograms/README.pt-BR.md). Os plugins não precisam de armazenamento próprio de NPCs ou hologramas: a equipe os coloca por comando.
 
-- O `Placement` é selado: `NpcPlacement`, `HologramPlacement`, `RegisterPlacement` e `SocialHeadPlacement` (veja [Cabeças de redes sociais](../../features/social-heads/README.pt-BR.md)), cada um com um grupo de servidores, um id e uma `Position`. O `Placements` guarda tudo de um grupo.
+- O `Placement` é selado: `NpcPlacement`, `HologramPlacement`, `RegisterPlacement`, `SocialHeadPlacement` (veja [Cabeças de redes sociais](../../features/social-heads/README.pt-BR.md)) e `ParkourPointPlacement` (veja [Parkour](../../features/parkour/README.pt-BR.md)), cada um com um grupo de servidores, um id e uma `Position`. O `Placements` guarda tudo de um grupo.
 - O `PlacementSync` carrega o que foi colocado no grupo deste servidor ao ligar, salva e remove pelo `SavePlacementCommand` e pelo `RemovePlacementCommand`, publica `placement.changed` para o grupo, e recarrega com a `FindPlacementsQuery` quando esse pacote chega. Os ouvintes registrados com `onChange` rodam na main thread.
 - O `Reconciler<T>` compara a lista desejada com o que está aparecendo, por id, e devolve só o que foi adicionado ou mudou e o que foi removido, então recarregar nunca recria o que não mudou.
-- O `PlacementImport` lê o `plugins/Muxe-Core/import.yml` uma vez ao ligar.
+- O `PlacementImport` lê o `plugins/Muxe-Core/import.yml` uma vez ao ligar: NPCs, caixas registradoras e pontos do parkour.
 
 ## Modo construção
 

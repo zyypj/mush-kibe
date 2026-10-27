@@ -30,7 +30,7 @@ Uma cabeça de jogador colocada no mundo que mostra, uma por vez, as redes socia
 &fhttps://www.instagram.com/muxe/
 ```
 
-- Os cliques usam o anti-spam do Muxe-Core (`spam.*`) junto com os NPCs, as caixas registradoras e a hotbar: três cliques dentro de 1 segundo bloqueiam por 3 segundos com `&cAguarde 2,9s para usar novamente.`
+- Os cliques usam o anti-spam do Muxe-Core (`spam.*`) junto com os NPCs, as caixas registradoras, a hotbar e os itens do parkour: três cliques dentro de 1 segundo bloqueiam por 3 segundos com `&cAguarde 2,9s para usar novamente.`
 - Clicar na cabeça nunca coloca nem quebra nada: o clique é cancelado.
 
 ### Compartilhada pelo grupo de servidores
@@ -88,7 +88,7 @@ social-heads:
 | `social-heads.networks.<id>.label` | `&d@muxe`, `&5@muxe`, `&b@muxe`, `&b@muxe`, `&c@muxe` | Texto do rótulo acima da cabeça. |
 | `social-heads.networks.<id>.texture` | Só Twitch, TikTok e YouTube | Textura da cabeça: o hash depois de `textures.minecraft.net/texture/`, a URL da textura ou o valor em base64, como o `skull-texture` dos [itens](../../development/core-api/README.pt-BR.md#itens). Sem ela, a cabeça de jogador padrão. |
 | `social-heads.networks.<id>.message` | Nome da rede e o link dela | Linhas de chat enviadas no clique. |
-| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam compartilhado com os NPCs, as caixas registradoras e a hotbar. |
+| `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam compartilhado com os NPCs, as caixas registradoras, a hotbar e os itens do parkour. |
 
 Sem a seção `social-heads`, as cabeças ficam desligadas naquele servidor: o core registra `The social heads are off: config.yml has no 'social-heads' section`, não mostra nenhuma cabeça e ignora os cliques. O `/redes` continua salvando os posicionamentos, que os outros servidores do grupo mostram. Uma `networks` vazia ou um `interval` que não é positivo é um erro ao ligar.
 
