@@ -35,10 +35,14 @@ import br.com.muxe.core.common.persistence.migration.MigrationRunner;
 import br.com.muxe.core.common.persistence.transaction.JdbcTransactions;
 import br.com.muxe.core.common.persistence.transaction.Transactions;
 import br.com.muxe.core.common.redis.RedisConnector;
+import br.com.muxe.core.common.placement.PlacementModule;
+import br.com.muxe.core.common.placement.infrastructure.postgres.PostgresPlacementRepository;
 import br.com.muxe.core.common.server.ServerIdentity;
 import br.com.muxe.core.common.server.directory.ServerDirectory;
 import br.com.muxe.core.common.server.directory.ServerDirectorySync;
 import br.com.muxe.core.common.server.heartbeat.ServerHeartbeat;
+import br.com.muxe.core.common.shop.ShopModule;
+import br.com.muxe.core.common.shop.infrastructure.postgres.PostgresPromotionRepository;
 import br.com.muxe.core.common.store.ExpiringStore;
 import br.com.muxe.core.common.store.redis.RedisExpiringStore;
 import java.io.IOException;
@@ -222,6 +226,8 @@ public final class CoreRuntime implements AutoCloseable {
             commands = new SimpleCommandBus(executors.io(), middlewares);
             queries = new SimpleQueryBus(executors.io(), middlewares);
             AccountModule.register(commands, queries, new PostgresAccountRepository(), transactions, clock);
+            PlacementModule.register(commands, queries, new PostgresPlacementRepository(), transactions);
+            ShopModule.register(commands, queries, new PostgresPromotionRepository(), transactions, clock);
 
             ServerHeartbeat heartbeat = closer.register(new ServerHeartbeat(packets, identity, hooks.serverLoad(), directory, executors.scheduler(), clock, logger));
             transport.addConnectionListener(new ConnectionListener() {
