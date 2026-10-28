@@ -12,7 +12,7 @@ import br.com.muxe.lobby.command.SetSpawnCommand;
 import br.com.muxe.lobby.config.LobbySettings;
 import br.com.muxe.lobby.listener.LobbyJoinListener;
 import br.com.muxe.lobby.listener.LobbyProtectionListener;
-import br.com.muxe.lobby.profile.PlayerInfoSource;
+import br.com.muxe.lobby.profile.RankInfoSource;
 import br.com.muxe.lobby.scoreboard.LobbyScoreboard;
 import br.com.muxe.lobby.spawn.ArrivalService;
 import br.com.muxe.lobby.spawn.FlightBuildHook;
@@ -46,7 +46,7 @@ public final class LobbyBootstrap {
         ArrivalService arrival = new ArrivalService(spawn, settings.flyHeight());
         BuildMode build = core.buildMode();
         build.addHook(new FlightBuildHook());
-        LobbyScoreboard scoreboard = new LobbyScoreboard(core, settings.scoreboard(), PlayerInfoSource.fixed(settings.defaultInfo()));
+        LobbyScoreboard scoreboard = new LobbyScoreboard(core, settings.scoreboard(), new RankInfoSource(player -> core.permissions().display(player).tag(), settings.defaultInfo()));
         LobbyBossBar bossBar = new LobbyBossBar(BossBars.start(plugin), settings.bossBar());
 
         PluginManager plugins = plugin.getServer().getPluginManager();

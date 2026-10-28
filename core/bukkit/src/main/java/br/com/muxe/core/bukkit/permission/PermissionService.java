@@ -1,5 +1,6 @@
 package br.com.muxe.core.bukkit.permission;
 
+import br.com.muxe.core.bukkit.permission.display.RankDisplay;
 import br.com.muxe.core.common.permission.domain.PermissionData;
 import br.com.muxe.core.common.permission.domain.PermissionUser;
 import br.com.muxe.core.common.permission.domain.ResolvedPermissions;
@@ -82,6 +83,11 @@ public final class PermissionService implements Listener, Runnable {
 
     public Optional<PermissionUser> user(UUID player) {
         return cache.user(player);
+    }
+
+    public RankDisplay display(UUID player) {
+        Optional<String> selected = cache.user(player).flatMap(PermissionUser::selectedTag);
+        return cache.resolved(player).map(resolved -> RankDisplay.of(sync.data(), resolved, selected)).orElse(RankDisplay.NONE);
     }
 
     public void onChange(Consumer<Player> listener) {

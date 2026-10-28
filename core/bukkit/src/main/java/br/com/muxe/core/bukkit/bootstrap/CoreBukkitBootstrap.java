@@ -37,6 +37,7 @@ public final class CoreBukkitBootstrap {
     private CoreRuntime runtime;
     private PlacedFeatures features;
     private PermissionService permissions;
+    private RankFeatures ranks;
 
     public CoreBukkitBootstrap(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -83,6 +84,7 @@ public final class CoreBukkitBootstrap {
         String lobbyGroup = config.getString("network.lobby-group", "lobby");
         Commands commands = Commands.of(plugin, messages);
         commands.register(new MuxeAdminCommand(core), new LobbyCommand(core, lobbyGroup), new BuildCommand(buildMode, messages));
+        ranks = RankFeatures.start(plugin, core, config, commands);
         features = PlacedFeatures.start(plugin, core, config, commands);
         HotbarFeatures.start(plugin, core, config, features);
 
@@ -103,6 +105,10 @@ public final class CoreBukkitBootstrap {
         if (features != null) {
             features.stop();
             features = null;
+        }
+        if (ranks != null) {
+            ranks.stop();
+            ranks = null;
         }
         if (permissions != null) {
             permissions.stop();
