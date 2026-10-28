@@ -30,7 +30,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class PermissionService implements Listener, Runnable {
+public final class PermissionService implements PlayerRanks, Listener, Runnable {
 
     public static final long EXPIRY_CHECK_TICKS = 20L;
     public static final Duration LOAD_TIMEOUT = Duration.ofSeconds(5);
@@ -65,26 +65,32 @@ public final class PermissionService implements Listener, Runnable {
         return service;
     }
 
+    @Override
     public PermissionSync sync() {
         return sync;
     }
 
+    @Override
     public PermissionData data() {
         return sync.data();
     }
 
+    @Override
     public Clock clock() {
         return clock;
     }
 
+    @Override
     public Optional<ResolvedPermissions> resolved(UUID player) {
         return cache.resolved(player);
     }
 
+    @Override
     public Optional<PermissionUser> user(UUID player) {
         return cache.user(player);
     }
 
+    @Override
     public RankDisplay display(UUID player) {
         Optional<String> selected = cache.user(player).flatMap(PermissionUser::selectedTag);
         return cache.resolved(player).map(resolved -> RankDisplay.of(sync.data(), resolved, selected)).orElse(RankDisplay.NONE);

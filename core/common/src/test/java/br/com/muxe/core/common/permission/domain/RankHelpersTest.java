@@ -93,6 +93,23 @@ class RankHelpersTest {
         assertThat(TrackMove.demote(DONATION, user(), NOW).isFailure()).isTrue();
     }
 
+    @Test
+    void grantingAddsTimeToARunningGrantButNeverShortensAPermanentOne() {
+        PermissionNode running = new PermissionNode("muxe.tag.natal", true, Contexts.NONE, Optional.of(NOW.plus(Duration.ofDays(2))), NOW.minusSeconds(60), NOW);
+        Lifetime week = Lifetime.of(Duration.ofDays(7));
+
+        PermissionNode extended = NodeGrant.grant(user(running), "muxe.tag.natal", Contexts.NONE, week, NOW).orElseThrow();
+        PermissionNode fresh = NodeGrant.grant(user(), "group.vip", Contexts.NONE, Lifetime.PERMANENT, NOW).orElseThrow();
+        Result<PermissionNode> twice = NodeGrant.grant(user(fresh), "group.vip", Contexts.NONE, week, NOW);
+        PermissionNode elsewhere = NodeGrant.grant(user(fresh), "group.vip", Contexts.of(Contexts.SERVER, "bedwars"), week, NOW).orElseThrow();
+
+        assertThat(extended.expiresAt()).contains(NOW.plus(Duration.ofDays(9)));
+        assertThat(fresh.expiresAt()).isEmpty();
+        assertThat(fresh.value()).isTrue();
+        assertThat(twice.isFailure()).isTrue();
+        assertThat(elsewhere.expiresAt()).contains(NOW.plus(Duration.ofDays(7)));
+    }
+
     private static TrackMove move(Result<TrackMove> result) {
         return result.orElseThrow();
     }

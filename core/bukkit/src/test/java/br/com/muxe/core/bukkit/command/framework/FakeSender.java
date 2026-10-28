@@ -1,10 +1,12 @@
 package br.com.muxe.core.bukkit.command.framework;
 
 import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -47,6 +49,7 @@ public final class FakeSender {
     private <T extends CommandSender> T as(Class<T> type) {
         return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, (proxy, method, args) -> switch (method.getName()) {
             case "getName" -> name;
+            case "getUniqueId" -> UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8));
             case "sendMessage" -> {
                 if (args[0] instanceof String[] lines) {
                     messages.addAll(Arrays.asList(lines));

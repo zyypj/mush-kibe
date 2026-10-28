@@ -25,3 +25,6 @@ permissions:
   muxe.shop.manage:
     description: Allows /loja caixa, /loja vendedor and /loja promocao.
     default: op
+  muxe.tags.manage:
+    description: Allows /tag dar and /tag remover, which give and take decorative tags.
+    default: op
