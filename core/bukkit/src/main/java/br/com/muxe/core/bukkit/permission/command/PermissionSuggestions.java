@@ -5,6 +5,7 @@ import br.com.muxe.core.bukkit.command.framework.completion.SuggestionRegistry;
 import br.com.muxe.core.common.permission.domain.Contexts;
 import br.com.muxe.core.common.permission.domain.Group;
 import br.com.muxe.core.common.permission.domain.Lifetime;
+import br.com.muxe.core.common.permission.domain.Medal;
 import br.com.muxe.core.common.permission.domain.PermissionData;
 import br.com.muxe.core.common.permission.domain.PermissionNode;
 import br.com.muxe.core.common.permission.domain.ResolvedPermissions;
@@ -26,6 +27,8 @@ public final class PermissionSuggestions {
     public static final String TAGS = "tags";
     public static final String USABLE_TAGS = "usable-tags";
     public static final String DECORATIVE_TAGS = "decorative-tags";
+    public static final String MEDALS = "medals";
+    public static final String USABLE_MEDALS = "usable-medals";
     public static final String TRACKS = "tracks";
     public static final String LIFETIMES = "lifetimes";
     public static final String NODES = "permission-nodes";
@@ -57,6 +60,8 @@ public final class PermissionSuggestions {
             .suggestions(TAGS, sender -> data.get().tags().keySet())
             .suggestions(USABLE_TAGS, this::usableTags)
             .suggestions(DECORATIVE_TAGS, sender -> decorativeTags())
+            .suggestions(MEDALS, sender -> medals())
+            .suggestions(USABLE_MEDALS, this::usableMedals)
             .suggestions(TRACKS, sender -> data.get().tracks().keySet())
             .suggestions(LIFETIMES, sender -> Lifetime.SUGGESTIONS)
             .suggestions(NODES, sender -> nodes())
@@ -78,10 +83,22 @@ public final class PermissionSuggestions {
         return data.get().tags().keySet();
     }
 
+    public List<String> medals() {
+        return data.get().medalsByWeight().stream().map(Medal::id).toList();
+    }
+
+    public Collection<String> usableMedals(CommandSender sender) {
+        if (sender instanceof Player player && player.getUniqueId() != null) {
+            return resolved.apply(player.getUniqueId()).map(found -> found.medals().stream().map(Medal::id).toList()).orElse(List.of());
+        }
+        return medals();
+    }
+
     public Collection<String> nodes() {
         TreeSet<String> nodes = new TreeSet<>(knownPermissions.get());
         data.get().groups().values().forEach(group -> group.nodes().forEach(node -> nodes.add(node.key())));
         data.get().tags().values().forEach(tag -> nodes.add(tag.permission()));
+        data.get().medals().values().forEach(medal -> nodes.add(medal.permission()));
         data.get().groups().keySet().forEach(group -> nodes.add(PermissionNode.GROUP_PREFIX + group));
         return nodes;
     }

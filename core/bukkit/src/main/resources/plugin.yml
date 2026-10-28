@@ -28,6 +28,9 @@ permissions:
   muxe.tags.manage:
     description: Allows /tag dar and /tag remover, which give and take decorative tags.
     default: op
+  muxe.medals.manage:
+    description: Allows /medalha dar and /medalha remover, which give and take medals.
+    default: op
   muxe.account.others:
     description: Allows /account and /accountmenu on other players.
     default: op

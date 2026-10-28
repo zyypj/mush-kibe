@@ -9,6 +9,8 @@ import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.permission.command.EditorCommand;
+import br.com.muxe.core.bukkit.permission.command.MedalCommand;
+import br.com.muxe.core.bukkit.permission.command.MedalList;
 import br.com.muxe.core.bukkit.permission.command.PermissionCommand;
 import br.com.muxe.core.bukkit.permission.command.PermissionSuggestions;
 import br.com.muxe.core.bukkit.permission.command.RankCommand;
@@ -73,6 +75,7 @@ final class RankFeatures {
         EditorSessions editor = new EditorSessions(core.store(), core.clock(), EditorSessions.DEFAULT_DURATION);
         commands.register(
             new TagCommand(permissions, targets, replies, new TagList(core.messages(), chatFormat)),
+            new MedalCommand(permissions, targets, replies, new MedalList(core.messages(), chatFormat)),
             new AccountCommands(new AccountProfiles(core.queries(), permissions), accountLines, new AccountMenu(accountSettings, accountLines, core.messages()), replies),
             new RankCommand(permissions, targets, replies, reports),
             new PermissionCommand(permissions, targets, replies, reports),
