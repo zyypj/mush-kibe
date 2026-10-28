@@ -122,7 +122,7 @@ Checkpoints are keyed by their number. Broken entries are skipped with a warning
 | `/parkour remover <inicio\|fim\|n>` | Removes a point. `remover checkpoint <n>` also works. | `muxe.parkour` |
 | `/parkour listar` | Lists the points of this server group: start, checkpoints in order, end. | `muxe.parkour` |
 
-Without arguments, or with a wrong one, the command shows its usage (`messages.parkour-usage`). Only players can use it.
+Without arguments, or with a wrong one, the command shows its usage (`messages.parkour-usage`). Only players can use it. Subcommands and point names (`inicio`, `fim`, `checkpoint`) complete with tab; see [Commands](../../development/commands/README.md).
 
 ## Permissions
 
