@@ -10,6 +10,7 @@ import br.com.muxe.core.proxy.editor.security.EditorAuthenticator;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +52,102 @@ class EditorApiTest {
         assertThat(find(body.getAsJsonArray("tags"), "vip").get("chatPrefix").getAsString()).isEqualTo("&a&lVIP ");
         assertThat(ids(body.getAsJsonArray("tracks"))).containsExactly("doacao", "staff");
         assertThat(body.get("defaultGroup").getAsString()).isEqualTo("membro");
+    }
+
+    @Test
+    void theDataListsMedalsByWeightWithTheirDisplay() {
+        JsonArray medals = fixture.get("/api/data", token).body().getAsJsonObject().getAsJsonArray("medals");
+
+        assertThat(medals).hasSize(31);
+        assertThat(ids(medals).subList(0, 3)).containsExactly("toxico", "yin-yang", "musico");
+        JsonObject cafe = find(medals, "cafe");
+        assertThat(cafe.get("name").getAsString()).isEqualTo("Café");
+        assertThat(cafe.get("symbol").getAsString()).isEqualTo("☕");
+        assertThat(cafe.get("color").getAsString()).isEqualTo("&e");
+        assertThat(cafe.get("weight").getAsInt()).isEqualTo(70);
+        assertThat(cafe.get("display").getAsString()).isEqualTo("&e☕");
+        assertThat(cafe.get("chatPrefix").getAsString()).isEqualTo("&e☕ ");
+        assertThat(cafe.get("permission").getAsString()).isEqualTo("muxe.medal.cafe");
+    }
+
+    @Test
+    void aPlayerShowsTheChosenMedal() {
+        JsonObject user = fixture.get("/api/users/" + EditorFixture.VIP, token).body().getAsJsonObject();
+
+        assertThat(user.get("selectedMedal").getAsString()).isEqualTo("carinha");
+        assertThat(fixture.get("/api/users/" + EditorFixture.ADMIN, token).body().getAsJsonObject().get("selectedMedal").isJsonNull()).isTrue();
+    }
+
+    @Test
+    void savingAPlayerAsLoadedKeepsTheChosenMedal() {
+        JsonObject user = fixture.get("/api/users/" + EditorFixture.VIP, token).body().getAsJsonObject();
+        user.getAsJsonArray("nodes").add(JsonParser.parseString("{\"key\":\"muxe.medal.cafe\",\"value\":true}"));
+        JsonObject change = new JsonObject();
+        change.addProperty("type", "put-user");
+        change.add("user", user);
+        JsonArray changes = new JsonArray();
+        changes.add(change);
+        JsonObject body = new JsonObject();
+        body.add("changes", changes);
+
+        assertThat(fixture.post("/api/changes", token, body.toString()).status()).isEqualTo(200);
+
+        PermissionUser saved = fixture.permissions.user(EditorFixture.VIP);
+        assertThat(saved.selectedMedal()).contains("carinha");
+        assertThat(saved.selectedTag()).contains("vip");
+        assertThat(saved.nodes()).extracting(PermissionNode::key).contains("muxe.medal.cafe");
+    }
+
+    @Test
+    void theChosenMedalOfAPlayerIsChangedAndCleared() {
+        String chosen = "{\"changes\":[{\"type\":\"put-user\",\"user\":{\"id\":\"" + EditorFixture.VIP + "\",\"selectedMedal\":\"cafe\",\"nodes\":[{\"key\":\"group.vip\"}]}}]}";
+        String cleared = "{\"changes\":[{\"type\":\"put-user\",\"user\":{\"id\":\"" + EditorFixture.VIP + "\",\"selectedMedal\":null,\"nodes\":[{\"key\":\"group.vip\"}]}}]}";
+
+        assertThat(fixture.post("/api/changes", token, chosen).status()).isEqualTo(200);
+        assertThat(fixture.permissions.user(EditorFixture.VIP).selectedMedal()).contains("cafe");
+        assertThat(fixture.post("/api/changes", token, cleared).status()).isEqualTo(200);
+        assertThat(fixture.permissions.user(EditorFixture.VIP).selectedMedal()).isEmpty();
+    }
+
+    @Test
+    void anUnknownChosenMedalIsRefused() {
+        String body = "{\"changes\":[{\"type\":\"put-user\",\"user\":{\"id\":\"" + EditorFixture.VIP + "\",\"selectedMedal\":\"inexistente\",\"nodes\":[]}}]}";
+
+        ApiResponse response = fixture.post("/api/changes", token, body);
+
+        assertThat(response.status()).isEqualTo(400);
+        assertThat(code(response)).isEqualTo(PermissionProblems.UNKNOWN_MEDAL);
+        assertThat(fixture.permissions.user(EditorFixture.VIP).selectedMedal()).contains("carinha");
+    }
+
+    @Test
+    void aMedalIsCreatedGrantedToARankAndDeleted() {
+        JsonObject vip = find(fixture.get("/api/data", token).body().getAsJsonObject().getAsJsonArray("groups"), "vip");
+        vip.getAsJsonArray("nodes").add(JsonParser.parseString("{\"key\":\"muxe.medal.coroa\",\"value\":true}"));
+        String create = "{\"changes\":[{\"type\":\"put-medal\",\"medal\":{\"id\":\"coroa\",\"name\":\"Coroa\",\"symbol\":\"⊰⊱\",\"color\":\"&e\",\"weight\":15}},"
+            + "{\"type\":\"put-group\",\"group\":" + vip + "}]}";
+
+        ApiResponse created = fixture.post("/api/changes", token, create);
+
+        assertThat(created.status()).isEqualTo(200);
+        assertThat(find(created.body().getAsJsonObject().getAsJsonObject("data").getAsJsonArray("medals"), "coroa").get("display").getAsString()).isEqualTo("&e⊰⊱");
+        assertThat(fixture.sync.data().group("vip").orElseThrow().nodes()).extracting(PermissionNode::key).contains("muxe.medal.coroa");
+        assertThat(fixture.permissions.recentActions(500)).extracting(action -> action.description()).contains("saved medal coroa (&e⊰⊱)");
+
+        ApiResponse deleted = fixture.post("/api/changes", token, "{\"changes\":[{\"type\":\"delete-medal\",\"id\":\"coroa\"}]}");
+
+        assertThat(deleted.status()).isEqualTo(200);
+        assertThat(fixture.sync.data().medal("coroa")).isEmpty();
+        assertThat(fixture.permissions.recentActions(500)).extracting(action -> action.description()).contains("deleted medal coroa");
+    }
+
+    @Test
+    void anInvalidMedalIsABadRequest() {
+        String body = "{\"changes\":[{\"type\":\"put-medal\",\"medal\":{\"id\":\"coroa\",\"name\":\"Coroa\",\"symbol\":\"coroas\",\"color\":\"&e\",\"weight\":15}}]}";
+
+        assertThat(code(fixture.post("/api/changes", token, body))).isEqualTo(ApiResponse.INVALID_REQUEST);
+        assertThat(fixture.sync.data().medal("coroa")).isEmpty();
+        assertThat(fixture.permissions.recentActions(500)).isEmpty();
     }
 
     @Test

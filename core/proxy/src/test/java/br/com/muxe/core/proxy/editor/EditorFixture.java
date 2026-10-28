@@ -49,7 +49,7 @@ public final class EditorFixture implements AutoCloseable {
         accounts.add(Account.firstLogin(ADMIN, "tadeu", true, NOW));
         accounts.add(Account.firstLogin(VIP, "joana", false, NOW));
         permissions.saveUser(new PermissionUser(ADMIN, List.of(PermissionNode.group("admin", Optional.empty(), NOW)), Optional.empty()));
-        permissions.saveUser(new PermissionUser(VIP, List.of(PermissionNode.group("vip", Optional.empty(), NOW)), Optional.of("vip")));
+        permissions.saveUser(new PermissionUser(VIP, List.of(PermissionNode.group("vip", Optional.empty(), NOW)), Optional.of("vip"), Optional.of("carinha")));
         sync = new PermissionSync(commands, queries, network.node("proxy-1", "proxy", ServerKind.PROXY).start().bus(), Runnable::run, Logger.getLogger("test"));
         sync.start().join();
         api = PermissionEditor.api(sessions, queries, sync, clock, Logger.getLogger("test"));

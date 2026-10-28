@@ -2,6 +2,7 @@ package br.com.muxe.core.proxy.editor.json;
 
 import br.com.muxe.core.common.permission.domain.Contexts;
 import br.com.muxe.core.common.permission.domain.Group;
+import br.com.muxe.core.common.permission.domain.Medal;
 import br.com.muxe.core.common.permission.domain.PermissionChange;
 import br.com.muxe.core.common.permission.domain.PermissionNode;
 import br.com.muxe.core.common.permission.domain.PermissionUser;
@@ -56,6 +57,8 @@ public final class ChangeReader {
             case "delete-tag" -> new PermissionChange.DeleteTag(string(json, "id"));
             case "put-track" -> new PermissionChange.PutTrack(track(object(json.get("track"), "track")));
             case "delete-track" -> new PermissionChange.DeleteTrack(string(json, "id"));
+            case "put-medal" -> new PermissionChange.PutMedal(medal(object(json.get("medal"), "medal")));
+            case "delete-medal" -> new PermissionChange.DeleteMedal(string(json, "id"));
             case "put-user" -> new PermissionChange.PutUser(user(object(json.get("user"), "user"), now));
             default -> throw new IllegalArgumentException("Unknown change type: " + type);
         };
@@ -67,6 +70,10 @@ public final class ChangeReader {
 
     private static Tag tag(JsonObject json) {
         return new Tag(string(json, "id"), string(json, "name"), string(json, "color"), integer(json, "weight"), optionalString(json, "prefix"), bool(json, "decorative", false));
+    }
+
+    private static Medal medal(JsonObject json) {
+        return new Medal(string(json, "id"), string(json, "name"), string(json, "symbol"), string(json, "color"), integer(json, "weight"));
     }
 
     private static Track track(JsonObject json) {
@@ -84,7 +91,7 @@ public final class ChangeReader {
         } catch (IllegalArgumentException exception) {
             throw new IllegalArgumentException("Invalid user id");
         }
-        return new PermissionUser(id, nodes(json, now), optionalString(json, "selectedTag"));
+        return new PermissionUser(id, nodes(json, now), optionalString(json, "selectedTag"), optionalString(json, "selectedMedal"));
     }
 
     private static List<PermissionNode> nodes(JsonObject owner, Instant now) {

@@ -2,6 +2,7 @@ package br.com.muxe.core.proxy.editor.json;
 
 import br.com.muxe.core.common.account.domain.Account;
 import br.com.muxe.core.common.permission.domain.Group;
+import br.com.muxe.core.common.permission.domain.Medal;
 import br.com.muxe.core.common.permission.domain.PermissionAction;
 import br.com.muxe.core.common.permission.domain.PermissionData;
 import br.com.muxe.core.common.permission.domain.PermissionNode;
@@ -29,6 +30,7 @@ public final class PermissionJson {
         json.add("groups", array(data.groupsByWeight().stream().map(PermissionJson::group).toList()));
         json.add("tags", array(data.tagsByWeight().stream().map(PermissionJson::tag).toList()));
         json.add("tracks", array(data.tracks().values().stream().sorted(Comparator.comparing(Track::id)).map(PermissionJson::track).toList()));
+        json.add("medals", array(data.medalsByWeight().stream().map(PermissionJson::medal).toList()));
         return json;
     }
 
@@ -55,6 +57,19 @@ public final class PermissionJson {
         return json;
     }
 
+    public static JsonObject medal(Medal medal) {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", medal.id());
+        json.addProperty("name", medal.name());
+        json.addProperty("symbol", medal.symbol());
+        json.addProperty("color", medal.color());
+        json.addProperty("weight", medal.weight());
+        json.addProperty("display", medal.display());
+        json.addProperty("chatPrefix", medal.chatPrefix());
+        json.addProperty("permission", medal.permission());
+        return json;
+    }
+
     public static JsonObject track(Track track) {
         JsonObject json = new JsonObject();
         json.addProperty("id", track.id());
@@ -73,6 +88,7 @@ public final class PermissionJson {
         json.addProperty("lastSeenAt", account.lastSeenAt().toEpochMilli());
         json.add("nodes", nodes(user.nodes()));
         json.add("selectedTag", optional(user.selectedTag()));
+        json.add("selectedMedal", optional(user.selectedMedal()));
         return json;
     }
 
