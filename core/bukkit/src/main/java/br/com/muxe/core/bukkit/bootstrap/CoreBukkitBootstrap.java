@@ -7,6 +7,8 @@ import br.com.muxe.core.bukkit.command.BuildCommand;
 import br.com.muxe.core.bukkit.command.LobbyCommand;
 import br.com.muxe.core.bukkit.command.MuxeAdminCommand;
 import br.com.muxe.core.bukkit.command.framework.Commands;
+import br.com.muxe.core.bukkit.command.framework.registry.CommandMapRegistrar;
+import br.com.muxe.core.bukkit.command.framework.registry.PermissionMessages;
 import br.com.muxe.core.bukkit.config.BukkitConfigSource;
 import br.com.muxe.core.bukkit.greeting.GreetingSettings;
 import br.com.muxe.core.bukkit.greeting.JoinGreeting;
@@ -87,6 +89,8 @@ public final class CoreBukkitBootstrap {
         ranks = RankFeatures.start(plugin, core, config, commands);
         features = PlacedFeatures.start(plugin, core, config, commands);
         HotbarFeatures.start(plugin, core, config, features);
+        CommandMapRegistrar.commandMap(plugin.getServer())
+            .ifPresent(map -> new PermissionMessages(plugin, map, messages.get("no-permission")).start());
 
         plugin.getLogger().info("Muxe-Core ready as " + settings.server().id() + " (" + settings.server().group() + ")");
     }

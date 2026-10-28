@@ -148,6 +148,8 @@ Todo plugin que registra comandos precisa destas chaves em `messages` no seu `co
 | `command-player-offline` | `&cO jogador &f{input} &cnão está online.` |
 | `command-failed` | `&cNão foi possível executar este comando agora.` |
 
+O Muxe-Core também coloca a sua mensagem `no-permission` em todos os comandos do mapa de comandos do servidor, inclusive os de outros plugins e os do próprio Bukkit (`/plugins`, `/version`), assim que o servidor termina de ligar e de novo sempre que um plugin é ativado (`PermissionMessages`). Assim, quem não tem permissão sempre vê a mesma mensagem.
+
 ## Testes
 
 Os handlers são métodos comuns, e o framework roda sem servidor: monte `new Commands(ArgumentTypes.basic(), new SuggestionRegistry(), messages, logger, registrar)` com um `CommandRegistrar` que guarde os `RegisteredCommand`, e chame `run(sender, label, args)` e `complete(sender, args)` com remetentes proxy. O `core:bukkit` tem `TestCommands` e `FakeSender` nos testes para isso.
