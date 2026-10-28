@@ -70,7 +70,7 @@ Senhas:
 
 - Servido pelo proxy em `editor.port` (1031). As sessões são abertas no jogo com `/editor` (só Admin), duram 30 minutos e são conferidas de novo a cada requisição: o dono ainda precisa resolver `muxe.permissions.editor`.
 - O token vai no fragmento da URL e no cabeçalho `Authorization`, nunca em cookies, query strings ou logs; o Redis guarda só o SHA-256 dele.
-- Limites de requisições por endereço, limite de tamanho do corpo, conferência do `Origin` nas escritas, cabeçalhos de segurança rígidos (`Content-Security-Policy` `default-src 'self'`, `X-Frame-Options: DENY`, `no-referrer`, `nosniff`, `no-store` na API) e validação no servidor de todos os campos. Todo lote salvo vai para o log com o autor.
+- Limites de requisições por endereço, limite de tamanho do corpo, conferência do `Origin` nas escritas, cabeçalhos de segurança rígidos (`Content-Security-Policy` `default-src 'self'`, com só a fonte Montserrat carregada do Google Fonts, `X-Frame-Options: DENY`, `no-referrer`, `nosniff`, `no-store` na API) e validação no servidor de todos os campos. Todo lote salvo vai para o log com o autor.
 - **O editor usa HTTP simples até a rede ter um domínio.** Então ele fica atrás de um proxy reverso com TLS e `editor.bind: 127.0.0.1`. Detalhes em [Editor de permissões](../../features/permission-editor/README.pt-BR.md#segurança).
 
 ## Endereços dos jogadores

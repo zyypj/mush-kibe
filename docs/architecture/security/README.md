@@ -70,7 +70,7 @@ Passwords:
 
 - Served by the proxy on `editor.port` (1031). Sessions are opened in game with `/editor` (Admin only), last 30 minutes and are re-checked on every request: the owner must still resolve `muxe.permissions.editor`.
 - The token travels in the URL fragment and the `Authorization` header, never in cookies, query strings or logs; Redis keeps only its SHA-256.
-- Per-address rate limits, a body size limit, an `Origin` check on writes, strict security headers (`Content-Security-Policy` `default-src 'self'`, `X-Frame-Options: DENY`, `no-referrer`, `nosniff`, `no-store` on the API) and server-side validation of every field. Every saved batch is logged with its author.
+- Per-address rate limits, a body size limit, an `Origin` check on writes, strict security headers (`Content-Security-Policy` `default-src 'self'`, with only the Montserrat font loaded from Google Fonts, `X-Frame-Options: DENY`, `no-referrer`, `nosniff`, `no-store` on the API) and server-side validation of every field. Every saved batch is logged with its author.
 - **The editor uses plain HTTP until the network has a domain.** Then it goes behind a reverse proxy with TLS and `editor.bind: 127.0.0.1`. Details in [Permission editor](../../features/permission-editor/README.md#security).
 
 ## Player addresses

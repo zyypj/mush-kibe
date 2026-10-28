@@ -20,7 +20,7 @@ const nav = {
   go(page, id) {
     view.page = page;
     view.id = id || null;
-    document.getElementById("main").scrollTop = 0;
+    window.scrollTo(0, 0);
     refresh();
   },
 };
@@ -33,7 +33,7 @@ function screen(title, message) {
   const root = clear(document.getElementById("root"));
   root.appendChild(el("div", { class: "screen" },
     el("div", { class: "card" },
-      el("div", { class: "row", style: null }, el("div", { class: "brand-mark", text: "M" })),
+      el("div", { class: "screen-logo", text: "MUXE" }),
       el("h1", { text: title }),
       el("p", { class: "muted", text: message }))));
 }
@@ -41,20 +41,25 @@ function screen(title, message) {
 function shell() {
   const root = clear(document.getElementById("root"));
   root.appendChild(el("div", { class: "app" },
-    el("div", { class: "brand" }, el("div", { class: "brand-mark", text: "M" }), el("div", null, "Muxe", el("small", { text: "Editor de permissões" }))),
-    el("header", { class: "topbar", id: "topbar" }),
-    el("nav", { class: "sidebar", id: "sidebar", "aria-label": "Seções" }),
-    el("main", { class: "main", id: "main" })));
+    el("header", { class: "navbar" },
+      el("div", { class: "wrap navbar-inner" },
+        el("div", { class: "brand", text: "MUXE" }),
+        el("nav", { class: "sidebar", id: "sidebar", "aria-label": "Seções" }),
+        el("div", { class: "topbar", id: "topbar" }))),
+    el("section", { class: "hero" },
+      el("div", { class: "wrap" },
+        el("h1", { text: "Editor de permissões" }),
+        el("p", { text: "Cargos, tags, trilhas e jogadores da rede Muxe." }))),
+    el("main", { class: "main wrap", id: "main" }),
+    el("footer", { class: "footer" },
+      el("p", { text: "Muxe · Editor de permissões. As alterações valem em todos os servidores assim que você salvar." }),
+      el("p", { text: "O Muxe não é afiliado à Mojang nem à Microsoft." }))));
   root.appendChild(el("aside", { class: "pending", id: "pending", hidden: true, "aria-label": "Alterações pendentes" }));
 }
 
 function renderSidebar() {
   const side = clear(document.getElementById("sidebar"));
-  side.appendChild(el("div", { class: "nav-title", text: "Editar" }));
   for (const page of PAGES) {
-    if (page.id === "history") {
-      side.appendChild(el("div", { class: "nav-title", text: "Registro" }));
-    }
     side.appendChild(el("button", {
       type: "button",
       class: "nav-item" + (view.page === page.id ? " active" : ""),
@@ -67,10 +72,7 @@ function renderTopbar() {
   const top = clear(document.getElementById("topbar"));
   const pending = pendingChanges();
   const timer = el("span", { class: "timer", id: "timer" });
-  top.appendChild(el("span", { class: "muted", text: "Logado como" }));
-  top.appendChild(el("strong", { text: state.session.actor }));
-  top.appendChild(el("span", { class: "badge" }, "sessão ", timer));
-  top.appendChild(el("div", { class: "spacer" }));
+  top.appendChild(el("span", { class: "session-pill" }, el("strong", { text: state.session.actor }), el("span", { text: "sessão " }), timer));
   if (pending.length) {
     top.appendChild(el("span", { class: "badge warn", text: pending.length + " alteração(ões) pendente(s)" }));
     top.appendChild(button("Descartar", discardAll, "ghost"));
@@ -101,10 +103,10 @@ function renderPending() {
 
 function renderMain() {
   const main = document.getElementById("main");
-  const scroll = main.scrollTop;
+  const scroll = window.scrollY;
   const page = PAGES.find((candidate) => candidate.id === view.page) || PAGES[0];
   clear(main).appendChild(page.render(view, nav));
-  main.scrollTop = scroll;
+  window.scrollTo(0, scroll);
 }
 
 function refresh() {
