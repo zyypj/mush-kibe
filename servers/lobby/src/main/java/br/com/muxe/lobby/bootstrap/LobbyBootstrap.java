@@ -3,6 +3,7 @@ package br.com.muxe.lobby.bootstrap;
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.bossbar.BossBars;
 import br.com.muxe.core.bukkit.buildmode.BuildMode;
+import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.persistence.migration.MigrationReport;
 import br.com.muxe.lobby.bossbar.LobbyBossBar;
@@ -16,8 +17,6 @@ import br.com.muxe.lobby.scoreboard.LobbyScoreboard;
 import br.com.muxe.lobby.spawn.ArrivalService;
 import br.com.muxe.lobby.spawn.FlightBuildHook;
 import br.com.muxe.lobby.spawn.SpawnService;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -59,15 +58,9 @@ public final class LobbyBootstrap {
         scheduler.runTaskTimer(plugin, scoreboard, scoreboardPeriod, scoreboardPeriod);
         scheduler.runTaskTimer(plugin, bossBar, bossBar.period(), bossBar.period());
 
-        bind("jogar", new PlayCommand(core, messages, settings.games()));
-        bind("setspawn", new SetSpawnCommand(spawn, messages));
-    }
-
-    private void bind(String name, CommandExecutor executor) {
-        PluginCommand command = plugin.getCommand(name);
-        if (command == null) {
-            throw new IllegalStateException("Command /" + name + " is missing from plugin.yml");
-        }
-        command.setExecutor(executor);
+        Commands.of(plugin, messages).register(
+            new PlayCommand(core, messages, settings.games()),
+            new SetSpawnCommand(spawn, messages)
+        );
     }
 }

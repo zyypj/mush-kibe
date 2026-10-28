@@ -5,14 +5,6 @@ author: Muxe
 description: Main lobby of the Muxe network.
 depend:
   - Muxe-Core
-commands:
-  jogar:
-    description: Sends you to a game.
-    usage: /jogar <game>
-    aliases:
-      - play
-  setspawn:
-    description: Sets the lobby spawn at your position.
 permissions:
   muxe.lobby.setspawn:
     description: Allows /setspawn.
