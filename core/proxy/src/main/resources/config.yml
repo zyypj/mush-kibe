@@ -64,6 +64,13 @@ messages:
     - ""
     - "&eAcompanhe as notícias em: &bmuxe.com.br"
     - "&cO problema continua? Avise a equipe em &bdiscord.muxe.com.br"
+  server-restarting:
+    - "&cVocê foi desconectado do servidor."
+    - "&cMotivo: Servidor reiniciando"
+    - "&cTente entrar novamente em alguns minutos."
+    - ""
+    - "&eMais informações no nosso Discord: &bdiscord.muxe.com.br"
+  server-moved: "&eO servidor em que você estava está reiniciando. Você foi levado para outro servidor."
   no-lobby-server: "&cNenhum lobby disponível no momento. Use /lobby em instantes."
   no-server: "&cNenhum servidor disponível para &f{destination}&c."
   must-authenticate: "&cFaça login antes de trocar de servidor."

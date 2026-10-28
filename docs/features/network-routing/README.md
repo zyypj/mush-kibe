@@ -16,6 +16,11 @@ How players are placed on servers and moved between them. Lives in `core:proxy` 
 - **Closed network:** while no auth server is alive, nobody can log in, not even premium players or resumed sessions. The proxy refuses the login before anything else runs, so the player sees the `no-auth-server` screen on "Failed to connect to the server" and no account is recorded.
 - **Initial server:** authenticated players start in the least loaded lobby; everyone else starts in the least loaded auth server that has room. If no lobby is alive, an authenticated player starts on the least loaded auth server instead and sees `no-lobby-server` once connected. A player with no server to join is disconnected with `no-lobby-server` or `no-auth-server`. Unauthenticated players never fall back to a lobby.
 - **After authenticating on the auth server:** the proxy sends the player to the least loaded lobby. If none is alive, the player stays on the auth server and sees `no-lobby-server`.
+- **When the player's server goes down or kicks them:** the proxy picks where the player goes next (`Fallbacks`), never the server they left.
+  - A logged-in player goes to the least loaded lobby and sees `server-moved`. A player kicked on purpose by a server that is still up also goes to a lobby, and sees that server's kick reason instead.
+  - If no other lobby is alive, even when the auth server is, the logged-in player is disconnected with the `server-restarting` screen. The same screen is shown when every server is down.
+  - A player still logging in moves to another auth server only when theirs is closing; with no other auth server they get `server-restarting`. A kick on purpose by an auth server that is still up (a wrong password, the login time running out) works as before.
+  - A server counts as closing when it already left the server list (its core announced the shutdown), when the kick has no reason, or when the reason is the Bukkit shutdown message (`Server closed`).
 - **Moving later:** any server can publish `player.connect` to send a player to a server id or to the least loaded server of a group. The proxy ignores it for unauthenticated players, and tells the player `no-server` when there is no destination.
 - **Least loaded:** among alive servers of the group with room, the one with fewest players; ties are broken by id.
 - **Disconnect:** the gate forgets the player.
@@ -39,6 +44,8 @@ Proxy `config.yml`:
 | `routing.auth-group` | `auth` | Group of the auth servers. |
 | `routing.lobby-group` | `lobby` | Group players are sent to after authenticating. |
 | `messages.no-auth-server` | Six-line screen: could not connect, reason, retry hint, a blank line, where to follow the news and the team's Discord | Shown when the login is refused because no auth server is alive. A YAML list, one item per line. |
+| `messages.server-restarting` | Five-line screen: disconnected, reason (server restarting), retry hint, a blank line and the Discord for more information | Shown when the player's server goes down and there is no other lobby, or no server at all. A YAML list, one item per line. |
+| `messages.server-moved` | `&eO servidor em que você estava está reiniciando. Você foi levado para outro servidor.` | Chat message after being moved because the server went down. |
 | `messages.no-lobby-server`, `no-server`, `must-authenticate` | Portuguese texts | Messages shown by the proxy. |
 | `authentication.*` | see [Authentication](../authentication/README.md#configuration) | Premium detection and login sessions. |
 
@@ -77,13 +84,16 @@ None. The gate lives in the proxy's memory.
 - [x] Only auth servers are trusted to authenticate players.
 - [x] The least loaded server with room is chosen, and dead servers are ignored.
 - [x] While no auth server is alive the network refuses every login, and a full auth server still counts as up.
+- [x] A player whose server goes down moves to another lobby, and is disconnected with `server-restarting` when only the auth server, or nothing, is left.
 - [ ] After login the player arrives in a lobby (checked in game).
+- [ ] Restarting a lobby moves its players to the other lobby (checked in game).
 - [ ] Premium players and resumed sessions start directly in a lobby (checked in game).
 
 ## Failures and recovery
 
 - **No auth server alive:** logins are refused for everyone with `no-auth-server`; players already online stay where they are. Logins open again within seconds of an auth server reporting its status.
 - **No server of the target group alive:** the player stays where they are and sees a message.
+- **The player's server goes down:** they move to another lobby, or are disconnected with `server-restarting` when there is none.
 - **Redis down:** routing requests from servers fail; players stay on their current server. The directory recovers within seconds of the reconnection.
 - **Proxy restart:** players reconnect and authenticate again.
 

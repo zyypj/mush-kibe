@@ -34,6 +34,21 @@ class ProxyConfigFileTest {
     }
 
     @Test
+    void theRestartScreenFollowsTheKickScreenLayout() {
+        ProxyMessages messages = new ProxyMessages(ProxyConfigFile.load(folder));
+
+        String expected = String.join("\n",
+            "&cVocê foi desconectado do servidor.",
+            "&cMotivo: Servidor reiniciando",
+            "&cTente entrar novamente em alguns minutos.",
+            "",
+            "&eMais informações no nosso Discord: &bdiscord.muxe.com.br"
+        );
+
+        assertThat(messages.get("server-restarting")).isEqualTo(LegacyComponentSerializer.legacyAmpersand().deserialize(expected));
+    }
+
+    @Test
     void aPasswordLoginIsRememberedForADay() {
         MapConfigSource config = ProxyConfigFile.load(folder);
 
