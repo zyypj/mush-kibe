@@ -58,7 +58,8 @@ public final class PermissionResolver {
 
         ResolvedPermissions partial = new ResolvedPermissions(permissions, groups, List.of(), Optional.empty());
         List<Tag> tags = data.tagsByWeight().stream().filter(tag -> partial.has(tag.permission())).toList();
-        return new ResolvedPermissions(permissions, groups, tags, expiries.stream().min(Comparator.naturalOrder()));
+        List<Medal> medals = data.medalsByWeight().stream().filter(medal -> partial.has(medal.permission())).toList();
+        return new ResolvedPermissions(permissions, groups, tags, medals, expiries.stream().min(Comparator.naturalOrder()));
     }
 
     private static void apply(Map<String, Boolean> permissions, List<Instant> expiries, List<PermissionNode> nodes) {

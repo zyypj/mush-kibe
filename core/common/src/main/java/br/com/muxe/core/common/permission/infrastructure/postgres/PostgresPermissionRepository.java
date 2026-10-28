@@ -2,6 +2,7 @@ package br.com.muxe.core.common.permission.infrastructure.postgres;
 
 import br.com.muxe.core.common.permission.domain.Contexts;
 import br.com.muxe.core.common.permission.domain.Group;
+import br.com.muxe.core.common.permission.domain.Medal;
 import br.com.muxe.core.common.permission.domain.PermissionAction;
 import br.com.muxe.core.common.permission.domain.PermissionData;
 import br.com.muxe.core.common.permission.domain.PermissionNode;
@@ -36,6 +37,16 @@ public final class PostgresPermissionRepository implements PermissionRepository 
     private static final String FIND_TRACKS = "SELECT id, groups FROM core.perm_tracks";
     private static final String FIND_USER_NODES = "SELECT " + NODE_COLUMNS + " FROM core.perm_user_nodes WHERE player_id = ?";
     private static final String FIND_USER_TAG = "SELECT tag_id FROM core.player_tags WHERE player_id = ?";
+    private static final String FIND_MEDALS = "SELECT id, name, symbol, color, weight FROM core.perm_medals";
+    private static final String FIND_USER_MEDAL = "SELECT medal_id FROM core.player_medals WHERE player_id = ?";
+    private static final String SAVE_MEDAL = """
+        INSERT INTO core.perm_medals (id, name, symbol, color, weight) VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, symbol = EXCLUDED.symbol, color = EXCLUDED.color, weight = EXCLUDED.weight
+        """;
+    private static final String SELECT_MEDAL = """
+        INSERT INTO core.player_medals (player_id, medal_id, updated_at) VALUES (?, ?, now())
+        ON CONFLICT (player_id) DO UPDATE SET medal_id = EXCLUDED.medal_id, updated_at = EXCLUDED.updated_at
+        """;
     private static final String FIND_USERS_WITH = "SELECT DISTINCT player_id FROM core.perm_user_nodes WHERE permission = ? ORDER BY player_id";
 
     private static final String SAVE_TAG = """
@@ -89,7 +100,13 @@ public final class PostgresPermissionRepository implements PermissionRepository 
                     tracks.add(new Track(rows.getString("id"), Arrays.asList((String[]) array.getArray())));
                 }
             }
-            return PermissionData.of(groups, tags, tracks);
+            List<Medal> medals = new ArrayList<>();
+            try (PreparedStatement statement = connection.prepareStatement(FIND_MEDALS); ResultSet rows = statement.executeQuery()) {
+                while (rows.next()) {
+                    medals.add(new Medal(rows.getString("id"), rows.getString("name"), rows.getString("symbol"), rows.getString("color"), rows.getInt("weight")));
+                }
+            }
+            return PermissionData.of(groups, tags, tracks, medals);
         } catch (SQLException exception) {
             throw new PersistenceException("permission.load", exception);
         }
@@ -117,7 +134,16 @@ public final class PostgresPermissionRepository implements PermissionRepository 
                     }
                 }
             }
-            return new PermissionUser(id, nodes, tag);
+            Optional<String> medal = Optional.empty();
+            try (PreparedStatement statement = connection.prepareStatement(FIND_USER_MEDAL)) {
+                statement.setObject(1, id);
+                try (ResultSet rows = statement.executeQuery()) {
+                    if (rows.next()) {
+                        medal = Optional.ofNullable(rows.getString("medal_id"));
+                    }
+                }
+            }
+            return new PermissionUser(id, nodes, tag, medal);
         } catch (SQLException exception) {
             throw new PersistenceException("permission.find_user", exception);
         }
@@ -209,6 +235,7 @@ public final class PostgresPermissionRepository implements PermissionRepository 
                 statement.executeBatch();
             }
             selectTag(user.id(), user.selectedTag());
+            selectMedal(user.id(), user.selectedMedal());
         } catch (SQLException exception) {
             throw new PersistenceException("permission.save_user", exception);
         }
@@ -232,6 +259,46 @@ public final class PostgresPermissionRepository implements PermissionRepository 
             }
         } catch (SQLException exception) {
             throw new PersistenceException("permission.select_tag", exception);
+        }
+    }
+
+    @Override
+    public void saveMedal(Medal medal) {
+        try (PreparedStatement statement = TransactionContext.connection().prepareStatement(SAVE_MEDAL)) {
+            statement.setString(1, medal.id());
+            statement.setString(2, medal.name());
+            statement.setString(3, medal.symbol());
+            statement.setString(4, medal.color());
+            statement.setInt(5, medal.weight());
+            statement.executeUpdate();
+        } catch (SQLException exception) {
+            throw new PersistenceException("permission.save_medal", exception);
+        }
+    }
+
+    @Override
+    public void deleteMedal(String id) {
+        run("permission.delete_medal", "DELETE FROM core.perm_medals WHERE id = ?", id);
+    }
+
+    @Override
+    public void selectMedal(UUID id, Optional<String> medal) {
+        try {
+            Connection connection = TransactionContext.connection();
+            if (medal.isEmpty()) {
+                try (PreparedStatement statement = connection.prepareStatement("DELETE FROM core.player_medals WHERE player_id = ?")) {
+                    statement.setObject(1, id);
+                    statement.executeUpdate();
+                }
+                return;
+            }
+            try (PreparedStatement statement = connection.prepareStatement(SELECT_MEDAL)) {
+                statement.setObject(1, id);
+                statement.setString(2, medal.get());
+                statement.executeUpdate();
+            }
+        } catch (SQLException exception) {
+            throw new PersistenceException("permission.select_medal", exception);
         }
     }
 

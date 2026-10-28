@@ -8,6 +8,8 @@ import br.com.muxe.core.common.permission.application.command.ApplyPermissionCha
 import br.com.muxe.core.common.permission.application.command.ApplyPermissionChangesHandler;
 import br.com.muxe.core.common.permission.application.command.RemoveUserNodeCommand;
 import br.com.muxe.core.common.permission.application.command.RemoveUserNodeHandler;
+import br.com.muxe.core.common.permission.application.command.SelectMedalCommand;
+import br.com.muxe.core.common.permission.application.command.SelectMedalHandler;
 import br.com.muxe.core.common.permission.application.command.SelectTagCommand;
 import br.com.muxe.core.common.permission.application.command.SelectTagHandler;
 import br.com.muxe.core.common.permission.application.query.FindPermissionUserHandler;
@@ -32,6 +34,7 @@ public final class PermissionModule {
         commands.register(AddUserNodeCommand.class, new AddUserNodeHandler(permissions, transactions, clock));
         commands.register(RemoveUserNodeCommand.class, new RemoveUserNodeHandler(permissions, transactions, clock));
         commands.register(SelectTagCommand.class, new SelectTagHandler(permissions, transactions));
+        commands.register(SelectMedalCommand.class, new SelectMedalHandler(permissions, transactions));
         queries.register(LoadPermissionDataQuery.class, new LoadPermissionDataHandler(permissions, transactions));
         queries.register(FindPermissionUserQuery.class, new FindPermissionUserHandler(permissions, transactions));
         queries.register(FindUsersWithNodeQuery.class, new FindUsersWithNodeHandler(permissions, transactions));

@@ -26,6 +26,12 @@ public interface PermissionRepository {
 
     void selectTag(UUID id, Optional<String> tag);
 
+    void saveMedal(Medal medal);
+
+    void deleteMedal(String id);
+
+    void selectMedal(UUID id, Optional<String> medal);
+
     List<UUID> usersWith(String key);
 
     void log(PermissionAction action);

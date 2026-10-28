@@ -13,6 +13,7 @@ public sealed interface PermissionChange {
         Map<String, Group> groups = new HashMap<>(data.groups());
         Map<String, Tag> tags = new HashMap<>(data.tags());
         Map<String, Track> tracks = new HashMap<>(data.tracks());
+        Map<String, Medal> medals = new HashMap<>(data.medals());
         for (PermissionChange change : changes) {
             switch (change) {
                 case PutGroup put -> groups.put(put.group().id(), put.group());
@@ -21,11 +22,13 @@ public sealed interface PermissionChange {
                 case DeleteTag delete -> tags.remove(delete.id());
                 case PutTrack put -> tracks.put(put.track().id(), put.track());
                 case DeleteTrack delete -> tracks.remove(delete.id());
+                case PutMedal put -> medals.put(put.medal().id(), put.medal());
+                case DeleteMedal delete -> medals.remove(delete.id());
                 case PutUser ignored -> {
                 }
             }
         }
-        return new PermissionData(groups, tags, tracks);
+        return new PermissionData(groups, tags, tracks, medals);
     }
 
     record PutGroup(Group group) implements PermissionChange {
@@ -91,6 +94,28 @@ public sealed interface PermissionChange {
         @Override
         public String describe() {
             return "deleted track " + id;
+        }
+    }
+
+    record PutMedal(Medal medal) implements PermissionChange {
+        public PutMedal {
+            Objects.requireNonNull(medal, "medal");
+        }
+
+        @Override
+        public String describe() {
+            return "saved medal " + medal.id() + " (" + medal.display() + ")";
+        }
+    }
+
+    record DeleteMedal(String id) implements PermissionChange {
+        public DeleteMedal {
+            PermissionIds.require(id);
+        }
+
+        @Override
+        public String describe() {
+            return "deleted medal " + id;
         }
     }
 

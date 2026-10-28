@@ -44,6 +44,8 @@ public final class ApplyPermissionChangesHandler implements CommandHandler<Apply
             for (PermissionChange change : command.changes()) {
                 switch (change) {
                     case PermissionChange.PutTag put -> permissions.saveTag(put.tag());
+                    case PermissionChange.PutMedal put -> permissions.saveMedal(put.medal());
+                    case PermissionChange.DeleteMedal delete -> permissions.deleteMedal(delete.id());
                     case PermissionChange.PutGroup put -> permissions.saveGroup(put.group());
                     case PermissionChange.PutTrack put -> permissions.saveTrack(put.track());
                     case PermissionChange.PutUser put -> permissions.saveUser(put.user());

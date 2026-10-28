@@ -104,17 +104,17 @@ class RankCommandTest {
 
     @Test
     void listAndInfoDescribeTheHierarchy() {
-        run("cargo listar", "cargo info vip");
+        run("cargo listar", "cargo info mvp");
 
         assertThat(staff.messages()).first().isEqualTo("§6§lCARGOS §8» §7do maior para o menor");
         assertThat(staff.messages()).contains(
             "§8• §cAdmin §8(admin) §7peso §f150 §8- §7herda §5Mod+",
             "§8• §7Membro §8(membro) §7peso §f0 §8- §7herda §7nenhum",
             "§8• §fdoacao§8: §7Membro §8→ §aVIP §8→ §9MVP §8→ §6Pro §8→ §dUltra",
-            "§6§lCARGO §8» §aVIP §8(vip)",
-            "§7Peso: §f10",
-            "§7Tag: §aVIP §8(no chat: §a§lVIP §aSteve§8)",
-            "§7Herda: §7Membro",
+            "§6§lCARGO §8» §9MVP §8(mvp)",
+            "§7Peso: §f20",
+            "§7Tag: §9MVP §8(no chat: §9§lMVP §9Steve§8)",
+            "§7Herda: §aVIP",
             "§7Permissões §8(0)§7:",
             "§8• §7Nenhuma permissão."
         );

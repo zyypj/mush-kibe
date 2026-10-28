@@ -9,6 +9,7 @@ import br.com.muxe.core.common.network.permission.PermissionsChangedPacket;
 import br.com.muxe.core.common.permission.application.command.AddUserNodeCommand;
 import br.com.muxe.core.common.permission.application.command.ApplyPermissionChangesCommand;
 import br.com.muxe.core.common.permission.application.command.RemoveUserNodeCommand;
+import br.com.muxe.core.common.permission.application.command.SelectMedalCommand;
 import br.com.muxe.core.common.permission.application.command.SelectTagCommand;
 import br.com.muxe.core.common.permission.application.query.FindPermissionUserQuery;
 import br.com.muxe.core.common.permission.application.query.LoadPermissionDataQuery;
@@ -142,6 +143,10 @@ public final class PermissionSync {
 
     public CompletableFuture<Result<Void>> selectTag(UUID player, Optional<String> tag) {
         return commands.dispatch(new SelectTagCommand(player, tag)).thenApply(result -> afterUserChange(player, result));
+    }
+
+    public CompletableFuture<Result<Void>> selectMedal(UUID player, Optional<String> medal) {
+        return commands.dispatch(new SelectMedalCommand(player, medal)).thenApply(result -> afterUserChange(player, result));
     }
 
     private <T> Result<T> afterUserChange(UUID player, Result<T> result) {

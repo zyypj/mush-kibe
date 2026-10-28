@@ -7,12 +7,17 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-public record PermissionUser(UUID id, List<PermissionNode> nodes, Optional<String> selectedTag) {
+public record PermissionUser(UUID id, List<PermissionNode> nodes, Optional<String> selectedTag, Optional<String> selectedMedal) {
 
     public PermissionUser {
         Objects.requireNonNull(id, "id");
         nodes = List.copyOf(nodes);
         Objects.requireNonNull(selectedTag, "selectedTag");
+        Objects.requireNonNull(selectedMedal, "selectedMedal");
+    }
+
+    public PermissionUser(UUID id, List<PermissionNode> nodes, Optional<String> selectedTag) {
+        this(id, nodes, selectedTag, Optional.empty());
     }
 
     public static PermissionUser empty(UUID id) {
@@ -34,14 +39,14 @@ public record PermissionUser(UUID id, List<PermissionNode> nodes, Optional<Strin
             }
         }
         next.add(new PermissionNode(node.key(), node.value(), node.contexts(), node.expiresAt(), added, node.updatedAt()));
-        return new PermissionUser(id, next, selectedTag);
+        return new PermissionUser(id, next, selectedTag, selectedMedal);
     }
 
     public PermissionUser without(String key, Contexts contexts) {
-        return new PermissionUser(id, nodes.stream().filter(node -> !(node.key().equals(key) && node.contexts().equals(contexts))).toList(), selectedTag);
+        return new PermissionUser(id, nodes.stream().filter(node -> !(node.key().equals(key) && node.contexts().equals(contexts))).toList(), selectedTag, selectedMedal);
     }
 
     public PermissionUser withoutExpired(Instant now) {
-        return new PermissionUser(id, nodes.stream().filter(node -> node.isActive(now)).toList(), selectedTag);
+        return new PermissionUser(id, nodes.stream().filter(node -> node.isActive(now)).toList(), selectedTag, selectedMedal);
     }
 }

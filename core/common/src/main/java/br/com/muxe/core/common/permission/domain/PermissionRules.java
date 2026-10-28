@@ -44,6 +44,9 @@ public final class PermissionRules {
                 return problem(PermissionProblems.UNKNOWN_GROUP, "The group '" + node.groupId() + "' does not exist");
             }
         }
+        if (user.selectedMedal().isPresent() && data.medal(user.selectedMedal().get()).isEmpty()) {
+            return problem(PermissionProblems.UNKNOWN_MEDAL, "The medal '" + user.selectedMedal().get() + "' does not exist");
+        }
         if (user.selectedTag().isPresent() && data.tag(user.selectedTag().get()).isEmpty()) {
             return problem(PermissionProblems.UNKNOWN_TAG, "The tag '" + user.selectedTag().get() + "' does not exist");
         }

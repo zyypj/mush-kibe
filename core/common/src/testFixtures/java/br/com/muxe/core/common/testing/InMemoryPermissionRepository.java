@@ -1,6 +1,7 @@
 package br.com.muxe.core.common.testing;
 
 import br.com.muxe.core.common.permission.domain.Group;
+import br.com.muxe.core.common.permission.domain.Medal;
 import br.com.muxe.core.common.permission.domain.PermissionAction;
 import br.com.muxe.core.common.permission.domain.PermissionData;
 import br.com.muxe.core.common.permission.domain.PermissionRepository;
@@ -21,6 +22,7 @@ public final class InMemoryPermissionRepository implements PermissionRepository 
     private final Map<String, Group> groups = new ConcurrentHashMap<>();
     private final Map<String, Tag> tags = new ConcurrentHashMap<>();
     private final Map<String, Track> tracks = new ConcurrentHashMap<>();
+    private final Map<String, Medal> medals = new ConcurrentHashMap<>();
     private final Map<UUID, PermissionUser> users = new ConcurrentHashMap<>();
     private final List<PermissionAction> actions = new CopyOnWriteArrayList<>();
 
@@ -29,12 +31,13 @@ public final class InMemoryPermissionRepository implements PermissionRepository 
         PermissionFixtures.DATA.tags().values().forEach(repository::saveTag);
         PermissionFixtures.DATA.groups().values().forEach(repository::saveGroup);
         PermissionFixtures.DATA.tracks().values().forEach(repository::saveTrack);
+        PermissionFixtures.DATA.medals().values().forEach(repository::saveMedal);
         return repository;
     }
 
     @Override
     public PermissionData load() {
-        return new PermissionData(groups, tags, tracks);
+        return new PermissionData(groups, tags, tracks, medals);
     }
 
     @Override
@@ -64,7 +67,7 @@ public final class InMemoryPermissionRepository implements PermissionRepository 
             ? new Group(group.id(), group.displayName(), group.weight(), Optional.empty(), group.nodes())
             : group);
         users.replaceAll((key, user) -> user.selectedTag().filter(id::equals).isPresent()
-            ? new PermissionUser(user.id(), user.nodes(), Optional.empty())
+            ? new PermissionUser(user.id(), user.nodes(), Optional.empty(), user.selectedMedal())
             : user);
     }
 
@@ -86,7 +89,26 @@ public final class InMemoryPermissionRepository implements PermissionRepository 
     @Override
     public void selectTag(UUID id, Optional<String> tag) {
         PermissionUser user = user(id);
-        users.put(id, new PermissionUser(id, user.nodes(), tag));
+        users.put(id, new PermissionUser(id, user.nodes(), tag, user.selectedMedal()));
+    }
+
+    @Override
+    public void saveMedal(Medal medal) {
+        medals.put(medal.id(), medal);
+    }
+
+    @Override
+    public void deleteMedal(String id) {
+        medals.remove(id);
+        users.replaceAll((key, user) -> user.selectedMedal().filter(id::equals).isPresent()
+            ? new PermissionUser(user.id(), user.nodes(), user.selectedTag(), Optional.empty())
+            : user);
+    }
+
+    @Override
+    public void selectMedal(UUID id, Optional<String> medal) {
+        PermissionUser user = user(id);
+        users.put(id, new PermissionUser(id, user.nodes(), user.selectedTag(), medal));
     }
 
     @Override

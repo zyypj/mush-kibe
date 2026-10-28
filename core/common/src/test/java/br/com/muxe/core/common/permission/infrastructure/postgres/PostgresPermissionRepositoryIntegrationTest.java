@@ -10,6 +10,7 @@ import br.com.muxe.core.common.concurrent.MainThreadGuard;
 import br.com.muxe.core.common.metrics.simple.SimpleMetricRegistry;
 import br.com.muxe.core.common.permission.domain.Contexts;
 import br.com.muxe.core.common.permission.domain.Group;
+import br.com.muxe.core.common.permission.domain.Medal;
 import br.com.muxe.core.common.permission.domain.PermissionAction;
 import br.com.muxe.core.common.permission.domain.PermissionData;
 import br.com.muxe.core.common.permission.domain.PermissionNode;
@@ -130,6 +131,30 @@ class PostgresPermissionRepositoryIntegrationTest {
 
         assertThat(transactions.readOnly("test.find", () -> repository.user(player)).selectedTag()).isEmpty();
         assertThat(transactions.readOnly("test.load", repository::load).track("eventos")).isEmpty();
+    }
+
+    @Test
+    void theMigrationCreatesTheMedalsAndAPlayerKeepsTheChosenOne() {
+        PermissionData data = transactions.readOnly("test.load", repository::load);
+        UUID player = UUID.randomUUID();
+
+        assertThat(data.medals().keySet()).containsExactlyInAnyOrderElementsOf(PermissionFixtures.DATA.medals().keySet());
+        assertThat(data.medal("feiticeiro-aprendiz").orElseThrow().symbol()).isEqualTo("⊰⊱");
+        assertThat(data.medal("casa-de-gengibre").orElseThrow().symbol()).isEqualTo("۩");
+        assertThat(data.group("vip").orElseThrow().nodes()).extracting(PermissionNode::key).contains("muxe.medal.carinha", "muxe.medal.toxico", "muxe.medal.yin-yang");
+
+        transactions.inTransaction("test.medal", () -> {
+            repository.saveMedal(new Medal("pascoa", "Páscoa", "✿", "&d", 400));
+            repository.selectMedal(player, Optional.of("pascoa"));
+            return null;
+        });
+        assertThat(transactions.readOnly("test.find", () -> repository.user(player)).selectedMedal()).contains("pascoa");
+
+        transactions.inTransaction("test.delete", () -> {
+            repository.deleteMedal("pascoa");
+            return null;
+        });
+        assertThat(transactions.readOnly("test.find", () -> repository.user(player)).selectedMedal()).isEmpty();
     }
 
     @Test

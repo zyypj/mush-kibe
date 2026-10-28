@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-public record ResolvedPermissions(Map<String, Boolean> permissions, List<Group> groups, List<Tag> tags, Optional<Instant> nextExpiry) {
+public record ResolvedPermissions(Map<String, Boolean> permissions, List<Group> groups, List<Tag> tags, List<Medal> medals, Optional<Instant> nextExpiry) {
 
     public static final String META_PREFIX = "meta.";
 
@@ -14,6 +14,11 @@ public record ResolvedPermissions(Map<String, Boolean> permissions, List<Group> 
         permissions = Map.copyOf(permissions);
         groups = List.copyOf(groups);
         tags = List.copyOf(tags);
+        medals = List.copyOf(medals);
+    }
+
+    public ResolvedPermissions(Map<String, Boolean> permissions, List<Group> groups, List<Tag> tags, Optional<Instant> nextExpiry) {
+        this(permissions, groups, tags, List.of(), nextExpiry);
     }
 
     public Tristate check(String permission) {
@@ -50,6 +55,14 @@ public record ResolvedPermissions(Map<String, Boolean> permissions, List<Group> 
     public Optional<Tag> displayTag(Optional<String> selected) {
         Optional<Tag> chosen = selected.flatMap(id -> tags.stream().filter(tag -> tag.id().equals(id)).findFirst());
         return chosen.isPresent() ? chosen : tags.stream().findFirst();
+    }
+
+    public boolean canUse(Medal medal) {
+        return medals.contains(medal);
+    }
+
+    public Optional<Medal> displayMedal(Optional<String> selected) {
+        return selected.flatMap(id -> medals.stream().filter(medal -> medal.id().equals(id)).findFirst());
     }
 
     public Optional<String> meta(String key) {

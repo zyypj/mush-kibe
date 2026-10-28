@@ -112,7 +112,8 @@ class PermissionCommandTest {
             "§cO cargo §aVIP §cnão tem a permissão §fmuxe.lobby.fly§c.",
             "§cO cargo §fnada §cnão existe. Use §f/cargo listar§c."
         );
-        assertThat(kit.sync.data().group("vip").orElseThrow().nodes()).extracting(PermissionNode::key).containsExactly("group.membro");
+        assertThat(kit.sync.data().group("vip").orElseThrow().nodes()).extracting(PermissionNode::key)
+            .containsExactlyInAnyOrder("group.membro", "muxe.medal.carinha", "muxe.medal.toxico", "muxe.medal.yin-yang");
         assertThat(kit.database.recentActions(10)).allSatisfy(action -> assertThat(action.actor()).isEqualTo("Staff"));
     }
 
