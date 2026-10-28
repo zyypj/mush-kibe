@@ -60,7 +60,7 @@ class TagCommandTest {
     void theListShowsTheUsableTagsFromTheLowestWithAPreviewAndAClick() {
         kit.online("tadeu", PermissionNode.group("ultra", Optional.empty(), NOW), PermissionNode.permanent("muxe.tag.natal", true, NOW));
 
-        List<TagChoice> choices = list.choices(kit.resolved(RankTestKit.uuid("tadeu")).orElseThrow().tags(), "tadeu");
+        List<TagChoice> choices = list.choices(kit.resolved(RankTestKit.uuid("tadeu")).orElseThrow().tags(), "tadeu", Optional.empty());
         BaseComponent[] message = list.components(choices);
 
         assertThat(choices).extracting(TagChoice::label).containsExactly("§7Membro", "§aVIP", "§9MVP", "§6Pro", "§dUltra", "§cNatal");
@@ -69,6 +69,15 @@ class TagCommandTest {
         assertThat(TextComponent.toLegacyText(message)).isEqualTo(
             "§aSuas tags: §7Membro§f, §aVIP§f, §9MVP§f, §6Pro§f, §dUltra§f, §cNatal");
         assertThat(clicks(message)).contains("/tag membro", "/tag natal");
+    }
+
+    @Test
+    void theTagPreviewShowsTheChosenMedal() {
+        kit.online("tadeu", PermissionNode.group("ultra", Optional.empty(), NOW));
+
+        List<TagChoice> choices = list.choices(kit.resolved(RankTestKit.uuid("tadeu")).orElseThrow().tags(), "tadeu", kit.data().medal("cafe"));
+
+        assertThat(choices.get(1).hover().get(1)).isEqualTo("§e☕ §a§lVIP §atadeu§f: Olá!");
     }
 
     @Test
