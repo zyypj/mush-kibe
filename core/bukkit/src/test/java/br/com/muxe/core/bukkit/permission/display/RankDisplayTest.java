@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import br.com.muxe.core.common.permission.domain.Contexts;
 import br.com.muxe.core.common.permission.domain.Group;
+import br.com.muxe.core.common.permission.domain.Medal;
 import br.com.muxe.core.common.permission.domain.PermissionData;
 import br.com.muxe.core.common.permission.domain.PermissionNode;
 import br.com.muxe.core.common.permission.domain.PermissionResolver;
@@ -21,7 +22,36 @@ class RankDisplayTest {
 
     private static final Instant NOW = Instant.parse("2026-10-28T15:00:00Z");
     private static final PermissionData DATA = PermissionFixtures.DATA;
-    private static final String CHAT = "{prefix}{color}{player}&f: {message}";
+    private static final String CHAT = "{medal}{prefix}{color}{player}&f: {message}";
+
+    @Test
+    void theChosenMedalGoesBeforeTheTagInTheChat() {
+        RankDisplay withCafe = new RankDisplay(DATA.tag("enderlore"), DATA.medal("cafe"));
+
+        assertThat(String.format(withCafe.chatFormat(CHAT), "tadeu", "Olá!")).isEqualTo("§e☕ §5§lENDERLORE §5tadeu§f: Olá!");
+        assertThat(withCafe.preview(CHAT, "tadeu", "Olá!")).isEqualTo("&e☕ &5&lENDERLORE &5tadeu&f: Olá!");
+        assertThat(String.format(RankDisplay.NONE.withMedal(DATA.medal("toxico")).chatFormat(CHAT), "tadeu", "oi")).isEqualTo("§a☣ §7tadeu§f: oi");
+        assertThat(withCafe.formatName("tadeu")).isEqualTo("&5&lENDERLORE &5tadeu");
+        assertThat(String.format(withCafe.chatFormat("{prefix}{color}{player}&f: {message}"), "tadeu", "oi")).isEqualTo("§5§lENDERLORE §5tadeu§f: oi");
+    }
+
+    @Test
+    void onlyAChosenMedalThePlayerCanUseIsShown() {
+        ResolvedPermissions vip = resolve(PermissionNode.group("vip", Optional.empty(), NOW));
+
+        assertThat(RankDisplay.of(DATA, vip, Optional.empty(), Optional.empty()).medal()).isEmpty();
+        assertThat(RankDisplay.of(DATA, vip, Optional.empty(), Optional.of("toxico")).medal()).map(Medal::id).contains("toxico");
+        assertThat(RankDisplay.of(DATA, vip, Optional.empty(), Optional.of("cafe")).medal()).isEmpty();
+        assertThat(RankDisplay.of(DATA, resolve(), Optional.empty(), Optional.of("toxico")).medalPrefix()).isEmpty();
+        assertThat(RankDisplay.of(DATA, vip, Optional.empty(), Optional.of("yin-yang")).tag()).map(Tag::id).contains("vip");
+    }
+
+    @Test
+    void theNameTagKeepsOnlyTheTagWhenAMedalIsChosen() {
+        RankDisplay withMedal = display("vip").withMedal(DATA.medal("cafe"));
+
+        assertThat(NameTag.of(DATA.group("vip"), withMedal)).isEqualTo(NameTag.of(DATA.group("vip"), display("vip")));
+    }
 
     @Test
     void theChatShowsTheTagPrefixAndTheNameInTheTagColor() {

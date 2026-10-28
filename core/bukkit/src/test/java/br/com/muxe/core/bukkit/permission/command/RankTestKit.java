@@ -117,7 +117,8 @@ public final class RankTestKit implements PlayerRanks, AutoCloseable {
     @Override
     public RankDisplay display(UUID player) {
         return cache.resolved(player)
-            .map(resolved -> RankDisplay.of(sync.data(), resolved, cache.user(player).flatMap(PermissionUser::selectedTag)))
+            .map(resolved -> RankDisplay.of(sync.data(), resolved,
+                cache.user(player).flatMap(PermissionUser::selectedTag), cache.user(player).flatMap(PermissionUser::selectedMedal)))
             .orElse(RankDisplay.NONE);
     }
 

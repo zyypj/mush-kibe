@@ -92,8 +92,10 @@ public final class PermissionService implements PlayerRanks, Listener, Runnable 
 
     @Override
     public RankDisplay display(UUID player) {
-        Optional<String> selected = cache.user(player).flatMap(PermissionUser::selectedTag);
-        return cache.resolved(player).map(resolved -> RankDisplay.of(sync.data(), resolved, selected)).orElse(RankDisplay.NONE);
+        Optional<PermissionUser> user = cache.user(player);
+        Optional<String> tag = user.flatMap(PermissionUser::selectedTag);
+        Optional<String> medal = user.flatMap(PermissionUser::selectedMedal);
+        return cache.resolved(player).map(resolved -> RankDisplay.of(sync.data(), resolved, tag, medal)).orElse(RankDisplay.NONE);
     }
 
     public void onChange(Consumer<Player> listener) {

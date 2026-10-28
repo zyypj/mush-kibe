@@ -2,13 +2,14 @@ package br.com.muxe.core.bukkit.permission.display;
 
 import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.common.permission.domain.Group;
+import br.com.muxe.core.common.permission.domain.Medal;
 import br.com.muxe.core.common.permission.domain.PermissionData;
 import br.com.muxe.core.common.permission.domain.ResolvedPermissions;
 import br.com.muxe.core.common.permission.domain.Tag;
 import java.util.Objects;
 import java.util.Optional;
 
-public record RankDisplay(Optional<Tag> tag) {
+public record RankDisplay(Optional<Tag> tag, Optional<Medal> medal) {
 
     public static final String DEFAULT_COLOR = "&7";
     public static final String DEFAULT_TAG = "&7Membro";
@@ -16,6 +17,11 @@ public record RankDisplay(Optional<Tag> tag) {
 
     public RankDisplay {
         Objects.requireNonNull(tag, "tag");
+        Objects.requireNonNull(medal, "medal");
+    }
+
+    public RankDisplay(Optional<Tag> tag) {
+        this(tag, Optional.empty());
     }
 
     public static RankDisplay of(PermissionData data, ResolvedPermissions resolved, Optional<String> selected) {
@@ -24,6 +30,18 @@ public record RankDisplay(Optional<Tag> tag) {
             chosen = resolved.primaryGroup().flatMap(Group::tag).flatMap(data::tag).filter(resolved::canUse);
         }
         return new RankDisplay(chosen.isPresent() ? chosen : resolved.displayTag(Optional.empty()));
+    }
+
+    public static RankDisplay of(PermissionData data, ResolvedPermissions resolved, Optional<String> selectedTag, Optional<String> selectedMedal) {
+        return of(data, resolved, selectedTag).withMedal(resolved.displayMedal(selectedMedal));
+    }
+
+    public RankDisplay withMedal(Optional<Medal> chosen) {
+        return new RankDisplay(tag, chosen);
+    }
+
+    public String medalPrefix() {
+        return medal.map(Medal::chatPrefix).orElse("");
     }
 
     public String prefix() {
@@ -47,19 +65,22 @@ public record RankDisplay(Optional<Tag> tag) {
     }
 
     public String chatFormat(String template) {
-        return Colors.translate(escape(template
-            .replace("{prefix}", prefix())
-            .replace("{color}", color())))
+        return Colors.translate(escape(fill(template)))
             .replace("{player}", "%1$s")
             .replace("{message}", "%2$s");
     }
 
     public String preview(String template, String player, String message) {
-        return template
-            .replace("{prefix}", prefix())
-            .replace("{color}", color())
+        return fill(template)
             .replace("{player}", player)
             .replace("{message}", message);
+    }
+
+    private String fill(String template) {
+        return template
+            .replace("{medal}", medalPrefix())
+            .replace("{prefix}", prefix())
+            .replace("{color}", color());
     }
 
     private static String escape(String text) {
