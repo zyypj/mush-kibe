@@ -13,6 +13,7 @@ import java.util.Optional;
 public final class PermissionFixtures {
 
     public static final Instant SEEDED_AT = Instant.parse("2026-10-28T12:00:00Z");
+    public static final List<String> STAFF_PERMISSIONS = List.of("muxe.account.others", "muxe.account.staff");
     public static final List<String> RANKS = List.of("membro", "vip", "mvp", "pro", "ultra", "partner", "partner+", "mod", "mod+", "admin");
     public static final List<Tag> TAGS = List.of(
         new Tag("membro", "Membro", "&7", 0, Optional.of(""), false),
@@ -51,6 +52,9 @@ public final class PermissionFixtures {
             List<PermissionNode> nodes = new ArrayList<>();
             if (index > 0) {
                 nodes.add(PermissionNode.group(RANKS.get(index - 1), Optional.empty(), SEEDED_AT));
+            }
+            if (id.equals("mod")) {
+                STAFF_PERMISSIONS.forEach(permission -> nodes.add(PermissionNode.permanent(permission, true, SEEDED_AT)));
             }
             if (id.equals("admin")) {
                 nodes.add(PermissionNode.permanent(PermissionNode.WILDCARD, true, SEEDED_AT));

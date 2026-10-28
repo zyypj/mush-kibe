@@ -68,6 +68,7 @@ class PostgresPermissionRepositoryIntegrationTest {
         assertThat(data.tags().keySet()).containsExactlyInAnyOrderElementsOf(PermissionFixtures.DATA.tags().keySet());
         assertThat(data.groups().keySet()).containsExactlyInAnyOrderElementsOf(PermissionFixtures.RANKS);
         assertThat(data.group("mod").orElseThrow().parents()).containsExactly("partner+");
+        assertThat(data.group("mod").orElseThrow().nodes()).extracting(PermissionNode::key).contains("muxe.account.others", "muxe.account.staff");
         assertThat(data.tag("membro").orElseThrow().formatName("tadeu")).isEqualTo("&7tadeu");
         assertThat(data.tag("partner+").orElseThrow().chatPrefix()).isEqualTo("&1&lPARTNER+ ");
         assertThat(data.track("doacao").orElseThrow().groups()).containsExactly("membro", "vip", "mvp", "pro", "ultra");
