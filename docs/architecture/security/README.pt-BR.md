@@ -9,6 +9,7 @@ Como a rede protege seus servidores, serviços e jogadores. O princípio: os jog
 | Serviço | Acessível pelos jogadores | Acessível por |
 |---|---|---|
 | Velocity | Sim, é a única porta de entrada pública | Todos |
+| Editor de permissões (proxy, porta 1031) | Sim, só o site | Todos podem carregar a página; a API exige um token de sessão do `/editor` |
 | Servidores Spigot | Não | Só o proxy |
 | PostgreSQL | Não | Só os servidores da rede |
 | Redis | Não | Só os servidores da rede |
@@ -64,6 +65,18 @@ Senhas:
 - Os valores de configuração usam `env:NAME` para ler uma variável de ambiente ou `file:/path` para ler um arquivo, como um secret do Docker ou do Kubernetes.
 - O `.env` é ignorado pelo git; o `.env.example` documenta as variáveis sem valores.
 - Um segredo que foi exposto, mesmo que por pouco tempo, é trocado. O segredo de mensageria pode ser rotacionado sem downtime com `messaging.previous-secrets`.
+
+## Editor de permissões
+
+- Servido pelo proxy em `editor.port` (1031). As sessões são abertas no jogo com `/editor` (só Admin), duram 30 minutos e são conferidas de novo a cada requisição: o dono ainda precisa resolver `muxe.permissions.editor`.
+- O token vai no fragmento da URL e no cabeçalho `Authorization`, nunca em cookies, query strings ou logs; o Redis guarda só o SHA-256 dele.
+- Limites de requisições por endereço, limite de tamanho do corpo, conferência do `Origin` nas escritas, cabeçalhos de segurança rígidos (`Content-Security-Policy` `default-src 'self'`, `X-Frame-Options: DENY`, `no-referrer`, `nosniff`, `no-store` na API) e validação no servidor de todos os campos. Todo lote salvo vai para o log com o autor.
+- **O editor usa HTTP simples até a rede ter um domínio.** Então ele fica atrás de um proxy reverso com TLS e `editor.bind: 127.0.0.1`. Detalhes em [Editor de permissões](../../features/permission-editor/README.pt-BR.md#segurança).
+
+## Endereços dos jogadores
+
+- O proxy lê o endereço da conexão só para conferir sessões de login (com hash) e para buscar a localização da conta na MaxMind GeoLite2. Nem o endereço nem um erro de GeoIP que possa contê-lo são guardados ou registrados em log. Veja [Localização da conta](../../features/geoip/README.pt-BR.md).
+- A chave de licença da MaxMind é um segredo: pode ser escrita no `config.yml` do proxy (o painel não tem variáveis de ambiente próprias) ou lida com `env:` / `file:`. Ela nunca vai para o log.
 
 ## Tráfego entre máquinas
 

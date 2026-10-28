@@ -41,6 +41,8 @@ Tudo sobre a Muxe está documentado aqui, em inglês e português. As regras de 
 - [Loja](features/shop/README.pt-BR.md): `/loja`, os menus de compra, as caixas registradoras e a promoção da rede.
 - [SkyWars](features/skywars/README.pt-BR.md): esqueleto do plugin e modos.
 - [BedWars](features/bedwars/README.pt-BR.md): esqueleto do plugin e modos.
+- [Editor de permissões](features/permission-editor/README.pt-BR.md): um site servido pelo proxy para editar cargos, herança, permissões, tags, trilhas e jogadores, aberto com `/editor`.
+- [Localização da conta (GeoIP)](features/geoip/README.pt-BR.md): país, região, cidade e rede de cada login pela MaxMind GeoLite2, sem guardar o endereço.
 
 ## Documentando uma nova feature
 

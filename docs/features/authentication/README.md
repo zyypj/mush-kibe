@@ -109,6 +109,8 @@ Proxy `config.yml`:
 | `authentication.cracked-cache` | `10m` | How long "not premium" answers are cached. Short, so a name that becomes premium is protected quickly. |
 | `authentication.session-duration` | `24h` | How long a password login is remembered for the same account and IP. |
 
+The same file also holds `editor.*` ([Permission editor](../permission-editor/README.md#configuration)) and `geoip.*` ([Account location](../geoip/README.md#configuration)).
+
 `plugins/Muxe-Auth/config.yml`:
 
 | Key | Default | Description |

@@ -9,6 +9,7 @@ How the network protects its servers, services and players. The principle: playe
 | Service | Reachable by players | Reachable by |
 |---|---|---|
 | Velocity | Yes, it is the only public entry point | Everyone |
+| Permission editor (proxy, port 1031) | Yes, the website only | Everyone can load the page; the API needs an `/editor` session token |
 | Spigot servers | No | The proxy only |
 | PostgreSQL | No | The network's servers only |
 | Redis | No | The network's servers only |
@@ -64,6 +65,18 @@ Passwords:
 - Configuration values use `env:NAME` to read an environment variable or `file:/path` to read a file such as a Docker or Kubernetes secret.
 - `.env` is ignored by git; `.env.example` documents the variables without values.
 - A secret that was exposed, even briefly, is replaced. The messaging secret can be rotated without downtime with `messaging.previous-secrets`.
+
+## Permission editor
+
+- Served by the proxy on `editor.port` (1031). Sessions are opened in game with `/editor` (Admin only), last 30 minutes and are re-checked on every request: the owner must still resolve `muxe.permissions.editor`.
+- The token travels in the URL fragment and the `Authorization` header, never in cookies, query strings or logs; Redis keeps only its SHA-256.
+- Per-address rate limits, a body size limit, an `Origin` check on writes, strict security headers (`Content-Security-Policy` `default-src 'self'`, `X-Frame-Options: DENY`, `no-referrer`, `nosniff`, `no-store` on the API) and server-side validation of every field. Every saved batch is logged with its author.
+- **The editor uses plain HTTP until the network has a domain.** Then it goes behind a reverse proxy with TLS and `editor.bind: 127.0.0.1`. Details in [Permission editor](../../features/permission-editor/README.md#security).
+
+## Player addresses
+
+- The proxy reads the connection address only to check login sessions (hashed) and to look up the account location in MaxMind GeoLite2. Neither the address nor a GeoIP error that could contain it is stored or logged. See [Account location](../../features/geoip/README.md).
+- The MaxMind license key is a secret: it can be written in the proxy `config.yml` (the panel has no custom environment variables) or read with `env:` / `file:`. It is never logged.
 
 ## Traffic between machines
 

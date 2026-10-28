@@ -109,6 +109,8 @@ Com palavras faltando ou sobrando, `/logar` e `/registrar` respondem `usage-logi
 | `authentication.cracked-cache` | `10m` | Por quanto tempo as respostas "não premium" ficam em cache. É curto, para que um nome que vira premium fique protegido rápido. |
 | `authentication.session-duration` | `24h` | Por quanto tempo um login com senha é lembrado para a mesma conta e o mesmo IP. |
 
+O mesmo arquivo também tem `editor.*` ([Editor de permissões](../permission-editor/README.pt-BR.md#configuração)) e `geoip.*` ([Localização da conta](../geoip/README.pt-BR.md#configuração)).
+
 `plugins/Muxe-Auth/config.yml`:
 
 | Chave | Padrão | Descrição |
