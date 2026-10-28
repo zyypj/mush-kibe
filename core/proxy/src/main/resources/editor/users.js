@@ -1,7 +1,8 @@
 import { api } from "./api.js";
-import { renderMc, tagDisplay } from "./colors.js";
+import { medalDisplay, renderMc, tagDisplay } from "./colors.js";
+import { medalSource } from "./medals.js";
 import { contextsText, expiryInputs, nodeTable, parseContexts, putNode, removeNode } from "./nodes.js";
-import { groupsByWeight, isChanged, loadUser, notify, now, state, tagsByWeight, tracksById } from "./state.js";
+import { MEDAL_PREFIX, groupsByWeight, isChanged, loadUser, medalKey, medalsByWeight, notify, now, state, tagsByWeight, tracksById } from "./state.js";
 import { button, el, field, formatDate, formatRemaining, modal, toast } from "./ui.js";
 
 const TAG_PREFIX = "muxe.tag.";
@@ -13,6 +14,29 @@ function isGroupNode(node) {
 
 function isTagNode(node) {
   return node.value && node.key.startsWith(TAG_PREFIX) && state.working.tags.has(node.key.substring(TAG_PREFIX.length));
+}
+
+function isMedalNode(node) {
+  return node.value && node.key.startsWith(MEDAL_PREFIX) && state.working.medals.has(node.key.substring(MEDAL_PREFIX.length));
+}
+
+function askExpiry(title, confirmLabel) {
+  const expiry = expiryInputs(null);
+  return modal(title, field("Duração", expiry.element), [
+    { label: "Cancelar", className: "ghost" },
+    {
+      label: confirmLabel,
+      className: "primary",
+      run: () => {
+        try {
+          return { value: expiry.read() };
+        } catch (error) {
+          toast(error.message, "bad");
+          return false;
+        }
+      },
+    },
+  ]);
 }
 
 function expiryBadge(node) {
@@ -145,22 +169,7 @@ function tagsCard(user) {
           notify();
         }, "small danger")
         : button("Dar", async () => {
-          const expiry = expiryInputs(null);
-          const expiresAt = await modal("Dar a tag " + tag.name, field("Duração", expiry.element), [
-            { label: "Cancelar", className: "ghost" },
-            {
-              label: "Dar tag",
-              className: "primary",
-              run: () => {
-                try {
-                  return { value: expiry.read() };
-                } catch (error) {
-                  toast(error.message, "bad");
-                  return false;
-                }
-              },
-            },
-          ]);
+          const expiresAt = await askExpiry("Dar a tag " + tag.name, "Dar tag");
           if (expiresAt) {
             user.nodes = putNode(user.nodes, { key: TAG_PREFIX + tag.id, value: true, contexts: {}, expiresAt: expiresAt.value });
             notify();
@@ -174,6 +183,60 @@ function tagsCard(user) {
     el("div", { class: "label", text: "Tags decorativas" }),
     el("div", { class: "spacer-8" }),
     decorative);
+}
+
+function medalsCard(user) {
+  const chosen = el("select", null, el("option", { value: "", text: "Nenhuma" }));
+  for (const medal of medalsByWeight()) {
+    chosen.appendChild(el("option", { value: medal.id, text: medal.symbol + " " + medal.name + (medalSource(user, medal.id) ? "" : " (não tem)") }));
+  }
+  const missing = user.selectedMedal && !state.working.medals.has(user.selectedMedal);
+  if (missing) {
+    chosen.appendChild(el("option", { value: user.selectedMedal, text: user.selectedMedal + " (excluída)" }));
+  }
+  chosen.value = user.selectedMedal || "";
+  chosen.addEventListener("change", () => {
+    user.selectedMedal = chosen.value || null;
+    notify();
+  });
+  const current = user.selectedMedal ? state.working.medals.get(user.selectedMedal) : null;
+  const status = el("div", { class: "row" },
+    current ? renderMc(medalDisplay(current), true) : null,
+    current && !medalSource(user, current.id) ? el("span", { class: "badge warn", text: "o jogador não tem esta medalha" }) : null,
+    missing ? el("span", { class: "badge bad", text: "medalha inexistente" }) : null);
+  const owned = el("div", { class: "stack" });
+  for (const medal of medalsByWeight()) {
+    const node = user.nodes.find((candidate) => candidate.key === medalKey(medal.id) && Object.keys(candidate.contexts || {}).length === 0);
+    const own = Boolean(node && node.value);
+    const source = medalSource(user, medal.id);
+    owned.appendChild(el("div", { class: "row" },
+      renderMc(medalDisplay(medal), true),
+      el("span", { text: medal.name }),
+      own ? expiryBadge(node) : null,
+      !own && source ? el("span", { class: "badge ok", text: "pelo cargo " + source.group }) : null,
+      !own && !source ? el("span", { class: "muted", text: "não tem" }) : null,
+      el("div", { class: "grow" }),
+      own
+        ? button("Tirar", () => {
+          user.nodes = removeNode(user.nodes, node);
+          notify();
+        }, "small danger")
+        : button("Dar", async () => {
+          const expiresAt = await askExpiry("Dar a medalha " + medal.name, "Dar medalha");
+          if (expiresAt) {
+            user.nodes = putNode(user.nodes, { key: medalKey(medal.id), value: true, contexts: {}, expiresAt: expiresAt.value });
+            notify();
+          }
+        }, "small")));
+  }
+  return el("div", { class: "card" },
+    el("h2", { text: "Medalhas" }),
+    field("Medalha escolhida", chosen, "A medalha só aparece no chat se o jogador puder usá-la."),
+    status,
+    el("div", { class: "spacer-8" }),
+    el("div", { class: "label", text: "Medalhas do jogador" }),
+    el("div", { class: "spacer-8" }),
+    owned);
 }
 
 function profileCard(user) {
@@ -244,15 +307,16 @@ export function usersPage(view, nav) {
       profileCard(user),
       groupsCard(user),
       tagsCard(user),
+      medalsCard(user),
       nodeTable({
         key: "user:" + user.id,
         title: "Permissões do jogador",
-        hint: "cargos e tags decorativas ficam nos quadros acima",
+        hint: "cargos, tags decorativas e medalhas ficam nos quadros acima",
         nodes: () => user.nodes,
         update: (nodes) => {
           user.nodes = nodes;
         },
-        exclude: (node) => isGroupNode(node) || isTagNode(node),
+        exclude: (node) => isGroupNode(node) || isTagNode(node) || isMedalNode(node),
         emptyText: "Nenhuma permissão própria.",
       }));
   }

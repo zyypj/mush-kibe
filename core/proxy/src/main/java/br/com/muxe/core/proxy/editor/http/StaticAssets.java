@@ -22,6 +22,7 @@ public final class StaticAssets {
         "nodes.js",
         "groups.js",
         "tags.js",
+        "medals.js",
         "tracks.js",
         "users.js",
         "history.js",

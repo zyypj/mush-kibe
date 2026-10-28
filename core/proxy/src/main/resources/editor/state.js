@@ -4,8 +4,8 @@ export const state = {
   session: null,
   clockOffset: 0,
   defaultGroup: "membro",
-  original: { groups: new Map(), tags: new Map(), tracks: new Map() },
-  working: { groups: new Map(), tags: new Map(), tracks: new Map() },
+  original: { groups: new Map(), tags: new Map(), tracks: new Map(), medals: new Map() },
+  working: { groups: new Map(), tags: new Map(), tracks: new Map(), medals: new Map() },
   users: new Map(),
 };
 
@@ -30,8 +30,9 @@ function toMap(list) {
 
 export function loadData(data) {
   state.defaultGroup = data.defaultGroup;
-  state.original = { groups: toMap(data.groups), tags: toMap(data.tags), tracks: toMap(data.tracks) };
-  state.working = { groups: toMap(clone(data.groups)), tags: toMap(clone(data.tags)), tracks: toMap(clone(data.tracks)) };
+  const medals = data.medals || [];
+  state.original = { groups: toMap(data.groups), tags: toMap(data.tags), tracks: toMap(data.tracks), medals: toMap(medals) };
+  state.working = { groups: toMap(clone(data.groups)), tags: toMap(clone(data.tags)), tracks: toMap(clone(data.tracks)), medals: toMap(clone(medals)) };
 }
 
 export function loadUser(user) {
@@ -65,17 +66,23 @@ function tagSignature(tag) {
   return JSON.stringify([tag.name, tag.color, tag.weight, tag.prefix === undefined ? null : tag.prefix, Boolean(tag.decorative)]);
 }
 
+function medalSignature(medal) {
+  return JSON.stringify([medal.name, medal.symbol, medal.color, medal.weight]);
+}
+
 function trackSignature(track) {
   return JSON.stringify(track.groups);
 }
 
 function userChanged(entry) {
   return nodesSignature(entry.original.nodes) !== nodesSignature(entry.working.nodes)
-    || (entry.original.selectedTag || null) !== (entry.working.selectedTag || null);
+    || (entry.original.selectedTag || null) !== (entry.working.selectedTag || null)
+    || (entry.original.selectedMedal || null) !== (entry.working.selectedMedal || null);
 }
 
 const KINDS = [
   { type: "tag", key: "tags", signature: tagSignature, label: "Tag" },
+  { type: "medal", key: "medals", signature: medalSignature, label: "Medalha" },
   { type: "group", key: "groups", signature: groupSignature, label: "Cargo" },
   { type: "track", key: "tracks", signature: trackSignature, label: "Trilha" },
 ];
@@ -103,7 +110,7 @@ export function pendingChanges() {
       if (!before.has(id)) {
         items.push({ kind: "add", type: kind.type, id, label: kind.label + " " + id });
       } else if (kind.signature(before.get(id)) !== kind.signature(item)) {
-        items.push({ kind: "edit", type: kind.type, id, label: kind.label + " " + id });
+        items.push({ kind: "edit", type: kind.type, id, label: kind.label + " " + id, details: details(kind.type, before.get(id), item) });
       }
     }
     for (const id of before.keys()) {
@@ -114,7 +121,7 @@ export function pendingChanges() {
   }
   for (const [id, entry] of state.users) {
     if (userChanged(entry)) {
-      items.push({ kind: "edit", type: "user", id, label: "Jogador " + (entry.working.username || id) });
+      items.push({ kind: "edit", type: "user", id, label: "Jogador " + (entry.working.username || id), details: details("user", entry.original, entry.working) });
     }
   }
   return items;
@@ -123,13 +130,13 @@ export function pendingChanges() {
 export function changesPayload() {
   const pending = pendingChanges();
   const payload = [];
-  const order = ["tag", "group", "track", "user"];
+  const order = ["tag", "medal", "group", "track", "user"];
   for (const type of order) {
     for (const item of pending.filter((candidate) => candidate.type === type && candidate.kind !== "del")) {
       payload.push(put(item));
     }
   }
-  for (const type of ["track", "group", "tag"]) {
+  for (const type of ["track", "group", "medal", "tag"]) {
     for (const item of pending.filter((candidate) => candidate.type === type && candidate.kind === "del")) {
       payload.push({ type: "delete-" + type, id: item.id });
     }
@@ -140,7 +147,7 @@ export function changesPayload() {
 function put(item) {
   if (item.type === "user") {
     const user = state.users.get(item.id).working;
-    return { type: "put-user", user: { id: user.id, nodes: user.nodes, selectedTag: user.selectedTag || null } };
+    return { type: "put-user", user: { id: user.id, nodes: user.nodes, selectedTag: user.selectedTag || null, selectedMedal: user.selectedMedal || null } };
   }
   if (item.type === "group") {
     const group = state.working.groups.get(item.id);
@@ -149,6 +156,10 @@ function put(item) {
   if (item.type === "tag") {
     const tag = state.working.tags.get(item.id);
     return { type: "put-tag", tag: { id: tag.id, name: tag.name, color: tag.color, weight: tag.weight, prefix: tag.prefix === undefined ? null : tag.prefix, decorative: Boolean(tag.decorative) } };
+  }
+  if (item.type === "medal") {
+    const medal = state.working.medals.get(item.id);
+    return { type: "put-medal", medal: { id: medal.id, name: medal.name, symbol: medal.symbol, color: medal.color, weight: medal.weight } };
   }
   const track = state.working.tracks.get(item.id);
   return { type: "put-track", track: { id: track.id, groups: track.groups } };
@@ -194,6 +205,61 @@ export function groupsByWeight() {
 
 export function tagsByWeight() {
   return Array.from(state.working.tags.values()).sort((a, b) => b.weight - a.weight || a.id.localeCompare(b.id));
+}
+
+export function medalsByWeight() {
+  return Array.from(state.working.medals.values()).sort((a, b) => a.weight - b.weight || a.id.localeCompare(b.id));
+}
+
+export const MEDAL_PREFIX = "muxe.medal.";
+
+export function medalKey(medalId) {
+  return MEDAL_PREFIX + medalId;
+}
+
+export function medalNodes(nodes, medalId) {
+  return (nodes || []).filter((node) => node.value && node.key === medalKey(medalId));
+}
+
+export function medalName(medalId) {
+  const medal = state.working.medals.get(medalId) || state.original.medals.get(medalId);
+  return medal ? medal.name : medalId;
+}
+
+function medalKeys(nodes) {
+  return new Set((nodes || []).filter((node) => node.value && node.key.startsWith(MEDAL_PREFIX)).map((node) => node.key.substring(MEDAL_PREFIX.length)));
+}
+
+function details(type, before, after) {
+  const lines = [];
+  if (type === "medal") {
+    const fields = [["name", "nome"], ["symbol", "símbolo"], ["color", "cor"], ["weight", "peso"]];
+    for (const [field, label] of fields) {
+      if (before[field] !== after[field]) {
+        lines.push(label + ": " + before[field] + " → " + after[field]);
+      }
+    }
+    return lines;
+  }
+  if (type === "user" && (before.selectedMedal || null) !== (after.selectedMedal || null)) {
+    const describe = (id) => id ? medalName(id) : "nenhuma";
+    lines.push("medalha escolhida: " + describe(before.selectedMedal) + " → " + describe(after.selectedMedal));
+  }
+  if (type === "user" || type === "group") {
+    const was = medalKeys(before.nodes);
+    const is = medalKeys(after.nodes);
+    for (const id of is) {
+      if (!was.has(id)) {
+        lines.push("+ medalha " + medalName(id));
+      }
+    }
+    for (const id of was) {
+      if (!is.has(id)) {
+        lines.push("− medalha " + medalName(id));
+      }
+    }
+  }
+  return lines;
 }
 
 export function tracksById() {

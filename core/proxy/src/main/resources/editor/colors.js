@@ -79,3 +79,32 @@ export function tagDisplay(tag) {
 export function chatLine(tag, player, message) {
   return chatPrefix(tag) + tag.color + player + "&f: " + message;
 }
+
+export function medalDisplay(medal) {
+  return medal.color + medal.symbol;
+}
+
+export function medalChatLine(medal, tag, player, message) {
+  const name = tag ? chatPrefix(tag) + tag.color + player : "&7" + player;
+  return medalDisplay(medal) + " " + name + "&f: " + message;
+}
+
+export function medalListEntry(medal) {
+  return medalDisplay(medal) + " " + medal.color + medal.name;
+}
+
+export function swatches(selected, label, onPick) {
+  const box = el("div", { class: "swatches", role: "radiogroup", "aria-label": label });
+  for (const color of COLORS) {
+    const swatch = el("button", {
+      type: "button",
+      class: "swatch" + (selected === "&" + color.code ? " active" : ""),
+      title: color.name + " (&" + color.code + ")",
+      "aria-label": color.name,
+      onclick: () => onPick("&" + color.code),
+    }, el("span", { text: color.code }));
+    swatch.style.background = color.hex;
+    box.appendChild(swatch);
+  }
+  return box;
+}

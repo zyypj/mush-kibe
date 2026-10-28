@@ -13,6 +13,7 @@ const MESSAGES = {
   "permission.default-group-required": "O cargo padrão 'membro' não pode ser removido.",
   "permission.unknown-group": "Há referência a um cargo que não existe.",
   "permission.unknown-tag": "Há referência a uma tag que não existe.",
+  "permission.unknown-medal": "Há referência a uma medalha que não existe.",
   "permission.inheritance-cycle": "A herança criaria um ciclo (um cargo herdando a si mesmo).",
 };
 

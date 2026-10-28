@@ -1,25 +1,9 @@
-import { COLORS, chatLine, chatPrefix, renderMc, tagDisplay } from "./colors.js";
+import { chatLine, chatPrefix, renderMc, swatches, tagDisplay } from "./colors.js";
 import { isChanged, notify, state, tagsByWeight } from "./state.js";
 import { ID_PATTERN, button, confirmDialog, el, field, modal, toast } from "./ui.js";
 
 const SAMPLE_PLAYER = "tadeu";
 const SAMPLE_MESSAGE = "Olá!";
-
-function swatches(selected, onPick) {
-  const box = el("div", { class: "swatches", role: "radiogroup", "aria-label": "Cor da tag" });
-  for (const color of COLORS) {
-    const swatch = el("button", {
-      type: "button",
-      class: "swatch" + (selected === "&" + color.code ? " active" : ""),
-      title: color.name + " (&" + color.code + ")",
-      "aria-label": color.name,
-      onclick: () => onPick("&" + color.code),
-    }, el("span", { text: color.code }));
-    swatch.style.background = color.hex;
-    box.appendChild(swatch);
-  }
-  return box;
-}
 
 function previews(tag) {
   return el("div", { class: "stack" },
@@ -43,7 +27,7 @@ export async function createTagDialog(nav) {
   const refresh = () => {
     draft.name = name.value.trim() || "Tag";
     previewBox.replaceChildren(previews(draft));
-    colorBox.replaceChildren(swatches(draft.color, (color) => {
+    colorBox.replaceChildren(swatches(draft.color, "Cor da tag", (color) => {
       draft.color = color;
       refresh();
     }));
@@ -157,7 +141,7 @@ function editor(tag, nav) {
       el("div", { class: "spacer-8" }),
       el("div", { class: "grid-2" }, field("Nome", name), field("Peso", weight)),
       el("div", { class: "spacer-8" }),
-      field("Cor", swatches(tag.color, (color) => {
+      field("Cor", swatches(tag.color, "Cor da tag", (color) => {
         tag.color = color;
         notify();
       })),

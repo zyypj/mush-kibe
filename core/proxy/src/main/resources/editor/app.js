@@ -1,6 +1,7 @@
 import { api, forgetToken, takeToken } from "./api.js";
 import { groupsPage } from "./groups.js";
 import { forgetHistory, historyPage } from "./history.js";
+import { medalsPage } from "./medals.js";
 import { changesPayload, loadData, markSaved, now, pendingChanges, revert, revertAll, state, subscribe } from "./state.js";
 import { tagsPage } from "./tags.js";
 import { tracksPage } from "./tracks.js";
@@ -10,6 +11,7 @@ import { button, clear, confirmDialog, el, formatClock, toast } from "./ui.js";
 const PAGES = [
   { id: "groups", label: "Cargos", icon: "◆", render: groupsPage, count: () => state.working.groups.size },
   { id: "tags", label: "Tags", icon: "✦", render: tagsPage, count: () => state.working.tags.size },
+  { id: "medals", label: "Medalhas", icon: "✪", render: medalsPage, count: () => state.working.medals.size },
   { id: "tracks", label: "Trilhas", icon: "⇅", render: tracksPage, count: () => state.working.tracks.size },
   { id: "users", label: "Jogadores", icon: "☺", render: usersPage, count: () => state.users.size || "" },
   { id: "history", label: "Histórico", icon: "↺", render: historyPage, count: () => "" },
@@ -49,7 +51,7 @@ function shell() {
     el("section", { class: "hero" },
       el("div", { class: "wrap" },
         el("h1", { text: "Editor de permissões" }),
-        el("p", { text: "Cargos, tags, trilhas e jogadores da rede Muxe." }))),
+        el("p", { text: "Cargos, tags, medalhas, trilhas e jogadores da rede Muxe." }))),
     el("main", { class: "main wrap", id: "main" }),
     el("footer", { class: "footer" },
       el("p", { text: "Muxe · Editor de permissões. As alterações valem em todos os servidores assim que você salvar." }),
@@ -92,11 +94,13 @@ function renderPending() {
     return;
   }
   const names = { add: "NOVO", edit: "EDITADO", del: "EXCLUÍDO" };
-  const pages = { group: "groups", tag: "tags", track: "tracks", user: "users" };
+  const pages = { group: "groups", tag: "tags", medal: "medals", track: "tracks", user: "users" };
   panel.appendChild(el("header", null, el("strong", { text: "Alterações pendentes" }), el("span", { class: "badge", text: String(pending.length) })));
   panel.appendChild(el("ul", null, pending.map((item) => el("li", null,
     el("span", { class: "kind " + item.kind, text: names[item.kind] }),
-    el("button", { type: "button", class: "btn ghost small what", onclick: () => item.kind !== "del" && nav.go(pages[item.type], item.id), text: item.label }),
+    el("div", { class: "what" },
+      el("button", { type: "button", class: "btn ghost small", onclick: () => item.kind !== "del" && nav.go(pages[item.type], item.id), text: item.label }),
+      (item.details || []).map((line) => el("span", { class: "pending-detail", text: line }))),
     button("Desfazer", () => revert(item.type, item.id), "small ghost")))));
   panel.appendChild(el("footer", null, button("Descartar tudo", discardAll, "ghost"), button("Salvar", saveAll, "save")));
 }

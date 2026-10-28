@@ -1,7 +1,7 @@
 import { CONTEXT_PATTERN, NODE_PATTERN, button, clear, el, field, formatDate, formatRemaining, modal, parseDuration, toLocalInput, toast } from "./ui.js";
 import { notify, now, state } from "./state.js";
 
-const SUGGESTIONS = ["*", "muxe.permissions.editor", "muxe.tag.*", "meta.prefix."];
+const SUGGESTIONS = ["*", "muxe.permissions.editor", "muxe.tag.*", "muxe.medal.*", "meta.prefix."];
 const memory = new Map();
 
 export function contextsText(contexts) {
@@ -134,6 +134,9 @@ function suggestions() {
   }
   for (const tag of state.working.tags.values()) {
     keys.add("muxe.tag." + tag.id);
+  }
+  for (const medal of state.working.medals.values()) {
+    keys.add("muxe.medal." + medal.id);
   }
   for (const key of Array.from(keys).sort()) {
     list.appendChild(el("option", { value: key }));
