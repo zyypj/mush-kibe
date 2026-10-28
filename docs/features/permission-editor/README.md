@@ -2,13 +2,14 @@
 
 # Permission editor
 
-A website served by the proxy where staff edit ranks (groups), their hierarchy and permissions, tags, tracks and the permissions of each player, then save everything at once. It lives in the `core:proxy` package `br.com.muxe.core.proxy.editor` and works on the permission model of `core:common` (`br.com.muxe.core.common.permission`).
+A website served by the proxy where staff edit ranks (groups), their hierarchy and permissions, tags, medals, tracks and the permissions of each player, then save everything at once. It lives in the `core:proxy` package `br.com.muxe.core.proxy.editor` and works on the permission model of `core:common` (`br.com.muxe.core.common.permission`).
 
 ## User stories
 
 - As an administrator, I want to open a private link from the game and edit ranks, tags and permissions in the browser, so that I do not type long commands.
 - As an administrator, I want to create a rank that inherits another one or starts as a copy of another one, so that I build the hierarchy quickly.
 - As an administrator, I want to give a player a temporary rank or a decorative tag, so that rewards expire by themselves.
+- As an administrator, I want to create medals, choose which ranks grant them and give a player a medal or change the medal they chose, so that cosmetic rewards are managed in one place.
 - As an administrator, I want to review every pending change before saving and see who changed what, so that mistakes are easy to spot.
 
 ## How it works
@@ -26,14 +27,15 @@ A website served by the proxy where staff edit ranks (groups), their hierarchy a
 - **Inheritance:** parents are the `group.<id>` permissions of the rank. The editor adds and removes them, shows the indirect chain and does not offer ranks that would create a cycle.
 - **Permissions** of ranks and players: a table with search and filters (true, false, temporary, with context); add one, add many at once (one per line: `-key` for false, `key=value` contexts and a duration like `30d`), toggle true/false, edit and remove. Each permission can have contexts (`server`, `world` or any `key=value`) and an expiry (a duration such as `12h`, `30d`, `1mo`, or a date).
 - **Tags:** create, edit and delete; id, name, color chosen among the 16 `&` codes, weight, optional chat prefix (by default color + bold + NAME), decorative flag. Live previews of the chat line (`&a&lVIP &atadeu: Olá!`), of `/tag` (`&aVIP`) and of the name tag.
+- **Medalhas:** listed by weight (lowest first, as in `/medalha`); create, edit and delete; id, name, symbol (1 to 4 characters, such as `☕` or `⊰⊱`), color with the same 16-color picker as tags, weight. Live previews of the chat line (`<medal> <tag> tadeu: Olá!`, with a tag chosen for the preview, `: Olá!` in white) and of the `/medalha` entry. The medal page lists the ranks that grant it (`muxe.medal.<id>` on the rank, with contexts and expiry), the ranks that get it by inheritance or by a wildcard (`*`, `muxe.medal.*`), and adds or removes the permission on a rank. Deleting a medal also removes it from the ranks that grant it and clears it as the chosen medal of the players open in the editor (the database clears it for everyone else).
 - **Tracks:** ordered lists of ranks used to promote and demote; reorder, add and remove ranks.
-- **Players:** search by name or UUID; see the account, give ranks (permanent or temporary, optionally with contexts), promote or demote along each track, give or take decorative tags (`muxe.tag.<id>`, optionally temporary), choose the selected tag and edit the remaining permissions.
+- **Players:** search by name or UUID; see the account, give ranks (permanent or temporary, optionally with contexts), promote or demote along each track, give or take decorative tags (`muxe.tag.<id>`, optionally temporary), choose the selected tag, give or take medals (`muxe.medal.<id>`, optionally temporary; medals granted by a rank show which one), choose the player's medal (or **Nenhuma**; the page warns when the player cannot use it) and edit the remaining permissions.
 - **History:** the last 300 saved changes with author, filterable.
 
 ### Saving
 
-- Nothing is written while editing. A floating panel lists every pending change (new, edited, deleted), each with **Desfazer**; **Salvar** sends them all in one request.
-- The proxy turns the request into `PermissionChange`s and applies them atomically with `PermissionSync.apply(actor, changes)`: the rules run on the result (default rank present, known ranks and tags, no inheritance cycle), the changes are written in one transaction with one action-log row each, `permission.changed` is published to the network and every server reloads.
+- Nothing is written while editing. A floating panel lists every pending change (new, edited, deleted), each with **Desfazer** and, for medals, ranks and players, what changed (medal fields, `+ medalha X` / `− medalha X`, `medalha escolhida: A → B`); **Salvar** sends them all in one request.
+- The proxy turns the request into `PermissionChange`s and applies them atomically with `PermissionSync.apply(actor, changes)`: the rules run on the result (default rank present, known ranks and tags, known chosen medal, no inheritance cycle), the changes are written in one transaction with one action-log row each, `permission.changed` is published to the network and every server reloads.
 - If a rule fails, nothing is saved and the page shows the problem; the pending changes stay so they can be fixed.
 - The proxy log gets one line per saved batch with the actor and a summary of the changes.
 
@@ -44,15 +46,15 @@ All endpoints are under `/api`, answer JSON with `Cache-Control: no-store` and n
 | Method and path | Answer |
 |---|---|
 | `GET /api/session` | `actor`, `actorId`, `createdAt`, `expiresAt`, `now` (epoch milliseconds). |
-| `GET /api/data` | `defaultGroup`, `groups` (by weight, with `nodes`), `tags` (with `display` and `chatPrefix`), `tracks`. |
-| `GET /api/users/search?name=` | The player found by name (ignoring case) or UUID: account fields, `nodes` and `selectedTag`. `404 editor.user-not-found`. |
+| `GET /api/data` | `defaultGroup`, `groups` (by weight, with `nodes`), `tags` (with `display` and `chatPrefix`), `tracks`, `medals` (by weight, lowest first, with `display`, `chatPrefix` and `permission`). |
+| `GET /api/users/search?name=` | The player found by name (ignoring case) or UUID: account fields, `nodes`, `selectedTag` and `selectedMedal`. `404 editor.user-not-found`. |
 | `GET /api/users/{uuid}` | The same, by id. |
 | `GET /api/groups/{id}/members` | `total` and up to 200 `members` (`id`, `username`) with that rank directly. |
 | `GET /api/actions?limit=` | The latest saved changes (`at`, `actor`, `description`), 1 to 500, 100 by default. |
-| `POST /api/changes` | Body `{"changes":[...]}` with up to 500 changes of the types `put-group`, `delete-group`, `put-tag`, `delete-tag`, `put-track`, `delete-track`, `put-user`. Answers `saved` and the new `data`, or `400` with the rule's problem code. |
+| `POST /api/changes` | Body `{"changes":[...]}` with up to 500 changes of the types `put-group`, `delete-group`, `put-tag`, `delete-tag`, `put-track`, `delete-track`, `put-medal`, `delete-medal`, `put-user`. Answers `saved` and the new `data`, or `400` with the rule's problem code. |
 | `POST /api/logout` | Closes the session. |
 
-A node is `{"key","value","contexts":{...},"expiresAt"}` with an optional `addedAt`/`updatedAt` (milliseconds; future values become now). A group is `{"id","displayName","weight","tag","nodes"}`, a tag `{"id","name","color","weight","prefix","decorative"}`, a track `{"id","groups"}` and a user `{"id","nodes","selectedTag"}`.
+A node is `{"key","value","contexts":{...},"expiresAt"}` with an optional `addedAt`/`updatedAt` (milliseconds; future values become now). A group is `{"id","displayName","weight","tag","nodes"}`, a tag `{"id","name","color","weight","prefix","decorative"}`, a medal `{"id","name","symbol","color","weight"}` (`delete-medal` takes `id`), a track `{"id","groups"}` and a user `{"id","nodes","selectedTag","selectedMedal"}`. A `put-user` replaces the whole player: `selectedTag` or `selectedMedal` missing or `null` clears it, so the site always sends both back as loaded. An invalid medal (id, empty name, symbol outside 1 to 4 characters, color that is not one `&` code) is `400 editor.invalid-request`; a chosen medal that does not exist is `400 permission.unknown-medal`.
 
 Status codes: `400 editor.invalid-request` and the `permission.*` problem codes, `401 editor.unauthenticated` / `editor.session-expired`, `403 editor.forbidden` / `editor.bad-origin`, `404`, `405`, `413 editor.too-large`, `415`, `429 editor.too-many-requests`, `503 editor.not-ready` / `editor.unavailable`.
 
@@ -120,6 +122,8 @@ None.
 - [ ] Adding a parent that would create a cycle is not offered, and a crafted request that does it is refused with `permission.inheritance-cycle`.
 - [ ] Giving a player a rank for 30 days saves a `group.<id>` permission that expires in 30 days.
 - [ ] Changing a tag's color updates the chat and `/tag` previews immediately.
+- [ ] Changing a medal's symbol or color updates the chat and `/medalha` previews immediately; granting it to a rank from the medal page adds `muxe.medal.<id>` to that rank.
+- [ ] Changing only a player's ranks keeps the medal they chose.
 - [ ] After **Salvar**, the change shows in the history with the author, and players on other servers get it without relogging.
 - [ ] A player who loses `muxe.permissions.editor` is refused on the next request.
 
@@ -136,4 +140,5 @@ None.
 - No HTTPS until there is a domain and a reverse proxy (see Security).
 - A rank's id cannot be renamed; create a copy and delete the old one.
 - Members are listed only for direct members, up to 200.
-- The tag preview approximates the game's font and colors.
+- The tag and medal previews approximate the game's font and colors; the `/medalha` entry preview is `symbol name` in the medal's color.
+- Whether a player owns a medal is estimated in the page from their direct ranks, inheritance and wildcards; the server's resolver is the reference.
