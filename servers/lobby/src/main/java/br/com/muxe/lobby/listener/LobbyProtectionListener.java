@@ -9,7 +9,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -65,6 +68,26 @@ public final class LobbyProtectionListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onInventoryClick(InventoryClickEvent event) {
         onlyWhileBuilding(event.getWhoClicked(), event);
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onBurn(BlockBurnEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onSpread(BlockSpreadEvent event) {
+        if (!FireRules.spreads(event.getSource().getType())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onIgnite(BlockIgniteEvent event) {
+        Player player = event.getPlayer();
+        if (!FireRules.ignites(event.getCause(), player != null && build.isBuilding(player))) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW)

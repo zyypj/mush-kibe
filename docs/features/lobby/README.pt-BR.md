@@ -53,7 +53,7 @@ NPCs, hologramas e a loja com as caixas registradoras vêm do Muxe-Core e funcio
 
 ### Proteção
 
-Os jogadores não levam dano, não perdem fome, não quebram, não colocam, não largam nem pegam itens, nem movem itens no inventário, então a hotbar fica no lugar. A chuva é cancelada.
+Os jogadores não levam dano, não perdem fome, não quebram, não colocam, não largam nem pegam itens, nem movem itens no inventário, então a hotbar fica no lugar. A chuva é cancelada. O fogo nunca queima blocos, nunca se espalha e nunca começa sozinho (lava, raio, espalhamento); só a staff no modo construção consegue acender fogo com a mão, e esse fogo também não queima nada (`FireRules`).
 
 Os jogadores ficam sempre no modo Aventura: qualquer troca para outro modo de jogo é cancelada, exceto o Criativo para quem está no modo construção.
 

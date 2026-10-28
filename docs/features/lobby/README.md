@@ -53,7 +53,7 @@ NPCs, holograms and the shop with its cash registers come from Muxe-Core and wor
 
 ### Protection
 
-Players cannot take damage, lose hunger, break, place, drop or pick up items, or move items in their inventory, so the hotbar stays in place. Rain is cancelled.
+Players cannot take damage, lose hunger, break, place, drop or pick up items, or move items in their inventory, so the hotbar stays in place. Rain is cancelled. Fire never burns blocks, never spreads and never starts on its own (lava, lightning, spread); only staff in build mode can light a fire by hand, and that fire does not burn anything either (`FireRules`).
 
 Players are always in Adventure mode: any change to another game mode is cancelled, except Creative for a player in build mode.
 
