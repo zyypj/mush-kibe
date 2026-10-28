@@ -1,6 +1,8 @@
 package br.com.muxe.core.common.runtime;
 
+import br.com.muxe.core.common.account.AccountDetailsModule;
 import br.com.muxe.core.common.account.AccountModule;
+import br.com.muxe.core.common.account.infrastructure.postgres.PostgresAccountDetailsRepository;
 import br.com.muxe.core.common.account.infrastructure.postgres.PostgresAccountRepository;
 import br.com.muxe.core.common.concurrent.MuxeExecutors;
 import br.com.muxe.core.common.config.settings.MuxeSettings;
@@ -37,6 +39,8 @@ import br.com.muxe.core.common.persistence.transaction.Transactions;
 import br.com.muxe.core.common.redis.RedisConnector;
 import br.com.muxe.core.common.parkour.ParkourModule;
 import br.com.muxe.core.common.parkour.infrastructure.postgres.PostgresParkourRecordRepository;
+import br.com.muxe.core.common.permission.PermissionModule;
+import br.com.muxe.core.common.permission.infrastructure.postgres.PostgresPermissionRepository;
 import br.com.muxe.core.common.placement.PlacementModule;
 import br.com.muxe.core.common.placement.infrastructure.postgres.PostgresPlacementRepository;
 import br.com.muxe.core.common.server.ServerIdentity;
@@ -230,6 +234,8 @@ public final class CoreRuntime implements AutoCloseable {
             commands = new SimpleCommandBus(executors.io(), middlewares);
             queries = new SimpleQueryBus(executors.io(), middlewares);
             AccountModule.register(commands, queries, new PostgresAccountRepository(), transactions, clock);
+            AccountDetailsModule.register(commands, queries, new PostgresAccountDetailsRepository(), transactions, clock);
+            PermissionModule.register(commands, queries, new PostgresPermissionRepository(), transactions, clock);
             PlacementModule.register(commands, queries, new PostgresPlacementRepository(), transactions);
             ParkourModule.register(commands, queries, new PostgresParkourRecordRepository(), transactions, clock);
             ShopModule.register(commands, queries, new PostgresPromotionRepository(), transactions, clock);
