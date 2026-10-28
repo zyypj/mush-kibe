@@ -14,6 +14,7 @@ import br.com.muxe.core.bukkit.menu.MenuListener;
 import br.com.muxe.core.bukkit.monitor.BukkitServerLoad;
 import br.com.muxe.core.bukkit.monitor.TickMonitor;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
+import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.bukkit.thread.BukkitMainThreadExecutor;
 import br.com.muxe.core.bukkit.thread.BukkitMainThreadGuard;
@@ -22,6 +23,7 @@ import br.com.muxe.core.common.config.ConfigException;
 import br.com.muxe.core.common.config.secret.SecretResolver;
 import br.com.muxe.core.common.config.settings.MuxeSettings;
 import br.com.muxe.core.common.config.settings.SettingsLoader;
+import br.com.muxe.core.common.permission.sync.PermissionSync;
 import br.com.muxe.core.common.runtime.CoreRuntime;
 import br.com.muxe.core.common.runtime.PlatformHooks;
 import java.util.concurrent.Executor;
@@ -34,6 +36,7 @@ public final class CoreBukkitBootstrap {
     private final JavaPlugin plugin;
     private CoreRuntime runtime;
     private PlacedFeatures features;
+    private PermissionService permissions;
 
     public CoreBukkitBootstrap(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -64,7 +67,9 @@ public final class CoreBukkitBootstrap {
             messages,
             plugin.getLogger()
         );
-        MuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages, buildMode);
+        PermissionSync permissionSync = new PermissionSync(runtime.commands(), runtime.queries(), runtime.packets(), mainThread, plugin.getLogger());
+        permissions = PermissionService.start(plugin, permissionSync, settings.server().group(), runtime.clock());
+        MuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages, buildMode, permissions);
         plugin.getServer().getServicesManager().register(MuxeCore.class, core, plugin, ServicePriority.Normal);
 
         plugin.getServer().getScheduler().runTaskTimer(plugin, new TickMonitor(load, runtime.metrics()), 1L, 1L);
@@ -98,6 +103,10 @@ public final class CoreBukkitBootstrap {
         if (features != null) {
             features.stop();
             features = null;
+        }
+        if (permissions != null) {
+            permissions.stop();
+            permissions = null;
         }
         plugin.getServer().getServicesManager().unregisterAll(plugin);
         if (runtime != null) {

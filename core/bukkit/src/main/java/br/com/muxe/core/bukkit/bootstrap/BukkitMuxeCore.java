@@ -3,6 +3,7 @@ package br.com.muxe.core.bukkit.bootstrap;
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
+import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cqrs.command.CommandBus;
 import br.com.muxe.core.common.cqrs.query.QueryBus;
@@ -26,13 +27,20 @@ final class BukkitMuxeCore implements MuxeCore {
     private final NetworkGateway network;
     private final MessageCatalog messages;
     private final BuildMode buildMode;
+    private final PermissionService permissions;
 
-    BukkitMuxeCore(CoreRuntime runtime, Executor mainThread, NetworkGateway network, MessageCatalog messages, BuildMode buildMode) {
+    BukkitMuxeCore(CoreRuntime runtime, Executor mainThread, NetworkGateway network, MessageCatalog messages, BuildMode buildMode, PermissionService permissions) {
         this.runtime = runtime;
         this.mainThread = mainThread;
         this.network = network;
         this.messages = messages;
         this.buildMode = buildMode;
+        this.permissions = permissions;
+    }
+
+    @Override
+    public PermissionService permissions() {
+        return permissions;
     }
 
     @Override
