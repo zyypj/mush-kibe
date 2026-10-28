@@ -6,24 +6,15 @@ import org.junit.jupiter.api.Test;
 
 class CommandTextTest {
 
-    private static final String[] ARGS = {"Linha", "caixa", "2", "&b&lRANK", "ENDERLORE"};
-
-    @Test
-    void textIsJoinedFromAnArgument() {
-        assertThat(CommandText.join(ARGS, 3)).isEqualTo("&b&lRANK ENDERLORE");
-        assertThat(CommandText.join(ARGS, 9)).isEmpty();
-    }
-
     @Test
     void theEmptyLineTokenBecomesABlankLine() {
-        assertThat(CommandText.line(new String[] {"adicionar", "caixa", "{VAZIO}"}, 2)).isEmpty();
-        assertThat(CommandText.line(ARGS, 3)).isEqualTo("&b&lRANK ENDERLORE");
+        assertThat(CommandText.line("{VAZIO}")).isEmpty();
+        assertThat(CommandText.line("&b&lRANK ENDERLORE")).isEqualTo("&b&lRANK ENDERLORE");
     }
 
     @Test
-    void wordsAreLowercaseAndMissingWordsAreEmpty() {
-        assertThat(CommandText.word(ARGS, 0)).isEqualTo("linha");
-        assertThat(CommandText.word(ARGS, 7)).isEmpty();
+    void idsAreLowercase() {
+        assertThat(CommandText.id("Caixa")).isEqualTo("caixa");
     }
 
     @Test

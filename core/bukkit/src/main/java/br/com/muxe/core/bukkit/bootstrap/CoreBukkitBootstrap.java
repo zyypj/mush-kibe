@@ -6,6 +6,7 @@ import br.com.muxe.core.bukkit.buildmode.BuildSettings;
 import br.com.muxe.core.bukkit.command.BuildCommand;
 import br.com.muxe.core.bukkit.command.LobbyCommand;
 import br.com.muxe.core.bukkit.command.MuxeAdminCommand;
+import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.config.BukkitConfigSource;
 import br.com.muxe.core.bukkit.greeting.GreetingSettings;
 import br.com.muxe.core.bukkit.greeting.JoinGreeting;
@@ -24,8 +25,6 @@ import br.com.muxe.core.common.config.settings.SettingsLoader;
 import br.com.muxe.core.common.runtime.CoreRuntime;
 import br.com.muxe.core.common.runtime.PlatformHooks;
 import java.util.concurrent.Executor;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -77,10 +76,9 @@ public final class CoreBukkitBootstrap {
             plugin.getServer().getPluginManager().registerEvents(new JoinGreeting(plugin, greeting, messages), plugin);
         }
         String lobbyGroup = config.getString("network.lobby-group", "lobby");
-        bindCommand("muxe", new MuxeAdminCommand(core));
-        bindCommand("lobby", new LobbyCommand(core, lobbyGroup));
-        bindCommand("build", new BuildCommand(buildMode, messages));
-        features = PlacedFeatures.start(plugin, core, config, this::bindCommand);
+        Commands commands = Commands.of(plugin, messages);
+        commands.register(new MuxeAdminCommand(core), new LobbyCommand(core, lobbyGroup), new BuildCommand(buildMode, messages));
+        features = PlacedFeatures.start(plugin, core, config, commands);
         HotbarFeatures.start(plugin, core, config, features);
 
         plugin.getLogger().info("Muxe-Core ready as " + settings.server().id() + " (" + settings.server().group() + ")");
@@ -106,13 +104,5 @@ public final class CoreBukkitBootstrap {
             runtime.close();
             runtime = null;
         }
-    }
-
-    private void bindCommand(String name, CommandExecutor executor) {
-        PluginCommand command = plugin.getCommand(name);
-        if (command == null) {
-            throw new IllegalStateException("Command /" + name + " is missing from plugin.yml");
-        }
-        command.setExecutor(executor);
     }
 }

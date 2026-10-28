@@ -5,8 +5,10 @@ import br.com.muxe.core.bukkit.command.AsyncReply;
 import br.com.muxe.core.bukkit.command.HologramCommand;
 import br.com.muxe.core.bukkit.command.NpcCommand;
 import br.com.muxe.core.bukkit.command.ParkourCommand;
+import br.com.muxe.core.bukkit.command.PlacementArgument;
 import br.com.muxe.core.bukkit.command.ShopCommand;
 import br.com.muxe.core.bukkit.command.SocialHeadCommand;
+import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.hologram.TextHolograms;
 import br.com.muxe.core.bukkit.hologram.placed.PlacedHolograms;
 import br.com.muxe.core.bukkit.npc.placed.NpcLines;
@@ -31,8 +33,6 @@ import br.com.muxe.core.common.config.source.DurationParser;
 import br.com.muxe.core.common.cooldown.SpamGuard;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BiConsumer;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -74,7 +74,7 @@ final class PlacedFeatures {
         this.parkour = parkour;
     }
 
-    static PlacedFeatures start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, BiConsumer<String, CommandExecutor> bind) {
+    static PlacedFeatures start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, Commands commands) {
         MessageCatalog messages = core.messages();
         SpamGuard spam = new SpamGuard(
             core.clock(),
@@ -111,11 +111,14 @@ final class PlacedFeatures {
         placements.start().thenRun(() -> PlacementImport.run(plugin.getDataFolder(), placements, plugin.getLogger()));
 
         AsyncReply reply = new AsyncReply(core.mainThread(), messages, plugin.getLogger());
-        bind.accept(NpcCommand.NAME, new NpcCommand(placements, MojangSkins.standard(), core.mainThread(), messages, reply));
-        bind.accept(HologramCommand.NAME, new HologramCommand(placements, messages, reply));
-        bind.accept(ShopCommand.NAME, new ShopCommand(shop, placements, messages, reply));
-        bind.accept(SocialHeadCommand.NAME, new SocialHeadCommand(placements, messages, reply));
-        bind.accept(ParkourCommand.NAME, new ParkourCommand(placements, messages, reply));
+        PlacementArgument.registerAll(commands, placements::current);
+        commands.register(
+            new NpcCommand(placements, MojangSkins.standard(), core.mainThread(), messages, reply),
+            new HologramCommand(placements, messages, reply),
+            new ShopCommand(shop, placements, messages, reply),
+            new SocialHeadCommand(placements, messages, reply),
+            new ParkourCommand(placements, messages, reply)
+        );
         return new PlacedFeatures(placements, npcs, holograms, shop, spam, games, shopAccess, socialHeads, parkour);
     }
 

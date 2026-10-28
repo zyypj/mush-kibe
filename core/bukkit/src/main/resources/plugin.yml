@@ -3,39 +3,6 @@ version: '${version}'
 main: br.com.muxe.core.bukkit.MuxeCorePlugin
 author: Muxe
 description: Base plugin of every Muxe server. Connects to PostgreSQL and Redis and exposes the shared services.
-commands:
-  muxe:
-    description: Network administration.
-    usage: /muxe <servers|find <player>|metrics>
-  build:
-    description: Turns build mode on or off on every server.
-    usage: /build <on|off>
-  lobby:
-    description: Sends you back to a lobby.
-    aliases:
-      - hub
-      - l
-  npc:
-    description: Creates and manages the NPCs of this server group.
-    usage: /npc <criar|acao|mover|skin|nome|remover|listar>
-  holograma:
-    description: Creates and manages the holograms of this server group.
-    usage: /holograma <criar|adicionar|linha|removerlinha|ver|mover|remover|listar>
-    aliases:
-      - hologram
-      - holo
-  parkour:
-    description: Places the start, checkpoints and end of this server group's parkour.
-    usage: /parkour <inicio|checkpoint|fim|remover|listar>
-    permission: muxe.parkour
-  redes:
-    description: Places the social media heads of this server group.
-    usage: /redes <criar|mover|remover|listar>
-  loja:
-    description: Opens the shop, or manages its cash registers and promotion.
-    usage: /loja [caixa|vendedor|promocao]
-    aliases:
-      - shop
 permissions:
   muxe.admin:
     description: Allows /muxe.

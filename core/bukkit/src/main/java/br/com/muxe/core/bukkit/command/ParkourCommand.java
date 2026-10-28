@@ -1,5 +1,10 @@
 package br.com.muxe.core.bukkit.command;
 
+import br.com.muxe.core.bukkit.command.framework.annotation.Arg;
+import br.com.muxe.core.bukkit.command.framework.annotation.Command;
+import br.com.muxe.core.bukkit.command.framework.annotation.Permission;
+import br.com.muxe.core.bukkit.command.framework.annotation.Subcommand;
+import br.com.muxe.core.bukkit.command.framework.annotation.Suggest;
 import br.com.muxe.core.bukkit.placement.PlacementSync;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.placement.domain.ParkourPoint;
@@ -8,19 +13,22 @@ import br.com.muxe.core.common.placement.domain.PlacementKind;
 import br.com.muxe.core.common.placement.domain.Position;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.OptionalInt;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public final class ParkourCommand implements CommandExecutor {
+@Command(name = ParkourCommand.NAME, description = "Places the start, checkpoints and end of this server group's parkour.", usage = "parkour-usage")
+@Permission(ParkourCommand.PERMISSION)
+public final class ParkourCommand {
 
     public static final String NAME = "parkour";
     public static final String PERMISSION = "muxe.parkour";
 
+    private static final String START_WORD = "inicio";
+    private static final String END_WORD = "fim";
+    private static final String CHECKPOINT_WORD = "checkpoint";
     private static final double CENTER = 0.5;
 
     private final PlacementSync placements;
@@ -35,9 +43,9 @@ public final class ParkourCommand implements CommandExecutor {
 
     public static Optional<ParkourPoint> point(String word, String number) {
         return switch (word) {
-            case "inicio", "início" -> Optional.of(ParkourPoint.start());
-            case "fim" -> Optional.of(ParkourPoint.end());
-            case "checkpoint" -> checkpoint(number);
+            case START_WORD, "início" -> Optional.of(ParkourPoint.start());
+            case END_WORD -> Optional.of(ParkourPoint.end());
+            case CHECKPOINT_WORD -> checkpoint(number);
             default -> checkpoint(word);
         };
     }
@@ -53,36 +61,24 @@ public final class ParkourCommand implements CommandExecutor {
         );
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(messages.get("players-only"));
-            return true;
-        }
-        if (!player.hasPermission(PERMISSION)) {
-            player.sendMessage(messages.get("no-permission"));
-            return true;
-        }
-        String action = CommandText.word(args, 0);
-        switch (action) {
-            case "inicio", "início", "fim", "checkpoint" -> place(player, point(action, CommandText.word(args, 1)));
-            case "remover" -> remove(player, point(CommandText.word(args, 1), CommandText.word(args, 2)));
-            case "listar" -> list(player);
-            default -> usage(player);
-        }
-        return true;
+    @Subcommand(value = START_WORD, aliases = "início")
+    public void start(Player player) {
+        place(player, Optional.of(ParkourPoint.start()));
     }
 
-    private void place(Player player, Optional<ParkourPoint> point) {
-        if (point.isEmpty()) {
-            player.sendMessage(messages.get("parkour-invalid-point"));
-            return;
-        }
-        ParkourPointPlacement placed = new ParkourPointPlacement(placements.group(), point.get(), standingOn(player.getLocation()));
-        reply.then(player, placements.save(placed), saved -> player.sendMessage(messages.get("parkour-saved", "point", name(point.get()))));
+    @Subcommand(END_WORD)
+    public void end(Player player) {
+        place(player, Optional.of(ParkourPoint.end()));
     }
 
-    private void remove(Player player, Optional<ParkourPoint> point) {
+    @Subcommand(CHECKPOINT_WORD)
+    public void checkpoint(Player player, @Arg("número") Optional<String> number) {
+        place(player, point(CHECKPOINT_WORD, word(number)));
+    }
+
+    @Subcommand("remover")
+    public void remove(Player player, @Arg("ponto") @Suggest({START_WORD, END_WORD, CHECKPOINT_WORD}) Optional<String> word, @Arg("número") Optional<String> number) {
+        Optional<ParkourPoint> point = point(word(word), word(number));
         if (point.isEmpty()) {
             player.sendMessage(messages.get("parkour-invalid-point"));
             return;
@@ -95,7 +91,8 @@ public final class ParkourCommand implements CommandExecutor {
             removed -> player.sendMessage(messages.get("parkour-removed", "point", name(point.get()))));
     }
 
-    private void list(Player player) {
+    @Subcommand("listar")
+    public void list(Player player) {
         List<ParkourPointPlacement> points = placements.current().parkourPoints().stream()
             .sorted(Comparator.comparing((ParkourPointPlacement placed) -> placed.point().type()).thenComparingInt(placed -> placed.point().number()))
             .toList();
@@ -109,6 +106,15 @@ public final class ParkourCommand implements CommandExecutor {
         }
     }
 
+    private void place(Player player, Optional<ParkourPoint> point) {
+        if (point.isEmpty()) {
+            player.sendMessage(messages.get("parkour-invalid-point"));
+            return;
+        }
+        ParkourPointPlacement placed = new ParkourPointPlacement(placements.group(), point.get(), standingOn(player.getLocation()));
+        reply.then(player, placements.save(placed), saved -> player.sendMessage(messages.get("parkour-saved", "point", name(point.get()))));
+    }
+
     private String name(ParkourPoint point) {
         return switch (point.type()) {
             case START -> messages.get("parkour-point-start");
@@ -117,8 +123,8 @@ public final class ParkourCommand implements CommandExecutor {
         };
     }
 
-    private void usage(Player player) {
-        messages.lines("parkour-usage").forEach(player::sendMessage);
+    private static String word(Optional<String> typed) {
+        return typed.map(value -> value.toLowerCase(Locale.ROOT)).orElse("");
     }
 
     private static Optional<ParkourPoint> checkpoint(String number) {
