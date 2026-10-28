@@ -77,7 +77,7 @@ export function tagDisplay(tag) {
 }
 
 export function chatLine(tag, player, message) {
-  return chatPrefix(tag) + tag.color + player + "&f: " + message;
+  return chatPrefix(tag) + tag.color + player + ": &f" + message;
 }
 
 export function medalDisplay(medal) {
@@ -86,7 +86,7 @@ export function medalDisplay(medal) {
 
 export function medalChatLine(medal, tag, player, message) {
   const name = tag ? chatPrefix(tag) + tag.color + player : "&7" + player;
-  return medalDisplay(medal) + " " + name + "&f: " + message;
+  return medalDisplay(medal) + " " + name + ": &f" + message;
 }
 
 export function medalListEntry(medal) {

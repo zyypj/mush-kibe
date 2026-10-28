@@ -49,9 +49,9 @@ class MedalCommandTest {
         assertThat(TextComponent.toLegacyText(message)).isEqualTo(
             "§aMedalhas disponíveis: §7Nenhuma§f, §a☣§f, §f☯§f, §5♫§f, §6⚡§f, §c✌§f, §4❤§f, §e☕§f, §6ツ");
         assertThat(choices.get(7).hover()).containsExactly(
-            "§eCafé", " ", "§fPrévia:", "§e☕ §5§lENDERLORE §5tadeu§f: Olá!", " ", "§eClique para selecionar!");
+            "§eCafé", " ", "§fPrévia:", "§e☕ §5§lENDERLORE §5tadeu: §fOlá!", " ", "§eClique para selecionar!");
         assertThat(choices.getFirst().hover()).containsExactly(
-            "§7Nenhuma", " ", "§fPrévia:", "§5§lENDERLORE §5tadeu§f: Olá!", " ", "§eClique para selecionar!");
+            "§7Nenhuma", " ", "§fPrévia:", "§5§lENDERLORE §5tadeu: §fOlá!", " ", "§eClique para selecionar!");
         assertThat(clicks(message)).containsExactly(
             "/medalha nenhuma", "/medalha toxico", "/medalha yin-yang", "/medalha musico", "/medalha flash",
             "/medalha paz-e-amor", "/medalha amor", "/medalha cafe", "/medalha carinha");
@@ -79,7 +79,22 @@ class MedalCommandTest {
 
         assertThat(tadeu.messages()).containsExactly("§aVocê selecionou a medalha §a☣ §aTóxico §acom sucesso.");
         assertThat(kit.stored("tadeu").selectedMedal()).contains("toxico");
-        assertThat(String.format(kit.display(uuid("tadeu")).chatFormat(RankTestKit.CHAT), "tadeu", "oi")).isEqualTo("§a☣ §a§lVIP §atadeu§f: oi");
+        assertThat(String.format(kit.display(uuid("tadeu")).chatFormat(RankTestKit.CHAT), "tadeu", "oi")).isEqualTo("§a☣ §a§lVIP §atadeu: §foi");
+    }
+
+    @Test
+    void medalAndMedalhasAreAliasesOfMedalha() {
+        kit.online("tadeu", PermissionNode.group("vip", Optional.empty(), NOW));
+        FakeSender tadeu = FakeSender.named("tadeu");
+
+        kit.framework.run(tadeu.player(), "medal toxico");
+        kit.framework.run(tadeu.player(), "medalhas yin-yang");
+
+        assertThat(tadeu.messages()).containsExactly(
+            "§aVocê selecionou a medalha §a☣ §aTóxico §acom sucesso.",
+            "§aVocê selecionou a medalha §f☯ §fYin Yang §acom sucesso."
+        );
+        assertThat(kit.stored("tadeu").selectedMedal()).contains("yin-yang");
     }
 
     @Test
@@ -93,7 +108,7 @@ class MedalCommandTest {
 
         assertThat(tadeu.messages()).containsExactly("§aVocê removeu a sua medalha.");
         assertThat(kit.stored("tadeu").selectedMedal()).isEmpty();
-        assertThat(String.format(kit.display(uuid("tadeu")).chatFormat(RankTestKit.CHAT), "tadeu", "oi")).isEqualTo("§a§lVIP §atadeu§f: oi");
+        assertThat(String.format(kit.display(uuid("tadeu")).chatFormat(RankTestKit.CHAT), "tadeu", "oi")).isEqualTo("§a§lVIP §atadeu: §foi");
     }
 
     @Test
@@ -116,7 +131,7 @@ class MedalCommandTest {
         kit.sync.removeNode("Staff", uuid("tadeu"), PermissionNode.GROUP_PREFIX + "vip", Contexts.NONE).join();
 
         assertThat(kit.display(uuid("tadeu")).medal()).isEmpty();
-        assertThat(String.format(kit.display(uuid("tadeu")).chatFormat(RankTestKit.CHAT), "tadeu", "oi")).isEqualTo("§7tadeu§f: oi");
+        assertThat(String.format(kit.display(uuid("tadeu")).chatFormat(RankTestKit.CHAT), "tadeu", "oi")).isEqualTo("§7tadeu: §foi");
         assertThat(kit.stored("tadeu").selectedMedal()).contains("toxico");
     }
 

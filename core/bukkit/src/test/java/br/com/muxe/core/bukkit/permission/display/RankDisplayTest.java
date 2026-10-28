@@ -22,17 +22,17 @@ class RankDisplayTest {
 
     private static final Instant NOW = Instant.parse("2026-10-28T15:00:00Z");
     private static final PermissionData DATA = PermissionFixtures.DATA;
-    private static final String CHAT = "{medal}{prefix}{color}{player}&f: {message}";
+    private static final String CHAT = "{medal}{prefix}{color}{player}: &f{message}";
 
     @Test
     void theChosenMedalGoesBeforeTheTagInTheChat() {
         RankDisplay withCafe = new RankDisplay(DATA.tag("enderlore"), DATA.medal("cafe"));
 
-        assertThat(String.format(withCafe.chatFormat(CHAT), "tadeu", "Olá!")).isEqualTo("§e☕ §5§lENDERLORE §5tadeu§f: Olá!");
-        assertThat(withCafe.preview(CHAT, "tadeu", "Olá!")).isEqualTo("&e☕ &5&lENDERLORE &5tadeu&f: Olá!");
-        assertThat(String.format(RankDisplay.NONE.withMedal(DATA.medal("toxico")).chatFormat(CHAT), "tadeu", "oi")).isEqualTo("§a☣ §7tadeu§f: oi");
+        assertThat(String.format(withCafe.chatFormat(CHAT), "tadeu", "Olá!")).isEqualTo("§e☕ §5§lENDERLORE §5tadeu: §fOlá!");
+        assertThat(withCafe.preview(CHAT, "tadeu", "Olá!")).isEqualTo("&e☕ &5&lENDERLORE &5tadeu: &fOlá!");
+        assertThat(String.format(RankDisplay.NONE.withMedal(DATA.medal("toxico")).chatFormat(CHAT), "tadeu", "oi")).isEqualTo("§a☣ §7tadeu: §foi");
         assertThat(withCafe.formatName("tadeu")).isEqualTo("&5&lENDERLORE &5tadeu");
-        assertThat(String.format(withCafe.chatFormat("{prefix}{color}{player}&f: {message}"), "tadeu", "oi")).isEqualTo("§5§lENDERLORE §5tadeu§f: oi");
+        assertThat(String.format(withCafe.chatFormat("{prefix}{color}{player}: &f{message}"), "tadeu", "oi")).isEqualTo("§5§lENDERLORE §5tadeu: §foi");
     }
 
     @Test
@@ -55,9 +55,9 @@ class RankDisplayTest {
 
     @Test
     void theChatShowsTheTagPrefixAndTheNameInTheTagColor() {
-        assertThat(String.format(display("vip").chatFormat(CHAT), "tadeu", "Olá!")).isEqualTo("§a§lVIP §atadeu§f: Olá!");
-        assertThat(String.format(display("membro").chatFormat(CHAT), "tadeu", "100% certo")).isEqualTo("§7tadeu§f: 100% certo");
-        assertThat(String.format(RankDisplay.NONE.chatFormat(CHAT), "tadeu", "oi")).isEqualTo("§7tadeu§f: oi");
+        assertThat(String.format(display("vip").chatFormat(CHAT), "tadeu", "Olá!")).isEqualTo("§a§lVIP §atadeu: §fOlá!");
+        assertThat(String.format(display("membro").chatFormat(CHAT), "tadeu", "100% certo")).isEqualTo("§7tadeu: §f100% certo");
+        assertThat(String.format(RankDisplay.NONE.chatFormat(CHAT), "tadeu", "oi")).isEqualTo("§7tadeu: §foi");
     }
 
     @Test
@@ -66,7 +66,7 @@ class RankDisplayTest {
         assertThat(display("ultra").coloredName("tadeu")).isEqualTo("&dtadeu");
         assertThat(display("ultra").tagDisplay()).isEqualTo("&dUltra");
         assertThat(RankDisplay.NONE.tagDisplay()).isEqualTo("&7Membro");
-        assertThat(display("vip").preview(CHAT, "tadeu", "Olá!")).isEqualTo("&a&lVIP &atadeu&f: Olá!");
+        assertThat(display("vip").preview(CHAT, "tadeu", "Olá!")).isEqualTo("&a&lVIP &atadeu: &fOlá!");
     }
 
     @Test

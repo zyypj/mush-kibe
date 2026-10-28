@@ -1203,7 +1203,7 @@ messages:
   command-invalid-option: "&cOpção inválida: &f{input}&c. Use: &f{options}&c."
   command-player-offline: "&cO jogador &f{input} &cnão está online."
   command-failed: "&cNão foi possível executar este comando agora."
-  chat-format: "{medal}{prefix}{color}{player}&f: {message}"
+  chat-format: "{medal}{prefix}{color}{player}: &f{message}"
   join-title: "&b&lMUXE"
   join-subtitle: "&eBoas-vindas!"
   build-usage: "&eUso: /build <on|off>"

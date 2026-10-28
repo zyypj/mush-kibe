@@ -55,7 +55,7 @@ The tag a player shows is, in order: the tag they picked with `/tag` (if they st
 
 ### Prefixes
 
-- **Chat:** `messages.chat-format`, by default `{medal}{prefix}{color}{player}&f: {message}`: `&a&lVIP &atadeu&f: Olá!`, or `&7tadeu&f: Olá!` for a member. With a medal chosen, its symbol and a space come first: `&e☕ &5&lENDERLORE &5tadeu&f: Olá!`.
+- **Chat:** `messages.chat-format`, by default `{medal}{prefix}{color}{player}: &f{message}`: `&a&lVIP &atadeu: &fOlá!`, or `&7tadeu: &fOlá!` for a member. With a medal chosen, its symbol and a space come first: `&e☕ &5&lENDERLORE &5tadeu: &fOlá!`.
 - **Tab list and name above the head:** one scoreboard team per rank and tag. They show only the tag, never the medal, because 1.8 allows 16 characters of prefix. The team prefix is the chat prefix followed by the tag color (`§a§lVIP §a`), cut to the 16 characters 1.8 allows without breaking a color code. Teams are named by rank weight, then tag weight (`849849admin` comes before `989989vip`), so the 1.8 tab list sorts players by hierarchy.
 - The teams are put on every scoreboard players use (the main one and each player's sidebar) within 5 ticks, and updated as soon as a tag or rank changes.
 - The lobby scoreboard line `Tag:` shows the tag display (`&aVIP`), and the profile, `/account` and `/accountmenu` cite ranks the same way (see [Account](../account/README.md)).
@@ -122,7 +122,7 @@ A medal is a symbol in a color (`&e☕`) with a name (`Café`) and a weight. A p
 
 ### `/medalha`
 
-- `/medalha` (or `/medalhas`, or the `Medalhas` button of the profile menu) lists, in one chat line, `Nenhuma` and then every medal the player owns, from the lowest weight to the highest:
+- `/medalha` (or `/medalhas`, `/medal`, or the `Medalhas` button of the profile menu) lists, in one chat line, `Nenhuma` and then every medal the player owns, from the lowest weight to the highest:
 
 ```text
 Medalhas disponíveis: Nenhuma, ☣, ☯, ♫, ⚡, ✌, ❤, ☕, ツ
@@ -190,7 +190,7 @@ Clique para selecionar!
 | `/permissao cargo remover <cargo> <permissão> [contexto]` | Removes a node from the rank. | `muxe.permissions.manage` |
 | `/editor` | Opens a 30-minute session of the web editor. | `muxe.permissions.editor` |
 
-Aliases: `/tags`, `/medalhas`, `/cargos` and `/rank`, `/permissoes` and `/perm`, `/editorpermissoes`; `promote` and `demote` for `promover` and `rebaixar`. `membro` cannot be given or taken: everyone has it. A rank change that would break the rules (a rank inheriting itself, an unknown parent) is refused with `perm-group-refused`.
+Aliases: `/tags`, `/medalhas` and `/medal`, `/cargos` and `/rank`, `/permissoes` and `/perm`, `/editorpermissoes`; `promote` and `demote` for `promover` and `rebaixar`. `membro` cannot be given or taken: everyone has it. A rank change that would break the rules (a rank inheriting itself, an unknown parent) is refused with `perm-group-refused`.
 
 Examples:
 
@@ -231,7 +231,7 @@ permissions:
 | Key | Default | Description |
 |---|---|---|
 | `permissions.editor-url` | `http://151.244.40.191:1031` | Address of the web editor. The link is `<editor-url>/#<token>`. |
-| `messages.chat-format` | `{medal}{prefix}{color}{player}&f: {message}` | Chat format. `{medal}` is the chosen medal and a space (empty without one), `{prefix}` the tag's chat prefix, `{color}` its color. A `config.yml` written before medals has no `{medal}`: add it to show medals in the chat. |
+| `messages.chat-format` | `{medal}{prefix}{color}{player}: &f{message}` | Chat format. `{medal}` is the chosen medal and a space (empty without one), `{prefix}` the tag's chat prefix, `{color}` its color. A `config.yml` written before medals has no `{medal}`: add it to show medals in the chat. |
 | `menus.profile.buttons.medals.command` | `medalha` | Command run by the `Medalhas` button of the profile menu. |
 
 Ranks, tags and tracks are data, not configuration: change them with the commands, the editor or in PostgreSQL.
@@ -317,14 +317,14 @@ None of its own. Commands and queries count in the CQRS metrics, and `permission
 
 - [x] Ranks inherit the ones below; admin has everything; contexts, negation, wildcards and expiry are respected.
 - [x] Permissions follow the server group and the world, and a temporary rank stops counting when it ends.
-- [x] The chat shows `&a&lVIP &atadeu&f: Olá!`, and `&7tadeu&f: Olá!` for members.
+- [x] The chat shows `&a&lVIP &atadeu: &fOlá!`, and `&7tadeu: &fOlá!` for members.
 - [x] Team prefixes fit in 16 characters and team names sort by rank, then tag.
 - [x] `/tag` lists the owned tags from the lowest, each clickable with the preview; `/tag <id>` selects only owned tags and saves the choice.
 - [x] Staff give and remove decorative tags and ranks, for good or for a time that adds up, promote and demote along tracks, and every change is logged with their name.
 - [x] Player and rank permissions are set, listed, tested and removed, with options in any order, and rank changes that break the rules are refused.
 - [x] `/editor` creates a 30-minute session and sends its link.
 - [x] `/medalha` lists `Nenhuma` and the owned medals from the lowest, each clickable with the preview; `/medalha <id>` selects only owned medals and `/medalha nenhuma` removes the medal.
-- [x] The chat shows the chosen medal before the tag (`&e☕ &5&lENDERLORE &5tadeu&f: Olá!`); a lost medal stops showing and the choice is kept.
+- [x] The chat shows the chosen medal before the tag (`&e☕ &5&lENDERLORE &5tadeu: &fOlá!`); a lost medal stops showing and the choice is kept.
 - [x] Staff give and remove medals, for good or for a time that adds up.
 - [x] The `Medalhas` button of the profile menu closes the menu and sends the medal list.
 - [x] Everything completes with tab and refuses players without permission.

@@ -55,7 +55,7 @@ A tag que um jogador mostra é, nesta ordem: a que ele escolheu com `/tag` (se a
 
 ### Prefixos
 
-- **Chat:** `messages.chat-format`, por padrão `{medal}{prefix}{color}{player}&f: {message}`: `&a&lVIP &atadeu&f: Olá!`, ou `&7tadeu&f: Olá!` para um membro. Com uma medalha escolhida, o símbolo dela e um espaço vêm primeiro: `&e☕ &5&lENDERLORE &5tadeu&f: Olá!`.
+- **Chat:** `messages.chat-format`, por padrão `{medal}{prefix}{color}{player}: &f{message}`: `&a&lVIP &atadeu: &fOlá!`, ou `&7tadeu: &fOlá!` para um membro. Com uma medalha escolhida, o símbolo dela e um espaço vêm primeiro: `&e☕ &5&lENDERLORE &5tadeu: &fOlá!`.
 - **Tab e nome acima da cabeça:** um time da scoreboard por cargo e tag. Mostram só a tag, nunca a medalha, porque o 1.8 permite 16 caracteres de prefixo. O prefixo do time é o prefixo do chat seguido da cor da tag (`§a§lVIP §a`), cortado nos 16 caracteres que o 1.8 permite sem quebrar um código de cor. Os times são nomeados pelo peso do cargo e depois pelo peso da tag (`849849admin` vem antes de `989989vip`), então o tab do 1.8 ordena os jogadores pela hierarquia.
 - Os times são colocados em toda scoreboard que os jogadores usam (a principal e a sidebar de cada jogador) em até 5 ticks, e atualizados assim que uma tag ou cargo muda.
 - A linha `Tag:` da scoreboard do lobby mostra a exibição da tag (`&aVIP`), e o perfil, o `/account` e o `/accountmenu` citam cargos do mesmo jeito (veja [Conta](../account/README.pt-BR.md)).
@@ -122,7 +122,7 @@ Uma medalha é um símbolo numa cor (`&e☕`) com um nome (`Café`) e um peso. O
 
 ### `/medalha`
 
-- `/medalha` (ou `/medalhas`, ou o botão `Medalhas` do menu de perfil) lista, numa linha do chat, `Nenhuma` e depois todas as medalhas que o jogador tem, do menor peso para o maior:
+- `/medalha` (ou `/medalhas`, `/medal`, ou o botão `Medalhas` do menu de perfil) lista, numa linha do chat, `Nenhuma` e depois todas as medalhas que o jogador tem, do menor peso para o maior:
 
 ```text
 Medalhas disponíveis: Nenhuma, ☣, ☯, ♫, ⚡, ✌, ❤, ☕, ツ
@@ -190,7 +190,7 @@ Clique para selecionar!
 | `/permissao cargo remover <cargo> <permissão> [contexto]` | Remove um nó do cargo. | `muxe.permissions.manage` |
 | `/editor` | Abre uma sessão de 30 minutos do editor web. | `muxe.permissions.editor` |
 
-Aliases: `/tags`, `/medalhas`, `/cargos` e `/rank`, `/permissoes` e `/perm`, `/editorpermissoes`; `promote` e `demote` para `promover` e `rebaixar`. `membro` não pode ser dado nem tirado: todos já têm. Uma mudança de cargo que quebraria as regras (um cargo herdando a si mesmo, uma herança desconhecida) é recusada com `perm-group-refused`.
+Aliases: `/tags`, `/medalhas` e `/medal`, `/cargos` e `/rank`, `/permissoes` e `/perm`, `/editorpermissoes`; `promote` e `demote` para `promover` e `rebaixar`. `membro` não pode ser dado nem tirado: todos já têm. Uma mudança de cargo que quebraria as regras (um cargo herdando a si mesmo, uma herança desconhecida) é recusada com `perm-group-refused`.
 
 Exemplos:
 
@@ -231,7 +231,7 @@ permissions:
 | Chave | Padrão | Descrição |
 |---|---|---|
 | `permissions.editor-url` | `http://151.244.40.191:1031` | Endereço do editor web. O link é `<editor-url>/#<token>`. |
-| `messages.chat-format` | `{medal}{prefix}{color}{player}&f: {message}` | Formato do chat. `{medal}` é a medalha escolhida e um espaço (vazio sem medalha), `{prefix}` o prefixo da tag no chat, `{color}` a cor dela. Uma `config.yml` escrita antes das medalhas não tem `{medal}`: adicione para mostrar medalhas no chat. |
+| `messages.chat-format` | `{medal}{prefix}{color}{player}: &f{message}` | Formato do chat. `{medal}` é a medalha escolhida e um espaço (vazio sem medalha), `{prefix}` o prefixo da tag no chat, `{color}` a cor dela. Uma `config.yml` escrita antes das medalhas não tem `{medal}`: adicione para mostrar medalhas no chat. |
 | `menus.profile.buttons.medals.command` | `medalha` | Comando rodado pelo botão `Medalhas` do menu de perfil. |
 
 Cargos, tags e trilhas são dados, não configuração: mude-os com os comandos, com o editor ou no PostgreSQL.
@@ -317,14 +317,14 @@ Nenhuma própria. Comandos e consultas contam nas métricas de CQRS, e o `permis
 
 - [x] Cargos herdam os de baixo; o admin tem tudo; contextos, negação, curingas e expiração são respeitados.
 - [x] As permissões seguem o grupo de servidores e o mundo, e um cargo temporário para de valer quando acaba.
-- [x] O chat mostra `&a&lVIP &atadeu&f: Olá!`, e `&7tadeu&f: Olá!` para membros.
+- [x] O chat mostra `&a&lVIP &atadeu: &fOlá!`, e `&7tadeu: &fOlá!` para membros.
 - [x] Os prefixos dos times cabem em 16 caracteres e os nomes dos times ordenam por cargo e depois por tag.
 - [x] `/tag` lista as tags do jogador da menor para a maior, cada uma clicável com a prévia; `/tag <id>` só seleciona tags que o jogador tem e salva a escolha.
 - [x] A staff dá e tira tags decorativas e cargos, para sempre ou por um tempo que se soma, promove e rebaixa por trilhas, e toda mudança fica registrada com o nome dela.
 - [x] Permissões de jogadores e cargos são definidas, listadas, testadas e removidas, com opções em qualquer ordem, e mudanças de cargo que quebram as regras são recusadas.
 - [x] `/editor` cria uma sessão de 30 minutos e envia o link.
 - [x] `/medalha` lista `Nenhuma` e as medalhas que o jogador tem a partir da menor, cada uma clicável com a prévia; `/medalha <id>` seleciona só medalhas que o jogador tem e `/medalha nenhuma` remove a medalha.
-- [x] O chat mostra a medalha escolhida antes da tag (`&e☕ &5&lENDERLORE &5tadeu&f: Olá!`); uma medalha perdida deixa de aparecer e a escolha é mantida.
+- [x] O chat mostra a medalha escolhida antes da tag (`&e☕ &5&lENDERLORE &5tadeu: &fOlá!`); uma medalha perdida deixa de aparecer e a escolha é mantida.
 - [x] A staff dá e tira medalhas, para sempre ou por um tempo que se soma.
 - [x] O botão `Medalhas` do menu de perfil fecha o menu e envia a lista de medalhas.
 - [x] Tudo completa com tab e recusa jogadores sem permissão.

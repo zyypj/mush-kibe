@@ -39,7 +39,7 @@ final class RankFeatures {
     private static final String ACCOUNT_MENU = "menus.account";
     private static final String EDITOR_URL = "permissions.editor-url";
     private static final String DEFAULT_EDITOR_URL = "http://151.244.40.191:1031";
-    private static final String DEFAULT_CHAT_FORMAT = "{medal}{prefix}{color}{player}&f: {message}";
+    private static final String DEFAULT_CHAT_FORMAT = "{medal}{prefix}{color}{player}: &f{message}";
 
     private final NameTagTeams teams;
 

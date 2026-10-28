@@ -22,7 +22,7 @@ import java.util.Optional;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@Command(name = MedalCommand.NAME, aliases = "medalhas", description = "Lists and selects the medals a player can use.")
+@Command(name = MedalCommand.NAME, aliases = {"medalhas", "medal"}, description = "Lists and selects the medals a player can use.")
 public final class MedalCommand {
 
     public static final String NAME = "medalha";

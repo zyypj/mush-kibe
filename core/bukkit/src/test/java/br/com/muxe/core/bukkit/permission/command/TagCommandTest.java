@@ -64,8 +64,8 @@ class TagCommandTest {
         BaseComponent[] message = list.components(choices);
 
         assertThat(choices).extracting(TagChoice::label).containsExactly("§7Membro", "§aVIP", "§9MVP", "§6Pro", "§dUltra", "§cNatal");
-        assertThat(choices.get(1).hover()).containsExactly("§fPrévia:", "§a§lVIP §atadeu§f: Olá!", " ", "§eClique para selecionar!");
-        assertThat(choices.getFirst().hover().get(1)).isEqualTo("§7tadeu§f: Olá!");
+        assertThat(choices.get(1).hover()).containsExactly("§fPrévia:", "§a§lVIP §atadeu: §fOlá!", " ", "§eClique para selecionar!");
+        assertThat(choices.getFirst().hover().get(1)).isEqualTo("§7tadeu: §fOlá!");
         assertThat(TextComponent.toLegacyText(message)).isEqualTo(
             "§aSuas tags: §7Membro§f, §aVIP§f, §9MVP§f, §6Pro§f, §dUltra§f, §cNatal");
         assertThat(clicks(message)).contains("/tag membro", "/tag natal");
@@ -77,7 +77,7 @@ class TagCommandTest {
 
         List<TagChoice> choices = list.choices(kit.resolved(RankTestKit.uuid("tadeu")).orElseThrow().tags(), "tadeu", kit.data().medal("cafe"));
 
-        assertThat(choices.get(1).hover().get(1)).isEqualTo("§e☕ §a§lVIP §atadeu§f: Olá!");
+        assertThat(choices.get(1).hover().get(1)).isEqualTo("§e☕ §a§lVIP §atadeu: §fOlá!");
     }
 
     @Test
