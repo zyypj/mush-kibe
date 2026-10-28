@@ -25,7 +25,8 @@ public final class StaticAssets {
         "tracks.js",
         "users.js",
         "history.js",
-        "favicon.svg"
+        "favicon.png",
+        "logo.png"
     );
 
     private final Map<String, Asset> assets;
@@ -64,8 +65,8 @@ public final class StaticAssets {
         if (file.endsWith(".js")) {
             return "text/javascript; charset=utf-8";
         }
-        if (file.endsWith(".svg")) {
-            return "image/svg+xml";
+        if (file.endsWith(".png")) {
+            return "image/png";
         }
         return "application/octet-stream";
     }

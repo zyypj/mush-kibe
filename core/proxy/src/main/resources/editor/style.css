@@ -78,11 +78,21 @@ a {
 }
 
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 30px;
   font-weight: 900;
   letter-spacing: 1px;
   color: #fff;
   line-height: 1;
+}
+
+.brand-logo {
+  width: 58px;
+  height: 58px;
+  margin: -4px 0 -10px;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
 }
 
 .brand-mark {
@@ -1058,14 +1068,11 @@ textarea {
 }
 
 .screen-logo {
-  display: inline-block;
-  padding: 6px 16px;
-  border-radius: 14px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 24px;
-  font-weight: 900;
-  letter-spacing: 1px;
+  display: block;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 4px;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
 }
 
 .pending {

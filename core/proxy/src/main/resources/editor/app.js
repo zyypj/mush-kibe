@@ -33,7 +33,7 @@ function screen(title, message) {
   const root = clear(document.getElementById("root"));
   root.appendChild(el("div", { class: "screen" },
     el("div", { class: "card" },
-      el("div", { class: "screen-logo", text: "MUXE" }),
+      el("img", { class: "screen-logo", src: "logo.png", alt: "Muxe" }),
       el("h1", { text: title }),
       el("p", { class: "muted", text: message }))));
 }
@@ -43,7 +43,7 @@ function shell() {
   root.appendChild(el("div", { class: "app" },
     el("header", { class: "navbar" },
       el("div", { class: "wrap navbar-inner" },
-        el("div", { class: "brand", text: "MUXE" }),
+        el("div", { class: "brand" }, el("img", { class: "brand-logo", src: "logo.png", alt: "" }), el("span", { text: "MUXE" })),
         el("nav", { class: "sidebar", id: "sidebar", "aria-label": "Seções" }),
         el("div", { class: "topbar", id: "topbar" }))),
     el("section", { class: "hero" },

@@ -47,6 +47,7 @@ class EditorHttpServerTest {
         for (String file : StaticAssets.FILES) {
             assertThat(send(HttpRequest.newBuilder(uri("/" + file)).GET()).statusCode()).as(file).isEqualTo(200);
         }
+        assertThat(send(HttpRequest.newBuilder(uri("/logo.png")).GET()).headers().firstValue("Content-Type")).contains("image/png");
     }
 
     @Test
