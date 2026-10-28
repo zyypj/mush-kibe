@@ -43,8 +43,8 @@ metrics:
 
 geoip:
   enabled: true
-  account-id: env:MUXE_MAXMIND_ACCOUNT_ID
-  license-key: env:MUXE_MAXMIND_LICENSE_KEY
+  account-id: ""
+  license-key: ""
   refresh-after: 7d
 
 messages:

@@ -72,7 +72,7 @@ class MaxMindDownloadsTest {
         assertThatThrownBy(() -> downloads.openTarGz(GeoEdition.ASN))
             .isInstanceOf(IOException.class)
             .hasMessageContaining("401")
-            .hasMessageContaining("MUXE_MAXMIND_LICENSE_KEY")
+            .hasMessageContaining("geoip.license-key")
             .hasMessageNotContaining("wrong");
     }
 

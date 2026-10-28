@@ -25,7 +25,7 @@ public record GeoIpSettings(boolean enabled, Optional<MaxMindCredentials> creden
             return off(exception.getMessage(), refresh);
         }
         if (accountId == null || accountId.isBlank() || licenseKey == null || licenseKey.isBlank()) {
-            return off("geoip.account-id and geoip.license-key are empty", refresh);
+            return off("geoip.account-id and geoip.license-key are empty in the proxy config.yml", refresh);
         }
         return new GeoIpSettings(true, Optional.of(new MaxMindCredentials(accountId.strip(), licenseKey.strip())), Optional.empty(), refresh);
     }

@@ -60,6 +60,6 @@ public final class MaxMindDownloads implements DatabaseSource {
     }
 
     private static String statusHint(int status) {
-        return status == 401 || status == 403 ? " (check MUXE_MAXMIND_ACCOUNT_ID and MUXE_MAXMIND_LICENSE_KEY)" : "";
+        return status == 401 || status == 403 ? " (check geoip.account-id and geoip.license-key)" : "";
     }
 }
