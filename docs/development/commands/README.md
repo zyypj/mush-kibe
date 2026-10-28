@@ -137,7 +137,7 @@ Every plugin that registers commands needs these keys under `messages` in its `c
 
 | Key | Default |
 |---|---|
-| `no-permission` | `&cVocê não tem permissão para isso.` |
+| `no-permission` | `&cVocê não possui permissão para usar este comando.` |
 | `players-only` | `&cApenas jogadores podem usar este comando.` |
 | `console-only` | `&cApenas o console pode usar este comando.` |
 | `command-usage` | `&cUso: &f{usage}` |
