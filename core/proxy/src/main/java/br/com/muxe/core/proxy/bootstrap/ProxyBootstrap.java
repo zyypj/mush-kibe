@@ -11,8 +11,12 @@ import br.com.muxe.core.common.runtime.PlatformHooks;
 import br.com.muxe.core.proxy.auth.AccessPolicy;
 import br.com.muxe.core.proxy.auth.AuthStatusResponder;
 import br.com.muxe.core.proxy.auth.AuthenticationGate;
+import br.com.muxe.core.common.permission.sync.PermissionSync;
 import br.com.muxe.core.proxy.config.AuthenticationSettings;
+import br.com.muxe.core.proxy.config.EditorSettings;
 import br.com.muxe.core.proxy.config.GeoIpSettings;
+import br.com.muxe.core.proxy.editor.bootstrap.PermissionEditor;
+import br.com.muxe.core.proxy.editor.http.EditorHttpServer;
 import br.com.muxe.core.proxy.config.ProxyConfigFile;
 import br.com.muxe.core.proxy.config.RoutingSettings;
 import br.com.muxe.core.proxy.geoip.GeoIpService;
@@ -35,6 +39,7 @@ import br.com.muxe.core.proxy.routing.ServerRouter;
 import br.com.muxe.core.proxy.session.LoginSessions;
 import br.com.muxe.core.proxy.text.ProxyMessages;
 import com.velocitypowered.api.proxy.ProxyServer;
+import java.io.IOException;
 import java.net.http.HttpClient;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -48,6 +53,8 @@ public final class ProxyBootstrap {
     private final Logger logger;
     private CoreRuntime runtime;
     private GeoIpService geoIp;
+    private PermissionSync permissions;
+    private EditorHttpServer editor;
 
     public ProxyBootstrap(Object plugin, ProxyServer proxy, Path dataDirectory, Logger logger) {
         this.plugin = plugin;
@@ -82,11 +89,20 @@ public final class ProxyBootstrap {
         proxy.getEventManager().register(plugin, new LoginListener(runtime.commands(), gate, sessions, messages, runtime.metrics(), logger));
         proxy.getEventManager().register(plugin, new ConnectionListener(gate, access, router, routing, messages));
         startGeoIp(GeoIpSettings.from(config, SecretResolver.system()));
+        startEditor(EditorSettings.from(config));
 
         logger.info("Muxe proxy ready as " + settings.server().id());
     }
 
     public void disable() {
+        if (editor != null) {
+            editor.close();
+            editor = null;
+        }
+        if (permissions != null) {
+            permissions.stop();
+            permissions = null;
+        }
         if (geoIp != null) {
             geoIp.close();
             geoIp = null;
@@ -95,6 +111,22 @@ public final class ProxyBootstrap {
             runtime.close();
             runtime = null;
         }
+    }
+
+    private void startEditor(EditorSettings settings) {
+        if (!settings.enabled()) {
+            logger.info("Permission editor is off (editor.enabled is false)");
+            return;
+        }
+        permissions = new PermissionSync(runtime.commands(), runtime.queries(), runtime.packets(), runtime.executors().io(), logger);
+        permissions.start().join();
+        try {
+            editor = PermissionEditor.start(settings, runtime.store(), runtime.queries(), permissions, runtime.clock(), logger);
+        } catch (IOException exception) {
+            logger.severe("Permission editor is off, cannot listen on " + settings.bind() + ":" + settings.port() + ": " + exception.getMessage());
+            return;
+        }
+        logger.info("Permission editor listening on " + settings.bind() + ":" + editor.address().getPort() + ", public at " + settings.publicUrl());
     }
 
     private void startGeoIp(GeoIpSettings settings) {

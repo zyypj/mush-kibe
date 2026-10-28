@@ -41,6 +41,15 @@ metrics:
   host: 127.0.0.1
   port: 9410
 
+editor:
+  enabled: true
+  bind: 0.0.0.0
+  port: 1031
+  public-url: "http://151.244.40.191:1031"
+  requests-per-minute: 240
+  failed-logins-per-ten-minutes: 20
+  max-body-bytes: 1048576
+
 geoip:
   enabled: true
   account-id: ""
