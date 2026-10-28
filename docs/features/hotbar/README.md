@@ -46,13 +46,18 @@ On a server whose kind is in `hotbar.server-kinds` (only `LOBBY` by default; aut
 ### Profile
 
 - Title `Meu perfil`, 6 rows. Opened by the head.
-- The head at the top (slot 13) shows the player's skin, the name and the lore:
+- The head at the top (slot 13) shows the player's skin, the name with the tag they display and the lore, with one `Rank` line per rank given to the player (lowest first, `Vitalício` or the time left):
 
 ```text
+NATAL tadeu
 
-Primeiro login: 27/10/2026 14:03
+Primeiro login: 10/09/2021 16:29
 Créditos: 0
+Rank: VIP (Vitalício)
+Rank: Ultra (29d 23h)
 ```
+
+- The name is `&c&lNATAL &ctadeu`: the prefix and color of the displayed tag, as in the chat. The rank lines are `&7Rank: &aVIP &7(Vitalício)`. See [Ranks and tags](../ranks-and-tags/README.md).
 
 - The first login comes from the player's [account](../accounts/README.md) and is formatted with `first-login.format` in `first-login.time-zone`. When the account cannot be read, `first-login.unknown` (`-`) is shown.
 - Credits show `default-credits` until a wallet exists.
@@ -130,7 +135,8 @@ Slots in `menus` are inventory slots, from 0 (top left) to 53, like in the shop.
 | `menus.game-selector.title`, `rows` | `Selecionar jogo`, `4` | Game selector title and height. |
 | `menus.game-selector.buttons.<id>` | 14 games and `custom-room` | `slot`, `item` and, optionally, `game` (a server group) or `shop` (a shop category id; empty for the default one). Placeholder: `{players}`. |
 | `menus.profile.title`, `rows` | `Meu perfil`, `6` | Profile title and height. |
-| `menus.profile.head` | Slot `13`, the player's head | `slot` and `item` of the head. Placeholders: `{player}`, `{first-login}`, `{credits}`. |
+| `menus.profile.head` | Slot `13`, the player's head named `{name}` | `slot` and `item` of the head. Placeholders: `{player}` (plain name), `{name}` (name with the tag prefix and color), `{first-login}`, `{credits}`. |
+| `menus.profile.ranks.line`, `ranks.permanent` | `&7Rank: {rank} &7({time})`, `Vitalício` | Lore line added for each rank (`{rank}` is the rank tag, such as `&aVIP`; `{time}` is the time left or `ranks.permanent`). |
 | `menus.profile.buttons.<id>` | The 7 profile buttons | Same keys as the game selector buttons. |
 | `menus.profile.first-login.format`, `time-zone`, `unknown` | `dd/MM/yyyy HH:mm`, `America/Sao_Paulo`, `-` | How the first login is written, and what is shown when it is unknown. |
 | `menus.profile.default-credits` | `0` | Credits shown until a wallet exists. |
@@ -206,6 +212,7 @@ The profile reads the account with `FindAccountQuery`.
 - [Network routing](../network-routing/README.md) moves the player to the chosen game or lobby.
 - The [Shop](../shop/README.md) opens from the `shop` buttons.
 - [Accounts](../accounts/README.md) give the first login shown in the profile.
+- [Ranks and tags](../ranks-and-tags/README.md) give the name, tag and ranks of the profile head.
 - The [Lobby](../lobby/README.md) keeps the items in place and gives flight back after build mode.
 - The [Parkour](../parkour/README.md) borrows slots 4 to 6 during a run.
 
@@ -214,7 +221,7 @@ The profile reads the account with `FindAccountQuery`.
 - [x] The hotbar is given only on the server kinds in `hotbar.server-kinds`, in slots 1, 2, 5, 8 and 9, with the reference names.
 - [x] The visibility dye cycles through the three options, and the choice is saved in PostgreSQL and read back.
 - [x] The game selector shows the configured buttons, with `{players}` as the sum of the group's players, sends the player to the group and opens the shop on `shop` buttons.
-- [x] The profile shows the player's head, first login and credits.
+- [x] The profile shows the player's head, displayed tag, first login, credits and ranks.
 - [x] The lobby selector lists the lobbies of the current group in number order, centered, lime for the current one and gray for the others.
 - [x] Three quick uses start a 3-second cooldown with the remaining time as `2,9`.
 - [x] The rows of `lobby.player_settings` are copied to `core.player_visibility`.

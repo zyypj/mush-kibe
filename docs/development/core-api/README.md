@@ -25,6 +25,7 @@ Plugins declare `depend: [Muxe-Core]` in `plugin.yml` and `compileOnly(projects.
 | `mainThread()`, `async()` | Executors for the server thread and for blocking work. |
 | `clock()` | The clock to inject in your services. |
 | `messages()` | Shared messages of Muxe-Core. |
+| `permissions()` | Ranks, tags and permissions of online players (see [Ranks and permissions](#ranks-and-permissions)). |
 
 ## Text
 
@@ -94,6 +95,7 @@ ChatLines.send(player, messages.lines("shop-payment"), CenteredText.DEFAULT_CENT
 
 - A line that starts with `<center>` is padded with spaces so its middle sits on the given pixel of the chat (`CenteredText.DEFAULT_CENTER` is 114, the middle of a line of 57 struck-through spaces). Widths follow the 1.8 default font; bold adds one pixel per character.
 - A line that starts with `<link>` opens the URL when clicked. Both markers can be combined.
+- `ChatLines.send(player, lines, center, url, hover)` also shows `hover` (a list of lines) when the mouse is over a `<link>` line. `ChatLines.linked(text, url, hover)` builds that clickable line, which is what tests check.
 
 ### Chat prompts
 
@@ -295,6 +297,7 @@ sidebar.lines(List.of("", "&fJogadores: &b2211", "", "&amuxe.com.br"));
 - One scoreboard per player, with up to 15 lines. Each line lives in a team, so updating a line never makes the sidebar flicker; only lines that changed are sent.
 - Lines up to about 30 visible characters are split between the team prefix and suffix (16 characters each in 1.8), carrying the color over (`SidebarText.split`). Blank lines are fine.
 - `scoreboard()` exposes the Bukkit scoreboard for other teams, such as the one that hides NPC names.
+- Muxe-Core puts the rank teams (tab list prefix and name tag, see [Ranks and tags](../../features/ranks-and-tags/README.md#prefixes)) on every scoreboard a player uses, sidebars included, within 5 ticks. Their names start with digits, so they never clash with the `muxe-line-*` teams or the NPC team.
 
 ## Boss bar
 
@@ -441,6 +444,25 @@ In `core:common`, usable on the proxy too:
 | `ConfigSource`, `DurationParser`, `SecretResolver` | Reading configuration, durations (`5s`) and secrets (`env:`, `file:`). |
 | `SpamGuard`, `CooldownFormat` | Anti-spam for clicks: a number of uses inside a window starts a cooldown (`3` uses in `1s` start `3s`), and the remaining time is shown as `2,9`. |
 | `PendingPrompts` | Players waiting to answer something in the chat, each with a deadline (used by `ChatPrompts`). |
+
+## Ranks and permissions
+
+Package `br.com.muxe.core.bukkit.permission`. Muxe-Core loads every player's ranks and makes `hasPermission` follow them on every Bukkit server, as described in [Ranks and tags](../../features/ranks-and-tags/README.md). Plugins only ask.
+
+```java
+PermissionService ranks = MuxeCore.get().permissions();
+if (player.hasPermission("muxe.lobby.fly")) { ... }
+RankDisplay display = ranks.display(player.getUniqueId());
+String name = display.formatName(player.getName());
+Optional<ResolvedPermissions> resolved = ranks.resolved(player.getUniqueId());
+ranks.onChange(changed -> refresh(changed));
+```
+
+- `hasPermission` works as usual: the player's permissible is replaced by one that asks the resolved ranks first and falls back to Bukkit (op and `plugin.yml` defaults) when the rank says nothing.
+- `display(id)` gives the tag the player shows: `prefix()` (`&a&lVIP `), `color()` (`&a`), `formatName(name)` (`&a&lVIP &atadeu`), `coloredName(name)` (`&atadeu`), `tagDisplay()` (`&aVIP`) and `chatFormat(template)`.
+- `resolved(id)` and `user(id)` give the resolved permissions and the raw nodes of online players; `data()` gives the groups, tags and tracks; `sync()` changes them for the whole network.
+- `onChange` runs on the main thread whenever an online player's permissions change (new rank, new tag, world change, expiry).
+- Commands and menus depend on the `PlayerRanks` interface, which tests implement with a `PermissionCache` and a `PermissionSync` over the in-memory fixtures.
 
 ## Commands
 

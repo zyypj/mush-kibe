@@ -46,13 +46,18 @@ Num servidor cujo tipo está em `hotbar.server-kinds` (só `LOBBY` por padrão; 
 ### Perfil
 
 - Título `Meu perfil`, 6 linhas. Aberto pela cabeça.
-- A cabeça no topo (slot 13) mostra a skin do jogador, o nome e a lore:
+- A cabeça no topo (slot 13) mostra a skin do jogador, o nome com a tag que ele exibe e a lore, com uma linha `Rank` para cada cargo dado ao jogador (do menor para o maior, `Vitalício` ou o tempo que falta):
 
 ```text
+NATAL tadeu
 
-Primeiro login: 27/10/2026 14:03
+Primeiro login: 10/09/2021 16:29
 Créditos: 0
+Rank: VIP (Vitalício)
+Rank: Ultra (29d 23h)
 ```
+
+- O nome é `&c&lNATAL &ctadeu`: o prefixo e a cor da tag exibida, como no chat. As linhas de cargo são `&7Rank: &aVIP &7(Vitalício)`. Veja [Cargos e tags](../ranks-and-tags/README.pt-BR.md).
 
 - O primeiro login vem da [conta](../accounts/README.pt-BR.md) do jogador e é formatado com `first-login.format` no fuso `first-login.time-zone`. Quando a conta não pode ser lida, aparece `first-login.unknown` (`-`).
 - Os créditos mostram `default-credits` até existir uma carteira.
@@ -130,7 +135,8 @@ Os slots em `menus` são slots do inventário, de 0 (canto superior esquerdo) a 
 | `menus.game-selector.title`, `rows` | `Selecionar jogo`, `4` | Título e altura do seletor de jogo. |
 | `menus.game-selector.buttons.<id>` | 14 jogos e `custom-room` | `slot`, `item` e, opcionalmente, `game` (um grupo de servidores) ou `shop` (o id de uma categoria da loja; vazio para a padrão). Placeholder: `{players}`. |
 | `menus.profile.title`, `rows` | `Meu perfil`, `6` | Título e altura do perfil. |
-| `menus.profile.head` | Slot `13`, a cabeça do jogador | `slot` e `item` da cabeça. Placeholders: `{player}`, `{first-login}`, `{credits}`. |
+| `menus.profile.head` | Slot `13`, a cabeça do jogador com o nome `{name}` | `slot` e `item` da cabeça. Placeholders: `{player}` (nome puro), `{name}` (nome com o prefixo e a cor da tag), `{first-login}`, `{credits}`. |
+| `menus.profile.ranks.line`, `ranks.permanent` | `&7Rank: {rank} &7({time})`, `Vitalício` | Linha da lore adicionada para cada cargo (`{rank}` é a tag do cargo, como `&aVIP`; `{time}` é o tempo que falta ou `ranks.permanent`). |
 | `menus.profile.buttons.<id>` | Os 7 botões do perfil | As mesmas chaves dos botões do seletor de jogo. |
 | `menus.profile.first-login.format`, `time-zone`, `unknown` | `dd/MM/yyyy HH:mm`, `America/Sao_Paulo`, `-` | Como o primeiro login é escrito e o que aparece quando ele é desconhecido. |
 | `menus.profile.default-credits` | `0` | Créditos mostrados até existir uma carteira. |
@@ -206,6 +212,7 @@ O perfil lê a conta com `FindAccountQuery`.
 - O [Roteamento da rede](../network-routing/README.pt-BR.md) move o jogador para o jogo ou o lobby escolhido.
 - A [Loja](../shop/README.pt-BR.md) abre pelos botões `shop`.
 - As [Contas](../accounts/README.pt-BR.md) dão o primeiro login mostrado no perfil.
+- [Cargos e tags](../ranks-and-tags/README.pt-BR.md) dão o nome, a tag e os cargos da cabeça do perfil.
 - O [Lobby](../lobby/README.pt-BR.md) mantém os itens no lugar e devolve o voo depois do modo construção.
 - O [Parkour](../parkour/README.pt-BR.md) usa os slots 4 a 6 durante a corrida.
 
@@ -214,7 +221,7 @@ O perfil lê a conta com `FindAccountQuery`.
 - [x] A hotbar só é dada nos tipos de servidor de `hotbar.server-kinds`, nos slots 1, 2, 5, 8 e 9, com os nomes de referência.
 - [x] O corante de visibilidade alterna entre as três opções, e a escolha é salva no PostgreSQL e lida de volta.
 - [x] O seletor de jogo mostra os botões configurados, com `{players}` como a soma dos jogadores do grupo, manda o jogador para o grupo e abre a loja nos botões `shop`.
-- [x] O perfil mostra a cabeça, o primeiro login e os créditos do jogador.
+- [x] O perfil mostra a cabeça, a tag exibida, o primeiro login, os créditos e os cargos do jogador.
 - [x] O seletor de lobby lista os lobbys do grupo atual em ordem de número, centralizados, verde-limão para o atual e cinza para os outros.
 - [x] Três usos rápidos iniciam um cooldown de 3 segundos com o tempo restante como `2,9`.
 - [x] As linhas de `lobby.player_settings` são copiadas para `core.player_visibility`.

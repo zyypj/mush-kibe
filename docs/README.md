@@ -43,6 +43,8 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 - [BedWars](features/bedwars/README.md): plugin skeleton and modes.
 - [Permission editor](features/permission-editor/README.md): a website served by the proxy to edit ranks, inheritance, permissions, tags, tracks and players, opened with `/editor`.
 - [Account location (GeoIP)](features/geoip/README.md): country, region, city and network of each login from MaxMind GeoLite2, without storing the address.
+- [Ranks and tags](features/ranks-and-tags/README.md): ranks, permissions and tags applied on every server, chat and tab prefixes, `/tag`, `/cargo`, `/permissao` and `/editor`.
+- [Account](features/account/README.md): `/account`, `/accountmenu` and the ranks on the profile head.
 
 ## Documenting a new feature
 

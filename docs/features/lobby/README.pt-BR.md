@@ -41,7 +41,7 @@ muxe.com.br
 ```
 
 - `{lobby}` é o número no fim do id do servidor (`lobby-4` mostra `#4`), e `{players}` conta todos os jogadores nos servidores Spigot da rede. As linhas são atualizadas a cada `scoreboard.update-interval`.
-- Ainda não existe sistema de tag nem de créditos: todo jogador mostra `scoreboard.default-tag` e `scoreboard.default-credits`. Os valores vêm do `PlayerInfoSource`, onde esses sistemas vão se plugar.
+- `Tag` mostra a tag que o jogador exibe (`&aVIP`, `&dUltra`, `&cNatal`...), como descrito em [Cargos e tags](../ranks-and-tags/README.pt-BR.md); ela muda em até um segundo depois de um `/tag` ou de um cargo novo. `scoreboard.default-tag` aparece enquanto os cargos do jogador não carregaram. Ainda não existe sistema de créditos: todo jogador mostra `scoreboard.default-credits`. Os valores vêm do `PlayerInfoSource` (`RankInfoSource`).
 
 ### Hotbar, menus e visibilidade dos jogadores
 
@@ -95,7 +95,7 @@ O `/jogar` completa os jogos configurados com tab.
 | `bossbar.frames`, `bossbar.interval` | `&e&lMUXE`, `&6&lMUXE`, `500ms` | Textos da boss bar e quanto tempo cada um fica. |
 | `scoreboard.title`, `scoreboard.lines` | Veja acima | Texto da scoreboard. Placeholders: `{tag}`, `{credits}`, `{lobby}`, `{players}`. |
 | `scoreboard.update-interval` | `1s` | De quanto em quanto tempo a scoreboard é atualizada. |
-| `scoreboard.default-tag`, `scoreboard.default-credits` | `&7Membro`, `0` | Mostrados até existirem tags e créditos. |
+| `scoreboard.default-tag`, `scoreboard.default-credits` | `&7Membro`, `0` | Tag mostrada enquanto os cargos do jogador não carregaram, e os créditos mostrados até existir uma carteira. |
 | `spawn.*` | não definido | Escrito pelo `/setspawn`. |
 | `messages.*` | Textos em português | Mensagens do `/jogar` e do `/setspawn`; as mensagens compartilhadas vêm do Muxe-Core. |
 
@@ -150,5 +150,5 @@ As métricas de servidor Spigot do Muxe-Core. As métricas de visibilidade foram
 
 ## Limitações conhecidas
 
-- Tags e créditos ainda não existem; a scoreboard mostra valores padrão.
+- Créditos ainda não existem; a scoreboard mostra `scoreboard.default-credits`.
 - As limitações da hotbar e dos seus menus estão em [Hotbar](../hotbar/README.pt-BR.md#limitações-conhecidas).

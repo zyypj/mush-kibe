@@ -25,6 +25,7 @@ Os plugins declaram `depend: [Muxe-Core]` no `plugin.yml` e `compileOnly(project
 | `mainThread()`, `async()` | Executores para a thread do servidor e para trabalho bloqueante. |
 | `clock()` | O relógio para injetar nos seus serviços. |
 | `messages()` | Mensagens compartilhadas do Muxe-Core. |
+| `permissions()` | Cargos, tags e permissões dos jogadores online (veja [Cargos e permissões](#cargos-e-permissões)). |
 
 ## Texto
 
@@ -94,6 +95,7 @@ ChatLines.send(player, messages.lines("shop-payment"), CenteredText.DEFAULT_CENT
 
 - Uma linha que começa com `<center>` ganha espaços para que o meio dela fique no pixel indicado do chat (`CenteredText.DEFAULT_CENTER` é 114, o meio de uma linha de 57 espaços riscados). As larguras seguem a fonte padrão do 1.8; o negrito soma um pixel por caractere.
 - Uma linha que começa com `<link>` abre a URL quando clicada. As duas marcações podem ser usadas juntas.
+- `ChatLines.send(player, lines, center, url, hover)` também mostra `hover` (uma lista de linhas) quando o mouse passa sobre uma linha `<link>`. `ChatLines.linked(text, url, hover)` monta essa linha clicável, que é o que os testes verificam.
 
 ### Perguntas no chat
 
@@ -295,6 +297,7 @@ sidebar.lines(List.of("", "&fJogadores: &b2211", "", "&amuxe.com.br"));
 - Uma scoreboard por jogador, com até 15 linhas. Cada linha fica em um time, então atualizar uma linha nunca faz a sidebar piscar; só as linhas que mudaram são enviadas.
 - Linhas de até uns 30 caracteres visíveis são divididas entre o prefixo e o sufixo do time (16 caracteres cada na 1.8), levando a cor junto (`SidebarText.split`). Linhas em branco funcionam.
 - `scoreboard()` expõe a scoreboard do Bukkit para outros times, como o que esconde o nome dos NPCs.
+- O Muxe-Core coloca os times de cargo (prefixo no tab e acima da cabeça, veja [Cargos e tags](../../features/ranks-and-tags/README.pt-BR.md#prefixos)) em toda scoreboard que um jogador usa, sidebars inclusive, em até 5 ticks. Os nomes deles começam com dígitos, então nunca colidem com os times `muxe-line-*` nem com o time dos NPCs.
 
 ## Boss bar
 
@@ -441,6 +444,25 @@ No `core:common`, usáveis também no proxy:
 | `ConfigSource`, `DurationParser`, `SecretResolver` | Leitura de configuração, durações (`5s`) e segredos (`env:`, `file:`). |
 | `SpamGuard`, `CooldownFormat` | Anti-spam de cliques: um número de usos dentro de uma janela inicia um cooldown (`3` usos em `1s` iniciam `3s`), e o tempo restante aparece como `2,9`. |
 | `PendingPrompts` | Jogadores esperando para responder algo no chat, cada um com um prazo (usado pelo `ChatPrompts`). |
+
+## Cargos e permissões
+
+Pacote `br.com.muxe.core.bukkit.permission`. O Muxe-Core carrega os cargos de todo jogador e faz o `hasPermission` segui-los em todo servidor Bukkit, como descrito em [Cargos e tags](../../features/ranks-and-tags/README.pt-BR.md). Os plugins só perguntam.
+
+```java
+PermissionService ranks = MuxeCore.get().permissions();
+if (player.hasPermission("muxe.lobby.fly")) { ... }
+RankDisplay display = ranks.display(player.getUniqueId());
+String name = display.formatName(player.getName());
+Optional<ResolvedPermissions> resolved = ranks.resolved(player.getUniqueId());
+ranks.onChange(changed -> refresh(changed));
+```
+
+- `hasPermission` funciona como sempre: o permissible do jogador é trocado por um que pergunta primeiro aos cargos resolvidos e volta ao Bukkit (op e padrões do `plugin.yml`) quando o cargo não diz nada.
+- `display(id)` dá a tag que o jogador mostra: `prefix()` (`&a&lVIP `), `color()` (`&a`), `formatName(name)` (`&a&lVIP &atadeu`), `coloredName(name)` (`&atadeu`), `tagDisplay()` (`&aVIP`) e `chatFormat(template)`.
+- `resolved(id)` e `user(id)` dão as permissões resolvidas e os nós crus dos jogadores online; `data()` dá os grupos, tags e trilhas; `sync()` muda tudo isso para a rede inteira.
+- `onChange` roda na thread principal sempre que as permissões de um jogador online mudam (cargo novo, tag nova, troca de mundo, expiração).
+- Comandos e menus dependem da interface `PlayerRanks`, que os testes implementam com um `PermissionCache` e um `PermissionSync` sobre os fixtures em memória.
 
 ## Comandos
 
