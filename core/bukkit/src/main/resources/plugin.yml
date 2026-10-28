@@ -34,3 +34,12 @@ permissions:
   muxe.account.staff:
     description: Shows the staff buttons of /accountmenu.
     default: op
+  muxe.ranks.manage:
+    description: Allows /cargo, which shows, gives, removes, promotes and demotes ranks.
+    default: op
+  muxe.permissions.manage:
+    description: Allows /permissao, which sets and removes permissions of players and ranks.
+    default: op
+  muxe.permissions.editor:
+    description: Allows /editor, which opens a session of the web permission editor.
+    default: op

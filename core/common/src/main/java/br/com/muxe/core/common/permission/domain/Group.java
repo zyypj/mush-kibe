@@ -1,5 +1,7 @@
 package br.com.muxe.core.common.permission.domain;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,5 +26,24 @@ public record Group(String id, String displayName, int weight, Optional<String> 
 
     public Group withNodes(List<PermissionNode> replaced) {
         return new Group(id, displayName, weight, tag, replaced);
+    }
+
+    public Group with(PermissionNode node) {
+        List<PermissionNode> next = new ArrayList<>();
+        Instant added = node.addedAt();
+        for (PermissionNode current : nodes) {
+            if (current.sameSlot(node)) {
+                added = current.addedAt();
+            } else {
+                next.add(current);
+            }
+        }
+        next.add(new PermissionNode(node.key(), node.value(), node.contexts(), node.expiresAt(), added, node.updatedAt()));
+        return withNodes(next);
+    }
+
+    public Optional<Group> without(String key, Contexts contexts) {
+        List<PermissionNode> next = nodes.stream().filter(node -> !(node.key().equals(key) && node.contexts().equals(contexts))).toList();
+        return next.size() == nodes.size() ? Optional.empty() : Optional.of(withNodes(next));
     }
 }

@@ -8,7 +8,11 @@ import br.com.muxe.core.bukkit.account.AccountSettings;
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.permission.PermissionService;
+import br.com.muxe.core.bukkit.permission.command.EditorCommand;
+import br.com.muxe.core.bukkit.permission.command.PermissionCommand;
 import br.com.muxe.core.bukkit.permission.command.PermissionSuggestions;
+import br.com.muxe.core.bukkit.permission.command.RankCommand;
+import br.com.muxe.core.bukkit.permission.command.RankReports;
 import br.com.muxe.core.bukkit.permission.command.Replies;
 import br.com.muxe.core.bukkit.permission.command.TagCommand;
 import br.com.muxe.core.bukkit.permission.command.TagList;
@@ -17,6 +21,7 @@ import br.com.muxe.core.bukkit.permission.display.ChatFormatListener;
 import br.com.muxe.core.bukkit.permission.display.NameTag;
 import br.com.muxe.core.bukkit.permission.display.NameTagTeams;
 import br.com.muxe.core.common.permission.domain.ResolvedPermissions;
+import br.com.muxe.core.common.permission.editor.EditorSessions;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeSet;
@@ -30,6 +35,8 @@ final class RankFeatures {
 
     private static final String CHAT_FORMAT = "messages.chat-format";
     private static final String ACCOUNT_MENU = "menus.account";
+    private static final String EDITOR_URL = "permissions.editor-url";
+    private static final String DEFAULT_EDITOR_URL = "http://151.244.40.191:1031";
     private static final String DEFAULT_CHAT_FORMAT = "{prefix}{color}{player}&f: {message}";
 
     private final NameTagTeams teams;
@@ -62,9 +69,14 @@ final class RankFeatures {
         TargetLookup targets = new TargetLookup(name -> Optional.ofNullable(server.getPlayerExact(name)), core.queries());
         AccountSettings accountSettings = AccountSettings.from(Objects.requireNonNull(config.getConfigurationSection(ACCOUNT_MENU), "Missing configuration section " + ACCOUNT_MENU));
         AccountLines accountLines = new AccountLines(core.messages(), accountSettings.chatDates());
+        RankReports reports = new RankReports(core.messages(), permissions::data, core.clock(), accountSettings.chatDates());
+        EditorSessions editor = new EditorSessions(core.store(), core.clock(), EditorSessions.DEFAULT_DURATION);
         commands.register(
             new TagCommand(permissions, targets, replies, new TagList(core.messages(), chatFormat)),
-            new AccountCommands(new AccountProfiles(core.queries(), permissions), accountLines, new AccountMenu(accountSettings, accountLines, core.messages()), replies)
+            new AccountCommands(new AccountProfiles(core.queries(), permissions), accountLines, new AccountMenu(accountSettings, accountLines, core.messages()), replies),
+            new RankCommand(permissions, targets, replies, reports),
+            new PermissionCommand(permissions, targets, replies, reports),
+            new EditorCommand(editor, core.async(), config.getString(EDITOR_URL, DEFAULT_EDITOR_URL), replies)
         );
         return new RankFeatures(teams);
     }
