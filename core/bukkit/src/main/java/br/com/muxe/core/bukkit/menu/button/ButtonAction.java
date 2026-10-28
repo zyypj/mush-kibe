@@ -14,6 +14,9 @@ public record ButtonAction(Type type, String target) {
         if (type == Type.GAME && target.isBlank()) {
             throw new IllegalArgumentException("A game button needs the group of its servers");
         }
+        if (type == Type.COMMAND && target.isBlank()) {
+            throw new IllegalArgumentException("A command button needs the command it runs");
+        }
     }
 
     public static ButtonAction game(String group) {
@@ -24,6 +27,11 @@ public record ButtonAction(Type type, String target) {
         return new ButtonAction(Type.SHOP, category);
     }
 
+    public static ButtonAction command(String line) {
+        String trimmed = line.strip();
+        return new ButtonAction(Type.COMMAND, trimmed.startsWith("/") ? trimmed.substring(1) : trimmed);
+    }
+
     public static ButtonAction from(ConfigurationSection section) {
         String game = section.getString("game", "");
         if (!game.isBlank()) {
@@ -32,12 +40,16 @@ public record ButtonAction(Type type, String target) {
         if (section.isSet("shop")) {
             return shop(section.getString("shop", ""));
         }
+        if (section.isSet("command")) {
+            return command(section.getString("command", ""));
+        }
         return NONE;
     }
 
     public enum Type {
         NONE,
         GAME,
-        SHOP
+        SHOP,
+        COMMAND
     }
 }

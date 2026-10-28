@@ -481,6 +481,7 @@ menus:
             - "&eClique para ver mais."
       medals:
         slot: 32
+        command: medalha
         item:
           material: DOUBLE_PLANT
           name: "&aMedalhas"

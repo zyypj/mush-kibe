@@ -28,6 +28,10 @@ public final class ButtonActions {
                 games.connect(context.player(), action.target(), button.displayName());
             }
             case SHOP -> shop.open(context.player(), action.target());
+            case COMMAND -> {
+                context.close();
+                context.player().performCommand(action.target());
+            }
         }
     }
 }

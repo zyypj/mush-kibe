@@ -29,6 +29,11 @@ class ConfiguredButtonTest {
         "    slot: 29",
         "    item:",
         "      material: COOKIE",
+        "  medals:",
+        "    slot: 32",
+        "    command: /medalha",
+        "    item:",
+        "      material: DOUBLE_PLANT",
         "");
 
     @Test
@@ -38,10 +43,11 @@ class ConfiguredButtonTest {
 
         List<ConfiguredButton> buttons = ConfiguredButton.list(yaml.getConfigurationSection("buttons"));
 
-        assertThat(buttons).extracting(ConfiguredButton::slot).containsExactly(10, 35, 29);
-        assertThat(buttons).extracting(ConfiguredButton::action).containsExactly(ButtonAction.game("bedwars"), ButtonAction.shop("ultra-plus"), ButtonAction.NONE);
+        assertThat(buttons).extracting(ConfiguredButton::slot).containsExactly(10, 35, 29, 32);
+        assertThat(buttons).extracting(ConfiguredButton::action).containsExactly(
+            ButtonAction.game("bedwars"), ButtonAction.shop("ultra-plus"), ButtonAction.NONE, new ButtonAction(ButtonAction.Type.COMMAND, "medalha"));
         assertThat(buttons.getFirst().displayName()).isEqualTo("BED WARS");
-        assertThat(buttons.getLast().displayName()).isEqualTo("friends");
+        assertThat(buttons.get(2).displayName()).isEqualTo("friends");
     }
 
     @Test
@@ -53,5 +59,6 @@ class ConfiguredButtonTest {
         assertThatThrownBy(() -> ConfiguredButton.requireFit(List.of(first, same), 4)).hasMessageContaining("slot 10");
         assertThatThrownBy(() -> ConfiguredButton.requireFit(List.of(outside), 4)).hasMessageContaining("outside");
         assertThatThrownBy(() -> ButtonAction.game(" ")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> ButtonAction.command("/")).isInstanceOf(IllegalArgumentException.class);
     }
 }
