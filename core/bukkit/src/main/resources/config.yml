@@ -83,31 +83,41 @@ social-heads:
     instagram:
       label: "&d@muxe"
       message:
+        - ""
         - "&d&lINSTAGRAM:"
         - "&fhttps://www.instagram.com/muxe/"
+        - ""
     twitch:
       label: "&5@muxe"
       texture: "8e8e38b532051fce3b3b7212f4ed1dd4b52ed976abdd286d9132c5b3a54db123"
       message:
+        - ""
         - "&5&lTWITCH:"
         - "&fhttps://twitch.tv/muxe"
+        - ""
     tiktok:
       label: "&b@muxe"
       texture: "d49286f0bbec44102d7a992c8a5d9c5501280dc9ca1917494fc84b0f63031410"
       message:
+        - ""
         - "&b&lTIKTOK:"
         - "&fhttps://tiktok.com/@muxe"
+        - ""
     twitter:
       label: "&b@muxe"
       message:
+        - ""
         - "&b&lTWITTER:"
         - "&fhttps://twitter.com/muxe"
+        - ""
     youtube:
       label: "&c@muxe"
       texture: "ffb6ce188b84bdf96985a356bf3f485416f33d3b6dfce3a3fc144e77fe8dbb25"
       message:
+        - ""
         - "&c&lYOUTUBE:"
         - "&fhttps://www.youtube.com/@muxe"
+        - ""
 
 parkour:
   no-record: "..."

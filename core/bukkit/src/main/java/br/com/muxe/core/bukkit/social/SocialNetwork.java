@@ -1,6 +1,7 @@
 package br.com.muxe.core.bukkit.social;
 
 import br.com.muxe.core.bukkit.item.SkullTexture;
+import br.com.muxe.core.bukkit.text.MessageCatalog;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,7 +13,7 @@ public record SocialNetwork(String id, String label, Optional<String> texture, L
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(label, "label");
         Objects.requireNonNull(texture, "texture");
-        message = List.copyOf(message);
+        message = message.stream().map(line -> line.isEmpty() ? MessageCatalog.BLANK_LINE : line).toList();
     }
 
     public static SocialNetwork from(ConfigurationSection section) {

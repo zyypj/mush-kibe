@@ -23,11 +23,13 @@ A player head placed in the world that shows, one at a time, the social networks
 
 ### Clicking
 
-- A left or right click on the head, or on its label, sends the `message` of the network shown at that moment, line by line, with `&` colors. With the default config, Instagram sends:
+- A left or right click on the head, or on its label, sends the `message` of the network shown at that moment, line by line, with `&` colors. With the default config, Instagram sends a blank line, the two lines below and another blank line:
 
 ```
+
 &d&lINSTAGRAM:
 &fhttps://www.instagram.com/muxe/
+
 ```
 
 - Clicks share the anti-spam of Muxe-Core (`spam.*`) with NPCs, cash registers, the hotbar and the parkour items: three clicks within 1 second block them for 3 seconds with `&cAguarde 2,9s para usar novamente.`
@@ -70,14 +72,18 @@ social-heads:
     instagram:
       label: "&d@muxe"
       message:
+        - ""
         - "&d&lINSTAGRAM:"
         - "&fhttps://www.instagram.com/muxe/"
+        - ""
     youtube:
       label: "&c@muxe"
       texture: "ffb6ce188b84bdf96985a356bf3f485416f33d3b6dfce3a3fc144e77fe8dbb25"
       message:
+        - ""
         - "&c&lYOUTUBE:"
         - "&fhttps://www.youtube.com/@muxe"
+        - ""
 ```
 
 | Key | Default | Description |
@@ -87,7 +93,7 @@ social-heads:
 | `social-heads.networks.<id>` | `instagram`, `twitch`, `tiktok`, `twitter`, `youtube` | The networks, shown in this order. At least one is needed. |
 | `social-heads.networks.<id>.label` | `&d@muxe`, `&5@muxe`, `&b@muxe`, `&b@muxe`, `&c@muxe` | Text of the label above the head. |
 | `social-heads.networks.<id>.texture` | Twitch, TikTok and YouTube only | Head texture: the hash after `textures.minecraft.net/texture/`, the texture URL or the base64 value, as `skull-texture` on [items](../../development/core-api/README.md#items). Without it, the default player head. |
-| `social-heads.networks.<id>.message` | Name of the network and its link | Chat lines sent on click. |
+| `social-heads.networks.<id>.message` | A blank line, the name of the network, its link and another blank line | Chat lines sent on click. `""` is a blank line. |
 | `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam shared with NPCs, cash registers, the hotbar and the parkour items. |
 
 Without a `social-heads` section, heads are off on that server: the core logs `The social heads are off: config.yml has no 'social-heads' section`, shows no head and ignores clicks. `/redes` still saves placements, which the other servers of the group show. An empty `networks` or an `interval` that is not positive is an error on startup.

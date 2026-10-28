@@ -23,11 +23,13 @@ Uma cabeça de jogador colocada no mundo que mostra, uma por vez, as redes socia
 
 ### Clique
 
-- Um clique esquerdo ou direito na cabeça, ou no rótulo dela, envia a `message` da rede mostrada naquele momento, linha por linha, com cores `&`. Com a config padrão, o Instagram envia:
+- Um clique esquerdo ou direito na cabeça, ou no rótulo dela, envia a `message` da rede mostrada naquele momento, linha por linha, com cores `&`. Com a config padrão, o Instagram envia uma linha em branco, as duas linhas abaixo e outra linha em branco:
 
 ```
+
 &d&lINSTAGRAM:
 &fhttps://www.instagram.com/muxe/
+
 ```
 
 - Os cliques usam o anti-spam do Muxe-Core (`spam.*`) junto com os NPCs, as caixas registradoras, a hotbar e os itens do parkour: três cliques dentro de 1 segundo bloqueiam por 3 segundos com `&cAguarde 2,9s para usar novamente.`
@@ -70,14 +72,18 @@ social-heads:
     instagram:
       label: "&d@muxe"
       message:
+        - ""
         - "&d&lINSTAGRAM:"
         - "&fhttps://www.instagram.com/muxe/"
+        - ""
     youtube:
       label: "&c@muxe"
       texture: "ffb6ce188b84bdf96985a356bf3f485416f33d3b6dfce3a3fc144e77fe8dbb25"
       message:
+        - ""
         - "&c&lYOUTUBE:"
         - "&fhttps://www.youtube.com/@muxe"
+        - ""
 ```
 
 | Chave | Padrão | Descrição |
@@ -87,7 +93,7 @@ social-heads:
 | `social-heads.networks.<id>` | `instagram`, `twitch`, `tiktok`, `twitter`, `youtube` | As redes, mostradas nesta ordem. Precisa de pelo menos uma. |
 | `social-heads.networks.<id>.label` | `&d@muxe`, `&5@muxe`, `&b@muxe`, `&b@muxe`, `&c@muxe` | Texto do rótulo acima da cabeça. |
 | `social-heads.networks.<id>.texture` | Só Twitch, TikTok e YouTube | Textura da cabeça: o hash depois de `textures.minecraft.net/texture/`, a URL da textura ou o valor em base64, como o `skull-texture` dos [itens](../../development/core-api/README.pt-BR.md#itens). Sem ela, a cabeça de jogador padrão. |
-| `social-heads.networks.<id>.message` | Nome da rede e o link dela | Linhas de chat enviadas no clique. |
+| `social-heads.networks.<id>.message` | Uma linha em branco, o nome da rede, o link e outra linha em branco | Linhas de chat enviadas no clique. `""` é uma linha em branco. |
 | `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam compartilhado com os NPCs, as caixas registradoras, a hotbar e os itens do parkour. |
 
 Sem a seção `social-heads`, as cabeças ficam desligadas naquele servidor: o core registra `The social heads are off: config.yml has no 'social-heads' section`, não mostra nenhuma cabeça e ignora os cliques. O `/redes` continua salvando os posicionamentos, que os outros servidores do grupo mostram. Uma `networks` vazia ou um `interval` que não é positivo é um erro ao ligar.

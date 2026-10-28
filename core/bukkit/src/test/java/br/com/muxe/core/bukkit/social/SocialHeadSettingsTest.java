@@ -39,8 +39,8 @@ class SocialHeadSettingsTest {
         SocialNetwork youtube = settings.networks().getLast();
 
         assertThat(instagram.label()).isEqualTo("&d@muxe");
-        assertThat(instagram.message()).containsExactly("&d&lINSTAGRAM:", "&fhttps://www.instagram.com/muxe/");
-        assertThat(twitch.message().getFirst()).isEqualTo("&5&lTWITCH:");
+        assertThat(instagram.message()).containsExactly(" ", "&d&lINSTAGRAM:", "&fhttps://www.instagram.com/muxe/", " ");
+        assertThat(twitch.message().get(1)).isEqualTo("&5&lTWITCH:");
         assertThat(twitch.texture()).contains(SkullTexture.value("8e8e38b532051fce3b3b7212f4ed1dd4b52ed976abdd286d9132c5b3a54db123"));
         assertThat(youtube.label()).isEqualTo("&c@muxe");
         assertThat(instagram.texture()).isEmpty();
