@@ -28,3 +28,9 @@ permissions:
   muxe.tags.manage:
     description: Allows /tag dar and /tag remover, which give and take decorative tags.
     default: op
+  muxe.account.others:
+    description: Allows /account and /accountmenu on other players.
+    default: op
+  muxe.account.staff:
+    description: Shows the staff buttons of /accountmenu.
+    default: op

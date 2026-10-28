@@ -1,5 +1,10 @@
 package br.com.muxe.core.bukkit.bootstrap;
 
+import br.com.muxe.core.bukkit.account.AccountCommands;
+import br.com.muxe.core.bukkit.account.AccountLines;
+import br.com.muxe.core.bukkit.account.AccountMenu;
+import br.com.muxe.core.bukkit.account.AccountProfiles;
+import br.com.muxe.core.bukkit.account.AccountSettings;
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.permission.PermissionService;
@@ -12,6 +17,7 @@ import br.com.muxe.core.bukkit.permission.display.ChatFormatListener;
 import br.com.muxe.core.bukkit.permission.display.NameTag;
 import br.com.muxe.core.bukkit.permission.display.NameTagTeams;
 import br.com.muxe.core.common.permission.domain.ResolvedPermissions;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeSet;
 import org.bukkit.Server;
@@ -23,6 +29,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 final class RankFeatures {
 
     private static final String CHAT_FORMAT = "messages.chat-format";
+    private static final String ACCOUNT_MENU = "menus.account";
     private static final String DEFAULT_CHAT_FORMAT = "{prefix}{color}{player}&f: {message}";
 
     private final NameTagTeams teams;
@@ -53,7 +60,12 @@ final class RankFeatures {
         ).register(commands);
         Replies replies = new Replies(core.mainThread(), core.messages(), plugin.getLogger());
         TargetLookup targets = new TargetLookup(name -> Optional.ofNullable(server.getPlayerExact(name)), core.queries());
-        commands.register(new TagCommand(permissions, targets, replies, new TagList(core.messages(), chatFormat)));
+        AccountSettings accountSettings = AccountSettings.from(Objects.requireNonNull(config.getConfigurationSection(ACCOUNT_MENU), "Missing configuration section " + ACCOUNT_MENU));
+        AccountLines accountLines = new AccountLines(core.messages(), accountSettings.chatDates());
+        commands.register(
+            new TagCommand(permissions, targets, replies, new TagList(core.messages(), chatFormat)),
+            new AccountCommands(new AccountProfiles(core.queries(), permissions), accountLines, new AccountMenu(accountSettings, accountLines, core.messages()), replies)
+        );
         return new RankFeatures(teams);
     }
 

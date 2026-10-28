@@ -351,6 +351,71 @@ menus:
             - "&7Exclusivo para &d&lULTRA&6+"
             - " "
             - "&eClique para comprar."
+  account:
+    title: "Conta: {player}"
+    rows: 6
+    time-zone: America/Sao_Paulo
+    date-format: "dd/MM/yyyy HH:mm"
+    menu-date-format: "dd/MM/yyyy HH:mm:ss"
+    head:
+      slot: 4
+      item:
+        material: SKULL_ITEM
+        data: 3
+        name: "{colored-name}"
+        lore:
+          - "&7Tipo: &f{type}"
+          - "&7ID: &f({number})"
+          - "&7ID de Perfil: &f{profile-id}"
+          - "&7UUID: &f{uuid}"
+          - " "
+    rank-line: "&7Rank: {rank}"
+    head-footer:
+      - "&7Primeiro login: &f{first-login}"
+      - "&7Último login: &f{last-login}"
+      - "&7Discord: &f{discord}"
+    close:
+      slot: 49
+      item:
+        material: BED
+        name: "&cFechar"
+    staff-buttons:
+      punishments:
+        slot: 20
+        item:
+          material: IRON_SWORD
+          name: "&aPunições"
+          lore:
+            - "&7Veja as punições ativas."
+            - " "
+            - "&eClique para ver mais."
+      punishment-history:
+        slot: 21
+        item:
+          material: BOOK
+          name: "&aHistórico de punições"
+          lore:
+            - "&7Veja todas as punições já aplicadas."
+            - " "
+            - "&eClique para ver mais."
+      statistics:
+        slot: 23
+        item:
+          material: PAPER
+          name: "&aEstatísticas"
+          lore:
+            - "&7Veja as estatísticas do jogador."
+            - " "
+            - "&eClique para ver mais."
+      migrate-statistics:
+        slot: 24
+        item:
+          material: ENDER_PEARL
+          name: "&aMigrar estatísticas"
+          lore:
+            - "&7Leve as estatísticas para outra conta."
+            - " "
+            - "&eClique para ver mais."
   profile:
     title: "Meu perfil"
     rows: 6
@@ -1317,6 +1382,28 @@ messages:
   rank-remaining: "{time}"
   rank-invalid-time: "&cTempo inválido: &f{input}&c. Use &f30d&c, &f12h&c, &f1d12h &cou &fpermanente&c."
   rank-player-unknown: "&cO jogador &f{player} &cnunca entrou no servidor."
+  account:
+    usage: "&cUso: &f/account <jogador>"
+    not-found: "&cO jogador &f{player} &cnunca entrou no servidor."
+    premium: "Premium"
+    cracked: "Pirata"
+    soon: "Em breve"
+    soon-click: "&cEm breve."
+    user: "&aUsuário: &f{player}"
+    type: "&aTipo: &f{type}"
+    discord: "&aDiscord: &f{discord}"
+    rank: "&aRank: &f{rank}"
+    rank-added: "  &7Adicionado em: {date}"
+    rank-updated: "  &7Atualizado em: {date}"
+    rank-expires: "  &7Expira em: {date} ({time})"
+    first-login: "&aPrimeiro login: &f{date}"
+    last-login: "&aÚltimo login: &f{date}"
+    location: "&aLocalização:"
+    country: "  &7País: {value}"
+    region: "  &7Estado: {value}"
+    city: "  &7Cidade: {value}"
+    asn: "  &7ASN: {value}"
+    location-unknown: "  &7Desconhecida"
   admin:
     usage: "&eUso: /muxe <servers|find <jogador>|metrics>"
     servers-header: "&bServidores ativos ({count}):"
