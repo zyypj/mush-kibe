@@ -2,12 +2,14 @@
 
 # Ranks and tags
 
-Ranks (groups of permissions), tags (what is shown before a player's name) and the in-game commands to manage them. The model and storage live in `core:common` (package `br.com.muxe.core.common.permission`); every Bukkit server applies them through Muxe-Core (`core:bukkit` package `permission`), so `hasPermission`, the chat, the tab list and the name above the head follow the same ranks on the whole network.
+Ranks (groups of permissions), tags (what is shown before a player's name), medals (a symbol shown before the tag in the chat) and the in-game commands to manage them. The model and storage live in `core:common` (package `br.com.muxe.core.common.permission`); every Bukkit server applies them through Muxe-Core (`core:bukkit` package `permission`), so `hasPermission`, the chat, the tab list and the name above the head follow the same ranks on the whole network.
 
 ## User stories
 
 - As a player, I want my rank and my tag shown in the chat, in the tab list and above my head, so that everyone sees them.
 - As a player, I want to list the tags I own, preview them and pick one with a click.
+- As a player, I want to pick one of my medals, with a preview, to show it before my tag in the chat.
+- As a staff member, I want to give and take medals, temporary or for good.
 - As a staff member, I want to give and remove ranks, temporary or for good, promote and demote along a track, and see what a player has, without leaving the game.
 - As a staff member, I want to set permissions on players and ranks with tab completion, and test what a player can do.
 - As an admin, I want to open the web editor from the game.
@@ -53,8 +55,8 @@ The tag a player shows is, in order: the tag they picked with `/tag` (if they st
 
 ### Prefixes
 
-- **Chat:** `messages.chat-format`, by default `{prefix}{color}{player}&f: {message}`: `&a&lVIP &atadeu&f: Olá!`, or `&7tadeu&f: Olá!` for a member.
-- **Tab list and name above the head:** one scoreboard team per rank and tag. The team prefix is the chat prefix followed by the tag color (`§a§lVIP §a`), cut to the 16 characters 1.8 allows without breaking a color code. Teams are named by rank weight, then tag weight (`849849admin` comes before `989989vip`), so the 1.8 tab list sorts players by hierarchy.
+- **Chat:** `messages.chat-format`, by default `{medal}{prefix}{color}{player}&f: {message}`: `&a&lVIP &atadeu&f: Olá!`, or `&7tadeu&f: Olá!` for a member. With a medal chosen, its symbol and a space come first: `&e☕ &5&lENDERLORE &5tadeu&f: Olá!`.
+- **Tab list and name above the head:** one scoreboard team per rank and tag. They show only the tag, never the medal, because 1.8 allows 16 characters of prefix. The team prefix is the chat prefix followed by the tag color (`§a§lVIP §a`), cut to the 16 characters 1.8 allows without breaking a color code. Teams are named by rank weight, then tag weight (`849849admin` comes before `989989vip`), so the 1.8 tab list sorts players by hierarchy.
 - The teams are put on every scoreboard players use (the main one and each player's sidebar) within 5 ticks, and updated as soon as a tag or rank changes.
 - The lobby scoreboard line `Tag:` shows the tag display (`&aVIP`), and the profile, `/account` and `/accountmenu` cite ranks the same way (see [Account](../account/README.md)).
 
@@ -66,7 +68,7 @@ The tag a player shows is, in order: the tag they picked with `/tag` (if they st
 Suas tags: Membro, VIP, MVP, Pro, Ultra, Enderlore, Carnaval, Natal
 ```
 
-- `Suas tags: ` is `&a`, each tag is in its color and the commas are `&f`. Each tag runs `/tag <id>` when clicked and, on hover, shows a preview of the chat with that tag:
+- `Suas tags: ` is `&a`, each tag is in its color and the commas are `&f`. Each tag runs `/tag <id>` when clicked and, on hover, shows a preview of the chat with that tag (and the medal the player shows, if any):
 
 ```text
 Prévia:
@@ -77,6 +79,71 @@ Clique para selecionar!
 
 - `/tag <id>` selects a tag the player owns: `&aVocê selecionou a tag &5Enderlore &acom sucesso.` The choice is saved in PostgreSQL (`SelectTagCommand`) and the chat, tab list, name tag and scoreboard change at once on every server.
 - A tag the player does not own is refused (`tag-locked`), an unknown one too (`tag-unknown`). If a selected tag is lost later, the player shows the tag of their rank again.
+
+### Medals
+
+A medal is a symbol in a color (`&e☕`) with a name (`Café`) and a weight. A player owns a medal through the permission `muxe.medal.<id>`, given to a rank or to the player; Admin owns every medal through `*`. Nobody shows a medal until they pick one: there is no default medal.
+
+| Id | Medal | Weight | Owned by |
+|---|---|---|---|
+| `toxico` | `&a☣` Tóxico | 10 | VIP and above |
+| `yin-yang` | `&f☯` Yin Yang | 20 | VIP and above |
+| `musico` | `&5♫` Músico | 30 | Ultra and above |
+| `flash` | `&6⚡` Flash | 40 | Ultra and above |
+| `paz-e-amor` | `&c✌` Paz e Amor | 50 | Ultra and above |
+| `amor` | `&4❤` Amor | 60 | Ultra and above |
+| `cafe` | `&e☕` Café | 70 | Ultra and above |
+| `carinha` | `&6ツ` Carinha | 80 | VIP and above |
+| `halloween` | `&4✝` Halloween | 90 | given individually |
+| `natal` | `&b✽` Natal | 100 | given individually |
+| `cacador-de-bruxas` | `&2∅` Caçador de Bruxas | 110 | given individually |
+| `casa-de-gengibre` | `&6۩` Casa de Gengibre | 120 | given individually |
+| `alerta` | `&e⚠` Alerta | 130 | given individually |
+| `atomo` | `&b⚛` Átomo | 140 | given individually |
+| `anel` | `&6℧` Anel | 150 | given individually |
+| `boneco-de-neve` | `&f☃` Boneco de Neve | 160 | given individually |
+| `carnaval` | `&6✴` Carnaval | 170 | given individually |
+| `feiticeiro-aprendiz` | `&a⊰⊱` Feiticeiro Aprendiz | 180 | given individually |
+| `biscoito-de-gengibre` | `&6۞` Biscoito de Gengibre | 190 | given individually |
+| `liga-prata` | `&f✶` Liga Prata (Bed Wars Champions) | 200 | given individually |
+| `fogo` | `&c火` Fogo | 210 | given individually |
+| `agua` | `&b水` Água | 220 | given individually |
+| `ar` | `&f気` Ar | 230 | given individually |
+| `estrela` | `&e✯` Estrela | 240 | given individually |
+| `sortudo` | `&2☘` Sortudo | 250 | given individually |
+| `carta` | `&f回` Carta | 260 | given individually |
+| `modo-aviao` | `&b✈` Modo Avião | 270 | given individually |
+| `celular` | `&a✆` Celular | 280 | given individually |
+| `flor` | `&d✿` Flor | 290 | given individually |
+| `briga-de-espadas` | `&7⚔` Briga de Espadas | 300 | given individually |
+| `imperial` | `&6⚜` Imperial | 310 | given individually |
+
+- VIP, MVP and Pro own 3 medals (`carinha`, `toxico`, `yin-yang`); Ultra and every rank above own 8. Seasonal and shop medals belong to no rank: staff give them one by one with `/medalha dar`. Buying a shop pack that lists medals does not give them yet.
+
+### `/medalha`
+
+- `/medalha` (or `/medalhas`, or the `Medalhas` button of the profile menu) lists, in one chat line, `Nenhuma` and then every medal the player owns, from the lowest weight to the highest:
+
+```text
+Medalhas disponíveis: Nenhuma, ☣, ☯, ♫, ⚡, ✌, ❤, ☕, ツ
+```
+
+- `Medalhas disponíveis: ` is `&a`, `Nenhuma` is `&7`, each medal is its symbol in its color and the commas are `&f`. Clicking `Nenhuma` runs `/medalha nenhuma`; clicking a medal runs `/medalha <id>`.
+- On hover, a medal shows its name in its color and a preview of the chat with the tag the player shows now:
+
+```text
+Café
+
+Prévia:
+☕ ENDERLORE tadeu: Olá!
+
+Clique para selecionar!
+```
+
+- `Nenhuma` shows the same hover with `Nenhuma` as the first line and the preview without a medal.
+- `/medalha <id>` selects a medal the player owns: `&aVocê selecionou a medalha &e☕ &eCafé &acom sucesso.` The choice is saved in PostgreSQL (`SelectMedalCommand`) and the chat changes at once on every server. `/medalha nenhuma` removes it: `&aVocê removeu a sua medalha.`
+- A medal the player does not own is refused (`medal-locked`), an unknown one too (`medal-unknown`).
+- If the player loses the chosen medal later (a rank ends, staff take it), it simply stops showing; the choice stays saved and comes back if they get the medal again.
 
 ### Temporary ranks and tags
 
@@ -89,7 +156,7 @@ Clique para selecionar!
 - Players are found by their name, online or not, through their [account](../accounts/README.md).
 - Every change goes through `PermissionSync`: it is saved in PostgreSQL, logged in `perm_actions` with the name of whoever ran the command (`CONSOLE` from the console) and announced to the whole network with `permission.changed`.
 - Replies are sent on the main thread after the database answers; if PostgreSQL fails, the sender gets `rank-failed`.
-- Everything completes with tab: subcommands, online players, ranks, tags (only owned tags for `/tag <id>`, only decorative tags for `/tag dar`), tracks, times (`permanente`, `1h`, `12h`, `1d`, `7d`, `15d`, `30d`, `60d`, `90d`, `365d`), permissions already in use (on ranks, from `plugin.yml` files, `group.*` and `muxe.tag.*`) and options (`true`, `false`, times, `server=<group>` of live servers, `world=<world>` of this server).
+- Everything completes with tab: subcommands, online players, ranks, tags (only owned tags for `/tag <id>`, only decorative tags for `/tag dar`), medals (`nenhuma` and the owned medals for `/medalha <id>`, every medal for `/medalha dar` and `remover`), tracks, times (`permanente`, `1h`, `12h`, `1d`, `7d`, `15d`, `30d`, `60d`, `90d`, `365d`), permissions already in use (on ranks, from `plugin.yml` files, `group.*`, `muxe.tag.*` and `muxe.medal.*`) and options (`true`, `false`, times, `server=<group>` of live servers, `world=<world>` of this server).
 - `/permissao ... definir` takes up to four options after the permission, in any order: `true`/`false` (default `true`), a time and contexts (`server=bedwars world=arena`). `remover` takes the contexts of the node to remove.
 - `/permissao jogador testar` checks the permission with the contexts of the server and world where the player is when they are online here, and with no context otherwise.
 - `/editor` opens a session of the web editor (`EditorSessions`): a token valid for 30 minutes, stored hashed in Redis. Players get a clickable link to `<permissions.editor-url>/#<token>` with a hover; the console gets the plain link.
@@ -102,6 +169,11 @@ Clique para selecionar!
 | `/tag <tag>` | Selects one of your tags. | everyone |
 | `/tag dar <jogador> <tag> [tempo]` | Gives a decorative tag. | `muxe.tags.manage` |
 | `/tag remover <jogador> <tag>` | Takes a decorative tag. | `muxe.tags.manage` |
+| `/medalha` | Lists your medals, clickable, with a preview. | everyone |
+| `/medalha <medalha>` | Selects one of your medals. | everyone |
+| `/medalha nenhuma` | Removes your medal. | everyone |
+| `/medalha dar <jogador> <medalha> [tempo]` | Gives a medal (the node `muxe.medal.<id>`). | `muxe.medals.manage` |
+| `/medalha remover <jogador> <medalha>` | Takes a medal given with `/medalha dar`. | `muxe.medals.manage` |
 | `/cargo ver <jogador>` | Main rank, tag shown and every rank held with its time left. | `muxe.ranks.manage` |
 | `/cargo dar <jogador> <cargo> [tempo]` | Gives a rank, for good or for a time. | `muxe.ranks.manage` |
 | `/cargo remover <jogador> <cargo>` | Takes a rank. | `muxe.ranks.manage` |
@@ -118,7 +190,7 @@ Clique para selecionar!
 | `/permissao cargo remover <cargo> <permissão> [contexto]` | Removes a node from the rank. | `muxe.permissions.manage` |
 | `/editor` | Opens a 30-minute session of the web editor. | `muxe.permissions.editor` |
 
-Aliases: `/tags`, `/cargos` and `/rank`, `/permissoes` and `/perm`, `/editorpermissoes`; `promote` and `demote` for `promover` and `rebaixar`. `membro` cannot be given or taken: everyone has it. A rank change that would break the rules (a rank inheriting itself, an unknown parent) is refused with `perm-group-refused`.
+Aliases: `/tags`, `/medalhas`, `/cargos` and `/rank`, `/permissoes` and `/perm`, `/editorpermissoes`; `promote` and `demote` for `promover` and `rebaixar`. `membro` cannot be given or taken: everyone has it. A rank change that would break the rules (a rank inheriting itself, an unknown parent) is refused with `perm-group-refused`.
 
 Examples:
 
@@ -127,6 +199,7 @@ Examples:
 /cargo dar tadeu ultra 30d
 /cargo promover tadeu doacao
 /tag dar tadeu natal 15d
+/medalha dar tadeu natal 30d
 /permissao jogador definir tadeu muxe.lobby.fly server=lobby 7d
 /permissao cargo definir vip muxe.kit.vip false world=arena
 /permissao jogador testar tadeu muxe.build
@@ -137,10 +210,12 @@ Examples:
 | Permission | Grants | Default |
 |---|---|---|
 | `muxe.tags.manage` | `/tag dar` and `/tag remover`. | op |
+| `muxe.medals.manage` | `/medalha dar` and `/medalha remover`. | op |
 | `muxe.ranks.manage` | `/cargo`. | op |
 | `muxe.permissions.manage` | `/permissao`. | op |
 | `muxe.permissions.editor` | `/editor`. | op |
 | `muxe.tag.<id>` | Owning the tag `<id>`. Rank tags come with the rank; decorative tags are given with `/tag dar`. | |
+| `muxe.medal.<id>` | Owning the medal `<id>`. Seeded on `vip` and `ultra` (see [Medals](#medals)); other medals are given with `/medalha dar`. | |
 | `group.<id>` | Holding the rank `<id>`. | |
 | `*` | Everything. Seeded on `admin`, so Admin has every permission above. | |
 
@@ -156,7 +231,8 @@ permissions:
 | Key | Default | Description |
 |---|---|---|
 | `permissions.editor-url` | `http://151.244.40.191:1031` | Address of the web editor. The link is `<editor-url>/#<token>`. |
-| `messages.chat-format` | `{prefix}{color}{player}&f: {message}` | Chat format. `{prefix}` is the tag's chat prefix, `{color}` its color. |
+| `messages.chat-format` | `{medal}{prefix}{color}{player}&f: {message}` | Chat format. `{medal}` is the chosen medal and a space (empty without one), `{prefix}` the tag's chat prefix, `{color}` its color. A `config.yml` written before medals has no `{medal}`: add it to show medals in the chat. |
+| `menus.profile.buttons.medals.command` | `medalha` | Command run by the `Medalhas` button of the profile menu. |
 
 Ranks, tags and tracks are data, not configuration: change them with the commands, the editor or in PostgreSQL.
 
@@ -177,6 +253,15 @@ All in `messages` of `plugins/Muxe-Core/config.yml`:
 | `tag-given`, `tag-removed` | `&aTag {tag} &adada para &f{player} &7({time})&a.`, `&aTag {tag} &aremovida de &f{player}&a.` |
 | `tag-already-held`, `tag-not-held` | `&f{player} &cjá possui a tag {tag} &cpara sempre.`, `&f{player} &cnão possui a tag {tag}&c.` |
 | `tag-usage`, `tag-usage-staff` | Lists: `&cUso: &f/tag [tag]` for players, every subcommand for staff. |
+| `medal-list-header`, `medal-list-separator`, `medal-list-none` | `&aMedalhas disponíveis: `, `&f, `, `&7Nenhuma` |
+| `medal-hover` | List: `{name}`, `""`, `&fPrévia:`, `{preview}`, `""`, `&eClique para selecionar!` (`{name}` is the name in the medal color) |
+| `medal-none-hover` | List: `&7Nenhuma`, `""`, `&fPrévia:`, `{preview}`, `""`, `&eClique para selecionar!` |
+| `medal-preview-message` | `Olá!` |
+| `medal-selected`, `medal-cleared` | `&aVocê selecionou a medalha {medal} &acom sucesso.`, `&aVocê removeu a sua medalha.` (`{medal}` is the symbol and the name, `&e☕ &eCafé`) |
+| `medal-unknown`, `medal-locked` | `&cA medalha &f{medal} &cnão existe.`, `&cVocê não possui a medalha {medal}&c.` |
+| `medal-given`, `medal-removed` | `&aMedalha {medal} &adada para &f{player} &7({time})&a.`, `&aMedalha {medal} &aremovida de &f{player}&a.` |
+| `medal-already-held`, `medal-not-held` | `&f{player} &cjá possui a medalha {medal} &cpara sempre.`, `&f{player} &cnão possui a medalha {medal}&c.` |
+| `medal-usage`, `medal-usage-staff` | Lists: `&cUso: &f/medalha [medalha]` for players, every subcommand for staff. |
 | `rank-usage`, `perm-usage` | Lists with every subcommand and how to write times and options. |
 | `rank-failed` | `&cNão foi possível concluir agora. Tente novamente em instantes.` |
 | `rank-permanent`, `rank-remaining` | `Vitalício`, `{time}` |
@@ -198,7 +283,7 @@ All in `messages` of `plugins/Muxe-Core/config.yml`:
 
 | Id | Target | Policy | Purpose |
 |---|---|---|---|
-| `permission.changed` | every server | standard | A player's nodes or tag changed (the player's id), or ranks, tags or tracks changed (no id). Servers reload that player, if loaded, or everything. |
+| `permission.changed` | every server | standard | A player's nodes, tag or medal changed (the player's id), or ranks, tags, tracks or medals changed (no id). Servers reload that player, if loaded, or everything. |
 
 ## Data
 
@@ -210,9 +295,11 @@ All in `messages` of `plugins/Muxe-Core/config.yml`:
 | `core.perm_user_nodes` | Nodes of each player: `player_id` and the same columns. Indexed by `permission`. |
 | `core.perm_tracks` | `id`, `groups` (array in order). |
 | `core.player_tags` | The tag each player selected. |
+| `core.perm_medals` | `id`, `name`, `symbol`, `color`, `weight`. |
+| `core.player_medals` | The medal each player selected (`player_id`, `medal_id`, `updated_at`). |
 | `core.perm_actions` | Every change: `at`, `actor`, `description`. |
 
-Created by the core migration `V8__create_permissions.sql`, which also seeds the ranks, tags and tracks above. `V10__seed_staff_permissions.sql` gives `mod` (and, by inheritance, every rank above) `muxe.account.others` and `muxe.account.staff`. Read with `LoadPermissionDataQuery` and `FindPermissionUserQuery`; changed with `ApplyPermissionChangesCommand`, `AddUserNodeCommand`, `RemoveUserNodeCommand` and `SelectTagCommand`.
+Created by the core migration `V8__create_permissions.sql`, which also seeds the ranks, tags and tracks above. `V10__seed_staff_permissions.sql` gives `mod` (and, by inheritance, every rank above) `muxe.account.others` and `muxe.account.staff`. `V11__create_medals.sql` creates the medal tables, seeds the 31 medals and gives `vip` and `ultra` their medals. Read with `LoadPermissionDataQuery` and `FindPermissionUserQuery`; changed with `ApplyPermissionChangesCommand`, `AddUserNodeCommand`, `RemoveUserNodeCommand`, `SelectTagCommand` and `SelectMedalCommand`.
 
 ## Metrics
 
@@ -222,7 +309,7 @@ None of its own. Commands and queries count in the CQRS metrics, and `permission
 
 - [Accounts](../accounts/README.md): players are found by name, online or not.
 - [Account](../account/README.md): `/account`, `/accountmenu` and the profile head show the ranks.
-- [Hotbar](../hotbar/README.md): the profile head shows the tag and ranks.
+- [Hotbar](../hotbar/README.md): the profile head shows the tag and ranks, and the `Medalhas` button runs `/medalha`.
 - [Lobby](../lobby/README.md): the scoreboard `Tag:` line.
 - The [Core API](../../development/core-api/README.md#ranks-and-permissions) gives other plugins `MuxeCore.permissions()`.
 
@@ -236,6 +323,10 @@ None of its own. Commands and queries count in the CQRS metrics, and `permission
 - [x] Staff give and remove decorative tags and ranks, for good or for a time that adds up, promote and demote along tracks, and every change is logged with their name.
 - [x] Player and rank permissions are set, listed, tested and removed, with options in any order, and rank changes that break the rules are refused.
 - [x] `/editor` creates a 30-minute session and sends its link.
+- [x] `/medalha` lists `Nenhuma` and the owned medals from the lowest, each clickable with the preview; `/medalha <id>` selects only owned medals and `/medalha nenhuma` removes the medal.
+- [x] The chat shows the chosen medal before the tag (`&e☕ &5&lENDERLORE &5tadeu&f: Olá!`); a lost medal stops showing and the choice is kept.
+- [x] Staff give and remove medals, for good or for a time that adds up.
+- [x] The `Medalhas` button of the profile menu closes the menu and sends the medal list.
 - [x] Everything completes with tab and refuses players without permission.
 - [ ] Permissions, chat, tab list and name tags change in game on every server right after a command (checked in game).
 
@@ -248,7 +339,8 @@ None of its own. Commands and queries count in the CQRS metrics, and `permission
 
 ## Known limitations
 
-- The tag preview has no medal symbol: medals do not exist yet.
-- Name tags and tab prefixes follow the 1.8 limit of 16 characters; a longer prefix is cut.
+- Name tags and tab prefixes follow the 1.8 limit of 16 characters; a longer prefix is cut. For that reason they never show the medal, only the chat does.
+- Buying a shop pack that lists medals does not give them yet; staff give them with `/medalha dar`.
+- `/medalha remover` only takes a medal given to the player; a medal that comes from a rank stays while the rank does.
 - `/permissao jogador ver` lists the player's own nodes, not the ones inherited from ranks; use `/cargo info` for those.
 - `/tag <id>` suggests the tags of online players only, from the cache.
