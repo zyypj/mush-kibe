@@ -9,6 +9,8 @@ import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.junit.jupiter.api.Test;
 
 class LobbyWorldProtectionTest {
@@ -46,6 +48,21 @@ class LobbyWorldProtectionTest {
 
         assertThat(ice.isCancelled()).isTrue();
         assertThat(fire.isCancelled()).isFalse();
+    }
+
+    @Test
+    void mobsNeverSpawnInTheLobbyUnlessAPluginSpawnsThem() {
+        CreatureSpawnEvent natural = new CreatureSpawnEvent(null, SpawnReason.NATURAL);
+        CreatureSpawnEvent egg = new CreatureSpawnEvent(null, SpawnReason.SPAWNER_EGG);
+        CreatureSpawnEvent plugin = new CreatureSpawnEvent(null, SpawnReason.CUSTOM);
+
+        listener.onCreatureSpawn(natural);
+        listener.onCreatureSpawn(egg);
+        listener.onCreatureSpawn(plugin);
+
+        assertThat(natural.isCancelled()).isTrue();
+        assertThat(egg.isCancelled()).isTrue();
+        assertThat(plugin.isCancelled()).isFalse();
     }
 
     private static Block block(Material type) {
