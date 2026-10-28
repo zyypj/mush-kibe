@@ -41,6 +41,12 @@ metrics:
   host: 127.0.0.1
   port: 9410
 
+geoip:
+  enabled: true
+  account-id: env:MUXE_MAXMIND_ACCOUNT_ID
+  license-key: env:MUXE_MAXMIND_LICENSE_KEY
+  refresh-after: 7d
+
 messages:
   no-auth-server:
     - "&cNão foi possível te conectar ao servidor."
