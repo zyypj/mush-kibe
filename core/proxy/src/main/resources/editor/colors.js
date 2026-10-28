@@ -21,6 +21,7 @@ export const COLORS = [
 
 const HEX = Object.fromEntries(COLORS.map((color) => [color.code, color.hex]));
 const FORMATS = { l: "mc-bold", o: "mc-italic", n: "mc-underline", m: "mc-strike", k: "mc-magic" };
+const DARK = new Set([HEX["0"], HEX["1"]]);
 
 export function renderMc(text, inline) {
   const box = el("span", { class: "mc" + (inline ? " inline" : "") });
@@ -33,7 +34,7 @@ export function renderMc(text, inline) {
     }
     const span = el("span", { text: buffer });
     span.style.color = color;
-    span.className = Array.from(formats).join(" ");
+    span.className = Array.from(formats).concat(DARK.has(color) ? ["mc-dark"] : []).join(" ");
     box.appendChild(span);
     buffer = "";
   };
@@ -76,5 +77,5 @@ export function tagDisplay(tag) {
 }
 
 export function chatLine(tag, player, message) {
-  return chatPrefix(tag) + tag.color + player + ": " + message;
+  return chatPrefix(tag) + tag.color + player + "&f: " + message;
 }

@@ -524,6 +524,10 @@ td.actions {
   font-size: 13px;
 }
 
+.mc-dark {
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.85), 0 0 1px rgba(255, 255, 255, 0.9);
+}
+
 .mc-bold {
   font-weight: 800;
 }

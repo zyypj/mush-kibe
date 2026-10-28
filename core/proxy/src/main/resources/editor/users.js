@@ -122,7 +122,7 @@ function groupsCard(user) {
 }
 
 function tagsCard(user) {
-  const selected = el("select", null, el("option", { value: "", text: "Automática (tag de maior peso)" }));
+  const selected = el("select", null, el("option", { value: "", text: "Automática (tag do cargo principal)" }));
   for (const tag of tagsByWeight()) {
     selected.appendChild(el("option", { value: tag.id, text: tag.name + " (" + tag.id + ")" }));
   }
@@ -169,7 +169,7 @@ function tagsCard(user) {
   }
   return el("div", { class: "card" },
     el("h2", { text: "Tags" }),
-    field("Tag escolhida", selected, "Se o jogador não puder usar a tag escolhida, a de maior peso aparece."),
+    field("Tag escolhida", selected, "Se o jogador não puder usar a tag escolhida, aparece a tag do cargo principal."),
     el("div", { class: "spacer-8" }),
     el("div", { class: "label", text: "Tags decorativas" }),
     el("div", { class: "spacer-8" }),
