@@ -279,7 +279,7 @@ buttons:
 ```
 
 - Each button has a `slot` (an inventory slot, 0 to 53), an `item` in the [`ItemBuilder` format](#items) and, optionally, an action.
-- `ButtonAction` is `NONE`, `GAME` (`game: <server group>`) or `SHOP` (`shop: <category id>`, empty for the default category).
+- `ButtonAction` is `NONE`, `GAME` (`game: <server group>`), `SHOP` (`shop: <category id>`, empty for the default category) or `COMMAND` (`command: <command>`, with or without `/`: closes the menu and the player runs the command).
 - `ButtonActions.run` closes the menu and connects the player through the [`GameConnector`](#game-connector) for `GAME`, and opens the shop through [`ShopAccess`](#shop-access) for `SHOP`. `players(action)` gives the players of a `GAME` button's group, for `{players}`.
 - `requireFit(buttons, rows)` refuses a button outside the menu's rows and two buttons in the same slot, so a wrong configuration fails on startup.
 - The game selector and the profile of the [Hotbar](../../features/hotbar/README.md) are built this way.

@@ -61,7 +61,7 @@ Rank: Ultra (29d 23h)
 
 - The first login comes from the player's [account](../accounts/README.md) and is formatted with `first-login.format` in `first-login.time-zone`. When the account cannot be read, `first-login.unknown` (`-`) is shown.
 - Credits show `default-credits` until a wallet exists.
-- Buttons: `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin`, `Nick (/nick)` and `Menu do Ultra+`. `Nick` opens the shop on the Ultra+ category; the others do nothing yet, because their menus do not exist.
+- Buttons: `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin`, `Nick (/nick)` and `Menu do Ultra+`. `Nick` opens the shop on the Ultra+ category; `Medalhas` closes the menu and runs `/medalha`, which sends the [medal list](../ranks-and-tags/README.md#medalha) in the chat; the others do nothing yet, because their menus do not exist.
 
 ### Lobby selector
 
@@ -137,7 +137,7 @@ Slots in `menus` are inventory slots, from 0 (top left) to 53, like in the shop.
 | `menus.profile.title`, `rows` | `Meu perfil`, `6` | Profile title and height. |
 | `menus.profile.head` | Slot `13`, the player's head named `{name}` | `slot` and `item` of the head. Placeholders: `{player}` (plain name), `{name}` (name with the tag prefix and color), `{first-login}`, `{credits}`. |
 | `menus.profile.ranks.line`, `ranks.permanent` | `&7Rank: {rank} &7({time})`, `Vitalício` | Lore line added for each rank (`{rank}` is the rank tag, such as `&aVIP`; `{time}` is the time left or `ranks.permanent`). |
-| `menus.profile.buttons.<id>` | The 7 profile buttons | Same keys as the game selector buttons. |
+| `menus.profile.buttons.<id>` | The 7 profile buttons | Same keys as the game selector buttons, plus `command` (a command the player runs after the menu closes; `medalha` on `medals`). |
 | `menus.profile.first-login.format`, `time-zone`, `unknown` | `dd/MM/yyyy HH:mm`, `America/Sao_Paulo`, `-` | How the first login is written, and what is shown when it is unknown. |
 | `menus.profile.default-credits` | `0` | Credits shown until a wallet exists. |
 | `menus.lobby-selector.group` | not set (the server's group) | Group listed in the lobby selector. |
@@ -238,7 +238,7 @@ The profile reads the account with `FindAccountQuery`.
 ## Known limitations
 
 - The cosmetics item does nothing yet.
-- The profile buttons `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin` and `Menu do Ultra+` do nothing yet.
+- The profile buttons `Amigos`, `Ver estatísticas`, `Preferências`, `Sua skin` and `Menu do Ultra+` do nothing yet.
 - There is no friend system, so "Only friends" hides everyone.
 - There are no credits yet: the profile shows `default-credits`.
 - `{players}` in the game selector is read when the menu opens and does not refresh while it is open.

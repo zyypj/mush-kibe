@@ -61,7 +61,7 @@ Rank: Ultra (29d 23h)
 
 - O primeiro login vem da [conta](../accounts/README.pt-BR.md) do jogador e é formatado com `first-login.format` no fuso `first-login.time-zone`. Quando a conta não pode ser lida, aparece `first-login.unknown` (`-`).
 - Os créditos mostram `default-credits` até existir uma carteira.
-- Botões: `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin`, `Nick (/nick)` e `Menu do Ultra+`. O `Nick` abre a loja na categoria Ultra+; os outros ainda não fazem nada, porque os seus menus não existem.
+- Botões: `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin`, `Nick (/nick)` e `Menu do Ultra+`. O `Nick` abre a loja na categoria Ultra+; `Medalhas` fecha o menu e roda `/medalha`, que envia a [lista de medalhas](../ranks-and-tags/README.pt-BR.md#medalha) no chat; os outros ainda não fazem nada, porque os seus menus não existem.
 
 ### Seletor de lobby
 
@@ -137,7 +137,7 @@ Os slots em `menus` são slots do inventário, de 0 (canto superior esquerdo) a 
 | `menus.profile.title`, `rows` | `Meu perfil`, `6` | Título e altura do perfil. |
 | `menus.profile.head` | Slot `13`, a cabeça do jogador com o nome `{name}` | `slot` e `item` da cabeça. Placeholders: `{player}` (nome puro), `{name}` (nome com o prefixo e a cor da tag), `{first-login}`, `{credits}`. |
 | `menus.profile.ranks.line`, `ranks.permanent` | `&7Rank: {rank} &7({time})`, `Vitalício` | Linha da lore adicionada para cada cargo (`{rank}` é a tag do cargo, como `&aVIP`; `{time}` é o tempo que falta ou `ranks.permanent`). |
-| `menus.profile.buttons.<id>` | Os 7 botões do perfil | As mesmas chaves dos botões do seletor de jogo. |
+| `menus.profile.buttons.<id>` | Os 7 botões do perfil | As mesmas chaves dos botões do seletor de jogo, mais `command` (um comando que o jogador roda depois que o menu fecha; `medalha` em `medals`). |
 | `menus.profile.first-login.format`, `time-zone`, `unknown` | `dd/MM/yyyy HH:mm`, `America/Sao_Paulo`, `-` | Como o primeiro login é escrito e o que aparece quando ele é desconhecido. |
 | `menus.profile.default-credits` | `0` | Créditos mostrados até existir uma carteira. |
 | `menus.lobby-selector.group` | não definido (o grupo do servidor) | Grupo listado no seletor de lobby. |
@@ -238,7 +238,7 @@ O perfil lê a conta com `FindAccountQuery`.
 ## Limitações conhecidas
 
 - O item de cosméticos ainda não faz nada.
-- Os botões do perfil `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin` e `Menu do Ultra+` ainda não fazem nada.
+- Os botões do perfil `Amigos`, `Ver estatísticas`, `Preferências`, `Sua skin` e `Menu do Ultra+` ainda não fazem nada.
 - Não existe sistema de amigos, então "Apenas amigos" esconde todo mundo.
 - Ainda não existem créditos: o perfil mostra `default-credits`.
 - O `{players}` do seletor de jogo é lido quando o menu abre e não é atualizado enquanto ele está aberto.

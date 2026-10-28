@@ -279,7 +279,7 @@ buttons:
 ```
 
 - Cada botão tem um `slot` (um slot do inventário, de 0 a 53), um `item` no [formato do `ItemBuilder`](#itens) e, opcionalmente, uma ação.
-- O `ButtonAction` é `NONE`, `GAME` (`game: <grupo de servidores>`) ou `SHOP` (`shop: <id da categoria>`, vazio para a categoria padrão).
+- O `ButtonAction` é `NONE`, `GAME` (`game: <grupo de servidores>`), `SHOP` (`shop: <id da categoria>`, vazio para a categoria padrão) ou `COMMAND` (`command: <comando>`, com ou sem `/`: fecha o menu e o jogador roda o comando).
 - O `ButtonActions.run` fecha o menu e conecta o jogador pelo [`GameConnector`](#conector-de-jogos) no `GAME`, e abre a loja pelo [`ShopAccess`](#acesso-à-loja) no `SHOP`. O `players(action)` dá os jogadores do grupo de um botão `GAME`, para o `{players}`.
 - O `requireFit(buttons, rows)` recusa um botão fora das linhas do menu e dois botões no mesmo slot, então uma configuração errada falha ao ligar.
 - O seletor de jogo e o perfil da [Hotbar](../../features/hotbar/README.pt-BR.md) são montados assim.
