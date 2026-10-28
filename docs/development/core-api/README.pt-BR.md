@@ -442,6 +442,10 @@ No `core:common`, usáveis também no proxy:
 | `SpamGuard`, `CooldownFormat` | Anti-spam de cliques: um número de usos dentro de uma janela inicia um cooldown (`3` usos em `1s` iniciam `3s`), e o tempo restante aparece como `2,9`. |
 | `PendingPrompts` | Jogadores esperando para responder algo no chat, cada um com um prazo (usado pelo `ChatPrompts`). |
 
+## Comandos
+
+Os comandos são classes anotadas registradas com `Commands`; veja [Comandos](../commands/README.pt-BR.md).
+
 ## Adicionando um utilitário
 
 1. Coloque-o no módulo certo: `core:bukkit` se ele precisa da API do Bukkit, `core:common` caso contrário.

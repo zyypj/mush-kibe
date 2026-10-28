@@ -48,7 +48,7 @@ A player head placed in the world that shows, one at a time, the social networks
 | `/redes remover <id>` | Removes a head. | `muxe.social` |
 | `/redes listar` | Lists the heads of this server group. | `muxe.social` |
 
-Without arguments, or with a wrong one, the command shows its usage (`messages.social-usage`).
+Without arguments, or with missing or extra words, the command shows its usage (`messages.social-usage`). Subcommands and existing ids complete with tab.
 
 ## Permissions
 

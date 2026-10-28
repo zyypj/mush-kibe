@@ -65,7 +65,7 @@ Nada é cobrado nem entregue ainda: nenhum pedido é criado, então **Meus pedid
 | `/loja promocao linha <número> <texto>` | Troca uma linha. | `muxe.shop.manage` |
 | `/loja promocao removerlinha <número>` | Remove uma linha. | `muxe.shop.manage` |
 
-Os ids usam letras minúsculas, números, `-` e `_`, com até 32 caracteres. Os números de linha começam em 1, no topo.
+Os ids usam letras minúsculas, números, `-` e `_`, com até 32 caracteres. Os números de linha começam em 1, no topo. Os subcomandos, os ids das caixas e os produtos que uma caixa pode abrir completam com tab; um número de linha que não é número responde `command-invalid-number`.
 
 ## Permissões
 

@@ -73,6 +73,8 @@ Players are always in Adventure mode: any change to another game mode is cancell
 | `/setspawn` | Saves the current position as the lobby spawn. | `muxe.lobby.setspawn` |
 | `/build <on\|off>` | Turns build mode on or off on any server; without an argument it toggles. Provided by Muxe-Core. | `muxe.build` |
 
+`/jogar` completes the configured games with tab.
+
 ## Permissions
 
 | Permission | Grants | Default |

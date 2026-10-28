@@ -73,6 +73,8 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 | `/setspawn` | Salva a posição atual como spawn do lobby. | `muxe.lobby.setspawn` |
 | `/build <on\|off>` | Liga ou desliga o modo construção em qualquer servidor; sem argumento, alterna. Vem do Muxe-Core. | `muxe.build` |
 
+O `/jogar` completa os jogos configurados com tab.
+
 ## Permissões
 
 | Permissão | Libera | Padrão |

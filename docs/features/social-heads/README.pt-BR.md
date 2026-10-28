@@ -48,7 +48,7 @@ Uma cabeça de jogador colocada no mundo que mostra, uma por vez, as redes socia
 | `/redes remover <id>` | Remove uma cabeça. | `muxe.social` |
 | `/redes listar` | Lista as cabeças deste grupo de servidores. | `muxe.social` |
 
-Sem argumentos, ou com um argumento errado, o comando mostra o seu uso (`messages.social-usage`).
+Sem argumentos, ou com palavras faltando ou sobrando, o comando mostra o seu uso (`messages.social-usage`). Os subcomandos e os ids existentes completam com tab.
 
 ## Permissões
 

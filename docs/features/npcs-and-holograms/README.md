@@ -105,7 +105,7 @@ Broken entries are skipped with a warning. Entries with an id that already exist
 | `/holograma remover <id>` | Removes a hologram. | `muxe.hologram` |
 | `/holograma listar` | Lists the holograms of this server group. | `muxe.hologram` |
 
-Without arguments, or with a wrong one, each command shows its usage.
+Without arguments, or with missing or extra words, each command shows its usage. An unknown id answers `npc-unknown` or `hologram-unknown`, and a line number that is not a number answers `command-invalid-number`. Subcommands, existing ids and the `loja` and `nenhuma` actions complete with tab.
 
 ## Permissions
 

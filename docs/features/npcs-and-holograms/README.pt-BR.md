@@ -105,7 +105,7 @@ Entradas quebradas são puladas com um aviso. Entradas com um id que já existe 
 | `/holograma remover <id>` | Remove um holograma. | `muxe.hologram` |
 | `/holograma listar` | Lista os hologramas deste grupo de servidores. | `muxe.hologram` |
 
-Sem argumentos, ou com um argumento errado, cada comando mostra o seu uso.
+Sem argumentos, ou com palavras faltando ou sobrando, cada comando mostra o seu uso. Um id desconhecido responde `npc-unknown` ou `hologram-unknown`, e um número de linha que não é número responde `command-invalid-number`. Os subcomandos, os ids existentes e as ações `loja` e `nenhuma` completam com tab.
 
 ## Permissões
 

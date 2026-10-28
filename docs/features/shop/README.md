@@ -65,7 +65,7 @@ Nothing is charged or delivered yet: no order is created, so **Meus pedidos** al
 | `/loja promocao linha <número> <texto>` | Replaces a line. | `muxe.shop.manage` |
 | `/loja promocao removerlinha <número>` | Removes a line. | `muxe.shop.manage` |
 
-Ids use lowercase letters, digits, `-` and `_`, up to 32 characters. Line numbers start at 1 at the top.
+Ids use lowercase letters, digits, `-` and `_`, up to 32 characters. Line numbers start at 1 at the top. Subcommands, register ids and the products a register can open complete with tab; a line number that is not a number answers `command-invalid-number`.
 
 ## Permissions
 

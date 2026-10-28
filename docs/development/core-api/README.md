@@ -442,6 +442,10 @@ In `core:common`, usable on the proxy too:
 | `SpamGuard`, `CooldownFormat` | Anti-spam for clicks: a number of uses inside a window starts a cooldown (`3` uses in `1s` start `3s`), and the remaining time is shown as `2,9`. |
 | `PendingPrompts` | Players waiting to answer something in the chat, each with a deadline (used by `ChatPrompts`). |
 
+## Commands
+
+Commands are annotated classes registered with `Commands`; see [Commands](../commands/README.md).
+
 ## Adding a helper
 
 1. Put it in the module that fits: `core:bukkit` if it needs the Bukkit API, `core:common` otherwise.

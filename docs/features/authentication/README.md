@@ -89,6 +89,8 @@ Positions are saved in `plugins/Muxe-Auth/config.yml` under `locations`, and app
 | `/authsetup info` | Shows both positions. | `muxe.auth.setup` |
 | `/authsetup limpar <spawn\|codigo>` | Removes a position and goes back to the default. | `muxe.auth.setup` |
 
+With missing or extra words, `/logar` and `/registrar` answer `usage-login` and `usage-register`. Passwords are never completed with tab.
+
 ## Permissions
 
 | Permission | Grants | Default |
@@ -125,7 +127,7 @@ Proxy `config.yml`:
 | `security.attempt-window` | `5m` | Window for counting wrong passwords. |
 | `password.min-length` | `6` | Minimum password length. |
 | `password.max-length` | `64` | Maximum password length. |
-| `messages.*` | Portuguese texts | Every text shown to the player, including the title (`title`, `subtitle-login`, `subtitle-register`) and the action bar (`challenge-action-bar`). |
+| `messages.*` | Portuguese texts | Every text shown to the player, including the title (`title`, `subtitle-login`, `subtitle-register`) and the action bar (`challenge-action-bar`), and the [command messages](../../development/commands/README.md#messages). |
 
 Required:
 

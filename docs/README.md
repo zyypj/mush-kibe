@@ -9,6 +9,7 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 - [Development](development/README.md): requirements, modules, dependency rules, build commands and how to run a local network.
 - [Conventions](development/conventions/README.md): Java style, package organization, naming, configuration and messages.
 - [Core API](development/core-api/README.md): what Muxe-Core offers to plugins, including titles, action bars and particle text.
+- [Commands](development/commands/README.md): the annotation command framework, its arguments, tab completion and registration.
 - [Process](process/README.md): how work is planned and delivered, and what "ready" and "done" mean.
 - [Legal and clean-room policy](legal/README.md): what may and may not enter this repository.
 

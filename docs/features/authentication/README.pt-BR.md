@@ -89,6 +89,8 @@ As posições são salvas em `plugins/Muxe-Auth/config.yml`, em `locations`, e v
 | `/authsetup info` | Mostra as duas posições. | `muxe.auth.setup` |
 | `/authsetup limpar <spawn\|codigo>` | Remove uma posição e volta ao padrão. | `muxe.auth.setup` |
 
+Com palavras faltando ou sobrando, `/logar` e `/registrar` respondem `usage-login` e `usage-register`. As senhas nunca são completadas com tab.
+
 ## Permissões
 
 | Permissão | Libera | Padrão |
@@ -125,7 +127,7 @@ As posições são salvas em `plugins/Muxe-Auth/config.yml`, em `locations`, e v
 | `security.attempt-window` | `5m` | Janela de contagem das senhas erradas. |
 | `password.min-length` | `6` | Tamanho mínimo da senha. |
 | `password.max-length` | `64` | Tamanho máximo da senha. |
-| `messages.*` | Textos em português | Todo texto mostrado ao jogador, incluindo o título (`title`, `subtitle-login`, `subtitle-register`) e a action bar (`challenge-action-bar`). |
+| `messages.*` | Textos em português | Todo texto mostrado ao jogador, incluindo o título (`title`, `subtitle-login`, `subtitle-register`) e a action bar (`challenge-action-bar`), e as [mensagens de comandos](../../development/commands/README.pt-BR.md#mensagens). |
 
 Obrigatório:
 
