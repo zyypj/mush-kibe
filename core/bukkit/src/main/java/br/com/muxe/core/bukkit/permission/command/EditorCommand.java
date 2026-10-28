@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 public final class EditorCommand {
 
     public static final String NAME = "editor";
-    public static final UUID CONSOLE = new UUID(0L, 0L);
+    public static final UUID CONSOLE = EditorSessions.CONSOLE;
 
     private final EditorSessions sessions;
     private final Executor async;

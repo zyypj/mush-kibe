@@ -17,6 +17,7 @@ public final class EditorSessions {
 
     public static final Duration DEFAULT_DURATION = Duration.ofMinutes(30);
     public static final String PERMISSION = "muxe.permissions.editor";
+    public static final UUID CONSOLE = new UUID(0L, 0L);
 
     private static final String KEY_PREFIX = "permissions:editor:";
     private static final String SEPARATOR = "|";

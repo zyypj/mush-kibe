@@ -18,7 +18,7 @@ Um site servido pelo proxy onde a equipe edita cargos (grupos), sua hierarquia e
 1. Um administrador usa `/editor` em um servidor de jogo (lado Bukkit). O comando abre uma sessão do editor (`EditorSessions.open`) e envia o link `<editor.public-url>/#<token>`.
 2. O token vai no **fragmento** da URL, então o navegador nunca o envia ao servidor na linha da requisição, em logs ou no `Referer`. A página o lê, guarda só na memória e no `sessionStorage` daquela aba e o tira da barra de endereço.
 3. Toda chamada da API envia `Authorization: Bearer <token>`. A sessão dura 30 minutos (`EditorSessions.DEFAULT_DURATION`); a barra do topo faz a contagem regressiva e a página se fecha quando ela acaba.
-4. Em toda chamada o proxy também carrega as permissões do dono da sessão e confere se elas ainda resolvem `muxe.permissions.editor`. Quem perdeu a permissão é recusado e a sessão é encerrada.
+4. Em toda chamada o proxy também carrega as permissões do dono da sessão e confere se elas ainda resolvem `muxe.permissions.editor`. Quem perdeu a permissão é recusado e a sessão é encerrada. Um link aberto pelo console de um servidor (dono `00000000-0000-0000-0000-000000000000`, `EditorSessions.CONSOLE`) é sempre aceito, porque só o console consegue criá-lo.
 
 ### O que pode ser editado
 

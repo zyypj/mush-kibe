@@ -18,7 +18,7 @@ A website served by the proxy where staff edit ranks (groups), their hierarchy a
 1. An administrator runs `/editor` on a game server (Bukkit side). The command opens an editor session (`EditorSessions.open`) and sends the link `<editor.public-url>/#<token>`.
 2. The token travels in the URL **fragment**, so the browser never sends it to the server in the request line, logs or `Referer`. The page reads it, keeps it only in memory and `sessionStorage` of that tab, and removes it from the address bar.
 3. Every API call sends `Authorization: Bearer <token>`. The session lasts 30 minutes (`EditorSessions.DEFAULT_DURATION`); the top bar counts down and the page closes itself when it ends.
-4. On every call the proxy also loads the session owner's permissions and checks that they still resolve `muxe.permissions.editor`. A player who lost it is refused and the session is closed.
+4. On every call the proxy also loads the session owner's permissions and checks that they still resolve `muxe.permissions.editor`. A player who lost it is refused and the session is closed. A link opened from a server console (owner id `00000000-0000-0000-0000-000000000000`, `EditorSessions.CONSOLE`) is always allowed, since only the console can create it.
 
 ### What can be edited
 

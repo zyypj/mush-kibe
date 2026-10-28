@@ -9,8 +9,8 @@ import br.com.muxe.core.common.permission.domain.PermissionUser;
 import br.com.muxe.core.common.permission.editor.EditorSession;
 import br.com.muxe.core.common.permission.editor.EditorSessions;
 import java.time.Clock;
-import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public final class EditorAuthenticator {
@@ -50,13 +50,16 @@ public final class EditorAuthenticator {
         if (loaded.groups().isEmpty()) {
             return new Authentication.Denied(503, NOT_READY, "The groups are still loading, try again in a few seconds");
         }
-        Instant now = clock.instant();
-        PermissionUser actor = queries.ask(new FindPermissionUserQuery(session.get().actorId())).join();
-        boolean allowed = PermissionResolver.resolve(loaded, actor, Contexts.NONE, now).has(EditorSessions.PERMISSION);
+        boolean allowed = session.get().actorId().equals(EditorSessions.CONSOLE) || canEdit(loaded, session.get().actorId());
         if (!allowed) {
             sessions.close(token.get());
             return new Authentication.Denied(403, FORBIDDEN, "The session owner lost the editor permission");
         }
         return new Authentication.Granted(token.get(), session.get(), session.get().createdAt().plus(sessions.duration()));
+    }
+
+    private boolean canEdit(PermissionData loaded, UUID actorId) {
+        PermissionUser actor = queries.ask(new FindPermissionUserQuery(actorId)).join();
+        return PermissionResolver.resolve(loaded, actor, Contexts.NONE, clock.instant()).has(EditorSessions.PERMISSION);
     }
 }

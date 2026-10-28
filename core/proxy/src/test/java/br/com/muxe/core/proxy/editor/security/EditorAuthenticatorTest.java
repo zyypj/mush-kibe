@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import br.com.muxe.core.common.permission.domain.PermissionData;
 import br.com.muxe.core.common.permission.domain.PermissionNode;
 import br.com.muxe.core.common.permission.domain.PermissionUser;
+import br.com.muxe.core.common.permission.editor.EditorSessions;
 import br.com.muxe.core.proxy.editor.EditorFixture;
 import java.time.Duration;
 import java.util.List;
@@ -60,6 +61,14 @@ class EditorAuthenticatorTest {
         assertThat(denied.status()).isEqualTo(403);
         assertThat(denied.code()).isEqualTo(EditorAuthenticator.FORBIDDEN);
         assertThat(fixture.sessions.find(token)).isEmpty();
+    }
+
+    @Test
+    void aLinkOpenedFromTheConsoleIsGranted() {
+        String token = fixture.sessions.open(EditorSessions.CONSOLE, "Console");
+
+        assertThat(authenticator.authenticate(Optional.of("Bearer " + token))).isInstanceOfSatisfying(Authentication.Granted.class,
+            granted -> assertThat(granted.session().actorName()).isEqualTo("Console"));
     }
 
     @Test
