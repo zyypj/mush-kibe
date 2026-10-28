@@ -27,7 +27,7 @@ public record HeldRank(Group group, Optional<Tag> tag, PermissionNode node) {
             .forEach(node -> data.group(node.groupId()).ifPresent(group ->
                 held.putIfAbsent(group.id(), new HeldRank(group, group.tag().flatMap(data::tag), node))));
         return held.values().stream()
-            .sorted(Comparator.comparingInt((HeldRank rank) -> rank.group().weight()).reversed().thenComparing(rank -> rank.group().id()))
+            .sorted(Comparator.comparingInt((HeldRank rank) -> rank.group().weight()).thenComparing(rank -> rank.group().id()))
             .toList();
     }
 

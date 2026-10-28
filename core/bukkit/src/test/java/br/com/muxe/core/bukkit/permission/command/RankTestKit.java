@@ -34,26 +34,26 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-final class RankTestKit implements PlayerRanks, AutoCloseable {
+public final class RankTestKit implements PlayerRanks, AutoCloseable {
 
-    static final Instant NOW = Instant.parse("2026-10-28T15:00:00Z");
-    static final MessageCatalog MESSAGES = MessageCatalog.from(ShopFixtures.CONFIG.getConfigurationSection("messages"));
-    static final String CHAT = ShopFixtures.CONFIG.getString("messages.chat-format");
+    public static final Instant NOW = Instant.parse("2026-10-28T15:00:00Z");
+    public static final MessageCatalog MESSAGES = MessageCatalog.from(ShopFixtures.CONFIG.getConfigurationSection("messages"));
+    public static final String CHAT = ShopFixtures.CONFIG.getString("messages.chat-format");
 
-    final TestNetwork network = new TestNetwork();
-    final InMemoryPermissionRepository database = InMemoryPermissionRepository.seeded();
-    final InMemoryAccountRepository accounts = new InMemoryAccountRepository();
-    final InMemoryAccountDetailsRepository details = new InMemoryAccountDetailsRepository();
-    final MutableClock clock = new MutableClock(NOW);
-    final SimpleCommandBus commands = new SimpleCommandBus(Runnable::run, List.of());
-    final SimpleQueryBus queries = new SimpleQueryBus(Runnable::run, List.of());
-    final PermissionSync sync;
-    final PermissionCache cache;
-    final Replies replies = new Replies(Runnable::run, MESSAGES, Logger.getLogger("test"));
-    final TargetLookup targets = new TargetLookup(name -> Optional.empty(), queries);
-    final TestCommands framework = new TestCommands(ArgumentTypes.basic(), MESSAGES);
+    public final TestNetwork network = new TestNetwork();
+    public final InMemoryPermissionRepository database = InMemoryPermissionRepository.seeded();
+    public final InMemoryAccountRepository accounts = new InMemoryAccountRepository();
+    public final InMemoryAccountDetailsRepository details = new InMemoryAccountDetailsRepository();
+    public final MutableClock clock = new MutableClock(NOW);
+    public final SimpleCommandBus commands = new SimpleCommandBus(Runnable::run, List.of());
+    public final SimpleQueryBus queries = new SimpleQueryBus(Runnable::run, List.of());
+    public final PermissionSync sync;
+    public final PermissionCache cache;
+    public final Replies replies = new Replies(Runnable::run, MESSAGES, Logger.getLogger("test"));
+    public final TargetLookup targets = new TargetLookup(name -> Optional.empty(), queries);
+    public final TestCommands framework = new TestCommands(ArgumentTypes.basic(), MESSAGES);
 
-    RankTestKit() {
+    public RankTestKit() {
         PermissionModule.register(commands, queries, database, new DirectTransactions(), clock);
         AccountModule.register(commands, queries, accounts, new DirectTransactions(), clock);
         AccountDetailsModule.register(commands, queries, details, new DirectTransactions(), clock);
@@ -67,25 +67,25 @@ final class RankTestKit implements PlayerRanks, AutoCloseable {
             .register(framework.commands());
     }
 
-    static UUID uuid(String name) {
+    public static UUID uuid(String name) {
         return UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8));
     }
 
-    Account account(String name) {
+    public Account account(String name) {
         Account account = Account.firstLogin(uuid(name), name, true, NOW.minusSeconds(86_400));
         accounts.save(account);
         details.add(account);
         return account;
     }
 
-    void online(String name, PermissionNode... nodes) {
+    public void online(String name, PermissionNode... nodes) {
         account(name);
         PermissionUser user = new PermissionUser(uuid(name), List.of(nodes), Optional.empty());
         database.saveUser(user);
         sync.load(uuid(name)).join();
     }
 
-    PermissionUser stored(String name) {
+    public PermissionUser stored(String name) {
         return database.user(uuid(name));
     }
 

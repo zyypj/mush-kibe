@@ -55,7 +55,7 @@ class RankHelpersTest {
     }
 
     @Test
-    void heldRanksListTheActiveGroupsGivenToThePlayerHighestFirst() {
+    void heldRanksListTheActiveGroupsGivenToThePlayerLowestFirst() {
         PermissionUser user = user(
             PermissionNode.group("vip", Optional.empty(), NOW),
             PermissionNode.group("ultra", Optional.of(NOW.plus(Duration.ofDays(3))), NOW),
@@ -66,10 +66,10 @@ class RankHelpersTest {
 
         List<HeldRank> ranks = HeldRank.of(DATA, user, NOW);
 
-        assertThat(ranks).extracting(HeldRank::display).containsExactly("&dUltra", "&aVIP");
-        assertThat(ranks.getFirst().isPermanent()).isFalse();
-        assertThat(ranks.getFirst().remaining(NOW)).contains(Duration.ofDays(3));
-        assertThat(ranks.getLast().isPermanent()).isTrue();
+        assertThat(ranks).extracting(HeldRank::display).containsExactly("&aVIP", "&dUltra");
+        assertThat(ranks.getLast().isPermanent()).isFalse();
+        assertThat(ranks.getLast().remaining(NOW)).contains(Duration.ofDays(3));
+        assertThat(ranks.getFirst().isPermanent()).isTrue();
         assertThat(HeldRank.defaultRank(DATA, NOW)).hasValueSatisfying(rank -> assertThat(rank.display()).isEqualTo("&7Membro"));
     }
 

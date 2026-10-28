@@ -38,7 +38,7 @@ final class HotbarFeatures {
         }
         ButtonActions buttons = new ButtonActions(placed.games(), placed.shopAccess());
         GameSelectorMenu games = new GameSelectorMenu(GameSelectorSettings.from(section(config, "menus.game-selector")), buttons);
-        ProfileMenu profile = new ProfileMenu(ProfileSettings.from(section(config, "menus.profile")), buttons, core.queries(), core.mainThread(), plugin.getLogger());
+        ProfileMenu profile = new ProfileMenu(ProfileSettings.from(section(config, "menus.profile")), buttons, core.queries(), core.permissions(), core.mainThread(), plugin.getLogger());
         LobbySelectorMenu lobbies = new LobbySelectorMenu(core, LobbySelectorSettings.from(section(config, "menus.lobby-selector"), core.identity().group()), core.messages());
 
         Hotbar hotbar = new Hotbar(settings);

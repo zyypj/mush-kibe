@@ -1,6 +1,8 @@
 package br.com.muxe.core.bukkit.profile;
 
 import br.com.muxe.core.bukkit.menu.button.ConfiguredButton;
+import br.com.muxe.core.common.permission.domain.HeldRank;
+import br.com.muxe.core.common.permission.domain.RemainingTime;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +19,9 @@ public record ProfileSettings(
     List<ConfiguredButton> buttons,
     DateTimeFormatter dateFormat,
     String unknownFirstLogin,
-    long credits
+    long credits,
+    String rankLine,
+    String permanentRank
 ) {
 
     public ProfileSettings {
@@ -25,6 +29,8 @@ public record ProfileSettings(
         Objects.requireNonNull(head, "head");
         Objects.requireNonNull(dateFormat, "dateFormat");
         Objects.requireNonNull(unknownFirstLogin, "unknownFirstLogin");
+        Objects.requireNonNull(rankLine, "rankLine");
+        Objects.requireNonNull(permanentRank, "permanentRank");
         buttons = List.copyOf(buttons);
         List<ConfiguredButton> all = new ArrayList<>(buttons);
         all.add(head);
@@ -41,11 +47,21 @@ public record ProfileSettings(
             ConfiguredButton.list(section.getConfigurationSection("buttons")),
             DateTimeFormatter.ofPattern(pattern).withZone(zone),
             section.getString("first-login.unknown", "-"),
-            section.getLong("default-credits", 0)
+            section.getLong("default-credits", 0),
+            section.getString("ranks.line", "&7Rank: {rank} &7({time})"),
+            section.getString("ranks.permanent", "Vitalício")
         );
     }
 
     public String firstLogin(Optional<Instant> firstSeenAt) {
         return firstSeenAt.map(dateFormat::format).orElse(unknownFirstLogin);
+    }
+
+    public List<String> rankLines(List<HeldRank> ranks, Instant now) {
+        return ranks.stream()
+            .map(rank -> rankLine
+                .replace("{rank}", rank.display())
+                .replace("{time}", rank.remaining(now).map(RemainingTime::format).orElse(permanentRank)))
+            .toList();
     }
 }

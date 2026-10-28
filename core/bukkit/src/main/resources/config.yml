@@ -359,12 +359,15 @@ menus:
       format: "dd/MM/yyyy HH:mm"
       time-zone: America/Sao_Paulo
       unknown: "-"
+    ranks:
+      line: "&7Rank: {rank} &7({time})"
+      permanent: "Vitalício"
     head:
       slot: 13
       item:
         material: SKULL_ITEM
         data: 3
-        name: "&7{player}"
+        name: "{name}"
         lore:
           - " "
           - "&7Primeiro login: {first-login}"
