@@ -52,6 +52,35 @@ Os itens da hotbar (seletor de jogo, perfil, cosméticos, corante de visibilidad
 
 NPCs, hologramas e a loja com as caixas registradoras vêm do Muxe-Core e funcionam em todos os servidores, não só aqui. O que a equipe coloca num lobby aparece em todos os lobbys do grupo `lobby`. Veja [NPCs e hologramas](../npcs-and-holograms/README.pt-BR.md) e [Loja](../shop/README.pt-BR.md).
 
+### NPCs de jogo
+
+Doze NPCs de jogo ficam em fila na frente do spawn, do x 12.5 ao -9.5 no y 33.375, cada um virado para o spawn e segurando um item do seu jogo. Acima de cada um, o nome em `&b&l` e `&e{players} jogando`, os jogadores online nos servidores vivos do seu grupo (0 quando nenhum está vivo). Clicar num deles manda o jogador para o servidor com menos jogadores do grupo, como o seletor de jogo, ou responde `&cNenhuma sala de &f{name} &cdisponível no momento.`
+
+| NPC | Id | Grupo | Na mão | Linhas |
+|---|---|---|---|---|
+| HG | `hg` | `hg` | Sopa de cogumelo | nome, contagem |
+| MURDER | `murder` | `murder` | Redstone | nome, contagem |
+| PVP | `pvp` | `pvp` | Peitoral de ferro | nome, contagem |
+| BUILD | `build` | `buildbattle` | Tábuas de carvalho | nome, contagem |
+| TREINO: PONTE | `treinoponte` | `treinoponte` | Frasco de experiência | nome, `&eClique aqui!` |
+| DUELS | `duels` | `duels` | Espada de diamante | `&d&lNOVIDADE!`, nome, contagem |
+| BED WARS | `bedwars` | `bedwars` | Cama | nome, contagem |
+| SKY WARS | `skywars` | `skywars` | Olho do fim | nome, contagem |
+| THE BRIDGE | `thebridge` | `thebridge` | Argila tingida branca | nome, contagem |
+| PARTY | `party` | `party` | Bolo | nome, contagem |
+| HIDE AND SEEK | `hideandseek` | `hideandseek` | Bloco de melancia | nome, contagem |
+| CTF | `ctf` | `ctf` | Lã vermelha | nome, contagem |
+
+- São NPCs de jogo comuns do grupo `lobby`, então o `lobby-1`, o `lobby-2` e todo lobby que vier depois os mostram.
+- Eles ficam no `servers/lobby/placements/import.yml`, no [formato de importação](../npcs-and-holograms/README.pt-BR.md#importando-o-que-já-existia). O grupo de cada NPC é a chave `group`; troque ali antes de importar, ou depois com `/npc acao <id> <grupo>`.
+- Skins: todo NPC tem `skin-name: ""` e mostra a skin padrão. As skins dos NPCs de referência foram feitas por outras pessoas e não têm licença para o Muxe, então não estão no repositório (veja [Jurídico](../../legal/README.pt-BR.md)). Para dar uma skin a um NPC, coloque em `skin-name` um nome original cuja skin o Muxe possa usar e importe de novo, ou use `/npc skin <id> <nome>`.
+
+#### Colocando os NPCs
+
+1. Copie o `servers/lobby/placements/import.yml` para `plugins/Muxe-Core/import.yml` em um lobby (qualquer um: os NPCs pertencem ao grupo).
+2. Use `/npc importar` nesse lobby, ou reinicie-o. Ele responde `&a12 itens de &fimport.yml &aimportados no grupo &flobby&a.`
+3. Confira com `/npc listar`. Importar de novo substitui os doze NPCs pelo que está no arquivo.
+
 ### Proteção
 
 Os jogadores não levam dano, não perdem fome, não quebram, não colocam, não largam nem pegam itens, nem movem itens no inventário, então a hotbar fica no lugar. A chuva é cancelada. O fogo nunca queima blocos, nunca se espalha e nunca começa sozinho (lava, raio, espalhamento); só a staff no modo construção consegue acender fogo com a mão, e esse fogo também não queima nada (`FireRules`). O mapa é estático: a física dos blocos fica desligada, então blocos fora do lugar (cana na terra, flor sem chão, tocha sem parede) nunca quebram nem caem; folhas nunca somem, gelo e neve nunca derretem, e água e lava nunca escorrem. Ao ligar, o lobby coloca `randomTickSpeed` em `0` e `doFireTick` em `false` em todos os mundos (`StaticWorld`): no 1.8, cana, flores, plantações e mudas conferem o chão nos ticks aleatórios e quebram sem nenhum evento, e as mudas virariam árvores. Um fogo aceso pela staff ainda pode apagar. Nenhum mob nasce no lobby (spawn natural, spawners, ovos e reprodução são cancelados); só entidades criadas por um plugin (`SpawnReason.CUSTOM`) são aceitas, e os NPCs e hologramas são pacotes, não entidades.
@@ -142,8 +171,10 @@ As métricas de servidor Spigot do Muxe-Core. As métricas de visibilidade foram
 - [x] Quem tem a permissão de voar chega 5 blocos acima do spawn, voando; os outros chegam nele.
 - [x] O `/fly` liga e desliga o voo com as mensagens de referência, faz quem está voando descer e precisa de `muxe.lobby.fly`.
 - [x] A saudação de entrada só fica ativa em servidores `LOBBY`, com o título e o subtítulo de referência.
+- [x] O arquivo dos NPCs de jogo tem os doze NPCs nos lugares e direções exportados, com o grupo, o item na mão e as linhas.
 - [x] A boss bar alterna `&e&lMUXE` e `&6&lMUXE` a cada 10 ticks, e a scoreboard preenche as linhas de referência.
 - [ ] Boss bar, scoreboard e o voo depois do modo construção funcionam no jogo (conferido no jogo).
+- [ ] Os doze NPCs de jogo aparecem nos dois lobbys com as linhas nas alturas de referência, a contagem acompanha os servidores de jogo e o clique manda o jogador (conferido no jogo).
 
 ## Falhas e recuperação
 
@@ -154,4 +185,6 @@ As métricas de servidor Spigot do Muxe-Core. As métricas de visibilidade foram
 ## Limitações conhecidas
 
 - Créditos ainda não existem; a scoreboard mostra `scoreboard.default-credits`.
+- Os NPCs de jogo mostram a skin padrão até a equipe escolher skins que o Muxe possa usar.
+- Ainda não existe grupo de servidores de jogo além de `skywars` e `bedwars`, então os outros NPCs de jogo mostram `0 jogando` e respondem que não há sala disponível.
 - As limitações da hotbar e dos seus menus estão em [Hotbar](../hotbar/README.pt-BR.md#limitações-conhecidas).

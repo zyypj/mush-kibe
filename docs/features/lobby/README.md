@@ -52,6 +52,35 @@ The hotbar items (game selector, profile, cosmetics, visibility dye and lobby se
 
 NPCs, holograms and the shop with its cash registers come from Muxe-Core and work on every server, not only here. Whatever staff place in one lobby shows up in every lobby of the `lobby` group. See [NPCs and holograms](../npcs-and-holograms/README.md) and [Shop](../shop/README.md).
 
+### Game NPCs
+
+Twelve game NPCs stand in a row in front of the spawn, from x 12.5 to -9.5 at y 33.375, each turned towards the spawn and holding an item of its game. Above each one, its name in `&b&l` and `&e{players} jogando`, the players online on the live servers of its group (0 when none is alive). Clicking one sends the player to the least loaded server of its group, like the game selector, or answers `&cNenhuma sala de &f{name} &cdisponível no momento.`
+
+| NPC | Id | Group | In hand | Lines |
+|---|---|---|---|---|
+| HG | `hg` | `hg` | Mushroom soup | name, count |
+| MURDER | `murder` | `murder` | Redstone | name, count |
+| PVP | `pvp` | `pvp` | Iron chestplate | name, count |
+| BUILD | `build` | `buildbattle` | Oak planks | name, count |
+| TREINO: PONTE | `treinoponte` | `treinoponte` | Bottle o' enchanting | name, `&eClique aqui!` |
+| DUELS | `duels` | `duels` | Diamond sword | `&d&lNOVIDADE!`, name, count |
+| BED WARS | `bedwars` | `bedwars` | Bed | name, count |
+| SKY WARS | `skywars` | `skywars` | Eye of ender | name, count |
+| THE BRIDGE | `thebridge` | `thebridge` | White stained clay | name, count |
+| PARTY | `party` | `party` | Cake | name, count |
+| HIDE AND SEEK | `hideandseek` | `hideandseek` | Melon block | name, count |
+| CTF | `ctf` | `ctf` | Red wool | name, count |
+
+- They are ordinary game NPCs of the `lobby` group, so `lobby-1`, `lobby-2` and every later lobby show them.
+- They live in `servers/lobby/placements/import.yml`, in the [import format](../npcs-and-holograms/README.md#importing-old-placements). The group of each NPC is its `group` key; change it there before importing, or later with `/npc acao <id> <group>`.
+- Skins: every NPC has `skin-name: ""` and shows the default skin. The skins of the reference NPCs were made by others and are not licensed to Muxe, so they are not in the repository (see [Legal](../../legal/README.md)). To give an NPC a skin, set `skin-name` to an original player name whose skin Muxe may use and import again, or run `/npc skin <id> <name>`.
+
+#### Placing them
+
+1. Copy `servers/lobby/placements/import.yml` to `plugins/Muxe-Core/import.yml` on one lobby (any one: the NPCs belong to the group).
+2. Run `/npc importar` on that lobby, or restart it. It answers `&a12 itens de &fimport.yml &aimportados no grupo &flobby&a.`
+3. Check with `/npc listar`. Importing again replaces the twelve NPCs with what is in the file.
+
 ### Protection
 
 Players cannot take damage, lose hunger, break, place, drop or pick up items, or move items in their inventory, so the hotbar stays in place. Rain is cancelled. Fire never burns blocks, never spreads and never starts on its own (lava, lightning, spread); only staff in build mode can light a fire by hand, and that fire does not burn anything either (`FireRules`). The map is static: block physics is off, so blocks out of place (sugar cane on dirt, a flower without soil, a torch without a wall) never break or drop; leaves never decay, ice and snow never melt, and water and lava never flow. On startup the lobby sets `randomTickSpeed` to `0` and `doFireTick` to `false` on every world (`StaticWorld`): in 1.8, sugar cane, flowers, crops and saplings check their soil on random ticks and break without any event, and saplings would grow into trees. A fire lit by staff can still go out. No mob ever spawns in the lobby (natural spawns, spawners, eggs and breeding are cancelled); only entities spawned by a plugin (`SpawnReason.CUSTOM`) are allowed, and the NPCs and holograms are packets, not entities.
@@ -142,8 +171,10 @@ The Spigot server metrics of Muxe-Core. The visibility metrics moved with it and
 - [x] Players with the fly permission arrive 5 blocks above the spawn, flying; others arrive on it.
 - [x] `/fly` turns flight on and off with the reference messages, lands a flying player, and needs `muxe.lobby.fly`.
 - [x] The join greeting is enabled only on `LOBBY` servers, with the reference title and subtitle.
+- [x] The game NPC file has the twelve NPCs at the exported spots and turns, with their group, item in hand and lines.
 - [x] The boss bar alternates `&e&lMUXE` and `&6&lMUXE` every 10 ticks, and the scoreboard fills the reference lines.
 - [ ] Boss bar, scoreboard and flight after build mode work in game (checked in game).
+- [ ] The twelve game NPCs show on both lobbies with their lines at the reference heights, the count follows the game servers and a click sends the player (checked in game).
 
 ## Failures and recovery
 
@@ -154,4 +185,6 @@ The Spigot server metrics of Muxe-Core. The visibility metrics moved with it and
 ## Known limitations
 
 - Credits do not exist yet; the scoreboard shows `scoreboard.default-credits`.
+- The game NPCs show the default skin until staff choose skins Muxe may use.
+- No game server group exists yet besides `skywars` and `bedwars`, so the other game NPCs show `0 jogando` and answer that no room is available.
 - The limits of the hotbar and its menus are listed in [Hotbar](../hotbar/README.md#known-limitations).

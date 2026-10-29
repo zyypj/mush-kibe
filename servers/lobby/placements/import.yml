@@ -1,0 +1,176 @@
+npcs:
+  hg:
+    group: hg
+    name: "HG"
+    skin-name: ""
+    hand:
+      material: MUSHROOM_SOUP
+      data: 0
+    location:
+      world: lobby
+      x: 12.5
+      y: 33.375
+      z: 1.5
+      yaw: 151.875
+      pitch: 0.0
+  murder:
+    group: murder
+    name: "MURDER"
+    skin-name: ""
+    hand:
+      material: REDSTONE
+      data: 0
+    location:
+      world: lobby
+      x: 10.5
+      y: 33.375
+      z: 2.5
+      yaw: 157.5
+      pitch: 0.0
+  pvp:
+    group: pvp
+    name: "PVP"
+    skin-name: ""
+    hand:
+      material: IRON_CHESTPLATE
+      data: 0
+    location:
+      world: lobby
+      x: 8.5
+      y: 33.375
+      z: 3.5
+      yaw: 163.125
+      pitch: 0.0
+  build:
+    group: buildbattle
+    name: "BUILD"
+    skin-name: ""
+    hand:
+      material: WOOD
+      data: 0
+    location:
+      world: lobby
+      x: 6.5
+      y: 33.375
+      z: 3.5
+      yaw: 167.34375
+      pitch: 0.0
+  treinoponte:
+    group: treinoponte
+    name: "TREINO: PONTE"
+    skin-name: ""
+    lines:
+      - "&b&l{name}"
+      - "&eClique aqui!"
+    hand:
+      material: EXP_BOTTLE
+      data: 0
+    location:
+      world: lobby
+      x: 4.5
+      y: 33.375
+      z: 2.5
+      yaw: 172.96875
+      pitch: 0.0
+  duels:
+    group: duels
+    name: "DUELS"
+    skin-name: ""
+    lines:
+      - "&d&lNOVIDADE!"
+      - "&b&l{name}"
+      - "&e{players} jogando"
+    hand:
+      material: DIAMOND_SWORD
+      data: 0
+    location:
+      world: lobby
+      x: 2.5
+      y: 33.375
+      z: 1.5
+      yaw: 178.59375
+      pitch: 0.0
+  bedwars:
+    group: bedwars
+    name: "BED WARS"
+    skin-name: ""
+    hand:
+      material: BED
+      data: 0
+    location:
+      world: lobby
+      x: 0.5
+      y: 33.375
+      z: 1.5
+      yaw: -177.1875
+      pitch: 0.0
+  skywars:
+    group: skywars
+    name: "SKY WARS"
+    skin-name: ""
+    hand:
+      material: EYE_OF_ENDER
+      data: 0
+    location:
+      world: lobby
+      x: -1.5
+      y: 33.375
+      z: 2.5
+      yaw: -171.5625
+      pitch: 0.0
+  thebridge:
+    group: thebridge
+    name: "THE BRIDGE"
+    skin-name: ""
+    hand:
+      material: STAINED_CLAY
+      data: 0
+    location:
+      world: lobby
+      x: -3.5
+      y: 33.375
+      z: 3.5
+      yaw: -167.34375
+      pitch: 0.0
+  party:
+    group: party
+    name: "PARTY"
+    skin-name: ""
+    hand:
+      material: CAKE
+      data: 0
+    location:
+      world: lobby
+      x: -5.5
+      y: 33.375
+      z: 3.5
+      yaw: -161.71875
+      pitch: 0.0
+  hideandseek:
+    group: hideandseek
+    name: "HIDE AND SEEK"
+    skin-name: ""
+    hand:
+      material: MELON_BLOCK
+      data: 0
+    location:
+      world: lobby
+      x: -7.5
+      y: 33.375
+      z: 2.5
+      yaw: -157.5
+      pitch: 0.0
+  ctf:
+    group: ctf
+    name: "CTF"
+    skin-name: ""
+    hand:
+      material: WOOL
+      data: 14
+    location:
+      world: lobby
+      x: -9.5
+      y: 33.375
+      z: 1.5
+      yaw: -151.875
+      pitch: 0.0
