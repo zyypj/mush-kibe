@@ -1,6 +1,12 @@
 package br.com.muxe.core.bukkit.command;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
+import br.com.muxe.core.bukkit.command.framework.annotation.Arg;
+import br.com.muxe.core.bukkit.command.framework.annotation.Command;
+import br.com.muxe.core.bukkit.command.framework.annotation.Permission;
+import br.com.muxe.core.bukkit.command.framework.annotation.Subcommand;
+import br.com.muxe.core.bukkit.command.framework.annotation.Suggest;
+import br.com.muxe.core.bukkit.command.framework.completion.SuggestionRegistry;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.messaging.channel.PacketTarget;
 import br.com.muxe.core.common.metrics.snapshot.MetricsSnapshot;
@@ -9,11 +15,11 @@ import br.com.muxe.core.common.network.player.PlayerLocateResponse;
 import br.com.muxe.core.common.server.directory.ServerStatus;
 import java.util.List;
 import java.util.Locale;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public final class MuxeAdminCommand implements CommandExecutor {
+@Command(name = "muxe", description = "Network administration.", usage = "admin.usage")
+@Permission(MuxeAdminCommand.PERMISSION)
+public final class MuxeAdminCommand {
 
     public static final String PERMISSION = "muxe.admin";
 
@@ -23,31 +29,8 @@ public final class MuxeAdminCommand implements CommandExecutor {
         this.core = core;
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        MessageCatalog messages = core.messages();
-        if (!sender.hasPermission(PERMISSION)) {
-            sender.sendMessage(messages.get("no-permission"));
-            return true;
-        }
-        String action = args.length == 0 ? "" : args[0].toLowerCase(Locale.ROOT);
-        if (action.equals("servers")) {
-            listServers(sender);
-            return true;
-        }
-        if (action.equals("find") && args.length == 2) {
-            findPlayer(sender, args[1]);
-            return true;
-        }
-        if (action.equals("metrics")) {
-            showMetrics(sender);
-            return true;
-        }
-        sender.sendMessage(messages.get("admin.usage"));
-        return true;
-    }
-
-    private void listServers(CommandSender sender) {
+    @Subcommand("servers")
+    public void listServers(CommandSender sender) {
         MessageCatalog messages = core.messages();
         List<ServerStatus> servers = core.servers().alive();
         sender.sendMessage(messages.get("admin.servers-header", "count", Integer.toString(servers.size())));
@@ -61,7 +44,8 @@ public final class MuxeAdminCommand implements CommandExecutor {
         }
     }
 
-    private void findPlayer(CommandSender sender, String username) {
+    @Subcommand("find")
+    public void findPlayer(CommandSender sender, @Arg("jogador") @Suggest(provider = SuggestionRegistry.PLAYERS) String username) {
         MessageCatalog messages = core.messages();
         core.packets()
             .request(PacketTarget.proxy(), new PlayerLocateRequest(username), PlayerLocateResponse.class, core.requestTimeout())
@@ -76,7 +60,8 @@ public final class MuxeAdminCommand implements CommandExecutor {
             }));
     }
 
-    private void showMetrics(CommandSender sender) {
+    @Subcommand("metrics")
+    public void showMetrics(CommandSender sender) {
         MessageCatalog messages = core.messages();
         MetricsSnapshot snapshot = core.metrics().snapshot();
         sender.sendMessage(messages.get("admin.metrics",

@@ -1,0 +1,212 @@
+npcs:
+  hg:
+    group: hg
+    name: "HG"
+    skin-name: ""
+    skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTY4NjYzNDU2MTIyNiwKICAicHJvZmlsZUlkIiA6ICI1ODAxMTliZDA5OGU0ODgyODM1YjE4YjQ0MTk4NGVlOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJWaXRpbWlzbW8iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWNkY2JlOGJkODhmMWE5Y2E3MzZhMGM3OWE0MWZmMzM4ZjlmNzhmMGRiNGI3ZDZmYjExNTg5M2YyNzQ5OTlhOSIKICAgIH0KICB9Cn0="
+      signature: "Kg5aLaBZ63tPKMgVNpC6nO/Ps7/B+/7QaLhp2U4DRlLsVe2f1OEauO53+QYsifRY4SGhiaCenl0697Dmze+VRIOnOuMCyHxuc8CFnuRw/iJSY3YWpb9AIo2TZ24X0cWOaCIOZ0O5pLnjEGae4ndoPhjU4WoNAoQW03PM6TqcBTDvYzBah8T5EHPrt4B2VFcAHGORzbPzNCNY7351A+m8Fhmfe8HSrdHfjX7SThvER9iWaN2cvhGA6mulsDHsL9574Hw95TedA9QMgXZJo4IjeyVIhMkIUzNcQPLPC4eDlI9m83g/mJg1vkskF2g3qfaeaaIrNTIqEDlEdtI4kzZd4p/QcaZp/ZhGmHiGUD+aB5ZfK6/O5qR2jQdmiSa4Yf6eIhx+HzO5UbZblxR4mBAuj2TWQzgirAVcj1LWlLWFyYo5/l56bF7ZjOtSW1M6skJQs363p9LDaLi3pXBGo5DURVFkyl6vHFltwZUpmEiZ0cOGO00zpKmXW0eNyxc+l/cLyescH1KkHFBkDId0sL9/VwFWaT+rgQ113aOfkDP0dI481ezI1NvLuYoRST3nh9kGI7YAmkdb8VlEs7ala2/J6ThPCxLnBmxYX28ubmM47nbArJymAwrtZt+49TgRmzNEpNb7b3HynCmqUFIWSxcx2UwMAnuXPvdzq9VWSVUWqwY="
+    hand:
+      material: MUSHROOM_SOUP
+      data: 0
+    location:
+      world: lobby
+      x: 12.5
+      y: 33.375
+      z: 1.5
+      yaw: 151.875
+      pitch: 0.0
+  murder:
+    group: murder
+    name: "MURDER"
+    skin-name: ""
+    skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTY4MDMzNjQxNjQ1MSwKICAicHJvZmlsZUlkIiA6ICJhZDJjYzAyMjUxNWU0YjNiYjY4ZWU2YTlkZjEwYzFiOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJOZW5kZXJhaSIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9hOTgyZjE3YWE1OGM5NjBmNDVkMGMxNTFhNjBkYjA5ZTM0ZjRiMmUyMTc4M2ViMmUxM2FmMDcwY2EzZDljN2Y5IgogICAgfQogIH0KfQ=="
+      signature: "Or1CeWrt9Oj5xzY0pCAyWLcC755/JvEMCaNnkgTnvAbw4FLcilXVFVaTK/JKu8eXrqwBRgLnx6h82bMTpehuR5NzvNuMwUM9F7lP1TATg/8NfY8/Am/VLXw8KrKmp6Uorb3NhjJbWDEPqOHcTpWYtRkDliRzwlH5H4fdniZLqYCILLaerfUD3KECHMuNGP8QvAODthS8SXqYunZnYhJVTzEUvkyeK12yZQcmBjYOssWKAkpkMu8g9PuT2z+DnG0bSSoMY5d/rX3/XmWsDt/IHR8UK3KPRpZ2ESiOZ3qpdqpAuOx36kI0Du8Zv408PJYMh+yECIgcUD+XupPQ00YZqZ//pOaXvE5uoW4YXzbpbjWNciJlz7uZBRbZL/eJPkYiP1NE13trSulmkajCMehSYgUSI39w7JDJqw/ZPpW0yYBjh1Tdlfk1Z1pe7xT9Pbxq+d2kmzalhqHyyb0WYtvHTkgx/hy+IwosgnnBFkrRWWH1TSccSfBFrbkS89XGlu4VruWj5FBwFOLui3iTqyXAAHcWAAQn8ofkBFJ+c82RSJPOUBRiyvKD4q0/R9LuW07trt2KqwktMbeXkgTi5Bz2G9LdDfI3nQb02Kn4nliYEykNFbsfll7A+E5zqL8FaCQOW6R2cjKadR+nEBqZuOu0j7DMtdvvSy6eYFILKDnB6Cs="
+    hand:
+      material: REDSTONE
+      data: 0
+    location:
+      world: lobby
+      x: 10.5
+      y: 33.375
+      z: 2.5
+      yaw: 157.5
+      pitch: 0.0
+  pvp:
+    group: pvp
+    name: "PVP"
+    skin-name: ""
+    skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTY4NjAyNDExODQ5NiwKICAicHJvZmlsZUlkIiA6ICI1ODAxMTliZDA5OGU0ODgyODM1YjE4YjQ0MTk4NGVlOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJWaXRpbWlzbW8iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTA3Zjg1Yjk3NjE3NWQ2NGMxNGEyOTgwMjY0NGFhYjQ3NWRiZjQ3ZTQxY2E1ZDUwOTJkZWFhNTA2YTVjZTg3MCIKICAgIH0KICB9Cn0="
+      signature: "HZsx8m/Kf3GBj88dKHr9n4ynOM66s0b51znwP/BXB0VF/bIByVlxZYSCrncGzp8eqCUbzz3XdatcfVOyqk9JpzmWuCyFYSwtRMszLWX5mUW/LwiT0ABX5syl02mdz3BN/TQG08RoN99o8szadwH7cGBfS6bt1zg8CsR2mGpYZ7t5xTLwrvXBnB7iKdyZkJPekdew+jXeiSljHc1KJfLaZppLE1SsiWFU4NpUrfRDqrm7ZQcJ99NNHLh9zjrxgDQzmaOHd3vXMv63Wtd0mecF2Er8XJUZzoFyaV8Dq7LhQOiazcDX3gZ45GtLLSieHhf6sD4Nyba/Z/qqSQzM9cUt7EWzHVDix5sWRF4xKg+1vNdfr5h63nMLwJ+AC1pAudN7/DjZfC7d7NRNJ7Yb5dcAgctDtNtOhWUpAYDYE9/aXTEGVhfouUvjORFDXnkeXk49O4fP3b2RqsmCx8yRsC6GtR0jgbyTcS6W1Dgtszbs9FLHmOhO9GN5FLhKDTkWsWeJachpcatbOrh3T5POnzcWl3hDpNUUZS/p+hX+1Y+s0ASVqsFLCXU8YFlrETjtI/h+QNwYyKM4Viu4cA4eZnZt9zikGjB+mVMww8i3I4cn7s8eh/Jkfhdmc5YfBlDgEuwaXL69aYJQvlqSHZxeONFL5A046dj4xms2vUzH9GDGSw8="
+    hand:
+      material: IRON_CHESTPLATE
+      data: 0
+    location:
+      world: lobby
+      x: 8.5
+      y: 33.375
+      z: 3.5
+      yaw: 163.125
+      pitch: 0.0
+  build:
+    group: buildbattle
+    name: "BUILD"
+    skin-name: ""
+    skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTYyODgwNDgzMzM3NSwKICAicHJvZmlsZUlkIiA6ICI1YmZkZmY5ZTAzNDQ0ZjRjOTE1Yjg0YmE5NzI4MWUxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJLQUJSQV9SSUJSVF9FVUdVIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzM3YmZmNmM2OGIyZjdkMzcyMmQ0Y2ZmZWU2YTJjYWY5OWRiNDY2ZTUzNGMwMDk3MjA3ODMzMDkyOGRlM2NiNmQiCiAgICB9CiAgfQp9"
+      signature: "NZGGGFFuYb7gvdjctQ5LIaqU6sN2SfN4bH3mAiZIe+DcQE9HKZkzDvJDru0/HrdCtJs8axMC4UPYTUmH2ZTrK84MWDHkTi4eeP3/FRtD7ucd1addGwlb6rN5HAgjzJc/gl8jsRSeZ5hBpB/AwC5jqsiJHA7pcAsiEegT4bzvvtiFpto79ttb/vSJN3JtoqzGQVx+3Ckc3MxIectP5lBB0+wdIQqJtKr9AcrGVgt7q/xRQsBbfveYrWXJNVQE1uA+UdWyiJzanJXD05zSNe5tE3HGaY5rr8QNsfCc2DDsLUH2NBcd7fafajzl1w3EvxdjAkjl8fJftAhHBQTUJ2wWnZBmNoXdyKSfpOKDnE/gyb0dq59fnTOHhbPqGnC4KejgisN30aGZ9ZPykj4kAXrddUl0D5YHgfPJ4EybcHZYMJsU0w7XUMxH1/mD3vVkLXBwkCGyqrUQ1IfWvECx2YWRmLoY1ZokRY+9+Q0/bt9WH6M62nDyfM17DHngPpSAcLe0i4Gcn5SDkUsNPbBszUqiVkVLr3Bj8KxivDjG1U/2qJKPdpbXeo1p+TQHUHSfVCpg2A37Cl0ZwY1sf/eAyRPsqq5mefYzLntJU5QnqXNpNqYp8amfVRNWytNWF6RbIhwLdTfhzoJjFJFNd96iF00LY5lciZrj2sx5Zb8wLEhenEA="
+    hand:
+      material: WOOD
+      data: 0
+    location:
+      world: lobby
+      x: 6.5
+      y: 33.375
+      z: 3.5
+      yaw: 167.34375
+      pitch: 0.0
+  treinoponte:
+    group: treinoponte
+    name: "TREINO: PONTE"
+    skin-name: ""
+    skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTcxNTQ3ODU3NTkxNSwKICAicHJvZmlsZUlkIiA6ICJlZjM2NzJlZTE4MDg0YzUxOTQ1NTc4MWYzYzk5NjMzNCIsCiAgInByb2ZpbGVOYW1lIiA6ICJUS0dzeXN0ZW0iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTk5OTU4NDQ0ODAzZDFiY2IzN2JkYzcwMDVkMDJkNTJmZmI2N2RiNjAzYjFiNjgyYmVkMDdkMTcyODMzYjY0NyIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9"
+      signature: "TA8NnDifSxlmsgAd5DvTOA1BHn/7ZO3LldG6lBVLrOIWhyc7LcQXT4i063DD8tAxq3lRE8e4NytA9BCezAzrZg/5D5GxU4ioGl+8t7Pkgt6XUX9cUtls6pPeaU2A0uA5+8SUbkx494Mcx8CMD+Soxz2aX0oiqFkeNOVCtycXNg69KJ4ntA0uM9k3IT9+JHOUJ6kgjqXxROdBepSrM0i70y4u3iwEd1x1IiFmVEHuOocQHlkV9edFeYFIf3JwXxqKiwm3jkK60q0JKY9RDgJYxqTfd9g3w+vXNVbYlNfoJZGSgfzggfieyKwF5efgWdz2LdRnKA48Vxi5bhK1knMrpn5mj+W+rDAO/r1IzCcjLudiqSXQ0yq/eQ6+i9Y24cNJoVeazwMjhspiBLOSBtasYvbYgKaikbZ4pAaOd/hUnGG6aJRVqXmz+K3o1lCOkzm7B0BvqbOQV53Zm8fXw80MQj1NOeTyisMpkwqpZz+EZcuvfhtEU0UnS+1Ik7qlk3Tye+J4lfSfm11lg0OgWaIcfZ5KmLZp7zRq483wzOW5KvE5ur5kxRuTReqjk8WN69JlC0OMvQlEQj9kciqNThlMs54Heq4cxGUyXxkeJeSf2Z0NUnaBI16/mwNayFHsd9ZU1B280jNTIk2AhDyljCx8B+vx2azCMWI9PgmGomGUnNk="
+    lines:
+      - "&b&l{name}"
+      - "&eClique aqui!"
+    hand:
+      material: EXP_BOTTLE
+      data: 0
+    location:
+      world: lobby
+      x: 4.5
+      y: 33.375
+      z: 2.5
+      yaw: 172.96875
+      pitch: 0.0
+  duels:
+    group: duels
+    name: "DUELS"
+    skin-name: ""
+    skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTc4OTc5NzIzNjU1OCwKICAicHJvZmlsZUlkIiA6ICI2YmU2YjUwYjYzMGM0NDAxODNjMjUzYmIyYjZhNmM4MSIsCiAgInByb2ZpbGVOYW1lIiA6ICJKdWFuc2UyMDIzIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzc2MDlmYzhlM2E1ZmI1ZjJhODg3ZWQzZDU5ZTYzNzhmNjQ4NThkOGIyOWFiZjc4NGQ1ODJmZDEzN2E3YTZiMDYiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ=="
+      signature: "f1RkVuqukxPqx47QaeVw5chDxwOviG7ljYV55uvWkG0wGZZPsxCYr2/qyeVdtxy1ToK/vamKsTlk51FU2KEdXObGCP6IgFHdVZ0wkywFQhw4tCOVhkFgGMWQrryLpIp4khga4kd1lzvqbaLEFgOf55QjIc7fT1nIxqZ3/PmalhqiGgJ1kF31XUmYnargay30RNZqvSwDqmXca8IyI32E+YztT5EW9dONwRbStlxDCbJHIqi7uiJdmyHVjXHDEmV1qCNp17Zc4ARQwZZzGZ5YbIeiGSJJyiKWb1zPDJR5lo/PIQtOenoGRPkMXg2RnUQr/NgmhUNsd/uWQz3g3mWm85pFeorMW1Q7MeENtT8lk56GspgnjVhDTEeI+oexnVyouMxAojUaVBHbSS7LZ7uGZoW1CnIPSHqjbGtZSi8NxlfioC6d7qwp1J7Cmkffc2LMW5jPAGpOqHFZoZePc51r1jgcEpFHsi/zts6wu0n+A6LFioYcEyyrKVQtl9j0od73j4VEs4Cmi7Or3n5UJK3Y3Vn6fZ7jkRKDiZ+RK8ApQEBXwkXy4Gn7ZxZcbRSj8y7K4HwJNlQLf3YJzOCSKH7jvp90+yMWHor1gAxvAO4AeBzzuWYR4KMPThi3uDCcXCPzQws8UBgD/w5aVqeIxrW+G0GLXyr/cT5VNuBM1+LJ/jQ="
+    lines:
+      - "&d&lNOVIDADE!"
+      - "&b&l{name}"
+      - "&e{players} jogando"
+    hand:
+      material: DIAMOND_SWORD
+      data: 0
+    location:
+      world: lobby
+      x: 2.5
+      y: 33.375
+      z: 1.5
+      yaw: 178.59375
+      pitch: 0.0
+  bedwars:
+    group: bedwars
+    name: "BED WARS"
+    skin-name: ""
+    skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTY4NjAyNDkwNzE1MSwKICAicHJvZmlsZUlkIiA6ICI1ODAxMTliZDA5OGU0ODgyODM1YjE4YjQ0MTk4NGVlOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJWaXRpbWlzbW8iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGEwMGQwN2Y3NTY0ZmM1NDNjMDFhMWMyNzk4MzliNDQzYmM2ZmE4ZDBhNjNjOWRlZDEzY2Q5YTlmNGFlMGNkOCIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9"
+      signature: "vd6+lSbiB/E8rcJUU8bCRwz9Td97ni9Aqfg9pF83REXaeDL4x9xXhxDKoUKAGeaXLuTnEJF2LgDBqxHZKDkN4f3GHm3mnQDOwXADAHuW6aiSeyFASA3DeaSTerXkim2bG0ueiQ1gVgKiAB8So0lxFttTIAUdo7FyF1Avit+B3MHmaPjlXJa374uT1RBGCtjmqJyzoWTUV/vpIILluVA9QHMOHxBsfQCRjzTXb9CYK1fXiodw7iJYidgALr57yM0bbLj8+d565faT345dAaxBk1HrPRJqXJl8EuSf0idgfynkTR/3heIvW7p0fXyWOqNnTxso9sJ9piQpN1WJDJ94jhVsszBFlB9ro9ihi6SF9H7RKVIYdRAMQD8RboC5j2SYz0bcAWEBwZjLiq8JapU3rGFdSYnF4s/1d6a5peDs8813vjzjJzKqkJTgs0iPIifvrE2p70+yNUGoTRWwMJ6kR04ZQO905no+KU03kQVrRraE6J6NN+YkaEGHclHZPZX/TLYUXamfpIO8PUCqcJSqnOnVRb+nFjw/IIYYA6hmxlK1lyAZeECFlz1ztQ1/+HdhP7G67K9CrlzG+eWrYcubItXiv0Rs55pLJTzisjWc2Be5UaT9KcNDLfoSk14ygVLlL8dBKg3OCyaVMpLAU1ViElw1l9jjTeAd+ACpBqGv11A="
+    hand:
+      material: BED
+      data: 0
+    location:
+      world: lobby
+      x: 0.5
+      y: 33.375
+      z: 1.5
+      yaw: -177.1875
+      pitch: 0.0
+  skywars:
+    group: skywars
+    name: "SKY WARS"
+    skin-name: ""
+    skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTc4NDI3NzYyNTYyOSwKICAicHJvZmlsZUlkIiA6ICIwN2Y0N2U3YmI4Yjc0YTE3YWVkMTRhYmQ3NWUyZTA3NSIsCiAgInByb2ZpbGVOYW1lIiA6ICJOaWNvbGFzQWxhY3Jpbm8iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzkwNzUwYWU1YThhZDgyNjkwMzE1MjU0ZTAxYTJiNjY2OGIwMzE0ZmMzMzE0MzcyZjhlZTM3NTUwMDNjOTk1YSIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9"
+      signature: "VGwh0WnxaqG0vXP39PickE1r1Blzeni3f5G1sqHwN6ui4RqLEs75aXZUP3M8xqMWS/f+o8WQK7E2zxnd5IMAWlOL+P9a6232MpNvD8LEWirBuRyFbw14liQdnRgpTcyahsKUzOR9GZdoYtguf7DNVBj7g1tQu4vwIQkl5vYlJiVdvde7YjlIkTdHSR5lSVYgYMvpDJUwINCC+l5y/uZlJGYBU6ZikaG+NBoaMBv7HGUI76Mzi6Z6LwxhPaTlB5UduJxqPRiDNCu9xkC7mWE96J7FGOZopIzwKok51pbBzqKJaWAxIbau6RonP6SzcGoASM+2+egwcI0pTzc+jJMr1m23IZnmQ6/DabURN+GlLlT8FlCvR1X1nVX7SP49LVJ+l5AHWo4e58+2NZkrnNpyIRA3fE5sIBrexDbAre6vMDtWeBguxfFCB+fF+t6a0D9MnVqJVyMyOX1FLKmrC4O4ZN/IcxT3aqGIMBsbuxmK79DW6Is+WaEkibrlvuIVuMd4pJpuZ7fTvbTwGM/8OnjwdU5t/Z/s3RHtm9oamkiIyzQp0XfTrs36zjBVE4RDU+6RLWhFcIHLuCrV3OnX8I9Io+aGlXdUPCpfkgykbK+GqX5TMYw0/xlZYDJ5pPsuBz8XMbm+t9a6ETZWA/iyTHscAMV+Gv4fuULgpVHqk+e43RE="
+    hand:
+      material: EYE_OF_ENDER
+      data: 0
+    location:
+      world: lobby
+      x: -1.5
+      y: 33.375
+      z: 2.5
+      yaw: -171.5625
+      pitch: 0.0
+  thebridge:
+    group: thebridge
+    name: "THE BRIDGE"
+    skin-name: ""
+    skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTY4NjAyNDUzMTk3MiwKICAicHJvZmlsZUlkIiA6ICI1ODAxMTliZDA5OGU0ODgyODM1YjE4YjQ0MTk4NGVlOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJWaXRpbWlzbW8iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWFmNWVhMThjNDYzNWNkODA2MTM3YTg1YzJjNDdkNzViOWUxOTk1Yjg3YzUxZDE3M2IyOGE0NjA4MTdmNzM5IgogICAgfQogIH0KfQ=="
+      signature: "AG2J6gW5swVxbHQlO//x3HYhB2y2cp3blEmzyJUCo5HsrGdemuBsWhYti8blnSyexln5H4qmfNgyX5YCtVl4L8UkDUVKjAx6o3Y3ACmRW58ZnySmVXHiTc7B30mtlbIBQD79GlaVX6+JWPFr4slwjOIgc/G3ss8u1WFGL6n+rHAh/84pzsqZxzsRPaE7lr2PbDGxaogpbYR0PWZiZ17tbdYmjYKgrmNuleOmdukJfIjJFlFOmcArCIOgPCAaSQ1+zfByPCCoNX2aejnhLoU21Ut5QGO/7msjFyST2fPqo37mUUFla1pBVNKQsbUt9trajtOHS8qfFTXVUEzvMPfHlrkG5Ns78r5WGsQcgKi+A9EecfvFtxUh7rXhtHnrw4+j/jGdOQm9sdYCJ9Q4+tP7uC480K+Ity2R0arnN4tn5uyxEJtUYT0G073pvpSrokXcA2Y8MRYjQEcYj3HfAjGkMp/ottHh96tjJoazY0dBSg1d7ApXswaUddlJA6K2uqy9OnfQFpGDW9biuDw5X+BWtG2CbhDEgTH5vbGa5vDtGdHSXa+5E2ZHuqNswjoFZsbZaxYvPxd4nREzUx4bSfNXogVtS+qfiEFLARieU3UXy1XnSlg1mT+BfZ3x0nmDN8fSZlvOyfAW3dfRM3mA3oYJfdVrQLo9Wir7WmKsGXBDjqQ="
+    hand:
+      material: STAINED_CLAY
+      data: 0
+    location:
+      world: lobby
+      x: -3.5
+      y: 33.375
+      z: 3.5
+      yaw: -167.34375
+      pitch: 0.0
+  party:
+    group: party
+    name: "PARTY"
+    skin-name: ""
+    skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTY4NjAyNDYyOTU3OSwKICAicHJvZmlsZUlkIiA6ICI1ODAxMTliZDA5OGU0ODgyODM1YjE4YjQ0MTk4NGVlOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJWaXRpbWlzbW8iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM0Mzc5ZTgxMTI4M2ZiY2ZlOWY4NmVhZTBiODE0NzIxMWU3ZTQ3MTMzNmE3NTQ1NjNhOGE0OWYzNDZkNjY0OCIKICAgIH0KICB9Cn0="
+      signature: "QNS1gkHSOzlxkp34TqVMCyNwkUMUmU++qd+XdTTEz2jtDr9ADmsL0n66jyK+LVVYnqTr23laF7oOAYNFHR4btjwhR/p20KLG15BrzItergmGSDOhBZi7zWTbfL9djXTfdHWHJGPIE8lChdyA71Iq3ueNouiwTuX4M5GbQ9fqp3YKs+Mjomp2oyRAsQULJzbOEBnNmO1UgqyEwH1vyhL5tNrTjn87y2FeWys1rvIw7+JZMoTWIcSpWRRgOMj41HxQDhfdTvTcVeQV1UpTJB7etFcjUmn6567HyhCOkw5DSJkYCoR30k4z/Rrp0hpzp7zQaQ4Hv/WBMxqWJFQRJtGNuVDHfPiPcFjt45c4ZdL5yzeoPXk0AhuAXUQ+N/sMKxp1lvANfF1yITct8E4ONj9tZngNj5GJEtbNu7aG0Xc96T0i2xyqHscV3+wVLMkGdZ6eioRQ/H4/yJcE95s0P3grnC6c9f6OpKtdGcpxLht2VVuVgaFrDkdz5x3KxpmZ+4AKNPBhFQc9fwtoxwY/d6DsIQiYI8YdgOrwzGzagWpIRRU+D/S0Nrp90OonJDE5i8SxV5z5rpngkIxXtXfd97tCcCB6KAXSQJ3jxtWeumSKZnxA3a2Mrcw5p6gk3dG5iy6hFgVMr/q+5xIzYlb0iwxahtVNtLHW7oe/Pzoz6RQrOG8="
+    hand:
+      material: CAKE
+      data: 0
+    location:
+      world: lobby
+      x: -5.5
+      y: 33.375
+      z: 3.5
+      yaw: -161.71875
+      pitch: 0.0
+  hideandseek:
+    group: hideandseek
+    name: "HIDE AND SEEK"
+    skin-name: ""
+    skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTcxMTc0MjI3OTM2NywKICAicHJvZmlsZUlkIiA6ICI1ODAxMTliZDA5OGU0ODgyODM1YjE4YjQ0MTk4NGVlOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJTa2lkekNSIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzQ3ZjU5MjQxMzI0MTU3MTUwM2QyMjA3YzQxYjEwNjI5NmNmN2Y5Y2M2YjQ0YWU3OGJiNGI0YjllODJiNzFjNjIiCiAgICB9CiAgfQp9"
+      signature: "H2eD4Mntp5nC8wfRa8ME+3TddTFvhr7CQBP8s4a5OOY9988WH0IM+TLd9cU09fBVwuxJhoivGZpCOu2df4ZiMXQTkqwb8Z8n13Jnka0eiPyQTIx7s/twnO9Txx7RhzaeVGNW8pBWAelbTAAF+cdCC4a3hbxgDHZ4AqWzjV3wN2JmFZXDdmL4SAJnU0YxhwR1jAkV6/05x6/qUVwiwjTfqGe1C1izSg1KfewOUfWLfBzcQpnr0DKZbzWNd5RkcZJJh0EUFbqF9d0LqDCg6zELC8WHLgobxDzzCy0lhTgx6a+BmT/GmxlzRmyg695m1F79IbfSicne5YH9VByxtHt59lbpFPSECy5+rsDpgFWqWYkqYza4PHRXQQ3K4mIlqkfVRLalymb+fVG2KhoxdYjgrNQirJYdJ5UTDRZcNarMgTb/OeTwfR/bshfPArt6KErh0bFYHcM0omV4o0Pu8fRsKS716GKH3SyswxeQCsujueFZ76xuO3iSpmLEm8b0QR1xk3zUI19sCsVYy/uKPdT2ccoWhKY/BnnLcenVw+kASZ7g0VqGyyqw68h/Z3sivOSFM7ypJ0cTUMNzzaa0aEIsq8c/7iKC0F4RlyYyBLAS7/aLIjukquTRcicYVBySxB2t3JOSDLtMC4Jg6aphgxf1UtZm10v+Oa6AnMVklCMYgXU="
+    hand:
+      material: MELON_BLOCK
+      data: 0
+    location:
+      world: lobby
+      x: -7.5
+      y: 33.375
+      z: 2.5
+      yaw: -157.5
+      pitch: 0.0
+  ctf:
+    group: ctf
+    name: "CTF"
+    skin-name: ""
+    skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTY4NjAyNDgyNDU3NiwKICAicHJvZmlsZUlkIiA6ICI1ODAxMTliZDA5OGU0ODgyODM1YjE4YjQ0MTk4NGVlOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJWaXRpbWlzbW8iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWI2YTFkMjBhODEzNjY5YWU2MDA1ZDYzY2VmYzE5MWJmZjFkOTAyMGVlYThhZmI1YmNiOTk0NDU0MjhlMzJiOCIKICAgIH0KICB9Cn0="
+      signature: "vTV/nRGk6abLKR42g1jiZRRaKqwphr4pqY3oKAxKHulZJ/inFtyliOtrmQnd6wRceyDUNUfAPqR5hBuDIvmsyHA+FBiy9czUyIfupOPRKzKS7yAKP3/qKQocyAYiswRJ1iXGENXdFOEsZvqzI8O7XaZB7ASOvdDjDfCz1YmWVD4BVJzG62X5wCF71eJbyvGN7IiNkqi2VZWPBhuNLCX8Mx1NC/CJuodLx8wLkXBWk4KQNfo3n1liz679VhrDNhzgxquL5ckvlS0qS2QNtvg9ISwWGEk0abWJJ/sOnQoHzCjs2afvh8C1GcWA28IK4xxfUy8JiYik55nmdHfUOZzANL8uGSvagUDgv91ItXL3v0rLyXQjiETv6CJ2Q5EP2htVbBpMRWpLiT6O627At3KvezMd1oBHIOcHNovbmor2gvm+Lw9W8UEbwMedacymfaNfTC11yv0Fn+ECPGhibEE3ModN3rmhdDBLCq+whhspq4W8M7JgCd1gz3b3U7tSSDrRwORcq4sC4sbaUCZn2kOaZIh0gGoOyQ6fd4fawApKe9NZEXBGParsfasQjUHLclZNElxIus2YQhllpzK4Y6YcFK2EpXbywucI9cyTwCt3mn4gKi0uNPuGvW8sZVs1DSFJ1IegclIWR7BuLkFfSICvWVmiSBuQLX0NpYxdD2saYb8="
+    hand:
+      material: WOOL
+      data: 14
+    location:
+      world: lobby
+      x: -9.5
+      y: 33.375
+      z: 1.5
+      yaw: -151.875
+      pitch: 0.0

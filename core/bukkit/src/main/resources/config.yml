@@ -36,11 +36,1515 @@ metrics:
 startup:
   shutdown-on-failure: true
 
+permissions:
+  editor-url: "http://151.244.40.191:1031"
+
+build-mode:
+  duration: 6h
+  adventure-only:
+    - LOBBY
+    - AUTH
+
+join-greeting:
+  server-kinds:
+    - LOBBY
+  delay: 500ms
+  sound: LEVEL_UP
+  volume: 1.0
+  pitch: 1.0
+  fade-in: 10
+  stay: 50
+  fade-out: 20
+
+spam:
+  max-clicks: 3
+  window: 1s
+  cooldown: 3s
+
+npcs:
+  lines:
+    game:
+      - "&b&l{name}"
+      - "&e{players} jogando"
+    shop:
+      - "&b&l{name}"
+      - "&eClique para abrir a loja"
+    none:
+      - "&b&l{name}"
+  labels:
+    bottom: 2.25625
+    gaps:
+      - 0.28125
+      - 0.46875
+    spacing: 0.28
+
+holograms:
+  top: 2.0
+  line-spacing: 0.28
+
+social-heads:
+  interval: 1m
+  label-height: 0.9
+  networks:
+    instagram:
+      label: "&d@muxe"
+      texture: "90d464186e1a50ddaa14be2259611a4e8458515a5367a9389a9cc7c89c94a93b"
+      message:
+        - ""
+        - "&d&lINSTAGRAM:"
+        - "&fhttps://www.instagram.com/muxe/"
+        - ""
+    twitch:
+      label: "&5@muxe"
+      texture: "8e8e38b532051fce3b3b7212f4ed1dd4b52ed976abdd286d9132c5b3a54db123"
+      message:
+        - ""
+        - "&5&lTWITCH:"
+        - "&fhttps://twitch.tv/muxe"
+        - ""
+    tiktok:
+      label: "&b@muxe"
+      texture: "d49286f0bbec44102d7a992c8a5d9c5501280dc9ca1917494fc84b0f63031410"
+      message:
+        - ""
+        - "&b&lTIKTOK:"
+        - "&fhttps://tiktok.com/@muxe"
+        - ""
+    twitter:
+      label: "&b@muxe"
+      texture: "6ad46a422ae59603fd889c25344ff67bc843af8ee518932c2e2ad07cdbf939b3"
+      message:
+        - ""
+        - "&b&lTWITTER:"
+        - "&fhttps://twitter.com/muxe"
+        - ""
+    youtube:
+      label: "&c@muxe"
+      texture: "ffb6ce188b84bdf96985a356bf3f485416f33d3b6dfce3a3fc144e77fe8dbb25"
+      message:
+        - ""
+        - "&c&lYOUTUBE:"
+        - "&fhttps://www.youtube.com/@muxe"
+        - ""
+
+parkour:
+  no-record: "..."
+  items:
+    restart:
+      slot: 4
+      item:
+        material: RECORD_9
+        name: "&aReiniciar Parkour"
+        hide-flags: false
+    checkpoint:
+      slot: 5
+      item:
+        material: GOLD_PLATE
+        name: "&aVoltar ao Checkpoint"
+    stop:
+      slot: 6
+      item:
+        material: REDSTONE
+        name: "&aParar Parkour"
+  holograms:
+    start:
+      - text: "&b&lPARKOUR"
+        height: 2.075
+      - text: "&aInício"
+        height: 1.79375
+      - text: "&eRecorde pessoal: &7{record}"
+        height: 1.2625
+    checkpoint:
+      - text: "&b&lPARKOUR"
+        height: 1.54375
+      - text: "&eCheckpoint &a#{number}"
+        height: 1.2625
+    end:
+      - text: "&b&lPARKOUR"
+        height: 1.54375
+      - text: "&cFim"
+        height: 1.2625
+  finish-firework:
+    type: BALL_LARGE
+    colors:
+      - "#55FF55"
+      - "#55FFFF"
+      - "#FF5555"
+    flicker: false
+    trail: false
+
+hotbar:
+  server-kinds:
+    - LOBBY
+  game-selector:
+    slot: 1
+    item:
+      material: COMPASS
+      name: "&aSelecionar jogo"
+  profile:
+    slot: 2
+    item:
+      material: SKULL_ITEM
+      data: 3
+      name: "&aMeu perfil"
+  cosmetics:
+    slot: 5
+    item:
+      material: CHEST
+      name: "&aCosméticos"
+  visibility:
+    slot: 8
+    all:
+      material: INK_SACK
+      data: 10
+      name: "&fJogadores: &aAtivados"
+    friends:
+      material: INK_SACK
+      data: 12
+      name: "&fJogadores: &bApenas amigos"
+    none:
+      material: INK_SACK
+      data: 8
+      name: "&fJogadores: &7Desativados"
+  lobby-selector:
+    slot: 9
+    item:
+      material: NETHER_STAR
+      name: "&aSelecionar lobby"
+      glow: true
+
+menus:
+  game-selector:
+    title: "Selecionar jogo"
+    rows: 4
+    buttons:
+      bedwars:
+        slot: 10
+        game: bedwars
+        item:
+          material: BED
+          name: "&b&lBED WARS"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      hg:
+        slot: 11
+        game: hg
+        item:
+          material: MUSHROOM_SOUP
+          name: "&b&lHG"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      duels:
+        slot: 12
+        game: duels
+        item:
+          material: DIAMOND_SWORD
+          name: "&b&lDUELS"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      pvp:
+        slot: 13
+        game: pvp
+        item:
+          material: IRON_CHESTPLATE
+          name: "&b&lPVP"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      skywars:
+        slot: 14
+        game: skywars
+        item:
+          material: EYE_OF_ENDER
+          name: "&b&lSKY WARS"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      thebridge:
+        slot: 15
+        game: thebridge
+        item:
+          material: STAINED_CLAY
+          name: "&b&lTHE BRIDGE"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      ctf:
+        slot: 16
+        game: ctf
+        item:
+          material: WOOL
+          data: 14
+          name: "&b&lCTF"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      party:
+        slot: 19
+        game: party
+        item:
+          material: CAKE
+          name: "&b&lPARTY"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      murder:
+        slot: 20
+        game: murder
+        item:
+          material: REDSTONE
+          name: "&b&lMURDER"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      quickbuilders:
+        slot: 21
+        game: quickbuilders
+        item:
+          material: DIAMOND_PICKAXE
+          name: "&b&lQUICK BUILDERS"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      buildbattle:
+        slot: 22
+        game: buildbattle
+        item:
+          material: WORKBENCH
+          name: "&b&lBUILD BATTLE"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      hideandseek:
+        slot: 23
+        game: hideandseek
+        item:
+          material: MELON_BLOCK
+          name: "&b&lHIDE AND SEEK"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      treinoponte:
+        slot: 24
+        game: treinoponte
+        item:
+          material: EXP_BOTTLE
+          name: "&b&lTREINO: PONTE"
+          glow: true
+          lore:
+            - " "
+            - "&aClique para entrar!"
+      nascomandou:
+        slot: 25
+        game: nascomandou
+        item:
+          material: STICK
+          name: "&b&lNASCÓ MANDOU"
+          lore:
+            - "&e{players} jogando agora!"
+            - " "
+            - "&aClique para entrar!"
+      custom-room:
+        slot: 35
+        shop: ultra-plus
+        item:
+          material: BREWING_STAND_ITEM
+          name: "&aSala customizada (/salacustom)"
+          lore:
+            - "&7Crie a sua própria sala"
+            - "&7para jogar com amigos."
+            - " "
+            - "&7Exclusivo para &d&lULTRA&6+"
+            - " "
+            - "&eClique para comprar."
+  account:
+    title: "Conta: {player}"
+    rows: 6
+    time-zone: America/Sao_Paulo
+    date-format: "dd/MM/yyyy HH:mm"
+    menu-date-format: "dd/MM/yyyy HH:mm:ss"
+    head:
+      slot: 4
+      item:
+        material: SKULL_ITEM
+        data: 3
+        name: "{colored-name}"
+        lore:
+          - "&7Tipo: &f{type}"
+          - "&7ID: &f({number})"
+          - "&7ID de Perfil: &f{profile-id}"
+          - "&7UUID: &f{uuid}"
+          - " "
+    rank-line: "&7Rank: {rank}"
+    head-footer:
+      - "&7Primeiro login: &f{first-login}"
+      - "&7Último login: &f{last-login}"
+      - "&7Discord: &f{discord}"
+    close:
+      slot: 49
+      item:
+        material: BED
+        name: "&cFechar"
+    staff-buttons:
+      punishments:
+        slot: 20
+        item:
+          material: IRON_SWORD
+          name: "&aPunições"
+          lore:
+            - "&7Veja as punições ativas."
+            - " "
+            - "&eClique para ver mais."
+      punishment-history:
+        slot: 21
+        item:
+          material: BOOK
+          name: "&aHistórico de punições"
+          lore:
+            - "&7Veja todas as punições já aplicadas."
+            - " "
+            - "&eClique para ver mais."
+      statistics:
+        slot: 23
+        item:
+          material: PAPER
+          name: "&aEstatísticas"
+          lore:
+            - "&7Veja as estatísticas do jogador."
+            - " "
+            - "&eClique para ver mais."
+      migrate-statistics:
+        slot: 24
+        item:
+          material: ENDER_PEARL
+          name: "&aMigrar estatísticas"
+          lore:
+            - "&7Leve as estatísticas para outra conta."
+            - " "
+            - "&eClique para ver mais."
+  profile:
+    title: "Meu perfil"
+    rows: 6
+    default-credits: 0
+    first-login:
+      format: "dd/MM/yyyy HH:mm"
+      time-zone: America/Sao_Paulo
+      unknown: "-"
+    ranks:
+      line: "&7Rank: {rank} &7({time})"
+      permanent: "Vitalício"
+    head:
+      slot: 13
+      item:
+        material: SKULL_ITEM
+        data: 3
+        name: "{name}"
+        lore:
+          - " "
+          - "&7Primeiro login: {first-login}"
+          - "&7Créditos: &d{credits}"
+    buttons:
+      friends:
+        slot: 29
+        item:
+          material: COOKIE
+          name: "&aAmigos"
+          lore:
+            - "&7Veja e gerencie suas amizades."
+            - " "
+            - "&eClique para ver mais."
+      statistics:
+        slot: 30
+        item:
+          material: PAPER
+          name: "&aVer estatísticas"
+          lore:
+            - "&7Veja suas estatísticas"
+            - "&7de todos os jogos."
+            - " "
+            - "&eClique para ver mais."
+      preferences:
+        slot: 31
+        item:
+          material: DIODE
+          name: "&aPreferências"
+          lore:
+            - "&7Alterar suas preferências."
+            - " "
+            - "&eClique para ver mais."
+      medals:
+        slot: 32
+        command: medalha
+        item:
+          material: DOUBLE_PLANT
+          name: "&aMedalhas"
+          lore:
+            - "&7Veja e selecione medalhas."
+            - " "
+            - "&eClique para ver mais."
+      skin:
+        slot: 33
+        item:
+          material: ITEM_FRAME
+          name: "&aSua skin"
+          lore:
+            - "&7Altere sua skin atual."
+            - " "
+            - "&eClique para ver mais."
+      nick:
+        slot: 39
+        shop: ultra-plus
+        item:
+          material: NAME_TAG
+          name: "&aNick (/nick)"
+          lore:
+            - "&7Escolha um disfarce"
+            - "&7para usar no servidor."
+            - " "
+            - "&7Exclusivo para &d&lULTRA&6+"
+            - " "
+            - "&eClique para comprar."
+      ultra-plus:
+        slot: 41
+        item:
+          material: INK_SACK
+          data: 13
+          name: "&aMenu do &dUltra&6+"
+          lore:
+            - "&7Confira as customizações"
+            - "&7do Ultra+."
+            - " "
+            - "&7Exclusivo para &d&lULTRA&6+"
+            - " "
+            - "&eClique para ver mais."
+  lobby-selector:
+    title: "Selecionar lobby ({page}/{pages})"
+    current:
+      material: STAINED_GLASS_PANE
+      data: 5
+      name: "&aLobby Principal #{number}"
+      lore:
+        - "&fJogadores &a{online}/{max}"
+    other:
+      material: STAINED_GLASS_PANE
+      data: 7
+      name: "&aLobby Principal #{number}"
+      lore:
+        - "&fJogadores &a{online}/{max}"
+    previous-page:
+      material: ARROW
+      name: "&aPágina anterior"
+    next-page:
+      material: ARROW
+      name: "&aPróxima página"
+
+shop:
+  server-kinds:
+    - LOBBY
+    - MINIGAME
+  title: "Loja: {name}"
+  default-category: ranks
+  promotion:
+    product: enderlore
+    lines:
+      - "&b&lLOJA"
+      - "&5&lRANK ENDERLORE"
+      - "&b&l13% DE DESCONTO!"
+      - "&2&mR$ 74,99&r &aR$ 64,99"
+      - "&eClique para comprar!"
+  panes:
+    other:
+      material: STAINED_GLASS_PANE
+      data: 7
+      name: " "
+    current:
+      material: STAINED_GLASS_PANE
+      data: 5
+      name: " "
+  categories:
+    ranks:
+      name: "Ranks"
+      tab-slot: 1
+      tab:
+        material: EMERALD
+        name: "&aRanks"
+        lore:
+          - " "
+          - "&eClique para selecionar."
+      products:
+        vip:
+          slot: 28
+          price: "R$ 39,99"
+          item:
+            material: INK_SACK
+            data: 10
+            name: "&aVIP"
+            lore:
+              - "&8Vitalício."
+              - " "
+              - "&a✔ &7Voar no Lobby"
+              - "&a✔ &7Criar clans"
+              - " "
+              - "&7Preço: &aR$ 39,99"
+              - " "
+              - "&eBotão esquerdo: &fComprar"
+        ultra:
+          slot: 30
+          price: "R$ 54,99"
+          item:
+            material: INK_SACK
+            data: 9
+            name: "&dUltra"
+            lore:
+              - "&8Vitalício."
+              - " "
+              - "&a✔ &7Anúncio ao entrar no Lobby"
+              - "&a✔ &7+50 Cosméticos exclusivos"
+              - "&a✔ &78 Medalhas inclusas"
+              - "&a✔ &7Preferência de cor (Bed Wars)"
+              - "&7+ tudo do &aVIP&7!"
+              - " "
+              - "&7Preço: &aR$ 54,99"
+              - " "
+              - "&eBotão esquerdo: &fComprar"
+        enderlore:
+          slot: 32
+          price: "R$ 64,99"
+          item:
+            material: INK_SACK
+            data: 5
+            name: "&5Enderlore"
+            lore:
+              - "&8Vitalício."
+              - " "
+              - "&c&lTEMPO LIMITADO!"
+              - " "
+              - "&7Preço: &2&mR$ 74,99&r &aR$ 64,99"
+              - "&b&l13% DE DESCONTO!"
+              - " "
+              - "&eBotão esquerdo: &fComprar"
+            glow: true
+          page:
+            name: "Enderlore"
+            item:
+              material: INK_SACK
+              data: 5
+              name: "&5Enderlore"
+              lore:
+                - "&8Vitalício."
+                - " "
+                - "&c&lTEMPO LIMITADO!"
+                - " "
+                - "&7Preço: &2&mR$ 74,99&r &aR$ 64,99"
+                - "&b&l13% DE DESCONTO!"
+                - " "
+                - "&eClique para ver a lista"
+                - "&ecompleta de vantagens!"
+              glow: true
+        ultra-plus:
+          slot: 34
+          price: ""
+          purchasable: false
+          item:
+            material: INK_SACK
+            data: 13
+            name: "&dUltra&6+"
+            lore:
+              - "&8Temporário."
+              - " "
+              - "&a✔ &7Nick customizado*"
+              - "&a✔ &7Salas customizadas"
+              - "&a✔ &7Cor na tag do clan"
+              - "&a✔ &7Títulos no Lobby"
+              - "&a✔ &7Customização de tag"
+              - "&a✔ &7&7Tudo do &dUltra&7 e &6+&7!"
+              - " "
+              - "&7&o*Apenas aleatório, 3 nomes por dia."
+              - " "
+              - "&cRequer Ultra"
+            glow: true
+      extras:
+        vip-perks:
+          slot: 37
+          item:
+            material: PAPER
+            name: "&aVantagens &aVIP"
+            lore:
+              - " "
+              - "&eClique para ver a lista"
+              - "&ecompleta de vantagens!"
+        ultra-perks:
+          slot: 39
+          item:
+            material: PAPER
+            name: "&dVantagens &dUltra"
+            lore:
+              - " "
+              - "&eClique para ver a lista"
+              - "&ecompleta de vantagens!"
+        enderlore-perks:
+          slot: 41
+          item:
+            material: PAPER
+            name: "&5Vantagens &5Enderlore"
+            lore:
+              - " "
+              - "&eClique para ver a lista"
+              - "&ecompleta de vantagens!"
+        ultra-plus-perks:
+          slot: 43
+          item:
+            material: PAPER
+            name: "&dVantagens &dUltra&6+"
+            lore:
+              - " "
+              - "&eClique para ver a lista"
+              - "&ecompleta de vantagens!"
+    ultra-plus:
+      name: "Ultra+"
+      tab-slot: 2
+      tab:
+        material: INK_SACK
+        data: 13
+        name: "&aUltra+"
+        lore:
+          - " "
+          - "&eClique para selecionar."
+      products:
+        ultra-plus-1:
+          slot: 28
+          price: "R$ 24,99"
+          purchasable: false
+          item:
+            material: INK_SACK
+            data: 13
+            name: "&dUltra&6+ &7(1 mês)"
+            lore:
+              - "&81 mês ou 30 dias."
+              - " "
+              - "&a✔ &7Nick customizado*"
+              - "&a✔ &7Salas customizadas"
+              - "&a✔ &7Cor na tag do clan"
+              - "&a✔ &7Títulos no Lobby"
+              - "&a✔ &7Customização de tag"
+              - "&a✔ &7&7Tudo do &dUltra&7 e &6+&7!"
+              - " "
+              - "&7&o*Apenas aleatório, 3 nomes por dia."
+              - " "
+              - "&7Preço: &aR$ 24,99"
+              - " "
+              - "&cRequer Ultra."
+        ultra-plus-3:
+          slot: 30
+          price: "R$ 63,99"
+          purchasable: false
+          item:
+            material: INK_SACK
+            data: 13
+            amount: 3
+            name: "&dUltra&6+ &7(3 meses)"
+            lore:
+              - "&83 meses ou 90 dias."
+              - " "
+              - "&a✔ &7Nick customizado*"
+              - "&a✔ &7Salas customizadas"
+              - "&a✔ &7Cor na tag do clan"
+              - "&a✔ &7Títulos no Lobby"
+              - "&a✔ &7Customização de tag"
+              - "&a✔ &7&7Tudo do &dUltra&7 e &6+&7!"
+              - " "
+              - "&7&o*Apenas aleatório, 3 nomes por dia."
+              - " "
+              - "&7Preço: &2&mR$ 74,97&r &aR$ 63,99"
+              - "&b&l14% DE DESCONTO!"
+              - " "
+              - "&cRequer Ultra."
+            glow: true
+        ultra-plus-6:
+          slot: 32
+          price: "R$ 119,99"
+          purchasable: false
+          item:
+            material: INK_SACK
+            data: 13
+            amount: 6
+            name: "&dUltra&6+ &7(6 meses)"
+            lore:
+              - "&86 meses ou 180 dias."
+              - " "
+              - "&a✔ &7Nick customizado*"
+              - "&a✔ &7Salas customizadas"
+              - "&a✔ &7Cor na tag do clan"
+              - "&a✔ &7Títulos no Lobby"
+              - "&a✔ &7Customização de tag"
+              - "&a✔ &7&7Tudo do &dUltra&7 e &6+&7!"
+              - " "
+              - "&7&o*Apenas aleatório, 3 nomes por dia."
+              - " "
+              - "&7Preço: &2&mR$ 149,94&r &aR$ 119,99"
+              - "&b&l19% DE DESCONTO!"
+              - " "
+              - "&cRequer Ultra."
+            glow: true
+        ultra-plus-12:
+          slot: 34
+          price: "R$ 224,99"
+          purchasable: false
+          item:
+            material: INK_SACK
+            data: 13
+            amount: 12
+            name: "&dUltra&6+ &7(12 meses)"
+            lore:
+              - "&812 meses ou 360 dias."
+              - " "
+              - "&a✔ &7Nick customizado*"
+              - "&a✔ &7Salas customizadas"
+              - "&a✔ &7Cor na tag do clan"
+              - "&a✔ &7Títulos no Lobby"
+              - "&a✔ &7Customização de tag"
+              - "&a✔ &7&7Tudo do &dUltra&7 e &6+&7!"
+              - " "
+              - "&7&o*Apenas aleatório, 3 nomes por dia."
+              - " "
+              - "&7Preço: &2&mR$ 299,88&r &aR$ 224,99"
+              - "&b&l24% DE DESCONTO!"
+              - " "
+              - "&cRequer Ultra."
+            glow: true
+      extras:
+        ultra-plus-perks:
+          slot: 49
+          item:
+            material: PAPER
+            name: "&dVantagens &dUltra&6+"
+            lore:
+              - " "
+              - "&eClique para ver a lista"
+              - "&ecompleta de vantagens!"
+    credits:
+      name: "Créditos"
+      tab-slot: 3
+      tab:
+        material: SKULL_ITEM
+        data: 3
+        name: "&aCréditos"
+        lore:
+          - " "
+          - "&eClique para selecionar."
+        skull-texture: "95fd67d56ffc53fb360a17879d9b5338d7332d8f129491a5e17e8d6e8aea6c3a"
+      products:
+        credits-900:
+          slot: 28
+          price: "R$ 18,99"
+          item:
+            material: SKULL_ITEM
+            data: 3
+            name: "&6900 Créditos (+100 Bônus)"
+            lore:
+              - " "
+              - "&7Preço: &aR$ 18,99"
+              - " "
+              - "&eBotão esquerdo: &fComprar"
+            skull-texture: "3438e0c8dc547f47a5ab71240cad8a79f15db7543773d7175882efd33fc2164d"
+        credits-1300:
+          slot: 30
+          price: "R$ 27,99"
+          item:
+            material: SKULL_ITEM
+            data: 3
+            name: "&61.300 Créditos (+200 Bônus)"
+            lore:
+              - " "
+              - "&7Preço: &aR$ 27,99"
+              - " "
+              - "&eBotão esquerdo: &fComprar"
+            skull-texture: "b311e842249745113333878fd5a8d8eb2280bcbab7689e473f1669623a11c997"
+        credits-2000:
+          slot: 32
+          price: "R$ 45,99"
+          item:
+            material: SKULL_ITEM
+            data: 3
+            name: "&62.000 Créditos (+500 Bônus)"
+            lore:
+              - " "
+              - "&7Preço: &aR$ 45,99"
+              - " "
+              - "&eBotão esquerdo: &fComprar"
+            skull-texture: "95fd67d56ffc53fb360a17879d9b5338d7332d8f129491a5e17e8d6e8aea6c3a"
+        credits-4000:
+          slot: 34
+          price: "R$ 99,99"
+          item:
+            material: SKULL_ITEM
+            data: 3
+            name: "&64.000 Créditos (+1.500 Bônus)"
+            lore:
+              - " "
+              - "&7Preço: &aR$ 99,99"
+              - " "
+              - "&eBotão esquerdo: &fComprar"
+            skull-texture: "8d1ceb0e2204edbb6dbda764e9b8d155dbb34fb84dd793ef03fe2c24b57d4d2a"
+    medals:
+      name: "Medalhas"
+      tab-slot: 4
+      tab:
+        material: GOLD_INGOT
+        name: "&aMedalhas"
+        lore:
+          - " "
+          - "&eClique para selecionar."
+      products:
+        medals-elements:
+          slot: 28
+          price: "R$ 9,99"
+          item:
+            material: DOUBLE_PLANT
+            name: "&aPacote: Três Elementos"
+            lore:
+              - " "
+              - "&7Prévia:"
+              - "&c&c火 &7{player}: &fFogo"
+              - "&b&b水 &7{player}: &fÁgua"
+              - "&f&f気 &7{player}: &fAr"
+              - " "
+              - "&7Preço: &aR$ 9,99"
+              - " "
+              - "&eBotão esquerdo: &fComprar"
+        medals-star:
+          slot: 30
+          price: "R$ 8,99"
+          item:
+            material: DOUBLE_PLANT
+            name: "&aPacote: Estrela"
+            lore:
+              - " "
+              - "&7Prévia:"
+              - "&e&e✯ &7{player}: &fEstrela"
+              - "&2&2☘ &7{player}: &fSortudo"
+              - "&f&f回 &7{player}: &fCarta"
+              - " "
+              - "&7Preço: &aR$ 8,99"
+              - " "
+              - "&eBotão esquerdo: &fComprar"
+        medals-airplane:
+          slot: 32
+          price: "R$ 9,99"
+          item:
+            material: DOUBLE_PLANT
+            name: "&aPacote: Modo Avião"
+            lore:
+              - " "
+              - "&7Prévia:"
+              - "&b&b✈ &7{player}: &fModo Avião"
+              - "&a&a✆ &7{player}: &fCelular"
+              - "&d&d✿ &7{player}: &fFlor"
+              - " "
+              - "&7Preço: &aR$ 9,99"
+              - " "
+              - "&eBotão esquerdo: &fComprar"
+        medals-toxic:
+          slot: 34
+          price: "R$ 8,99"
+          item:
+            material: DOUBLE_PLANT
+            name: "&aPacote: Tóxico"
+            lore:
+              - " "
+              - "&7Prévia:"
+              - "&a&a☣ &7{player}: &fTóxico"
+              - "&7&7⚔ &7{player}: &fBriga de Espadas"
+              - "&6&6⚜ &7{player}: &fImperial"
+              - " "
+              - "&7Preço: &aR$ 8,99"
+              - " "
+              - "&eBotão esquerdo: &fComprar"
+    orders:
+      name: "Meus pedidos"
+      tab-slot: 7
+      tab:
+        material: BOOK
+        name: "&aMeus pedidos"
+        lore:
+          - " "
+          - "&eClique para selecionar."
+      extras:
+        empty:
+          slot: 31
+          item:
+            material: STAINED_GLASS_PANE
+            data: 14
+            name: "&cNenhum pedido encontrado!"
+  checkout:
+    method-title: "Compra: Método de pagamento"
+    supporter-title: "Compra: Código de apoiador"
+    loading-title: "Compra: Carregando..."
+    payment-url: "https://muxe.com.br/loja"
+    chat-center: 114
+    code-timeout: 60s
+    pix:
+      material: INK_SACK
+      data: 6
+      name: "&aPix"
+      lore:
+        - "&7Escolha Pix como seu"
+        - "&7método de pagamento."
+        - " "
+        - "&7Pedido:"
+        - " &a{product}"
+        - "  "
+        - " &7Total: &0&a{price}"
+        - "  "
+        - "&eClique para continuar"
+    card:
+      material: BANNER
+      data: 5
+      name: "&aCartão de Crédito"
+      lore:
+        - "&7Escolha Cartão de Crédito"
+        - "&7como seu método de pagamento."
+        - " "
+        - "&7Pedido:"
+        - " &a{product}"
+        - "  "
+        - " &7Total: &0&a{price}"
+        - "  "
+        - "&eClique para continuar"
+    summary:
+      material: INK_SACK
+      data: 10
+      name: "&a{product}"
+      lore:
+        - " "
+        - "&7Total: &0&a{price}"
+    back:
+      material: ARROW
+      name: "&aVoltar"
+      lore:
+        - "&7Para {menu}"
+    use-code:
+      material: STAINED_CLAY
+      data: 5
+      name: "&aUsar código de apoiador"
+      lore:
+        - "&7Receba descontos utilizando"
+        - "&7um código de apoiador."
+        - " "
+        - "&eClique para continuar"
+    skip-code:
+      material: STAINED_CLAY
+      data: 14
+      name: "&cNão usar código de apoiador"
+      lore:
+        - "&7Continue a compra sem"
+        - "&7utilizar um código de"
+        - "&7apoiador."
+        - " "
+        - "&eClique para continuar"
+    loading:
+      step: 150ms
+      duration: 3s
+      lit:
+        material: STAINED_GLASS_PANE
+        data: 5
+        name: "&a..."
+      dim:
+        material: STAINED_GLASS_PANE
+        data: 7
+        name: "&a..."
+  register:
+    labels:
+      bottom: 2.25625
+      spacing: 0.28125
+      gaps:
+        - 0.40625
+        - 0.28125
+        - 0.28125
+        - 0.375
+    seller-skin:
+      value: "ewogICJ0aW1lc3RhbXAiIDogMTY2NjYzMjU2MjAzMSwKICAicHJvZmlsZUlkIiA6ICI5NTdiZmY2OThiZDY0YmFiOTRlOGUyZWMxNDY0ZTNhYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJHdWFuR3Jvb3ZlIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzNjZGRkYWI1MzcyMzFmZWE2MGU5OTM5ZTEwZmRlZDEyNmQ1YmU0NDg1YzQyNmUxNWUxYjg5NGE0Mzg2OGIwZDMiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ=="
+      signature: "bnDJTK/J8Q3Pja9ePRCxhQxVcTQG/HhTnkGvuScdPTa/BfY+hAwUBvcH+0ARAe8bftbNnz1Guyw8Su5NbaNqmRZ+ULxfvBy00mRyEeYovr7BTI8ipxFvPDeXpttKNTD01rLF5Bta03SDWGSRub9d+06rqx+Id+jYv0lbgM7TaeH7OS2fsWXbvd72IV+k/1slkux5fWKG+UZcZusLJlbwrrxg9TXMGHoOTeHS7B2O8O+gzmV91+FjTep2mpslzQGYPQc+ZITP+YQxuDGGs8xPLn3vNE+8E7dcV64zru8uHLzZf6yCj5B/qJEHIxUhtGNyDUMcNFDqLmgiSB/0jTvotioXm6yikTwlScs0ekeQ9C+ztSTu5EaXcEOCCn6y0Qc+ll64s+lEiVyYkYcJs2JwG4huJ1FrPkYJmFyPdfoQkc48rnZdHXkV7v2yuQ/eJCI5qPTsqd9CT3jcRfIgpfOQ+Gvxmdy9ja2Wtur6s+aMP77/tQw9eZvQCxK/QCjXaBVrbLLx6GU9gUQW/TlknYl8/l3b7v0odyRzmV0BaGu1/Mdcy7/A/GMLO+y16WCfTB2A1/a9WWElkBWM+U4yUXaP8nML/Ri90IAQIc4u+6WGYHO5qrHf12FvIeLSN1xJbvUHobxpX+9ickcrlFXbjGFuM9FbXxmgmRGjxL8ZhmOuFPc="
+    parts:
+      skull-1:
+        x: -0.1875
+        y: -0.03125
+        z: -1.1875
+        small: true
+        helmet:
+          material: SKULL_ITEM
+          data: 3
+          skull-texture: "49cfdefc59d0a0c8262565de9a1af49dce9b2b0e5a9d1fff8fabd7c5823adab3"
+      skull-2:
+        x: 0.1875
+        y: -0.03125
+        z: -1.1875
+        small: true
+        helmet:
+          material: SKULL_ITEM
+          data: 3
+          skull-texture: "f69f6da3534f5d579c89b4e3bee662fb9426072850e067b77ae08138ff6037cd"
+      skull-3:
+        x: -0.1875
+        y: -0.03125
+        z: -0.8125
+        small: true
+        helmet:
+          material: SKULL_ITEM
+          data: 3
+          skull-texture: "573dadada5e497655c1f384fd55579c78ff5d677aa1b456553c097d1950c5206"
+      skull-4:
+        x: 0.1875
+        y: -0.03125
+        z: -0.8125
+        small: true
+        helmet:
+          material: SKULL_ITEM
+          data: 3
+          skull-texture: "d545b0ddd82cc4fd2eac64e445bee91b4706408514f71594d18c4b90a5491d74"
+      skull-5:
+        x: -0.15625
+        y: 0.21875
+        z: -0.875
+        small: true
+        head-pose:
+          x: -45.0
+          y: 0.0
+          z: 0.0
+        helmet:
+          material: SKULL_ITEM
+          data: 3
+          skull-texture: "81fdf3f6b41368fd5aedf8caa59937c2b2ffd0c8069a96a869bf26162faca9b6"
+      skull-6:
+        x: 0.15625
+        y: 0.21875
+        z: -0.875
+        small: true
+        head-pose:
+          x: -45.0
+          y: 0.0
+          z: 0.0
+        helmet:
+          material: SKULL_ITEM
+          data: 3
+          skull-texture: "2ed06b3e950448c13008d4d37bc623ff927320ee79e1809c5665b388396fc872"
+      skull-7:
+        x: -0.1875
+        y: 0.375
+        z: -1.1875
+        small: true
+        helmet:
+          material: SKULL_ITEM
+          data: 3
+          skull-texture: "4c98227f2fe396a63b50d572f94bb21e4b134089c649b2b604a2afca5c26138c"
+      skull-8:
+        x: 0.1875
+        y: 0.375
+        z: -1.1875
+        small: true
+        helmet:
+          material: SKULL_ITEM
+          data: 3
+          skull-texture: "3031c02c523ccbfba1ba03fcb3354acd76aceb8be713cbf713adedcfb9c316cc"
+      item-1:
+        x: 0.0
+        y: -0.09632
+        z: 0.0
+        yaw: 295.02
+        arms: true
+        right-arm-pose:
+          x: 0.0
+          y: 90.0
+          z: 90.0
+        hand:
+          material: INK_SACK
+          data: 5
+          glow: true
+        motion:
+          spin: 4.5
+          bob-height: 0.25
+          bob-period: 40
+          phase: 0
+      item-2:
+        x: 0.0
+        y: -0.09632
+        z: 0.0
+        yaw: 115.02
+        arms: true
+        right-arm-pose:
+          x: 0.0
+          y: 90.0
+          z: 90.0
+        hand:
+          material: INK_SACK
+          data: 5
+          glow: true
+        motion:
+          spin: 4.5
+          bob-height: 0.25
+          bob-period: 40
+          phase: 180
+
 messages:
-  no-permission: "&cVocê não tem permissão para isso."
+  no-permission: "&cVocê não possui permissão para usar este comando."
+  unknown-command: "&cComando não encontrado."
   players-only: "&cApenas jogadores podem usar este comando."
-  connecting: "&7Conectando você a &b{destination}&7..."
+  console-only: "&cApenas o console pode usar este comando."
+  command-usage: "&cUso: &f{usage}"
+  command-usage-header: "&eUso do /{command}:"
+  command-usage-line: "&f{usage}"
+  command-invalid-number: "&cO valor &f{input} &cnão é um número válido."
+  command-invalid-option: "&cOpção inválida: &f{input}&c. Use: &f{options}&c."
+  command-player-offline: "&cO jogador &f{input} &cnão está online."
+  command-failed: "&cNão foi possível executar este comando agora."
+  chat-format: "{medal}{prefix}{color}{player}: &f{message}"
+  join-title: "&b&lMUXE"
+  join-subtitle: "&eBoas-vindas!"
+  build-usage: "&eUso: /build <on|off>"
+  build-enabled: "&aModo construção ativado."
+  build-disabled: "&cModo construção desativado."
+  build-already-on: "&cVocê já está no modo construção."
+  build-already-off: "&cVocê não está no modo construção."
+  build-not-allowed: "&cVocê não pode entrar no modo construção agora."
+  build-action-bar: "&aModo construção ativado"
   connect-failed: "&cNão foi possível enviar você agora. Tente novamente em instantes."
+  placement-failed: "&cNão foi possível salvar agora. Tente novamente em instantes."
+  spam-cooldown: "&cAguarde {seconds}s para usar novamente."
+  game-connecting: "&7Procurando uma sala de &b{name}&7..."
+  game-unavailable: "&cNenhuma sala de &f{name} &cdisponível no momento."
+  visibility-all: "&aVocê agora está vendo todos os jogadores."
+  visibility-friends: "&bVocê agora está vendo apenas seus amigos."
+  visibility-none: "&cVocê escondeu todos os jogadores."
+  lobby-current: "&cVocê já está conectado neste lobby."
+  lobby-full: "&cEste lobby está cheio."
+  lobby-failed: "&cNão foi possível trocar de lobby agora. Tente novamente."
+  npc-usage:
+    - "&eUso do /npc:"
+    - "&f/npc criar <id> <ação> <skin> <nome> &7- cria um NPC onde você está"
+    - "&f/npc acao <id> <ação> &7- troca o que o NPC faz ao ser clicado"
+    - "&f/npc mover <id> &7- move o NPC para onde você está"
+    - "&f/npc skin <id> <skin> &7- troca a skin pelo nick de um jogador original"
+    - "&f/npc nome <id> <nome> &7- troca o nome mostrado no holograma"
+    - "&f/npc remover <id> &7- remove o NPC"
+    - "&f/npc listar &7- lista os NPCs deste grupo de servidores"
+    - "&f/npc importar &7- importa o import.yml do Muxe-Core agora"
+    - "&7Ação: &floja&7, &fnenhuma &7ou o grupo do jogo (ex.: &fskywars&7)."
+  npc-invalid-id: "&cO id precisa ter só letras minúsculas, números, - e _."
+  npc-exists: "&cJá existe um NPC com o id &f{id}&c."
+  npc-unknown: "&cNão existe NPC com o id &f{id}&c."
+  npc-fetching-skin: "&7Buscando a skin de &f{skin}&7..."
+  npc-skin-missing: "&eSkin de &f{skin} &enão encontrada. O NPC fica com a skin padrão."
+  npc-created: "&aNPC &f{id} &acriado. Ação: &f{action}&a."
+  npc-action-changed: "&aNPC &f{id} &aagora tem a ação &f{action}&a."
+  npc-moved: "&aNPC &f{id} &amovido para onde você está."
+  npc-skin-changed: "&aSkin do NPC &f{id} &atrocada para &f{skin}&a."
+  npc-renamed: "&aNPC &f{id} &aagora se chama &f{name}&a."
+  npc-removed: "&aNPC &f{id} &aremovido."
+  npc-list-empty: "&7Nenhum NPC criado. Use &f/npc criar&7."
+  npc-list-header: "&eNPCs do grupo &f{group} &e({count}):"
+  npc-list-line: "&8- &f{id} &7→ &b{action} &7({name}, skin {skin}) &8{location}"
+  npc-importing: "&7Importando &f{file}&7..."
+  npc-import-missing: "&cO arquivo &fplugins/Muxe-Core/{file} &cnão existe."
+  npc-imported: "&a{count} itens de &f{file} &aimportados no grupo &f{group}&a."
+  hologram-usage:
+    - "&eUso do /holograma:"
+    - "&f/holograma criar <id> <texto> &7- cria um holograma onde você está"
+    - "&f/holograma adicionar <id> <texto> &7- adiciona uma linha no fim"
+    - "&f/holograma linha <id> <número> <texto> &7- troca uma linha"
+    - "&f/holograma removerlinha <id> <número> &7- remove uma linha"
+    - "&f/holograma ver <id> &7- mostra as linhas numeradas"
+    - "&f/holograma mover <id> &7- move o holograma para onde você está"
+    - "&f/holograma remover <id> &7- remove o holograma"
+    - "&f/holograma listar &7- lista os hologramas deste grupo de servidores"
+    - "&7Use &f& &7para cores e &f{vazio} &7para uma linha em branco."
+  hologram-invalid-id: "&cO id precisa ter só letras minúsculas, números, - e _."
+  hologram-exists: "&cJá existe um holograma com o id &f{id}&c."
+  hologram-unknown: "&cNão existe holograma com o id &f{id}&c."
+  hologram-created: "&aHolograma &f{id} &acriado."
+  hologram-line-added: "&aLinha adicionada ao holograma &f{id}&a."
+  hologram-line-changed: "&aLinha &f{line} &ado holograma &f{id} &atrocada."
+  hologram-line-removed: "&aLinha &f{line} &ado holograma &f{id} &aremovida."
+  hologram-last-line: "&cO holograma precisa ter pelo menos uma linha. Use &f/holograma remover&c."
+  hologram-invalid-line: "&cLinha inválida. O holograma tem &f{count} &clinhas."
+  hologram-moved: "&aHolograma &f{id} &amovido para onde você está."
+  hologram-removed: "&aHolograma &f{id} &aremovido."
+  hologram-list-empty: "&7Nenhum holograma criado. Use &f/holograma criar&7."
+  hologram-list-header: "&eHologramas do grupo &f{group} &e({count}):"
+  hologram-list-line: "&8- &f{id} &7({lines} linhas) &8{location}"
+  social-usage:
+    - "&eUso do /redes:"
+    - "&f/redes criar <id> &7- coloca uma cabeça de redes sociais onde você está, olhando para onde você olha"
+    - "&f/redes mover <id> &7- move a cabeça para onde você está"
+    - "&f/redes remover <id> &7- remove a cabeça"
+    - "&f/redes listar &7- lista as cabeças deste grupo"
+  social-invalid-id: "&cO id precisa ter só letras minúsculas, números, - e _."
+  social-exists: "&cJá existe uma cabeça de redes sociais com o id &f{id}&c."
+  social-unknown: "&cNão existe cabeça de redes sociais com o id &f{id}&c."
+  social-created: "&aCabeça de redes sociais &f{id} &acolocada."
+  social-moved: "&aCabeça de redes sociais &f{id} &amovida para onde você está."
+  social-removed: "&aCabeça de redes sociais &f{id} &aremovida."
+  social-list-empty: "&7Nenhuma cabeça de redes sociais. Use &f/redes criar&7."
+  social-list-header: "&eCabeças de redes sociais do grupo &f{group} &e({count}):"
+  social-list-line: "&8- &f{id} &8{location}"
+  parkour-started: "&b&lPARKOUR &aIniciado!"
+  parkour-restarted: "&b&lPARKOUR &aTemporizador reiniciado!"
+  parkour-checkpoint: "&b&lPARKOUR &aVocê completou o &echeckpoint #{number} &aem &7{time}&a!"
+  parkour-returned: "&b&lPARKOUR &aVocê voltou para o checkpoint #{number}."
+  parkour-finished: "&b&lPARKOUR &aVocê finalizou o &eparkour &aem &7{time}&a!"
+  parkour-new-record: "&b&lPARKOUR &eVocê atingiu um novo &brecorde! &a{previous} &7-> &a{time}"
+  parkour-stopped: "&b&lPARKOUR &cVocê saiu do parkour."
+  parkour-usage:
+    - "&eUso do /parkour:"
+    - "&f/parkour inicio &7- marca o início no bloco onde você está"
+    - "&f/parkour checkpoint <número> &7- marca um checkpoint no bloco onde você está"
+    - "&f/parkour fim &7- marca o fim no bloco onde você está"
+    - "&f/parkour remover <inicio|fim|número> &7- remove um ponto"
+    - "&f/parkour listar &7- lista os pontos deste grupo"
+  parkour-invalid-point: "&cUse inicio, fim ou o número do checkpoint (1 ou mais)."
+  parkour-saved: "&aPonto &f{point} &ado parkour marcado onde você está."
+  parkour-unknown: "&cO parkour deste grupo não tem &f{point}&c."
+  parkour-removed: "&aPonto &f{point} &aremovido do parkour."
+  parkour-list-empty: "&7O parkour deste grupo não tem pontos. Use &f/parkour inicio&7."
+  parkour-list-header: "&ePontos do parkour do grupo &f{group} &e({count}):"
+  parkour-list-line: "&8- &f{point} &8{location}"
+  parkour-point-start: "início"
+  parkour-point-end: "fim"
+  parkour-point-checkpoint: "checkpoint #{number}"
+  hologram-lines-header: "&eHolograma &f{id} &8{location}"
+  hologram-lines-line: "&8{line}. &r{text}"
+  shop-unavailable: "&cA loja não está disponível neste servidor."
+  shop-usage:
+    - "&eUso do /loja:"
+    - "&f/loja &7- abre a loja"
+    - "&f/loja caixa criar <id> &7- cria uma caixa registradora onde você está"
+    - "&f/loja caixa mover <id> &7- move a caixa para onde você está"
+    - "&f/loja caixa remover <id> &7- remove a caixa e o vendedor dela"
+    - "&f/loja caixa listar &7- lista as caixas deste grupo de servidores"
+    - "&f/loja vendedor <id> &7- move o vendedor da caixa para onde você está"
+    - "&f/loja vendedor <id> remover &7- tira o vendedor da caixa"
+    - "&f/loja promocao &7- mostra a promoção de todas as caixas da rede"
+    - "&f/loja promocao produto <id> &7- troca o produto que a caixa abre"
+    - "&f/loja promocao adicionar <texto> &7- adiciona uma linha no holograma"
+    - "&f/loja promocao linha <número> <texto> &7- troca uma linha do holograma"
+    - "&f/loja promocao removerlinha <número> &7- remove uma linha do holograma"
+  shop-register-invalid-id: "&cO id precisa ter só letras minúsculas, números, - e _."
+  shop-register-exists: "&cJá existe uma caixa com o id &f{id}&c."
+  shop-register-unknown: "&cNão existe caixa com o id &f{id}&c."
+  shop-register-created: "&aCaixa &f{id} &acriada onde você está, com o vendedor no mesmo lugar."
+  shop-register-moved: "&aCaixa &f{id} &amovida para onde você está."
+  shop-register-removed: "&aCaixa &f{id} &aremovida."
+  shop-register-list-empty: "&7Nenhuma caixa criada. Use &f/loja caixa criar&7."
+  shop-register-list-header: "&eCaixas do grupo &f{group} &e({count}):"
+  shop-register-list-line: "&8- &f{id} &8{location} &7vendedor: &8{seller}"
+  shop-seller-moved: "&aVendedor da caixa &f{id} &amovido para onde você está."
+  shop-seller-removed: "&aA caixa &f{id} &aficou sem vendedor."
+  shop-promotion-header: "&ePromoção da rede: produto &f{product}"
+  shop-promotion-no-lines: "&7O holograma da caixa está sem linhas."
+  shop-promotion-line: "&8{line}. &r{text}"
+  shop-promotion-product-unknown: "&cO produto &f{product} &cnão existe ou não tem página própria."
+  shop-promotion-product-changed: "&aAs caixas da rede agora abrem &f{product}&a."
+  shop-promotion-line-added: "&aLinha adicionada ao holograma das caixas."
+  shop-promotion-line-changed: "&aLinha &f{line} &ado holograma das caixas trocada."
+  shop-promotion-line-removed: "&aLinha &f{line} &ado holograma das caixas removida."
+  shop-promotion-invalid-line: "&cLinha inválida. O holograma tem &f{count} &clinhas."
+  shop-code-ask:
+    - "&eDigite o código de apoiador no chat."
+    - "&7Para cancelar, digite &ccancelar&7."
+  shop-code-accepted: "&aCódigo de apoiador &f{code} &aregistrado."
+  shop-code-cancelled: "&cCompra cancelada."
+  shop-code-expired: "&cTempo esgotado. Compra cancelada."
+  shop-payment:
+    - "&a&m                                                         "
+    - "<center>&b&lPAGAMENTO"
+    - ""
+    - "<center>&eEscaneie o &aQR Code &eem sua tela para"
+    - "<center>&efinalizar o &6pagamento&e!"
+    - ""
+    - "<link>&cClique aqui para fazer o pagamento via o site."
+    - ""
+    - "&a&m                                                         "
+  tag-list-header: "&aSuas tags: "
+  tag-list-separator: "&f, "
+  tag-preview-message: "Olá!"
+  tag-hover:
+    - "&fPrévia:"
+    - "{preview}"
+    - ""
+    - "&eClique para selecionar!"
+  tag-none: "&cVocê ainda não possui nenhuma tag."
+  tag-selected: "&aVocê selecionou a tag {tag} &acom sucesso."
+  tag-unknown: "&cA tag &f{tag} &cnão existe."
+  tag-locked: "&cVocê não possui a tag {tag}&c."
+  tag-not-decorative: "&cA tag {tag} &cvem de um cargo. Use &f/cargo dar&c."
+  tag-already-held: "&f{player} &cjá possui a tag {tag} &cpara sempre."
+  tag-given: "&aTag {tag} &adada para &f{player} &7({time})&a."
+  tag-removed: "&aTag {tag} &aremovida de &f{player}&a."
+  tag-not-held: "&f{player} &cnão possui a tag {tag}&c."
+  tag-usage:
+    - "&cUso: &f/tag [tag]"
+  tag-usage-staff:
+    - "&6&lTAGS"
+    - "&e/tag &8- &7lista as suas tags"
+    - "&e/tag <tag> &8- &7seleciona uma tag"
+    - "&e/tag dar <jogador> <tag> [tempo] &8- &7dá uma tag decorativa"
+    - "&e/tag remover <jogador> <tag> &8- &7tira uma tag decorativa"
+    - "&7Tempo: &f30d&7, &f12h&7, &f1d12h &7ou &fpermanente &7(padrão)."
+  medal-list-header: "&aMedalhas disponíveis: "
+  medal-list-separator: "&f, "
+  medal-list-none: "&7Nenhuma"
+  medal-preview-message: "Olá!"
+  medal-hover:
+    - "{name}"
+    - ""
+    - "&fPrévia:"
+    - "{preview}"
+    - ""
+    - "&eClique para selecionar!"
+  medal-none-hover:
+    - "&7Nenhuma"
+    - ""
+    - "&fPrévia:"
+    - "{preview}"
+    - ""
+    - "&eClique para selecionar!"
+  medal-selected: "&aVocê selecionou a medalha {medal} &acom sucesso."
+  medal-cleared: "&aVocê removeu a sua medalha."
+  medal-unknown: "&cA medalha &f{medal} &cnão existe."
+  medal-locked: "&cVocê não possui a medalha {medal}&c."
+  medal-already-held: "&f{player} &cjá possui a medalha {medal} &cpara sempre."
+  medal-given: "&aMedalha {medal} &adada para &f{player} &7({time})&a."
+  medal-removed: "&aMedalha {medal} &aremovida de &f{player}&a."
+  medal-not-held: "&f{player} &cnão possui a medalha {medal}&c."
+  medal-usage:
+    - "&cUso: &f/medalha [medalha]"
+  medal-usage-staff:
+    - "&6&lMEDALHAS"
+    - "&e/medalha &8- &7lista as suas medalhas"
+    - "&e/medalha <medalha> &8- &7seleciona uma medalha"
+    - "&e/medalha nenhuma &8- &7remove a sua medalha"
+    - "&e/medalha dar <jogador> <medalha> [tempo] &8- &7dá uma medalha"
+    - "&e/medalha remover <jogador> <medalha> &8- &7tira uma medalha"
+    - "&7Tempo: &f30d&7, &f12h&7, &f1d12h &7ou &fpermanente &7(padrão)."
+  rank-failed: "&cNão foi possível concluir agora. Tente novamente em instantes."
+  rank-permanent: "Vitalício"
+  rank-remaining: "{time}"
+  rank-invalid-time: "&cTempo inválido: &f{input}&c. Use &f30d&c, &f12h&c, &f1d12h &cou &fpermanente&c."
+  rank-player-unknown: "&cO jogador &f{player} &cnunca entrou no servidor."
+  account:
+    usage: "&cUso: &f/account <jogador>"
+    not-found: "&cO jogador &f{player} &cnunca entrou no servidor."
+    premium: "Premium"
+    cracked: "Pirata"
+    soon: "Em breve"
+    soon-click: "&cEm breve."
+    user: "&aUsuário: &f{player}"
+    type: "&aTipo: &f{type}"
+    discord: "&aDiscord: &f{discord}"
+    rank: "&aRank: &f{rank}"
+    rank-added: "  &7Adicionado em: {date}"
+    rank-updated: "  &7Atualizado em: {date}"
+    rank-expires: "  &7Expira em: {date} ({time})"
+    first-login: "&aPrimeiro login: &f{date}"
+    last-login: "&aÚltimo login: &f{date}"
+    location: "&aLocalização:"
+    country: "  &7País: {value}"
+    region: "  &7Estado: {value}"
+    city: "  &7Cidade: {value}"
+    asn: "  &7ASN: {value}"
+    location-unknown: "  &7Desconhecida"
+  rank-usage:
+    - "&6&lCARGOS &8- &7comandos"
+    - "&e/cargo ver <jogador> &8- &7mostra os cargos de um jogador"
+    - "&e/cargo dar <jogador> <cargo> [tempo] &8- &7dá um cargo"
+    - "&e/cargo remover <jogador> <cargo> &8- &7tira um cargo"
+    - "&e/cargo promover <jogador> <trilha> &8- &7sobe um cargo na trilha"
+    - "&e/cargo rebaixar <jogador> <trilha> &8- &7desce um cargo na trilha"
+    - "&e/cargo listar &8- &7lista os cargos e as trilhas"
+    - "&e/cargo info <cargo> &8- &7mostra um cargo e as permissões dele"
+    - "&7Tempo: &f30d&7, &f12h&7, &f1d12h &7ou &fpermanente &7(padrão)."
+  rank-unknown: "&cO cargo &f{rank} &cnão existe. Use &f/cargo listar&c."
+  rank-default: "&cTodo jogador já é {rank}&c."
+  rank-given: "&aCargo {rank} &adado para &f{player} &7({time})&a."
+  rank-already-held: "&f{player} &cjá possui o cargo {rank} &cpara sempre."
+  rank-removed: "&aCargo {rank} &aremovido de &f{player}&a."
+  rank-not-held: "&f{player} &cnão possui o cargo {rank}&c."
+  rank-track-unknown: "&cA trilha &f{track} &cnão existe. Use &f/cargo listar&c."
+  rank-promoted: "&f{player} &afoi promovido para {rank}&a."
+  rank-demoted: "&f{player} &efoi rebaixado para {rank}&e."
+  rank-track-top: "&f{player} &cjá está no topo da trilha &f{track}&c."
+  rank-track-bottom: "&f{player} &cnão tem cargo da trilha &f{track} &cpara perder."
+  rank-view-header: "&6&lCARGOS &8» &f{player}"
+  rank-view-primary: "&7Cargo principal: {rank}"
+  rank-view-tag: "&7Tag em uso: {tag}"
+  rank-view-line: "&8• {rank} &8- &f{time} &8(desde {date})"
+  rank-view-none: "&8• &7Nenhum cargo além de {rank}&7."
+  rank-list-header: "&6&lCARGOS &8» &7do maior para o menor"
+  rank-list-line: "&8• {rank} &8({id}) &7peso &f{weight} &8- &7herda {parents}"
+  rank-list-separator: "&7, "
+  rank-list-tracks: "&6&lTRILHAS"
+  rank-list-track: "&8• &f{track}&8: {groups}"
+  rank-list-track-separator: " &8→ "
+  rank-info-header: "&6&lCARGO &8» {rank} &8({id})"
+  rank-info-weight: "&7Peso: &f{weight}"
+  rank-info-tag: "&7Tag: {tag} &8(no chat: {prefix}&8)"
+  rank-info-parents: "&7Herda: {parents}"
+  rank-info-nodes: "&7Permissões &8({count})&7:"
+  rank-nothing: "&7nenhum"
+  node-line: "&8• &f{key} &8= {value}{contexts}{time}"
+  node-true: "&atrue"
+  node-false: "&cfalse"
+  node-contexts: " &8[&7{contexts}&8]"
+  node-time: " &7(expira em {time})"
+  node-none: "&8• &7Nenhuma permissão."
+  perm-usage:
+    - "&6&lPERMISSÕES &8- &7comandos"
+    - "&e/permissao jogador ver <jogador> &8- &7lista as permissões do jogador"
+    - "&e/permissao jogador definir <jogador> <permissão> [opções] &8- &7define uma permissão"
+    - "&e/permissao jogador remover <jogador> <permissão> [contexto] &8- &7remove uma permissão"
+    - "&e/permissao jogador testar <jogador> <permissão> &8- &7testa uma permissão"
+    - "&e/permissao cargo ver <cargo> &8- &7lista as permissões do cargo"
+    - "&e/permissao cargo definir <cargo> <permissão> [opções] &8- &7define uma permissão no cargo"
+    - "&e/permissao cargo remover <cargo> <permissão> [contexto] &8- &7remove uma permissão do cargo"
+    - "&7Opções, em qualquer ordem: &ftrue&7/&ffalse&7, um tempo (&f30d&7) e contextos (&fserver=lobby&7, &fworld=arena&7)."
+  perm-invalid-node: "&cPermissão inválida: &f{input}&c. Use letras minúsculas, números e &f. _ - + *&c."
+  perm-invalid-option: "&cOpção inválida: &f{input}&c. Use &ftrue&c/&ffalse&c, um tempo como &f30d &cou um contexto como &fserver=lobby&c."
+  perm-user-set: "&aPermissão &f{key} &8= {value}{contexts}{time} &adefinida para &f{player}&a."
+  perm-user-removed: "&aPermissão &f{key}{contexts} &aremovida de &f{player}&a."
+  perm-user-missing: "&f{player} &cnão tem a permissão &f{key}{contexts} &cdefinida."
+  perm-user-header: "&6&lPERMISSÕES &8» &f{player} &8({count})"
+  perm-test: "&f{player} &8» &f{key}&8: {result}"
+  perm-test-true: "&aPermitido"
+  perm-test-false: "&cNegado"
+  perm-test-undefined: "&7Não definido &8(vale o padrão do servidor)"
+  perm-test-online: "&8Testado com o servidor e o mundo onde o jogador está."
+  perm-test-offline: "&8Jogador fora deste servidor: testado sem contexto."
+  perm-group-set: "&aPermissão &f{key} &8= {value}{contexts}{time} &adefinida no cargo {rank}&a."
+  perm-group-removed: "&aPermissão &f{key}{contexts} &aremovida do cargo {rank}&a."
+  perm-group-missing: "&cO cargo {rank} &cnão tem a permissão &f{key}{contexts}&c."
+  perm-group-refused: "&cAlteração recusada: &f{reason}&c."
+  editor-opened:
+    - "&6&lEDITOR DE PERMISSÕES"
+    - "<link>&a&nClique aqui para abrir o editor no navegador."
+    - "&7O link é só seu e expira em &f{minutes} minutos&7."
+  editor-hover:
+    - "&7Abre o editor de cargos, tags e permissões."
+    - "&8{url}"
+  editor-console: "&aEditor de permissões: &f{url} &7(expira em {minutes} minutos)"
   admin:
     usage: "&eUso: /muxe <servers|find <jogador>|metrics>"
     servers-header: "&bServidores ativos ({count}):"

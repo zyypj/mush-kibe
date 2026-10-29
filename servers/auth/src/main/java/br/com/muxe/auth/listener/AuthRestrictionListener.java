@@ -1,9 +1,9 @@
 package br.com.muxe.auth.listener;
 
-import br.com.muxe.auth.command.AuthSetupCommand;
 import br.com.muxe.auth.protection.AuthProtection;
 import br.com.muxe.auth.session.AuthSessionRegistry;
 import br.com.muxe.auth.setup.AuthLocations;
+import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -35,12 +35,14 @@ public final class AuthRestrictionListener implements Listener {
     private final AuthLocations locations;
     private final int voidLevel;
     private final MessageCatalog messages;
+    private final BuildMode build;
 
-    public AuthRestrictionListener(AuthSessionRegistry sessions, AuthLocations locations, int voidLevel, MessageCatalog messages) {
+    public AuthRestrictionListener(AuthSessionRegistry sessions, AuthLocations locations, int voidLevel, MessageCatalog messages, BuildMode build) {
         this.sessions = sessions;
         this.locations = locations;
         this.voidLevel = voidLevel;
         this.messages = messages;
+        this.build = build;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -136,7 +138,7 @@ public final class AuthRestrictionListener implements Listener {
 
     private void guard(Entity actor, Cancellable event) {
         boolean allowed = actor instanceof Player player
-            && AuthProtection.mayInteract(isAuthenticated(player), player.hasPermission(AuthSetupCommand.PERMISSION));
+            && AuthProtection.mayInteract(isAuthenticated(player), build.isBuilding(player));
         if (!allowed) {
             event.setCancelled(true);
         }

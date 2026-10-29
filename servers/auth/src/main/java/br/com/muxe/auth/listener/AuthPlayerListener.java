@@ -6,6 +6,7 @@ import br.com.muxe.core.bukkit.text.MessageCatalog;
 import java.time.Duration;
 import java.util.UUID;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -37,6 +38,7 @@ public final class AuthPlayerListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         event.setJoinMessage(null);
+        player.setGameMode(GameMode.ADVENTURE);
         hideFromEveryone(player);
         player.teleport(locations.spawnLocation().orElseGet(() -> player.getWorld().getSpawnLocation()));
         flow.begin(player, locations.challengeAnchor(player.getEyeLocation(), challengeHeight));

@@ -2,6 +2,7 @@
 java = "25"
 spigot = "1.8.8-R0.1-SNAPSHOT"
 velocity = "4.3.0"
+netty = "4.0.23.Final"
 shadow = "9.6.1"
 hikari = "7.1.0"
 postgresql = "42.7.14"
@@ -10,16 +11,19 @@ jedis = "8.0.2"
 junit = "6.1.3"
 assertj = "3.27.7"
 testcontainers = "2.0.5"
+geoip2 = "5.2.0"
 
 [libraries]
 spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
 velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
+netty = { module = "io.netty:netty-all", version.ref = "netty" }
 
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
+geoip2 = { module = "com.maxmind.geoip2:geoip2", version.ref = "geoip2" }
 
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }

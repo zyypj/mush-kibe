@@ -23,7 +23,7 @@ Muxe prefers several small, named sub-packages over big flat ones. A package nam
 ```text
 br.com.muxe.auth
 ├── bootstrap                      wiring of the plugin
-├── command                        Bukkit command executors
+├── command                        annotated Bukkit commands (see Commands)
 ├── config                         settings records read from config.yml
 ├── credential                     a bounded context
 │   ├── domain                     entities, value objects, repository interfaces, problem codes

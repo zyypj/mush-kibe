@@ -200,6 +200,8 @@ Packets defined in `core:common` (`br.com.muxe.core.common.network`). Feature pa
 | `auth.authenticated` | `PlayerAuthenticatedPacket` | proxy | `DURABLE` 5 min, max age 15 s | A player registered or logged in on an auth server. |
 | `auth.status_request` | `AuthStatusRequest` | proxy | standard, max age 5 s | Ask whether a player is already authenticated. |
 | `auth.status_response` | `AuthStatusResponse` | requester | standard, max age 5 s | Answer to the above, sent only by the proxy the player is on. |
+| `placement.changed` | `PlacementsChangedPacket` | group | standard | NPCs, holograms or cash registers of the group changed; reload them from PostgreSQL. See [NPCs and holograms](../../features/npcs-and-holograms/README.md). |
+| `shop.promotion_changed` | `PromotionChangedPacket` | broadcast | standard | The shop promotion changed; reload it from PostgreSQL. See [Shop](../../features/shop/README.md). |
 
 ## Metrics
 

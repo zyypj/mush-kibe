@@ -11,11 +11,26 @@ import br.com.muxe.core.common.runtime.PlatformHooks;
 import br.com.muxe.core.proxy.auth.AccessPolicy;
 import br.com.muxe.core.proxy.auth.AuthStatusResponder;
 import br.com.muxe.core.proxy.auth.AuthenticationGate;
+import br.com.muxe.core.common.permission.sync.PermissionSync;
 import br.com.muxe.core.proxy.config.AuthenticationSettings;
+import br.com.muxe.core.proxy.config.EditorSettings;
+import br.com.muxe.core.proxy.config.GeoIpSettings;
+import br.com.muxe.core.proxy.editor.bootstrap.PermissionEditor;
+import br.com.muxe.core.proxy.editor.http.EditorHttpServer;
 import br.com.muxe.core.proxy.config.ProxyConfigFile;
 import br.com.muxe.core.proxy.config.RoutingSettings;
+import br.com.muxe.core.proxy.motd.MotdListener;
+import br.com.muxe.core.proxy.motd.MotdSettings;
+import br.com.muxe.core.proxy.tablist.TabListListener;
+import br.com.muxe.core.proxy.tablist.TabListSettings;
+import br.com.muxe.core.proxy.geoip.GeoIpService;
+import br.com.muxe.core.proxy.geoip.application.LocationRecorder;
+import br.com.muxe.core.proxy.geoip.download.GeoDatabaseFiles;
+import br.com.muxe.core.proxy.geoip.download.MaxMindDownloads;
 import br.com.muxe.core.proxy.listener.ConnectionListener;
+import br.com.muxe.core.proxy.listener.LocationListener;
 import br.com.muxe.core.proxy.listener.LoginListener;
+import br.com.muxe.core.proxy.listener.NetworkGateListener;
 import br.com.muxe.core.proxy.listener.PreLoginListener;
 import br.com.muxe.core.proxy.load.ProxyServerLoad;
 import br.com.muxe.core.proxy.login.LoginModeResolver;
@@ -23,12 +38,15 @@ import br.com.muxe.core.proxy.packet.ProxyPacketHandlers;
 import br.com.muxe.core.proxy.premium.CachedPremiumLookup;
 import br.com.muxe.core.proxy.premium.MojangPremiumLookup;
 import br.com.muxe.core.proxy.premium.PremiumLookup;
+import br.com.muxe.core.proxy.routing.NetworkGate;
 import br.com.muxe.core.proxy.routing.ServerRouter;
 import br.com.muxe.core.proxy.session.LoginSessions;
 import br.com.muxe.core.proxy.text.ProxyMessages;
 import com.velocitypowered.api.proxy.ProxyServer;
+import java.io.IOException;
 import java.net.http.HttpClient;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.logging.Logger;
 
 public final class ProxyBootstrap {
@@ -38,6 +56,9 @@ public final class ProxyBootstrap {
     private final Path dataDirectory;
     private final Logger logger;
     private CoreRuntime runtime;
+    private GeoIpService geoIp;
+    private PermissionSync permissions;
+    private EditorHttpServer editor;
 
     public ProxyBootstrap(Object plugin, ProxyServer proxy, Path dataDirectory, Logger logger) {
         this.plugin = plugin;
@@ -68,17 +89,68 @@ public final class ProxyBootstrap {
         new ProxyPacketHandlers(proxy, gate, access, router, routing, sessions, messages, logger).register(runtime.packets());
         new AuthStatusResponder(gate, playerId -> proxy.getPlayer(playerId).isPresent()).register(runtime.packets());
         proxy.getEventManager().register(plugin, new PreLoginListener(resolver, runtime.executors().io(), messages, runtime.metrics(), logger));
+        proxy.getEventManager().register(plugin, new NetworkGateListener(new NetworkGate(runtime.directory(), routing), messages));
         proxy.getEventManager().register(plugin, new LoginListener(runtime.commands(), gate, sessions, messages, runtime.metrics(), logger));
         proxy.getEventManager().register(plugin, new ConnectionListener(gate, access, router, routing, messages));
+        proxy.getEventManager().register(plugin, new MotdListener(MotdSettings.from(config)));
+        proxy.getEventManager().register(plugin, new TabListListener(TabListSettings.from(config)));
+        startGeoIp(GeoIpSettings.from(config, SecretResolver.system()));
+        startEditor(EditorSettings.from(config));
 
         logger.info("Muxe proxy ready as " + settings.server().id());
     }
 
     public void disable() {
+        if (editor != null) {
+            editor.close();
+            editor = null;
+        }
+        if (permissions != null) {
+            permissions.stop();
+            permissions = null;
+        }
+        if (geoIp != null) {
+            geoIp.close();
+            geoIp = null;
+        }
         if (runtime != null) {
             runtime.close();
             runtime = null;
         }
+    }
+
+    private void startEditor(EditorSettings settings) {
+        if (!settings.enabled()) {
+            logger.info("Permission editor is off (editor.enabled is false)");
+            return;
+        }
+        permissions = new PermissionSync(runtime.commands(), runtime.queries(), runtime.packets(), runtime.executors().io(), logger);
+        permissions.start().join();
+        try {
+            editor = PermissionEditor.start(settings, runtime.store(), runtime.queries(), permissions, runtime.clock(), logger);
+        } catch (IOException exception) {
+            logger.severe("Permission editor is off, cannot listen on " + settings.bind() + ":" + settings.port() + ": " + exception.getMessage());
+            return;
+        }
+        logger.info("Permission editor listening on " + settings.bind() + ":" + editor.address().getPort() + ", public at " + settings.publicUrl());
+    }
+
+    private void startGeoIp(GeoIpSettings settings) {
+        if (!settings.enabled() || settings.credentials().isEmpty()) {
+            logger.warning("GeoIP is off: " + settings.disabledReason().orElse("no MaxMind credentials") + ". Account locations will not be saved.");
+            return;
+        }
+        HttpClient client = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .followRedirects(HttpClient.Redirect.NEVER)
+            .executor(runtime.executors().io())
+            .build();
+        MaxMindDownloads downloads = new MaxMindDownloads(client, MaxMindDownloads.DEFAULT_ENDPOINT, settings.credentials().get());
+        GeoDatabaseFiles files = new GeoDatabaseFiles(dataDirectory.resolve("geoip"), downloads, runtime.clock(), settings.refreshAfter());
+        geoIp = new GeoIpService(files, runtime.executors().io(), logger);
+        geoIp.start(runtime.executors().scheduler());
+        LocationRecorder recorder = new LocationRecorder(runtime.commands(), geoIp::locator, runtime.executors().io(), logger);
+        proxy.getEventManager().register(plugin, new LocationListener(recorder));
     }
 
     private PremiumLookup premiumLookup(AuthenticationSettings authentication) {

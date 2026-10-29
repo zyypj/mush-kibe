@@ -40,7 +40,7 @@ When a connection starts, the proxy decides its **login mode**:
 After the account is recorded, the proxy authenticates the player immediately when:
 
 - the account is **premium**, or
-- the player has a valid **login session**: they logged in with a password less than `authentication.session-duration` ago (2 hours by default), with the same account and from the same IP.
+- the player has a valid **login session**: they logged in with a password less than `authentication.session-duration` ago (24 hours by default), with the same account and from the same IP. Resuming a session does not extend it: it always ends `session-duration` after the password login.
 
 Automatically authenticated players go straight to a lobby. Everyone else goes to an auth server.
 
@@ -64,7 +64,9 @@ The code is never sent as text: each hologram only carries a `⬛`, so a bot has
 - On success: `Você se autenticou com sucesso!` (or `Você se registrou com sucesso!`) and `Enviando ao lobby...`. The auth server publishes `auth.authenticated`; the proxy opens the gate, **remembers the login session** and sends the player to a lobby.
 - A player who does not finish in `security.login-timeout` is kicked.
 
-While unauthenticated, a player can only walk, type the code in the chat and use `/logar` and `/registrar`. They cannot chat with others, run other commands, see other players, interact with blocks or entities (item frames, armor stands, paintings), use buckets, drop or pick up items, open inventories, break or place blocks, take damage or lose hunger. Falling below `protection.void-level` sends the player back to the spawn. After authenticating, commands are released for everyone; building and interacting are released only for players with `muxe.auth.setup`. Chat stays closed for everyone on the auth server.
+Every player on the auth server stays in Adventure mode: it is set on join and Muxe-Core cancels any other game mode, except Creative in build mode.
+
+While unauthenticated, a player can only walk, type the code in the chat and use `/logar` and `/registrar`. They cannot chat with others, run other commands, see other players, interact with blocks or entities (item frames, armor stands, paintings), use buckets, drop or pick up items, open inventories, break or place blocks, take damage or lose hunger. Falling below `protection.void-level` sends the player back to the spawn. After authenticating, commands are released for everyone; building and interacting are released only for players in build mode (`/build`, which needs `muxe.build`). Build mode only starts on the auth server after the player is authenticated, so a cracked client using a staff member's name never inherits it. Chat stays closed for everyone on the auth server.
 
 ### 5. Configuring the auth server (staff)
 
@@ -87,11 +89,13 @@ Positions are saved in `plugins/Muxe-Auth/config.yml` under `locations`, and app
 | `/authsetup info` | Shows both positions. | `muxe.auth.setup` |
 | `/authsetup limpar <spawn\|codigo>` | Removes a position and goes back to the default. | `muxe.auth.setup` |
 
+With missing or extra words, `/logar` and `/registrar` answer `usage-login` and `usage-register`. Passwords are never completed with tab.
+
 ## Permissions
 
 | Permission | Grants | Default |
 |---|---|---|
-| `muxe.auth.setup` | `/authsetup`, and moving, building and interacting on the auth server after logging in. Only works once the player is authenticated, so a cracked client using an operator's name gets nothing. | op |
+| `muxe.auth.setup` | `/authsetup`, after logging in. Only works once the player is authenticated, so a cracked client using an operator's name gets nothing. | op |
 
 ## Configuration
 
@@ -103,7 +107,9 @@ Proxy `config.yml`:
 | `authentication.premium-lookup-timeout` | `3s` | Timeout of the Mojang lookup. |
 | `authentication.premium-cache` | `6h` | How long "premium" answers from Mojang are cached in Redis. |
 | `authentication.cracked-cache` | `10m` | How long "not premium" answers are cached. Short, so a name that becomes premium is protected quickly. |
-| `authentication.session-duration` | `2h` | How long a password login is remembered for the same account and IP. |
+| `authentication.session-duration` | `24h` | How long a password login is remembered for the same account and IP. |
+
+The same file also holds `editor.*` ([Permission editor](../permission-editor/README.md#configuration)) and `geoip.*` ([Account location](../geoip/README.md#configuration)).
 
 `plugins/Muxe-Auth/config.yml`:
 
@@ -123,7 +129,7 @@ Proxy `config.yml`:
 | `security.attempt-window` | `5m` | Window for counting wrong passwords. |
 | `password.min-length` | `6` | Minimum password length. |
 | `password.max-length` | `64` | Maximum password length. |
-| `messages.*` | Portuguese texts | Every text shown to the player, including the title (`title`, `subtitle-login`, `subtitle-register`) and the action bar (`challenge-action-bar`). |
+| `messages.*` | Portuguese texts | Every text shown to the player, including the title (`title`, `subtitle-login`, `subtitle-register`) and the action bar (`challenge-action-bar`), and the [command messages](../../development/commands/README.md#messages). |
 
 Required:
 
