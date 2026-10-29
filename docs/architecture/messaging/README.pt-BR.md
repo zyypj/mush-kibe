@@ -200,6 +200,8 @@ Pacotes definidos em `core:common` (`br.com.muxe.core.common.network`). Pacotes 
 | `auth.authenticated` | `PlayerAuthenticatedPacket` | proxy | `DURABLE` 5 min, idade máxima 15 s | Um jogador se registrou ou fez login em um servidor de auth. |
 | `auth.status_request` | `AuthStatusRequest` | proxy | padrão, idade máxima 5 s | Pergunta se um jogador já está autenticado. |
 | `auth.status_response` | `AuthStatusResponse` | quem pediu | padrão, idade máxima 5 s | Resposta à pergunta acima, enviada só pelo proxy em que o jogador está. |
+| `placement.changed` | `PlacementsChangedPacket` | grupo | padrão | NPCs, hologramas ou caixas registradoras do grupo mudaram; recarregue do PostgreSQL. Veja [NPCs e hologramas](../../features/npcs-and-holograms/README.pt-BR.md). |
+| `shop.promotion_changed` | `PromotionChangedPacket` | broadcast | padrão | A promoção da loja mudou; recarregue do PostgreSQL. Veja [Loja](../../features/shop/README.pt-BR.md). |
 
 ## Métricas
 

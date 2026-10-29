@@ -3,16 +3,46 @@ version: '${version}'
 main: br.com.muxe.core.bukkit.MuxeCorePlugin
 author: Muxe
 description: Base plugin of every Muxe server. Connects to PostgreSQL and Redis and exposes the shared services.
-commands:
-  muxe:
-    description: Network administration.
-    usage: /muxe <servers|find <player>|metrics>
-  lobby:
-    description: Sends you back to a lobby.
-    aliases:
-      - hub
-      - l
 permissions:
   muxe.admin:
     description: Allows /muxe.
+    default: op
+  muxe.build:
+    description: Allows /build, which switches to creative to build and break on any server.
+    default: op
+  muxe.npc:
+    description: Allows /npc.
+    default: op
+  muxe.hologram:
+    description: Allows /holograma.
+    default: op
+  muxe.parkour:
+    description: Allows /parkour.
+    default: op
+  muxe.social:
+    description: Allows /redes.
+    default: op
+  muxe.shop.manage:
+    description: Allows /loja caixa, /loja vendedor and /loja promocao.
+    default: op
+  muxe.tags.manage:
+    description: Allows /tag dar and /tag remover, which give and take decorative tags.
+    default: op
+  muxe.medals.manage:
+    description: Allows /medalha dar and /medalha remover, which give and take medals.
+    default: op
+  muxe.account.others:
+    description: Allows /account and /accountmenu on other players.
+    default: op
+  muxe.account.staff:
+    description: Shows the staff buttons of /accountmenu.
+    default: op
+  muxe.ranks.manage:
+    description: Allows /cargo, which shows, gives, removes, promotes and demotes ranks.
+    default: op
+  muxe.permissions.manage:
+    description: Allows /permissao, which sets and removes permissions of players and ranks.
+    default: op
+  muxe.permissions.editor:
+    description: Allows /editor, which opens a session of the web permission editor.
     default: op

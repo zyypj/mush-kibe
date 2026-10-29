@@ -40,6 +40,9 @@ public final class LoginListener {
 
     @Subscribe
     public EventTask onLogin(LoginEvent event) {
+        if (!event.getResult().isAllowed()) {
+            return null;
+        }
         Player player = event.getPlayer();
         RecordLoginCommand command = new RecordLoginCommand(player.getUniqueId(), player.getUsername(), player.isOnlineMode());
         CompletableFuture<Void> recording = commands.dispatch(command)

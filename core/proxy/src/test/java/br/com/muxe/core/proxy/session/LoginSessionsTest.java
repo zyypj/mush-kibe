@@ -14,14 +14,14 @@ class LoginSessionsTest {
 
     private final MutableClock clock = MutableClock.startingAt("2026-01-01T00:00:00Z");
     private final InMemoryExpiringStore store = new InMemoryExpiringStore(clock);
-    private final LoginSessions sessions = new LoginSessions(store, Duration.ofHours(2));
+    private final LoginSessions sessions = new LoginSessions(store, Duration.ofHours(24));
     private final UUID player = UUID.randomUUID();
 
     @Test
     void resumesFromTheSameAddressWithinTheDuration() throws UnknownHostException {
         sessions.remember(player, address("203.0.113.7"));
 
-        clock.advance(Duration.ofMinutes(119));
+        clock.advance(Duration.ofMinutes(24 * 60 - 1));
 
         assertThat(sessions.canResume(player, address("203.0.113.7"))).isTrue();
     }
@@ -30,8 +30,19 @@ class LoginSessionsTest {
     void expiresAfterTheDuration() throws UnknownHostException {
         sessions.remember(player, address("203.0.113.7"));
 
-        clock.advance(Duration.ofHours(2));
+        clock.advance(Duration.ofHours(24));
 
+        assertThat(sessions.canResume(player, address("203.0.113.7"))).isFalse();
+    }
+
+    @Test
+    void resumingDoesNotExtendTheSession() throws UnknownHostException {
+        sessions.remember(player, address("203.0.113.7"));
+
+        clock.advance(Duration.ofHours(23));
+        assertThat(sessions.canResume(player, address("203.0.113.7"))).isTrue();
+
+        clock.advance(Duration.ofHours(1));
         assertThat(sessions.canResume(player, address("203.0.113.7"))).isFalse();
     }
 

@@ -77,6 +77,7 @@ Schema `core`, owned by `core:common`:
 
 - The proxy's `LoginListener` records every login.
 - Any plugin can ask `FindAccountQuery` through `MuxeCore.queries()`.
+- [Account](../account/README.md) shows accounts with `/account`, `/accountmenu` and the profile head, and [Ranks and tags](../ranks-and-tags/README.md) finds players by name for its commands.
 
 ## Acceptance criteria
 

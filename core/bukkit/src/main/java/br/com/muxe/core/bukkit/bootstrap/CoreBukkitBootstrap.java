@@ -1,24 +1,35 @@
 package br.com.muxe.core.bukkit.bootstrap;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
+import br.com.muxe.core.bukkit.buildmode.BuildMode;
+import br.com.muxe.core.bukkit.buildmode.BuildSettings;
+import br.com.muxe.core.bukkit.command.BuildCommand;
 import br.com.muxe.core.bukkit.command.LobbyCommand;
 import br.com.muxe.core.bukkit.command.MuxeAdminCommand;
+import br.com.muxe.core.bukkit.command.framework.Commands;
+import br.com.muxe.core.bukkit.command.framework.registry.CommandMapRegistrar;
+import br.com.muxe.core.bukkit.command.framework.registry.PermissionMessages;
+import br.com.muxe.core.bukkit.command.framework.registry.UnknownCommands;
 import br.com.muxe.core.bukkit.config.BukkitConfigSource;
+import br.com.muxe.core.bukkit.greeting.GreetingSettings;
+import br.com.muxe.core.bukkit.greeting.JoinGreeting;
+import br.com.muxe.core.bukkit.menu.MenuListener;
 import br.com.muxe.core.bukkit.monitor.BukkitServerLoad;
 import br.com.muxe.core.bukkit.monitor.TickMonitor;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
+import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.bukkit.thread.BukkitMainThreadExecutor;
 import br.com.muxe.core.bukkit.thread.BukkitMainThreadGuard;
+import br.com.muxe.core.common.buildmode.BuildState;
 import br.com.muxe.core.common.config.ConfigException;
 import br.com.muxe.core.common.config.secret.SecretResolver;
 import br.com.muxe.core.common.config.settings.MuxeSettings;
 import br.com.muxe.core.common.config.settings.SettingsLoader;
+import br.com.muxe.core.common.permission.sync.PermissionSync;
 import br.com.muxe.core.common.runtime.CoreRuntime;
 import br.com.muxe.core.common.runtime.PlatformHooks;
 import java.util.concurrent.Executor;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,6 +38,9 @@ public final class CoreBukkitBootstrap {
 
     private final JavaPlugin plugin;
     private CoreRuntime runtime;
+    private PlacedFeatures features;
+    private PermissionService permissions;
+    private RankFeatures ranks;
 
     public CoreBukkitBootstrap(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -46,13 +60,41 @@ public final class CoreBukkitBootstrap {
         MessageCatalog messages = MessageCatalog.from(config.getConfigurationSection("messages"));
         Executor mainThread = new BukkitMainThreadExecutor(plugin);
         NetworkGateway network = new NetworkGateway(runtime.packets());
-        MuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages);
+        BuildSettings buildSettings = BuildSettings.from(config.getConfigurationSection("build-mode"));
+        BuildMode buildMode = new BuildMode(
+            plugin.getServer(),
+            new BuildState(runtime.store(), buildSettings.duration()),
+            buildSettings,
+            settings.server().kind(),
+            runtime.executors().io(),
+            mainThread,
+            messages,
+            plugin.getLogger()
+        );
+        PermissionSync permissionSync = new PermissionSync(runtime.commands(), runtime.queries(), runtime.packets(), mainThread, plugin.getLogger());
+        permissions = PermissionService.start(plugin, permissionSync, settings.server().group(), runtime.clock());
+        MuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages, buildMode, permissions);
         plugin.getServer().getServicesManager().register(MuxeCore.class, core, plugin, ServicePriority.Normal);
 
         plugin.getServer().getScheduler().runTaskTimer(plugin, new TickMonitor(load, runtime.metrics()), 1L, 1L);
+        plugin.getServer().getPluginManager().registerEvents(new MenuListener(), plugin);
+        plugin.getServer().getPluginManager().registerEvents(buildMode, plugin);
+        plugin.getServer().getScheduler().runTaskTimer(plugin, buildMode, BuildMode.ACTION_BAR_PERIOD_TICKS, BuildMode.ACTION_BAR_PERIOD_TICKS);
+        GreetingSettings greeting = GreetingSettings.from(config.getConfigurationSection("join-greeting"));
+        if (greeting.appliesTo(settings.server().kind())) {
+            plugin.getServer().getPluginManager().registerEvents(new JoinGreeting(plugin, greeting, messages), plugin);
+        }
         String lobbyGroup = config.getString("network.lobby-group", "lobby");
-        bindCommand("muxe", new MuxeAdminCommand(core));
-        bindCommand("lobby", new LobbyCommand(core, lobbyGroup));
+        Commands commands = Commands.of(plugin, messages);
+        commands.register(new MuxeAdminCommand(core), new LobbyCommand(core, lobbyGroup), new BuildCommand(buildMode, messages));
+        ranks = RankFeatures.start(plugin, core, config, commands);
+        features = PlacedFeatures.start(plugin, core, config, commands);
+        HotbarFeatures.start(plugin, core, config, features);
+        CommandMapRegistrar.commandMap(plugin.getServer())
+            .ifPresent(map -> {
+                new PermissionMessages(plugin, map, messages.get("no-permission")).start();
+                plugin.getServer().getPluginManager().registerEvents(new UnknownCommands(map, messages.get("unknown-command")), plugin);
+            });
 
         plugin.getLogger().info("Muxe-Core ready as " + settings.server().id() + " (" + settings.server().group() + ")");
     }
@@ -68,18 +110,22 @@ public final class CoreBukkitBootstrap {
     }
 
     public void disable() {
+        if (features != null) {
+            features.stop();
+            features = null;
+        }
+        if (ranks != null) {
+            ranks.stop();
+            ranks = null;
+        }
+        if (permissions != null) {
+            permissions.stop();
+            permissions = null;
+        }
         plugin.getServer().getServicesManager().unregisterAll(plugin);
         if (runtime != null) {
             runtime.close();
             runtime = null;
         }
-    }
-
-    private void bindCommand(String name, CommandExecutor executor) {
-        PluginCommand command = plugin.getCommand(name);
-        if (command == null) {
-            throw new IllegalStateException("Command /" + name + " is missing from plugin.yml");
-        }
-        command.setExecutor(executor);
     }
 }

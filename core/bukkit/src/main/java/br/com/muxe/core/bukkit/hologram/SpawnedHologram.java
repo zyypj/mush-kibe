@@ -15,4 +15,8 @@ public interface SpawnedHologram {
     void resend();
 
     void remove();
+
+    default boolean owns(int entityId) {
+        return false;
+    }
 }

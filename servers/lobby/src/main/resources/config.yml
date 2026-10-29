@@ -6,9 +6,35 @@ play:
 protection:
   void-level: 0
 
+arrival:
+  fly-height: 5
+
+bossbar:
+  interval: 500ms
+  frames:
+    - "&e&lMUXE"
+    - "&6&lMUXE"
+
+scoreboard:
+  title: "&b&lMUXE"
+  update-interval: 1s
+  default-tag: "&7Membro"
+  default-credits: 0
+  lines:
+    - ""
+    - "&fTag: {tag}"
+    - "&fCréditos: &d{credits}"
+    - ""
+    - "&fLobby: &a#{lobby}"
+    - "&fJogadores: &b{players}"
+    - ""
+    - "&amuxe.com.br"
+
 messages:
   play-usage: "&eUso: /jogar <modo>. Modos: &f{games}"
   play-unknown: "&cModo desconhecido. Modos: &f{games}"
   play-connecting: "&7Procurando uma sala de &b{game}&7..."
   play-failed: "&cNão foi possível entrar agora. Tente novamente."
   spawn-set: "&aSpawn do lobby definido."
+  fly-enabled: "&eVocê ativou o &bmodo voar&e!"
+  fly-disabled: "&cVocê desativou o modo voar!"

@@ -9,6 +9,7 @@ Tudo sobre a Muxe está documentado aqui, em inglês e português. As regras de 
 - [Desenvolvimento](development/README.pt-BR.md): requisitos, módulos, regras de dependência, comandos de build e como rodar uma rede local.
 - [Convenções](development/conventions/README.pt-BR.md): estilo de Java, organização de pacotes, nomes, configuração e mensagens.
 - [API do core](development/core-api/README.pt-BR.md): o que o Muxe-Core oferece aos plugins, incluindo títulos, action bars e texto em partículas.
+- [Comandos](development/commands/README.pt-BR.md): o framework de comandos com anotações, argumentos, tab e registro.
 - [Processo](process/README.pt-BR.md): como o trabalho é planejado e entregue, e o que significam "pronto para começar" e "concluído".
 - [Política legal e de sala limpa](legal/README.pt-BR.md): o que pode e o que não pode entrar neste repositório.
 
@@ -29,12 +30,21 @@ Tudo sobre a Muxe está documentado aqui, em inglês e português. As regras de 
 ## Features
 
 - [Contas](features/accounts/README.pt-BR.md): uma conta por jogador, criada no primeiro login.
-- [Autenticação](features/authentication/README.pt-BR.md): login automático de premium, desafio anti-bot, `/registrar`, `/logar` e sessões de 2 horas.
+- [Autenticação](features/authentication/README.pt-BR.md): login automático de premium, desafio anti-bot, `/registrar`, `/logar` e sessões de 24 horas.
 - [Roteamento da rede](features/network-routing/README.pt-BR.md): como o proxy escolhe servidores, o `/lobby` e a barreira de acesso.
 - [Administração da rede](features/network-admin/README.pt-BR.md): comandos `/muxe` para a equipe.
-- [Lobby](features/lobby/README.pt-BR.md): spawn, proteção e `/jogar`.
+- [Lobby](features/lobby/README.pt-BR.md): spawn, voo, proteção, scoreboard, boss bar e `/jogar`.
+- [Hotbar](features/hotbar/README.pt-BR.md): a hotbar dos lobbys, do Muxe-Core, com o seletor de jogo, o perfil, o seletor de lobby e a visibilidade dos jogadores.
+- [NPCs e hologramas](features/npcs-and-holograms/README.pt-BR.md): NPCs e hologramas de texto colocados por comando e compartilhados pelo grupo de servidores.
+- [Cabeças de redes sociais](features/social-heads/README.pt-BR.md): uma cabeça de jogador que passa pelas redes sociais da rede e envia o link no clique, compartilhada pelo grupo de servidores.
+- [Parkour](features/parkour/README.pt-BR.md): um parkour cronometrado no lobby, com checkpoints, itens para reiniciar ou voltar, e um recorde pessoal por mapa, compartilhado pelo grupo de servidores.
+- [Loja](features/shop/README.pt-BR.md): `/loja`, os menus de compra, as caixas registradoras e a promoção da rede.
 - [SkyWars](features/skywars/README.pt-BR.md): esqueleto do plugin e modos.
 - [BedWars](features/bedwars/README.pt-BR.md): esqueleto do plugin e modos.
+- [Editor de permissões](features/permission-editor/README.pt-BR.md): um site servido pelo proxy para editar cargos, herança, permissões, tags, trilhas e jogadores, aberto com `/editor`.
+- [Localização da conta (GeoIP)](features/geoip/README.pt-BR.md): país, região, cidade e rede de cada login pela MaxMind GeoLite2, sem guardar o endereço.
+- [Cargos e tags](features/ranks-and-tags/README.pt-BR.md): cargos, permissões e tags aplicados em todo servidor, prefixos no chat e no tab, `/tag`, `/cargo`, `/permissao` e `/editor`.
+- [Conta](features/account/README.pt-BR.md): `/account`, `/accountmenu` e os cargos na cabeça do perfil.
 
 ## Documentando uma nova feature
 

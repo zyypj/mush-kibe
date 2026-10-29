@@ -77,6 +77,7 @@ Schema `core`, que pertence ao `core:common`:
 
 - O `LoginListener` do proxy registra todo login.
 - Qualquer plugin pode fazer a `FindAccountQuery` pelo `MuxeCore.queries()`.
+- A [Conta](../account/README.pt-BR.md) mostra as contas com `/account`, `/accountmenu` e a cabeça do perfil, e [Cargos e tags](../ranks-and-tags/README.pt-BR.md) encontra jogadores pelo nome nos seus comandos.
 
 ## Critérios de aceitação
 

@@ -8,8 +8,8 @@ public final class AuthProtection {
     private AuthProtection() {
     }
 
-    public static boolean mayInteract(boolean authenticated, boolean staff) {
-        return authenticated && staff;
+    public static boolean mayInteract(boolean authenticated, boolean building) {
+        return authenticated && building;
     }
 
     public static boolean mayRunCommand(boolean authenticated, String commandLine) {

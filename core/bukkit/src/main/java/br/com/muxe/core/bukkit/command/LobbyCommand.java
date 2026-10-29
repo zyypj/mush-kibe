@@ -1,13 +1,12 @@
 package br.com.muxe.core.bukkit.command;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
-import br.com.muxe.core.bukkit.text.MessageCatalog;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import br.com.muxe.core.bukkit.command.framework.annotation.Command;
+import br.com.muxe.core.bukkit.command.framework.annotation.Default;
 import org.bukkit.entity.Player;
 
-public final class LobbyCommand implements CommandExecutor {
+@Command(name = "lobby", aliases = {"hub", "l"}, description = "Sends you back to a lobby.")
+public final class LobbyCommand {
 
     private final MuxeCore core;
     private final String lobbyGroup;
@@ -17,18 +16,11 @@ public final class LobbyCommand implements CommandExecutor {
         this.lobbyGroup = lobbyGroup;
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        MessageCatalog messages = core.messages();
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(messages.get("players-only"));
-            return true;
-        }
-        player.sendMessage(messages.get("connecting", "destination", lobbyGroup));
+    @Default
+    public void send(Player player) {
         core.network().connectToGroup(player.getUniqueId(), lobbyGroup).exceptionally(error -> {
-            core.mainThread().execute(() -> player.sendMessage(messages.get("connect-failed")));
+            core.mainThread().execute(() -> player.sendMessage(core.messages().get("connect-failed")));
             return null;
         });
-        return true;
     }
 }
