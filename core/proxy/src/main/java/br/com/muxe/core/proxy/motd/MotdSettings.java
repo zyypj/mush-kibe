@@ -10,6 +10,8 @@ public record MotdSettings(List<String> lines, int maxPlayers) {
 
     public static final int DEFAULT_MAX_PLAYERS = 3000;
 
+    private static final String LINE_BREAK = "&r\n";
+
     public MotdSettings {
         lines = List.copyOf(lines);
     }
@@ -22,6 +24,6 @@ public record MotdSettings(List<String> lines, int maxPlayers) {
     }
 
     public Component description() {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(String.join("\n", lines));
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(String.join(LINE_BREAK, lines));
     }
 }

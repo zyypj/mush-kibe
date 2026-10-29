@@ -9,8 +9,11 @@ import com.velocitypowered.api.proxy.InboundConnection;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import java.lang.reflect.Proxy;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -36,6 +39,19 @@ class MotdTest {
     }
 
     @Test
+    void theBreakAndThePaddingOfTheSecondLineAreNeverStruckThrough() {
+        MotdSettings settings = MotdSettings.from(ProxyConfigFile.load(folder));
+
+        List<TextComponent> pieces = new ArrayList<>();
+        collect(settings.description(), pieces);
+
+        assertThat(pieces).filteredOn(piece -> piece.content().contains("\n")).isNotEmpty()
+            .allSatisfy(piece -> assertThat(piece.decoration(TextDecoration.STRIKETHROUGH)).isNotEqualTo(TextDecoration.State.TRUE));
+        assertThat(pieces).filteredOn(piece -> piece.content().contains("VENHA JOGAR")).singleElement()
+            .satisfies(piece -> assertThat(piece.decoration(TextDecoration.STRIKETHROUGH)).isNotEqualTo(TextDecoration.State.TRUE));
+    }
+
+    @Test
     void everyPingGetsTheMotdAndTheMaximumButKeepsTheOnlineCount() {
         MotdSettings settings = new MotdSettings(List.of("&bA", "&aB"), 3000);
         ServerPing original = ServerPing.builder()
@@ -51,6 +67,13 @@ class MotdTest {
         assertThat(event.getPing().getDescriptionComponent()).isEqualTo(settings.description());
         assertThat(event.getPing().getPlayers().orElseThrow().getMax()).isEqualTo(3000);
         assertThat(event.getPing().getPlayers().orElseThrow().getOnline()).isEqualTo(1479);
+    }
+
+    private static void collect(Component component, List<TextComponent> pieces) {
+        if (component instanceof TextComponent text) {
+            pieces.add(text);
+        }
+        component.children().forEach(child -> collect(child, pieces));
     }
 
     private static InboundConnection connection() {
