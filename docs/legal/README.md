@@ -9,6 +9,7 @@ Muxe is an independent project. It is inspired by the gameplay of classic Brazil
 - Code written by the contributor for Muxe.
 - Libraries with licenses compatible with the project license, added through Gradle.
 - Ideas about gameplay, described in your own words. Game mechanics in general are not protected, but their concrete expression (code, text, art, maps) is.
+- Minecraft player skins for NPCs, referenced by their signed texture on Mojang's texture servers (`textures.minecraft.net`). Skins are shared openly by the Minecraft community, so the project owner allows them; the repository keeps only the signed reference, never the skin image.
 
 ## What must never enter this repository
 

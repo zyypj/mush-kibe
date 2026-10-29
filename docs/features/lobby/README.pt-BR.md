@@ -73,7 +73,7 @@ Doze NPCs de jogo ficam em fila na frente do spawn, do x 12.5 ao -9.5 no y 33.37
 
 - São NPCs de jogo comuns do grupo `lobby`, então o `lobby-1`, o `lobby-2` e todo lobby que vier depois os mostram.
 - Eles ficam no `servers/lobby/placements/import.yml`, no [formato de importação](../npcs-and-holograms/README.pt-BR.md#importando-o-que-já-existia). O grupo de cada NPC é a chave `group`; troque ali antes de importar, ou depois com `/npc acao <id> <grupo>`.
-- Skins: todo NPC tem `skin-name: ""` e mostra a skin padrão. As skins dos NPCs de referência foram feitas por outras pessoas e não têm licença para o Muxe, então não estão no repositório (veja [Jurídico](../../legal/README.pt-BR.md)). Para dar uma skin a um NPC, coloque em `skin-name` um nome original cuja skin o Muxe possa usar e importe de novo, ou use `/npc skin <id> <nome>`.
+- Skins: todo NPC usa a skin do NPC de referência, guardada no `import.yml` como a textura assinada da Mojang (`skin.value` e `skin.signature`), o que o [Jurídico](../../legal/README.pt-BR.md) permite. Para trocar, use `/npc skin <id> <nome>`, ou mude o `skin` da entrada e importe de novo.
 
 #### Colocando os NPCs
 
@@ -185,6 +185,5 @@ As métricas de servidor Spigot do Muxe-Core. As métricas de visibilidade foram
 ## Limitações conhecidas
 
 - Créditos ainda não existem; a scoreboard mostra `scoreboard.default-credits`.
-- Os NPCs de jogo mostram a skin padrão até a equipe escolher skins que o Muxe possa usar.
 - Ainda não existe grupo de servidores de jogo além de `skywars` e `bedwars`, então os outros NPCs de jogo mostram `0 jogando` e respondem que não há sala disponível.
 - As limitações da hotbar e dos seus menus estão em [Hotbar](../hotbar/README.pt-BR.md#limitações-conhecidas).

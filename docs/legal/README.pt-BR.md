@@ -9,6 +9,7 @@ A Muxe é um projeto independente. Ela se inspira na jogabilidade das redes clá
 - Código escrito pelo contribuidor para a Muxe.
 - Bibliotecas com licenças compatíveis com a licença do projeto, adicionadas pelo Gradle.
 - Ideias de jogabilidade, descritas com as suas próprias palavras. Mecânicas de jogo em geral não são protegidas, mas a sua expressão concreta (código, texto, arte, mapas) é.
+- Skins de jogadores do Minecraft para NPCs, referenciadas pela textura assinada nos servidores de textura da Mojang (`textures.minecraft.net`). As skins são compartilhadas abertamente pela comunidade do Minecraft, então o dono do projeto permite o uso; o repositório guarda só a referência assinada, nunca a imagem da skin.
 
 ## O que nunca pode entrar neste repositório
 

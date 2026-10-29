@@ -10,12 +10,14 @@ import br.com.muxe.core.common.placement.domain.NpcAction;
 import br.com.muxe.core.common.placement.domain.NpcPlacement;
 import br.com.muxe.core.common.placement.domain.Placement;
 import br.com.muxe.core.common.placement.domain.Position;
+import br.com.muxe.core.common.placement.domain.SkinTexture;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
@@ -81,7 +83,7 @@ class GameNpcImportTest {
     }
 
     @Test
-    void everyNpcHoldsAOneEightItemAndKeepsTheDefaultSkin() {
+    void everyNpcHoldsAOneEightItemAndWearsASignedMinecraftSkin() {
         Map<String, HeldItem> hands = new LinkedHashMap<>();
         npcs.forEach(npc -> hands.put(npc.id(), npc.hand().orElseThrow()));
 
@@ -90,8 +92,9 @@ class GameNpcImportTest {
         assertThat(hands.get("duels")).isEqualTo(new HeldItem("DIAMOND_SWORD", 0));
         assertThat(hands.values()).allSatisfy(item -> assertThat(PlacedNpcs.hand(item)).isPresent());
         assertThat(npcs).allSatisfy(npc -> {
-            assertThat(npc.skinName()).isEmpty();
-            assertThat(npc.skin()).isEqualTo(Optional.empty());
+            SkinTexture skin = npc.skin().orElseThrow();
+            assertThat(new String(Base64.getDecoder().decode(skin.value()), StandardCharsets.UTF_8)).contains("http://textures.minecraft.net/texture/");
+            assertThat(skin.signature()).isNotBlank();
         });
     }
 

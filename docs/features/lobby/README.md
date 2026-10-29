@@ -73,7 +73,7 @@ Twelve game NPCs stand in a row in front of the spawn, from x 12.5 to -9.5 at y 
 
 - They are ordinary game NPCs of the `lobby` group, so `lobby-1`, `lobby-2` and every later lobby show them.
 - They live in `servers/lobby/placements/import.yml`, in the [import format](../npcs-and-holograms/README.md#importing-old-placements). The group of each NPC is its `group` key; change it there before importing, or later with `/npc acao <id> <group>`.
-- Skins: every NPC has `skin-name: ""` and shows the default skin. The skins of the reference NPCs were made by others and are not licensed to Muxe, so they are not in the repository (see [Legal](../../legal/README.md)). To give an NPC a skin, set `skin-name` to an original player name whose skin Muxe may use and import again, or run `/npc skin <id> <name>`.
+- Skins: every NPC wears the skin of its reference NPC, stored in `import.yml` as the signed Mojang texture (`skin.value` and `skin.signature`), which [Legal](../../legal/README.md) allows. To change one, run `/npc skin <id> <name>`, or edit the `skin` of the entry and import again.
 
 #### Placing them
 
@@ -185,6 +185,5 @@ The Spigot server metrics of Muxe-Core. The visibility metrics moved with it and
 ## Known limitations
 
 - Credits do not exist yet; the scoreboard shows `scoreboard.default-credits`.
-- The game NPCs show the default skin until staff choose skins Muxe may use.
 - No game server group exists yet besides `skywars` and `bedwars`, so the other game NPCs show `0 jogando` and answer that no room is available.
 - The limits of the hotbar and its menus are listed in [Hotbar](../hotbar/README.md#known-limitations).
