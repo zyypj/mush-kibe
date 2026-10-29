@@ -23,6 +23,7 @@ object Relocations {
         "org.apache.commons.lang3",
         "org.json",
         "com.fasterxml.jackson",
+        "com.maxmind",
     )
 
     val bukkitOnly = listOf(

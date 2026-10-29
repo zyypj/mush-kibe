@@ -24,6 +24,8 @@ Staff commands to see the network from inside the game. Lives in `core:bukkit` (
 | `/muxe find <player>` | Shows which server a player is on. | `muxe.admin` |
 | `/muxe metrics` | Shows a summary of packet metrics and TPS. | `muxe.admin` |
 
+`/muxe find` completes the names of online players with tab.
+
 ## Permissions
 
 | Permission | Grants | Default |
@@ -32,7 +34,7 @@ Staff commands to see the network from inside the game. Lives in `core:bukkit` (
 
 ## Configuration
 
-Messages under `messages.admin.*` in Muxe-Core's `config.yml`, plus `messages.no-permission`.
+Messages under `messages.admin.*` in Muxe-Core's `config.yml`, plus `messages.no-permission` and the [command messages](../../development/commands/README.md#messages).
 
 ## Packets
 

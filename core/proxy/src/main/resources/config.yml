@@ -12,7 +12,7 @@ authentication:
   premium-lookup-timeout: 3s
   premium-cache: 6h
   cracked-cache: 10m
-  session-duration: 2h
+  session-duration: 24h
 
 database:
   url: jdbc:postgresql://localhost:5432/muxe
@@ -41,8 +41,54 @@ metrics:
   host: 127.0.0.1
   port: 9410
 
+editor:
+  enabled: true
+  bind: 0.0.0.0
+  port: 1031
+  public-url: "http://151.244.40.191:1031"
+  requests-per-minute: 240
+  failed-logins-per-ten-minutes: 20
+  max-body-bytes: 1048576
+
+motd:
+  max-players: 3000
+  lines:
+    - "&c&m  &6&m  &e&m  &a&m  &b&m  &r &b&lMUXE&r &b&m  &a&m  &e&m  &6&m  &c&m  "
+    - "&a&lVENHA JOGAR"
+
+tab-list:
+  header:
+    - ""
+    - "&b&lMUXE"
+    - ""
+  footer:
+    - ""
+    - "&eWebsite &bmuxe.com.br"
+    - "&eLoja &bloja.muxe.com.br"
+    - "&eDiscord &bmuxe.com.br/discord"
+    - ""
+
+geoip:
+  enabled: true
+  account-id: ""
+  license-key: ""
+  refresh-after: 7d
+
 messages:
-  no-auth-server: "&cNenhum servidor de autenticação disponível. Tente novamente em instantes."
+  no-auth-server:
+    - "&cNão foi possível te conectar ao servidor."
+    - "&cMotivo: Servidores de Autenticação Desligados"
+    - "&cTente novamente em alguns minutos."
+    - ""
+    - "&eAcompanhe as notícias em: &bmuxe.com.br"
+    - "&cO problema continua? Avise a equipe em &bdiscord.muxe.com.br"
+  server-restarting:
+    - "&cVocê foi desconectado do servidor."
+    - "&cMotivo: Servidor reiniciando"
+    - "&cTente entrar novamente em alguns minutos."
+    - ""
+    - "&eMais informações no nosso Discord: &bdiscord.muxe.com.br"
+  server-moved: "&eO servidor em que você estava está reiniciando. Você foi levado para outro servidor."
   no-lobby-server: "&cNenhum lobby disponível no momento. Use /lobby em instantes."
   no-server: "&cNenhum servidor disponível para &f{destination}&c."
   must-authenticate: "&cFaça login antes de trocar de servidor."

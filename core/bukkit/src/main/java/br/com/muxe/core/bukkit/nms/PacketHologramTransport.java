@@ -17,7 +17,10 @@ import org.bukkit.entity.Player;
 
 public final class PacketHologramTransport implements HologramTransport {
 
-    public static final double LABEL_HEIGHT = 0.9;
+    public static final double CLIENT_STAND_HEIGHT = 1.975;
+    public static final double NAME_TAG_OFFSET = 0.5;
+    public static final double TEXT_TOP_ABOVE_LABEL = 0.09375;
+    public static final double LABEL_HEIGHT = CLIENT_STAND_HEIGHT / 2 + NAME_TAG_OFFSET - TEXT_TOP_ABOVE_LABEL;
 
     private static final PacketHologramTransport INSTANCE = new PacketHologramTransport();
 
@@ -26,6 +29,14 @@ public final class PacketHologramTransport implements HologramTransport {
 
     public static PacketHologramTransport instance() {
         return INSTANCE;
+    }
+
+    public static double standY(double labelY) {
+        return labelY - LABEL_HEIGHT;
+    }
+
+    public static double clientTextTop(double smallStandY) {
+        return smallStandY - CLIENT_STAND_HEIGHT / 2 + CLIENT_STAND_HEIGHT + NAME_TAG_OFFSET;
     }
 
     public static boolean isAvailable() {
@@ -149,7 +160,7 @@ public final class PacketHologramTransport implements HologramTransport {
             Location location = pixel.location();
             World world = location.getWorld();
             Object stand = armorStand.newInstance(world == null ? null : worldHandle.invoke(world));
-            setLocation.invoke(stand, location.getX(), location.getY() - LABEL_HEIGHT, location.getZ(), 0f, 0f);
+            setLocation.invoke(stand, location.getX(), standY(location.getY()), location.getZ(), 0f, 0f);
             setInvisible.invoke(stand, true);
             setSmall.invoke(stand, true);
             setGravity.invoke(stand, false);
@@ -187,6 +198,16 @@ public final class PacketHologramTransport implements HologramTransport {
                 } catch (ReflectiveOperationException | RuntimeException exception) {
                     Bukkit.getLogger().log(Level.FINE, "[Muxe] Could not send a hologram to " + viewer.getName(), exception);
                 }
+            }
+
+            @Override
+            public boolean owns(int entityId) {
+                for (int id : ids) {
+                    if (id == entityId) {
+                        return true;
+                    }
+                }
+                return false;
             }
 
             @Override

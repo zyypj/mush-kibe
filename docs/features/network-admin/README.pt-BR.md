@@ -24,6 +24,8 @@ Comandos da equipe para ver a rede de dentro do jogo. Fica no `core:bukkit` (`Mu
 | `/muxe find <player>` | Mostra em qual servidor um jogador está. | `muxe.admin` |
 | `/muxe metrics` | Mostra um resumo das métricas de pacotes e o TPS. | `muxe.admin` |
 
+O `/muxe find` completa os nomes dos jogadores online com tab.
+
 ## Permissões
 
 | Permissão | Libera | Padrão |
@@ -32,7 +34,7 @@ Comandos da equipe para ver a rede de dentro do jogo. Fica no `core:bukkit` (`Mu
 
 ## Configuração
 
-Mensagens em `messages.admin.*` no `config.yml` do Muxe-Core, além de `messages.no-permission`.
+Mensagens em `messages.admin.*` no `config.yml` do Muxe-Core, além de `messages.no-permission` e das [mensagens de comandos](../../development/commands/README.pt-BR.md#mensagens).
 
 ## Pacotes
 

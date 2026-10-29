@@ -9,6 +9,7 @@ Como a rede protege seus servidores, serviços e jogadores. O princípio: os jog
 | Serviço | Acessível pelos jogadores | Acessível por |
 |---|---|---|
 | Velocity | Sim, é a única porta de entrada pública | Todos |
+| Editor de permissões (proxy, porta 1031) | Sim, só o site | Todos podem carregar a página; a API exige um token de sessão do `/editor` |
 | Servidores Spigot | Não | Só o proxy |
 | PostgreSQL | Não | Só os servidores da rede |
 | Redis | Não | Só os servidores da rede |
@@ -27,7 +28,7 @@ A rede aceita jogadores sem conta do Minecraft (modo offline), então o proxy n�
 - **Nomes premium** (uma conta premium existente, ou qualquer nome que existe na Mojang, mesmo que uma conta pirata o tenha registrado aqui antes) são forçados ao modo online: o Velocity verifica a sessão com a Mojang, então um cliente pirata não consegue usar um nome premium. Jogadores premium são autenticados sem senha.
 - **Os nomes seguem a identidade verificada pela Mojang:** um login premium toma o seu nome de qualquer outra conta, e um jogador premium que trocou de nome mantém a mesma conta, porque o UUID da Mojang não muda. Veja [Contas](../../features/accounts/README.pt-BR.md#dono-do-nome).
 - **Nomes piratas** vão para um servidor de auth, resolvem um código desenhado com hologramas (anti-bot) e depois se registram ou fazem login com senha.
-- **Sessões de login:** depois de um login com senha, o proxy guarda no Redis, por 2 horas, o SHA-256 do id do jogador e do IP. Uma reconexão da mesma conta, do mesmo IP, dentro desse tempo é autenticada sem senha. O IP puro nunca é guardado.
+- **Sessões de login:** depois de um login com senha, o proxy guarda no Redis, por 24 horas, o SHA-256 do id do jogador e do IP. Uma reconexão da mesma conta, do mesmo IP, dentro desse tempo é autenticada sem senha e não renova a sessão. O IP puro nunca é guardado.
 - Se a Mojang não puder ser consultada, nomes novos são recusados em vez de serem registrados como piratas.
 - Até um jogador ser autenticado, o proxy **nega toda conexão a um servidor fora do grupo de auth** e ignora pacotes `player.connect` desse jogador.
 - O proxy só aceita `auth.authenticated` de uma origem que seu diretório de servidores conhece como um servidor `AUTH` do grupo de auth.
@@ -64,6 +65,18 @@ Senhas:
 - Os valores de configuração usam `env:NAME` para ler uma variável de ambiente ou `file:/path` para ler um arquivo, como um secret do Docker ou do Kubernetes.
 - O `.env` é ignorado pelo git; o `.env.example` documenta as variáveis sem valores.
 - Um segredo que foi exposto, mesmo que por pouco tempo, é trocado. O segredo de mensageria pode ser rotacionado sem downtime com `messaging.previous-secrets`.
+
+## Editor de permissões
+
+- Servido pelo proxy em `editor.port` (1031). As sessões são abertas no jogo com `/editor` (só Admin), duram 30 minutos e são conferidas de novo a cada requisição: o dono ainda precisa resolver `muxe.permissions.editor`.
+- O token vai no fragmento da URL e no cabeçalho `Authorization`, nunca em cookies, query strings ou logs; o Redis guarda só o SHA-256 dele.
+- Limites de requisições por endereço, limite de tamanho do corpo, conferência do `Origin` nas escritas, cabeçalhos de segurança rígidos (`Content-Security-Policy` `default-src 'self'`, com só a fonte Montserrat carregada do Google Fonts, `X-Frame-Options: DENY`, `no-referrer`, `nosniff`, `no-store` na API) e validação no servidor de todos os campos. Todo lote salvo vai para o log com o autor.
+- **O editor usa HTTP simples até a rede ter um domínio.** Então ele fica atrás de um proxy reverso com TLS e `editor.bind: 127.0.0.1`. Detalhes em [Editor de permissões](../../features/permission-editor/README.pt-BR.md#segurança).
+
+## Endereços dos jogadores
+
+- O proxy lê o endereço da conexão só para conferir sessões de login (com hash) e para buscar a localização da conta na MaxMind GeoLite2. Nem o endereço nem um erro de GeoIP que possa contê-lo são guardados ou registrados em log. Veja [Localização da conta](../../features/geoip/README.pt-BR.md).
+- A chave de licença da MaxMind é um segredo: pode ser escrita no `config.yml` do proxy (o painel não tem variáveis de ambiente próprias) ou lida com `env:` / `file:`. Ela nunca vai para o log.
 
 ## Tráfego entre máquinas
 

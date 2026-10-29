@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class AuthProtectionTest {
 
     @Test
-    void onlyAuthenticatedStaffMayInteract() {
+    void onlyAuthenticatedPlayersInBuildModeMayInteract() {
         assertThat(AuthProtection.mayInteract(false, false)).isFalse();
         assertThat(AuthProtection.mayInteract(false, true)).isFalse();
         assertThat(AuthProtection.mayInteract(true, false)).isFalse();

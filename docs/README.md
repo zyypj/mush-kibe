@@ -9,6 +9,7 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 - [Development](development/README.md): requirements, modules, dependency rules, build commands and how to run a local network.
 - [Conventions](development/conventions/README.md): Java style, package organization, naming, configuration and messages.
 - [Core API](development/core-api/README.md): what Muxe-Core offers to plugins, including titles, action bars and particle text.
+- [Commands](development/commands/README.md): the annotation command framework, its arguments, tab completion and registration.
 - [Process](process/README.md): how work is planned and delivered, and what "ready" and "done" mean.
 - [Legal and clean-room policy](legal/README.md): what may and may not enter this repository.
 
@@ -29,12 +30,21 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 ## Features
 
 - [Accounts](features/accounts/README.md): one account per player, created on the first login.
-- [Authentication](features/authentication/README.md): premium auto-login, anti-bot challenge, `/registrar`, `/logar` and 2-hour sessions.
+- [Authentication](features/authentication/README.md): premium auto-login, anti-bot challenge, `/registrar`, `/logar` and 24-hour sessions.
 - [Network routing](features/network-routing/README.md): how the proxy picks servers, `/lobby` and the access gate.
 - [Network administration](features/network-admin/README.md): `/muxe` commands for staff.
-- [Lobby](features/lobby/README.md): spawn, protection and `/jogar`.
+- [Lobby](features/lobby/README.md): spawn, flight, protection, scoreboard, boss bar and `/jogar`.
+- [Hotbar](features/hotbar/README.md): the lobby hotbar from Muxe-Core, with the game selector, profile, lobby selector and player visibility.
+- [NPCs and holograms](features/npcs-and-holograms/README.md): NPCs and text holograms placed by command and shared by the server group.
+- [Social media heads](features/social-heads/README.md): a player head that cycles through the network's social media and sends the link on click, shared by the server group.
+- [Parkour](features/parkour/README.md): a timed lobby parkour with checkpoints, items to restart or go back, and a personal record per map, shared by the server group.
+- [Shop](features/shop/README.md): `/loja`, the checkout menus, cash registers and the network promotion.
 - [SkyWars](features/skywars/README.md): plugin skeleton and modes.
 - [BedWars](features/bedwars/README.md): plugin skeleton and modes.
+- [Permission editor](features/permission-editor/README.md): a website served by the proxy to edit ranks, inheritance, permissions, tags, tracks and players, opened with `/editor`.
+- [Account location (GeoIP)](features/geoip/README.md): country, region, city and network of each login from MaxMind GeoLite2, without storing the address.
+- [Ranks and tags](features/ranks-and-tags/README.md): ranks, permissions and tags applied on every server, chat and tab prefixes, `/tag`, `/cargo`, `/permissao` and `/editor`.
+- [Account](features/account/README.md): `/account`, `/accountmenu` and the ranks on the profile head.
 
 ## Documenting a new feature
 

@@ -17,7 +17,7 @@ public record AuthenticationSettings(
             source.duration("authentication.premium-lookup-timeout", Duration.ofSeconds(3)),
             source.duration("authentication.premium-cache", Duration.ofHours(6)),
             source.duration("authentication.cracked-cache", Duration.ofMinutes(10)),
-            source.duration("authentication.session-duration", Duration.ofHours(2))
+            source.duration("authentication.session-duration", Duration.ofHours(24))
         );
     }
 }

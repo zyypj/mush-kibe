@@ -40,7 +40,7 @@ Quando uma conexão começa, o proxy decide o seu **modo de login**:
 Depois que a conta é registrada, o proxy autentica o jogador na hora quando:
 
 - a conta é **premium**, ou
-- o jogador tem uma **sessão de login** válida: ele fez login com senha há menos de `authentication.session-duration` (2 horas por padrão), com a mesma conta e do mesmo IP.
+- o jogador tem uma **sessão de login** válida: ele fez login com senha há menos de `authentication.session-duration` (24 horas por padrão), com a mesma conta e do mesmo IP. Retomar a sessão não a renova: ela sempre termina `session-duration` depois do login com senha.
 
 Jogadores autenticados automaticamente vão direto para um lobby. Os demais vão para um servidor de autenticação.
 
@@ -64,7 +64,9 @@ O código nunca é enviado como texto: cada holograma só carrega um `⬛`, ent�
 - Em caso de sucesso: `Você se autenticou com sucesso!` (ou `Você se registrou com sucesso!`) e `Enviando ao lobby...`. O servidor de autenticação publica `auth.authenticated`; o proxy abre a passagem, **lembra a sessão de login** e envia o jogador para um lobby.
 - Um jogador que não termina em `security.login-timeout` é expulso.
 
-Enquanto não está autenticado, o jogador só pode andar, digitar o código no chat e usar `/logar` e `/registrar`. Ele não pode conversar com os outros, usar outros comandos, ver outros jogadores, interagir com blocos ou entidades (molduras, suportes de armadura, pinturas), usar baldes, largar ou pegar itens, abrir inventários, quebrar ou colocar blocos, levar dano ou perder fome. Quem cair abaixo de `protection.void-level` volta para o spawn. Depois de autenticar, os comandos são liberados para todos; construir e interagir são liberados só para jogadores com `muxe.auth.setup`. O chat continua fechado para todos no servidor de autenticação.
+Todo jogador no servidor de autenticação fica no modo Aventura: ele é aplicado ao entrar e o Muxe-Core cancela qualquer outro modo de jogo, exceto o Criativo no modo construção.
+
+Enquanto não está autenticado, o jogador só pode andar, digitar o código no chat e usar `/logar` e `/registrar`. Ele não pode conversar com os outros, usar outros comandos, ver outros jogadores, interagir com blocos ou entidades (molduras, suportes de armadura, pinturas), usar baldes, largar ou pegar itens, abrir inventários, quebrar ou colocar blocos, levar dano ou perder fome. Quem cair abaixo de `protection.void-level` volta para o spawn. Depois de autenticar, os comandos são liberados para todos; construir e interagir são liberados só para quem está no modo construção (`/build`, que exige `muxe.build`). O modo construção só começa no servidor de autenticação depois que o jogador está autenticado, então um cliente pirata usando o nome de alguém da equipe nunca o herda. O chat continua fechado para todos no servidor de autenticação.
 
 ### 5. Configurando o servidor de auth (equipe)
 
@@ -87,11 +89,13 @@ As posições são salvas em `plugins/Muxe-Auth/config.yml`, em `locations`, e v
 | `/authsetup info` | Mostra as duas posições. | `muxe.auth.setup` |
 | `/authsetup limpar <spawn\|codigo>` | Remove uma posição e volta ao padrão. | `muxe.auth.setup` |
 
+Com palavras faltando ou sobrando, `/logar` e `/registrar` respondem `usage-login` e `usage-register`. As senhas nunca são completadas com tab.
+
 ## Permissões
 
 | Permissão | Libera | Padrão |
 |---|---|---|
-| `muxe.auth.setup` | `/authsetup`, e andar, construir e interagir no servidor de autenticação depois do login. Só vale depois que o jogador está autenticado, então um cliente pirata usando o nome de um operador não ganha nada. | op |
+| `muxe.auth.setup` | `/authsetup`, depois do login. Só vale depois que o jogador está autenticado, então um cliente pirata usando o nome de um operador não ganha nada. | op |
 
 ## Configuração
 
@@ -103,7 +107,9 @@ As posições são salvas em `plugins/Muxe-Auth/config.yml`, em `locations`, e v
 | `authentication.premium-lookup-timeout` | `3s` | Tempo limite da consulta à Mojang. |
 | `authentication.premium-cache` | `6h` | Por quanto tempo as respostas "premium" da Mojang ficam em cache no Redis. |
 | `authentication.cracked-cache` | `10m` | Por quanto tempo as respostas "não premium" ficam em cache. É curto, para que um nome que vira premium fique protegido rápido. |
-| `authentication.session-duration` | `2h` | Por quanto tempo um login com senha é lembrado para a mesma conta e o mesmo IP. |
+| `authentication.session-duration` | `24h` | Por quanto tempo um login com senha é lembrado para a mesma conta e o mesmo IP. |
+
+O mesmo arquivo também tem `editor.*` ([Editor de permissões](../permission-editor/README.pt-BR.md#configuração)) e `geoip.*` ([Localização da conta](../geoip/README.pt-BR.md#configuração)).
 
 `plugins/Muxe-Auth/config.yml`:
 
@@ -123,7 +129,7 @@ As posições são salvas em `plugins/Muxe-Auth/config.yml`, em `locations`, e v
 | `security.attempt-window` | `5m` | Janela de contagem das senhas erradas. |
 | `password.min-length` | `6` | Tamanho mínimo da senha. |
 | `password.max-length` | `64` | Tamanho máximo da senha. |
-| `messages.*` | Textos em português | Todo texto mostrado ao jogador, incluindo o título (`title`, `subtitle-login`, `subtitle-register`) e a action bar (`challenge-action-bar`). |
+| `messages.*` | Textos em português | Todo texto mostrado ao jogador, incluindo o título (`title`, `subtitle-login`, `subtitle-register`) e a action bar (`challenge-action-bar`), e as [mensagens de comandos](../../development/commands/README.pt-BR.md#mensagens). |
 
 Obrigatório:
 
