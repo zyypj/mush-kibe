@@ -1,8 +1,10 @@
 package br.com.muxe.core.bukkit.npc;
 
+import br.com.muxe.core.bukkit.hologram.HologramPixel;
+import br.com.muxe.core.bukkit.hologram.HologramTransport;
 import br.com.muxe.core.bukkit.hologram.SpawnedHologram;
-import br.com.muxe.core.bukkit.hologram.TextHolograms;
 import br.com.muxe.core.bukkit.nms.EntityUse;
+import br.com.muxe.core.bukkit.nms.PacketHologramTransport;
 import br.com.muxe.core.bukkit.nms.PacketInterceptor;
 import br.com.muxe.core.bukkit.nms.PacketNpcTransport;
 import br.com.muxe.core.bukkit.text.Colors;
@@ -33,7 +35,8 @@ public final class NpcService implements Listener {
 
     private final Plugin plugin;
     private final PacketNpcTransport transport;
-    private final TextHolograms holograms;
+    private final HologramTransport holograms;
+    private final NpcLabelLayout layout;
     private final Function<Npc, List<String>> lines;
     private final Map<String, Placed> npcs = new ConcurrentHashMap<>();
     private final Map<UUID, Map<String, Seen>> viewers = new ConcurrentHashMap<>();
@@ -41,10 +44,11 @@ public final class NpcService implements Listener {
     private volatile BiConsumer<Player, Npc> clickHandler = (player, npc) -> {
     };
 
-    private NpcService(Plugin plugin, PacketNpcTransport transport, TextHolograms holograms, Function<Npc, List<String>> lines) {
+    private NpcService(Plugin plugin, PacketNpcTransport transport, HologramTransport holograms, NpcLabelLayout layout, Function<Npc, List<String>> lines) {
         this.plugin = plugin;
         this.transport = transport;
         this.holograms = holograms;
+        this.layout = layout;
         this.lines = lines;
         this.interceptor = PacketInterceptor.start(plugin, this::onUse);
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -52,7 +56,11 @@ public final class NpcService implements Listener {
     }
 
     public static NpcService start(Plugin plugin, Function<Npc, List<String>> lines) {
-        return new NpcService(plugin, PacketNpcTransport.instance(), TextHolograms.standard(), lines);
+        return start(plugin, NpcLabelLayout.STANDARD, lines);
+    }
+
+    public static NpcService start(Plugin plugin, NpcLabelLayout layout, Function<Npc, List<String>> lines) {
+        return new NpcService(plugin, PacketNpcTransport.instance(), PacketHologramTransport.instance(), layout, lines);
     }
 
     public void onClick(BiConsumer<Player, Npc> handler) {
@@ -142,11 +150,11 @@ public final class NpcService implements Listener {
     }
 
     private SpawnedHologram showHologram(Player viewer, Npc npc, List<String> text) {
-        if (text.isEmpty()) {
+        List<HologramPixel> pixels = layout.pixels(npc.location(), text);
+        if (pixels.isEmpty()) {
             return SpawnedHologram.NONE;
         }
-        Location top = npc.location().clone().add(0, HOLOGRAM_ABOVE_HEAD + holograms.height(text.size()), 0);
-        return holograms.show(viewer, top, text);
+        return holograms.spawn(viewer, pixels);
     }
 
     private List<String> currentLines(Npc npc) {

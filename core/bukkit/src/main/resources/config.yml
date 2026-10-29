@@ -71,6 +71,12 @@ npcs:
       - "&eClique para abrir a loja"
     none:
       - "&b&l{name}"
+  labels:
+    bottom: 2.25625
+    gaps:
+      - 0.28125
+      - 0.46875
+    spacing: 0.28
 
 holograms:
   top: 2.0

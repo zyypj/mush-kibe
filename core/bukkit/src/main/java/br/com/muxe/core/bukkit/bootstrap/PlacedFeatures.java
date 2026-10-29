@@ -11,6 +11,7 @@ import br.com.muxe.core.bukkit.command.SocialHeadCommand;
 import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.hologram.TextHolograms;
 import br.com.muxe.core.bukkit.hologram.placed.PlacedHolograms;
+import br.com.muxe.core.bukkit.npc.NpcLabelLayout;
 import br.com.muxe.core.bukkit.npc.placed.NpcLines;
 import br.com.muxe.core.bukkit.npc.placed.PlacedNpcs;
 import br.com.muxe.core.bukkit.network.GameConnector;
@@ -93,7 +94,8 @@ final class PlacedFeatures {
         Optional<Shop> shop = shopSettings.filter(settings -> settings.appliesTo(core.identity().kind())).map(settings -> shop(plugin, core, settings, spam));
         GameConnector games = new GameConnector(core.servers(), core.network(), core.mainThread(), messages);
         ShopAccess shopAccess = new ShopAccess(shop.map(Shop::service), messages);
-        PlacedNpcs npcs = new PlacedNpcs(plugin, games, NpcLines.from(config.getConfigurationSection("npcs.lines")), spam, messages, shopAccess::open);
+        PlacedNpcs npcs = new PlacedNpcs(plugin, games, NpcLines.from(config.getConfigurationSection("npcs.lines")),
+            NpcLabelLayout.from(config.getConfigurationSection("npcs.labels")), spam, messages, shopAccess::open);
         PlacedHolograms holograms = new PlacedHolograms(plugin,
             config.getDouble("holograms.top", 2.0),
             config.getDouble("holograms.line-spacing", TextHolograms.DEFAULT_LINE_SPACING));

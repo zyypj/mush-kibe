@@ -37,6 +37,7 @@ NPCs e hologramas de texto que a equipe coloca por comando, em qualquer servidor
 - Um NPC pode ter linhas próprias no lugar das linhas da sua ação, com os mesmos `{name}` e `{players}`: por exemplo `&d&lNOVIDADE!` acima do nome, ou `&eClique aqui!` no lugar da contagem. Um NPC sem linhas próprias mostra as linhas da sua ação.
 - Um NPC pode segurar um item da 1.8 na mão (um material e o seu data, como `WOOL` com data `14` para lã vermelha). Um material desconhecido é pulado com um aviso e o NPC fica sem item.
 - As linhas próprias e o item na mão são definidos pelo `import.yml` (veja abaixo).
+- As linhas crescem para cima a partir da última: a última linha fica `npcs.labels.bottom` (2.25625) blocos acima dos pés do NPC, a linha acima dela fica `npcs.labels.gaps` 1 (0.28125) mais alto, a próxima o espaço 2 (0.46875) mais alto, e cada linha a mais `npcs.labels.spacing` (0.28) mais alto. Assim o nome e a contagem de um NPC de jogo ficam no mesmo lugar, e uma linha extra em cima, como `&d&lNOVIDADE!`, ganha um pouco mais de espaço.
 - A skin é a de um nome original, buscada na Mojang quando o NPC é criado ou a skin muda, e guardada com o NPC. Quando o nome não tem skin, o NPC fica com a skin padrão e a equipe vê `&eSkin de &f{skin} &enão encontrada. O NPC fica com a skin padrão.`
 - Os NPCs existem só em pacotes, aparecem para jogadores a até 48 blocos e não ficam no tab. Os cliques esquerdo e direito contam. Veja a [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.pt-BR.md).
 - Os cliques nos NPCs de jogo e de loja usam o anti-spam do Muxe-Core (`spam.*`): três cliques dentro de 1 segundo bloqueiam por 3 segundos com `&cAguarde 2,9s para usar novamente.`
@@ -134,6 +135,9 @@ Sem argumentos, ou com palavras faltando ou sobrando, cada comando mostra o seu 
 | `npcs.lines.game` | `&b&l{name}`, `&e{players} jogando` | Linhas acima dos NPCs de jogo. |
 | `npcs.lines.shop` | `&b&l{name}`, `&eClique para abrir a loja` | Linhas acima dos NPCs da loja. |
 | `npcs.lines.none` | `&b&l{name}` | Linhas acima dos NPCs sem ação. |
+| `npcs.labels.bottom` | `2.25625` | Altura da última linha do NPC acima dos pés dele. |
+| `npcs.labels.gaps` | `0.28125`, `0.46875` | Espaço acima da última linha, depois acima da linha anterior, subindo. |
+| `npcs.labels.spacing` | `0.28` | Espaço entre as linhas acima dos espaços de `gaps`. Precisa ser positivo, como cada espaço. |
 | `holograms.top` | `2.0` | Altura da primeira linha do holograma acima de onde ele foi criado. |
 | `holograms.line-spacing` | `0.28` | Espaço entre as linhas do holograma. |
 | `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam dos cliques nos NPCs, nas caixas registradoras, na hotbar, nas cabeças de redes sociais e nos itens do parkour. |
@@ -183,6 +187,7 @@ Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha co
 - [x] Uma mudança num servidor aparece em todos os servidores do grupo, remoções também, e um servidor carrega o que foi colocado antes de ele ligar.
 - [x] Só o que mudou é mostrado de novo, e o que sumiu é removido.
 - [x] As linhas dos NPCs são preenchidas por ação com `{name}` e `{players}`.
+- [x] As linhas dos NPCs sobem a partir da última linha com os espaços configurados, e linhas em branco mantêm o espaço.
 - [x] Um NPC com linhas próprias as mostra no lugar das linhas da sua ação, e as linhas próprias e o item na mão sobrevivem a ir e voltar do PostgreSQL e à importação.
 - [x] As linhas do holograma descem a partir da primeira linha, que nunca se move.
 - [x] O formato antigo do `npcs.yml`, as caixas e os pontos do parkour são lidos do `import.yml` para o grupo do servidor.

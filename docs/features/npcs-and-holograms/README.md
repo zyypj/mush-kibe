@@ -37,6 +37,7 @@ NPCs and text holograms that staff place by command, on any server. They live in
 - An NPC can have its own lines instead of the lines of its action, with the same `{name}` and `{players}`: for example `&d&lNOVIDADE!` above the name, or `&eClique aqui!` instead of the count. An NPC without its own lines shows the lines of its action.
 - An NPC can hold a 1.8 item in its hand (a material and its data, such as `WOOL` with data `14` for red wool). An unknown material is skipped with a warning and the NPC holds nothing.
 - Own lines and the item in hand are set through `import.yml` (see below).
+- The lines grow upward from the last one: the last line sits `npcs.labels.bottom` (2.25625) blocks above the NPC's feet, the line above it `npcs.labels.gaps` 1 (0.28125) higher, the next one gap 2 (0.46875) higher, and any further line `npcs.labels.spacing` (0.28) higher. So the name and the count of a game NPC stay where they are, and an extra line on top, like `&d&lNOVIDADE!`, gets a little more room.
 - The skin is the one of an original player name, fetched from Mojang when the NPC is created or the skin changes, and stored with the NPC. When the name has no skin, the NPC keeps the default skin and staff see `&eSkin de &f{skin} &enão encontrada. O NPC fica com a skin padrão.`
 - NPCs exist only in packets, are shown to players within 48 blocks and do not stay in the tab list. Left and right clicks both count. See [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.md).
 - Clicks on game and shop NPCs share the anti-spam of Muxe-Core (`spam.*`): three clicks within 1 second block them for 3 seconds with `&cAguarde 2,9s para usar novamente.`
@@ -134,6 +135,9 @@ Without arguments, or with missing or extra words, each command shows its usage.
 | `npcs.lines.game` | `&b&l{name}`, `&e{players} jogando` | Lines above game NPCs. |
 | `npcs.lines.shop` | `&b&l{name}`, `&eClique para abrir a loja` | Lines above shop NPCs. |
 | `npcs.lines.none` | `&b&l{name}` | Lines above NPCs without an action. |
+| `npcs.labels.bottom` | `2.25625` | Height of the last NPC line above the NPC's feet. |
+| `npcs.labels.gaps` | `0.28125`, `0.46875` | Space above the last line, then above the line before it, going up. |
+| `npcs.labels.spacing` | `0.28` | Space between the lines above the gaps. Must be positive, like every gap. |
 | `holograms.top` | `2.0` | Height of the first hologram line above where it was created. |
 | `holograms.line-spacing` | `0.28` | Space between hologram lines. |
 | `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam for NPC, cash register, hotbar, social media head and parkour item clicks. |
@@ -183,6 +187,7 @@ Commands and queries: `SavePlacementCommand`, `RemovePlacementCommand` (fails wi
 - [x] A change on one server shows up on every server of the group, removals too, and a server loads what was placed before it started.
 - [x] Only changed placements are shown again, and missing ones are removed.
 - [x] NPC lines are filled per action with `{name}` and `{players}`.
+- [x] NPC lines stack up from the bottom line with the configured gaps, and blank lines keep their space.
 - [x] An NPC with its own lines shows them instead of the lines of its action, and its own lines and item in hand survive a round trip through PostgreSQL and the import.
 - [x] Hologram lines go down from the first line, which never moves.
 - [x] The old `npcs.yml` format, registers and parkour points are read from `import.yml` into the server's group.

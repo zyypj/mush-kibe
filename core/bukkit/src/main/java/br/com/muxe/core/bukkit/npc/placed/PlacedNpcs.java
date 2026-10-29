@@ -2,6 +2,7 @@ package br.com.muxe.core.bukkit.npc.placed;
 
 import br.com.muxe.core.bukkit.network.GameConnector;
 import br.com.muxe.core.bukkit.npc.Npc;
+import br.com.muxe.core.bukkit.npc.NpcLabelLayout;
 import br.com.muxe.core.bukkit.npc.NpcService;
 import br.com.muxe.core.bukkit.npc.NpcSkin;
 import br.com.muxe.core.bukkit.placement.Positions;
@@ -36,14 +37,14 @@ public final class PlacedNpcs {
     private final Reconciler<NpcPlacement> shown = new Reconciler<>(NpcPlacement::id);
     private final Map<String, NpcPlacement> byId = new ConcurrentHashMap<>();
 
-    public PlacedNpcs(Plugin plugin, GameConnector games, NpcLines lines, SpamGuard spam, MessageCatalog messages, Consumer<Player> openShop) {
+    public PlacedNpcs(Plugin plugin, GameConnector games, NpcLines lines, NpcLabelLayout layout, SpamGuard spam, MessageCatalog messages, Consumer<Player> openShop) {
         this.plugin = plugin;
         this.games = games;
         this.lines = lines;
         this.spam = spam;
         this.messages = messages;
         this.openShop = openShop;
-        this.service = NpcService.start(plugin, this::linesOf);
+        this.service = NpcService.start(plugin, layout, this::linesOf);
         this.service.onClick(this::clicked);
     }
 
