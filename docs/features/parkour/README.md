@@ -58,6 +58,7 @@ While running, the player has three items in the hotbar. The items that were in 
 ### Flight
 
 - Starting a run turns flight off. The core remembers whether the player was allowed to fly and whether they were flying, and gives both back when the run ends (finish, `Parar Parkour` or the server stopping).
+- Nobody can take off during a run: the core cancels the take-off, so turning flight on with the lobby's `/fly` does not help.
 
 ### Time
 
@@ -261,6 +262,7 @@ None of its own. `muxe_db_transaction_seconds{operation="parkour.submit_time"|"p
 - [x] Times are formatted as `1m 22,704s`.
 - [x] Points are marked on the block where the staff member stands, centred, and `import.yml` reads start, checkpoints and end.
 - [x] The parkour items replace slots 4 to 6 and flight, and both come back when the run ends.
+- [x] A player cannot take off during a run.
 - [ ] Holograms, the personal record, the items, the firework and the messages work in game, and a point marked on one lobby appears on another lobby of the group (checked in game).
 
 ## Failures and recovery

@@ -58,6 +58,7 @@ Durante a corrida, o jogador tem três itens na hotbar. Os itens que estavam nes
 ### Voo
 
 - Começar uma corrida desliga o voo. O core lembra se o jogador podia voar e se estava voando, e devolve os dois quando a corrida acaba (conclusão, `Parar Parkour` ou o servidor desligando).
+- Ninguém consegue levantar voo durante a corrida: o core cancela a decolagem, então ligar o voo com o `/fly` do lobby não adianta.
 
 ### Tempo
 
@@ -261,6 +262,7 @@ Nenhuma própria. `muxe_db_transaction_seconds{operation="parkour.submit_time"|"
 - [x] Os tempos são formatados como `1m 22,704s`.
 - [x] Os pontos são marcados no bloco onde o membro da equipe está, centralizados, e o `import.yml` lê o início, os checkpoints e o fim.
 - [x] Os itens do parkour substituem os slots 4 a 6 e o voo, e os dois voltam quando a corrida acaba.
+- [x] O jogador não consegue levantar voo durante a corrida.
 - [ ] Os hologramas, o recorde pessoal, os itens, o fogo de artifício e as mensagens funcionam no jogo, e um ponto marcado num lobby aparece em outro lobby do grupo (conferido no jogo).
 
 ## Falhas e recuperação

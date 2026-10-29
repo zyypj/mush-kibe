@@ -40,6 +40,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.plugin.Plugin;
 
 public final class Parkour implements Listener {
@@ -158,6 +159,17 @@ public final class Parkour implements Listener {
             ? runs.restart(player.getUniqueId(), current.get())
             : runs.backToCheckpoint(player.getUniqueId(), current.get());
         handle(player, current.get().start(), step);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onToggleFlight(PlayerToggleFlightEvent event) {
+        keepGrounded(event, runs.isRunning(event.getPlayer().getUniqueId()));
+    }
+
+    static void keepGrounded(PlayerToggleFlightEvent event, boolean running) {
+        if (running && event.isFlying()) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
