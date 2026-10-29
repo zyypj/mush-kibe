@@ -3,7 +3,10 @@ package br.com.muxe.lobby.listener;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
@@ -63,6 +66,22 @@ class LobbyWorldProtectionTest {
         assertThat(natural.isCancelled()).isTrue();
         assertThat(egg.isCancelled()).isTrue();
         assertThat(plugin.isCancelled()).isFalse();
+    }
+
+    @Test
+    void plantsNeverCheckTheirSoilOnRandomTicksAndFireNeverTicks() {
+        Map<String, String> rules = new HashMap<>();
+        World world = (World) Proxy.newProxyInstance(World.class.getClassLoader(), new Class<?>[] {World.class}, (proxy, method, args) -> {
+            if (method.getName().equals("setGameRuleValue")) {
+                rules.put((String) args[0], (String) args[1]);
+                return true;
+            }
+            return null;
+        });
+
+        StaticWorld.freeze(world);
+
+        assertThat(rules).containsEntry("randomTickSpeed", "0").containsEntry("doFireTick", "false");
     }
 
     private static Block block(Material type) {

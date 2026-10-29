@@ -13,6 +13,7 @@ import br.com.muxe.lobby.command.SetSpawnCommand;
 import br.com.muxe.lobby.config.LobbySettings;
 import br.com.muxe.lobby.listener.LobbyJoinListener;
 import br.com.muxe.lobby.listener.LobbyProtectionListener;
+import br.com.muxe.lobby.listener.StaticWorld;
 import br.com.muxe.lobby.profile.RankInfoSource;
 import br.com.muxe.lobby.scoreboard.LobbyScoreboard;
 import br.com.muxe.lobby.spawn.ArrivalService;
@@ -43,6 +44,7 @@ public final class LobbyBootstrap {
         MigrationReport migration = core.migrations().migrate(MODULE, plugin.getClass().getClassLoader());
         plugin.getLogger().info("Schema 'lobby' at version " + migration.schemaVersion());
 
+        plugin.getServer().getWorlds().forEach(StaticWorld::freeze);
         SpawnService spawn = new SpawnService(plugin);
         ArrivalService arrival = new ArrivalService(spawn, settings.flyHeight());
         BuildMode build = core.buildMode();
