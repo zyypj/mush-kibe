@@ -93,7 +93,7 @@ messages:
 ChatLines.send(player, messages.lines("shop-payment"), CenteredText.DEFAULT_CENTER, "https://muxe.com.br/loja");
 ```
 
-- A line that starts with `<center>` is padded with spaces so its middle sits on the given pixel of the chat (`CenteredText.DEFAULT_CENTER` is 114, the middle of a line of 57 struck-through spaces). Widths follow the 1.8 default font; bold adds one pixel per character.
+- A line that starts with `<center>` is padded with spaces so its middle sits on the given pixel of the chat (`CenteredText.DEFAULT_CENTER` is 114, the middle of a line of 57 struck-through spaces). Widths come from `TextWidth` in `core:common` (see [Platform-free helpers](#platform-free-helpers)).
 - A line that starts with `<link>` opens the URL when clicked. Both markers can be combined.
 - `ChatLines.send(player, lines, center, url, hover)` also shows `hover` (a list of lines) when the mouse is over a `<link>` line. `ChatLines.linked(text, url, hover)` builds that clickable line, which is what tests check.
 
@@ -444,6 +444,7 @@ In `core:common`, usable on the proxy too:
 | `ConfigSource`, `DurationParser`, `SecretResolver` | Reading configuration, durations (`5s`) and secrets (`env:`, `file:`). |
 | `SpamGuard`, `CooldownFormat` | Anti-spam for clicks: a number of uses inside a window starts a cooldown (`3` uses in `1s` start `3s`), and the remaining time is shown as `2,9`. |
 | `PendingPrompts` | Players waiting to answer something in the chat, each with a deadline (used by `ChatPrompts`). |
+| `TextWidth` | Pixel width of a text in the 1.8 default font (`TextWidth.of`), reading `&` and `§` codes; bold adds one pixel per character. `TextWidth.center(text, area)` pads with spaces so the text sits in the middle of an area, such as the server list (`TextWidth.SERVER_LIST_WIDTH`, 271). |
 
 ## Ranks and permissions
 

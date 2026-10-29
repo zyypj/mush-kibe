@@ -50,6 +50,12 @@ editor:
   failed-logins-per-ten-minutes: 20
   max-body-bytes: 1048576
 
+motd:
+  max-players: 3000
+  lines:
+    - "&c&m  &6&m  &e&m  &a&m  &b&m  &r &b&lMUXE&r &b&m  &a&m  &e&m  &6&m  &c&m  "
+    - "&a&lVENHA JOGAR"
+
 geoip:
   enabled: true
   account-id: ""

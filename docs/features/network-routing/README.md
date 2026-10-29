@@ -24,6 +24,7 @@ How players are placed on servers and moved between them. Lives in `core:proxy` 
 - **Moving later:** any server can publish `player.connect` to send a player to a server id or to the least loaded server of a group. The proxy ignores it for unauthenticated players, and tells the player `no-server` when there is no destination.
 - **Least loaded:** among alive servers of the group with room, the one with fewest players; ties are broken by id.
 - **Disconnect:** the gate forgets the player.
+- **Server list:** the proxy answers every ping with the `motd.lines` (a bar in the rainbow colors with `&b&lMUXE` in the middle, then `&a&lVENHA JOGAR`) and shows `motd.max-players` (3000) as the maximum. Each line is padded with spaces so it sits in the middle of the server list (`TextWidth.center`, 271 pixels). The online count stays the real one, and the icon is Velocity's `server-icon.png`.
 
 ## Commands
 
@@ -43,6 +44,8 @@ Proxy `config.yml`:
 |---|---|---|
 | `routing.auth-group` | `auth` | Group of the auth servers. |
 | `routing.lobby-group` | `lobby` | Group players are sent to after authenticating. |
+| `motd.lines` | The MUXE bar and `&a&lVENHA JOGAR` | The two lines of the server list. Write them without padding: the proxy centers them. |
+| `motd.max-players` | `3000` | Maximum shown in the server list. |
 | `messages.no-auth-server` | Six-line screen: could not connect, reason, retry hint, a blank line, where to follow the news and the team's Discord | Shown when the login is refused because no auth server is alive. A YAML list, one item per line. |
 | `messages.server-restarting` | Five-line screen: disconnected, reason (server restarting), retry hint, a blank line and the Discord for more information | Shown when the player's server goes down and there is no other lobby, or no server at all. A YAML list, one item per line. |
 | `messages.server-moved` | `&eO servidor em que você estava está reiniciando. Você foi levado para outro servidor.` | Chat message after being moved because the server went down. |
@@ -88,6 +91,8 @@ None. The gate lives in the proxy's memory.
 - [ ] After login the player arrives in a lobby (checked in game).
 - [ ] Restarting a lobby moves its players to the other lobby (checked in game).
 - [ ] Premium players and resumed sessions start directly in a lobby (checked in game).
+- [x] The server list shows the centered MUXE lines and 3000 as the maximum, keeping the real online count.
+- [ ] The MOTD looks centered in the 1.8 client (checked in game).
 
 ## Failures and recovery
 

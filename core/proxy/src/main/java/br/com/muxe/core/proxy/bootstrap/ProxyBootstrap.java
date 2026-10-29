@@ -19,6 +19,8 @@ import br.com.muxe.core.proxy.editor.bootstrap.PermissionEditor;
 import br.com.muxe.core.proxy.editor.http.EditorHttpServer;
 import br.com.muxe.core.proxy.config.ProxyConfigFile;
 import br.com.muxe.core.proxy.config.RoutingSettings;
+import br.com.muxe.core.proxy.motd.MotdListener;
+import br.com.muxe.core.proxy.motd.MotdSettings;
 import br.com.muxe.core.proxy.geoip.GeoIpService;
 import br.com.muxe.core.proxy.geoip.application.LocationRecorder;
 import br.com.muxe.core.proxy.geoip.download.GeoDatabaseFiles;
@@ -88,6 +90,7 @@ public final class ProxyBootstrap {
         proxy.getEventManager().register(plugin, new NetworkGateListener(new NetworkGate(runtime.directory(), routing), messages));
         proxy.getEventManager().register(plugin, new LoginListener(runtime.commands(), gate, sessions, messages, runtime.metrics(), logger));
         proxy.getEventManager().register(plugin, new ConnectionListener(gate, access, router, routing, messages));
+        proxy.getEventManager().register(plugin, new MotdListener(MotdSettings.from(config)));
         startGeoIp(GeoIpSettings.from(config, SecretResolver.system()));
         startEditor(EditorSettings.from(config));
 

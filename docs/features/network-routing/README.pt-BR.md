@@ -24,6 +24,7 @@ Como os jogadores são colocados nos servidores e levados de um para outro. Fica
 - **Mudando depois:** qualquer servidor pode publicar `player.connect` para enviar um jogador a um id de servidor ou ao servidor com menos jogadores de um grupo. O proxy ignora o pacote para jogadores não autenticados e avisa o jogador com `no-server` quando não há destino.
 - **Menos jogadores:** entre os servidores vivos do grupo que têm vaga, o que tem menos jogadores; empates são desfeitos pelo id.
 - **Desconexão:** a passagem esquece o jogador.
+- **Lista de servidores:** o proxy responde todo ping com as `motd.lines` (uma barra nas cores do arco-íris com `&b&lMUXE` no meio, e depois `&a&lVENHA JOGAR`) e mostra `motd.max-players` (3000) como máximo. Cada linha ganha espaços para ficar no meio da lista de servidores (`TextWidth.center`, 271 pixels). O número de jogadores online continua o real, e o ícone é o `server-icon.png` do Velocity.
 
 ## Comandos
 
@@ -43,6 +44,8 @@ Não se aplica.
 |---|---|---|
 | `routing.auth-group` | `auth` | Grupo dos servidores de autenticação. |
 | `routing.lobby-group` | `lobby` | Grupo para onde os jogadores vão depois de se autenticar. |
+| `motd.lines` | A barra do MUXE e `&a&lVENHA JOGAR` | As duas linhas da lista de servidores. Escreva sem espaços na frente: o proxy centraliza. |
+| `motd.max-players` | `3000` | Máximo mostrado na lista de servidores. |
 | `messages.no-auth-server` | Tela de seis linhas: não foi possível conectar, motivo, dica para tentar de novo, uma linha em branco, onde acompanhar as notícias e o Discord da equipe | Mostrada quando o login é recusado porque nenhum servidor de autenticação está vivo. Uma lista YAML, um item por linha. |
 | `messages.server-restarting` | Tela de cinco linhas: desconectado, motivo (servidor reiniciando), dica para tentar de novo, uma linha em branco e o Discord para mais informações | Mostrada quando o servidor do jogador desliga e não há outro lobby, ou nenhum servidor. Uma lista YAML, um item por linha. |
 | `messages.server-moved` | `&eO servidor em que você estava está reiniciando. Você foi levado para outro servidor.` | Mensagem no chat depois de ser levado para outro servidor porque o seu desligou. |
@@ -88,6 +91,8 @@ Não se aplica. A passagem fica na memória do proxy.
 - [ ] Depois do login o jogador chega a um lobby (conferido no jogo).
 - [ ] Reiniciar um lobby leva os jogadores dele para o outro lobby (conferido no jogo).
 - [ ] Jogadores premium e sessões retomadas começam direto em um lobby (conferido no jogo).
+- [x] A lista de servidores mostra as linhas do MUXE centralizadas e 3000 como máximo, mantendo o número real de jogadores online.
+- [ ] A MOTD aparece centralizada no cliente 1.8 (conferido no jogo).
 
 ## Falhas e recuperação
 
