@@ -9,7 +9,7 @@ The lobby plugin handles the spawn and arrival, flight, protection, the scoreboa
 ## User stories
 
 - As a player, I want to arrive at a clean, safe spawn, see the network at a glance and choose what to play.
-- As a staff member, I want to fly in the lobby.
+- As a VIP or staff member, I want to fly in the lobby and turn flight off when I want.
 - As a builder, I want to switch to a build mode to edit the lobby, while regular players cannot break it.
 
 ## How it works
@@ -19,7 +19,8 @@ The lobby plugin handles the spawn and arrival, flight, protection, the scoreboa
 - After logging in, the proxy sends the player to the least loaded lobby (see [Network routing](../network-routing/README.md)).
 - On join: Adventure mode, full health and hunger, experience reset, then teleported to the configured spawn (or the main world's spawn). Muxe-Core clears the inventory and the armor and gives the [hotbar](../hotbar/README.md).
 - Players with `muxe.lobby.fly` arrive `arrival.fly-height` blocks (5) above the spawn, already flying. Everyone else arrives on the spawn. Falling below `protection.void-level` sends the player back the same way.
-- The [parkour](../parkour/README.md) turns flight off while a player runs it and gives it back when the run ends.
+- `/fly` (`/voar`) turns flight on (`&eVocê ativou o &bmodo voar&e!`) or off (`&cVocê desativou o modo voar!`). Turning it off lands a player who is flying. Joining or falling into the void gives flight back to everyone with `muxe.lobby.fly`.
+- The [parkour](../parkour/README.md) turns flight off while a player runs it and gives it back when the run ends. Nobody can take off during a run, even after `/fly`.
 - Join and quit messages are hidden.
 - Half a second after joining, the player hears a level-up sound and sees the title `&b&lMUXE` with the subtitle `&eBoas-vindas!`. This greeting comes from Muxe-Core and runs on every `LOBBY` server, never on auth or game servers.
 - Switching lobbies in the [lobby selector](../hotbar/README.md#lobby-selector), or using `/lobby`, shows no "connecting" message: the player is just moved.
@@ -71,6 +72,7 @@ Players are always in Adventure mode: any change to another game mode is cancell
 |---|---|---|
 | `/jogar <mode>` (`/play`) | Sends the player to a game group. | None |
 | `/setspawn` | Saves the current position as the lobby spawn. | `muxe.lobby.setspawn` |
+| `/fly` (`/voar`) | Turns flight on or off. | `muxe.lobby.fly` |
 | `/build <on\|off>` | Turns build mode on or off on any server; without an argument it toggles. Provided by Muxe-Core. | `muxe.build` |
 
 `/jogar` completes the configured games with tab.
@@ -79,7 +81,7 @@ Players are always in Adventure mode: any change to another game mode is cancell
 
 | Permission | Grants | Default |
 |---|---|---|
-| `muxe.lobby.fly` | Arrive above the spawn, flying, and fly again after build mode. | op |
+| `muxe.lobby.fly` | Use `/fly`, arrive above the spawn, flying, and fly again after build mode. Seeded on `vip`, so every rank above VIP has it too. | op |
 | `muxe.build` | Use `/build` (Muxe-Core) to break, place, drop and pick up items in Creative. | op |
 | `muxe.lobby.setspawn` | Use `/setspawn`. | op |
 
@@ -97,7 +99,7 @@ Players are always in Adventure mode: any change to another game mode is cancell
 | `scoreboard.update-interval` | `1s` | How often the scoreboard refreshes. |
 | `scoreboard.default-tag`, `scoreboard.default-credits` | `&7Membro`, `0` | Tag shown while the player's ranks are not loaded, and the credits shown until a wallet exists. |
 | `spawn.*` | not set | Written by `/setspawn`. |
-| `messages.*` | Portuguese texts | Messages of `/jogar` and `/setspawn`; shared messages come from Muxe-Core. |
+| `messages.*` | Portuguese texts | Messages of `/jogar`, `/setspawn` and `/fly` (`fly-enabled`, `fly-disabled`); shared messages come from Muxe-Core. |
 
 `spam`, `hotbar`, `lobby-selector` and the visibility and lobby selector messages are no longer read from this file: they live in `plugins/Muxe-Core/config.yml`, described in [Hotbar](../hotbar/README.md#configuration).
 
@@ -138,6 +140,7 @@ The Spigot server metrics of Muxe-Core. The visibility metrics moved with it and
 ## Acceptance criteria
 
 - [x] Players with the fly permission arrive 5 blocks above the spawn, flying; others arrive on it.
+- [x] `/fly` turns flight on and off with the reference messages, lands a flying player, and needs `muxe.lobby.fly`.
 - [x] The join greeting is enabled only on `LOBBY` servers, with the reference title and subtitle.
 - [x] The boss bar alternates `&e&lMUXE` and `&6&lMUXE` every 10 ticks, and the scoreboard fills the reference lines.
 - [ ] Boss bar, scoreboard and flight after build mode work in game (checked in game).

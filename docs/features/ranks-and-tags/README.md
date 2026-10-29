@@ -299,7 +299,7 @@ All in `messages` of `plugins/Muxe-Core/config.yml`:
 | `core.player_medals` | The medal each player selected (`player_id`, `medal_id`, `updated_at`). |
 | `core.perm_actions` | Every change: `at`, `actor`, `description`. |
 
-Created by the core migration `V8__create_permissions.sql`, which also seeds the ranks, tags and tracks above. `V10__seed_staff_permissions.sql` gives `mod` (and, by inheritance, every rank above) `muxe.account.others` and `muxe.account.staff`. `V11__create_medals.sql` creates the medal tables, seeds the 31 medals and gives `vip` and `ultra` their medals. Read with `LoadPermissionDataQuery` and `FindPermissionUserQuery`; changed with `ApplyPermissionChangesCommand`, `AddUserNodeCommand`, `RemoveUserNodeCommand`, `SelectTagCommand` and `SelectMedalCommand`.
+Created by the core migration `V8__create_permissions.sql`, which also seeds the ranks, tags and tracks above. `V10__seed_staff_permissions.sql` gives `mod` (and, by inheritance, every rank above) `muxe.account.others` and `muxe.account.staff`. `V11__create_medals.sql` creates the medal tables, seeds the 31 medals and gives `vip` and `ultra` their medals. `V12__grant_lobby_fly_to_vip.sql` gives `vip` (and every rank above) `muxe.lobby.fly`, the lobby's `/fly`. Read with `LoadPermissionDataQuery` and `FindPermissionUserQuery`; changed with `ApplyPermissionChangesCommand`, `AddUserNodeCommand`, `RemoveUserNodeCommand`, `SelectTagCommand` and `SelectMedalCommand`.
 
 ## Metrics
 

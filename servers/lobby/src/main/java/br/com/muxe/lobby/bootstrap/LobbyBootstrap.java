@@ -7,6 +7,7 @@ import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.persistence.migration.MigrationReport;
 import br.com.muxe.lobby.bossbar.LobbyBossBar;
+import br.com.muxe.lobby.command.FlyCommand;
 import br.com.muxe.lobby.command.PlayCommand;
 import br.com.muxe.lobby.command.SetSpawnCommand;
 import br.com.muxe.lobby.config.LobbySettings;
@@ -60,7 +61,8 @@ public final class LobbyBootstrap {
 
         Commands.of(plugin, messages).register(
             new PlayCommand(core, messages, settings.games()),
-            new SetSpawnCommand(spawn, messages)
+            new SetSpawnCommand(spawn, messages),
+            new FlyCommand(messages)
         );
     }
 }

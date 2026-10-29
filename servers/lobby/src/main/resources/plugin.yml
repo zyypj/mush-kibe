@@ -10,5 +10,5 @@ permissions:
     description: Allows /setspawn.
     default: op
   muxe.lobby.fly:
-    description: Arrives 5 blocks above the spawn with flight enabled.
+    description: Arrives 5 blocks above the spawn with flight enabled and allows /fly.
     default: op

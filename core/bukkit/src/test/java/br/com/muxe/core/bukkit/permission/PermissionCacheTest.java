@@ -76,13 +76,13 @@ class PermissionCacheTest {
         Map<String, Group> groups = new HashMap<>(PermissionFixtures.DATA.groups());
         Group vip = groups.get("vip");
         List<PermissionNode> nodes = new ArrayList<>(vip.nodes());
-        nodes.add(PermissionNode.permanent("muxe.lobby.fly", true, NOW));
+        nodes.add(PermissionNode.permanent("muxe.lobby.setspawn", true, NOW));
         groups.put("vip", vip.withNodes(nodes));
         data.set(new PermissionData(groups, PermissionFixtures.DATA.tags(), PermissionFixtures.DATA.tracks()));
 
-        assertThat(cache.check(player, "muxe.lobby.fly")).isEqualTo(Tristate.UNDEFINED);
+        assertThat(cache.check(player, "muxe.lobby.setspawn")).isEqualTo(Tristate.UNDEFINED);
         assertThat(cache.refreshAll()).containsExactly(player);
-        assertThat(cache.check(player, "muxe.lobby.fly")).isEqualTo(Tristate.TRUE);
+        assertThat(cache.check(player, "muxe.lobby.setspawn")).isEqualTo(Tristate.TRUE);
     }
 
     @Test

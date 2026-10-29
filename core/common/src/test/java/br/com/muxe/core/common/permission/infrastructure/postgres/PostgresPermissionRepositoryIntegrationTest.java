@@ -141,7 +141,7 @@ class PostgresPermissionRepositoryIntegrationTest {
         assertThat(data.medals().keySet()).containsExactlyInAnyOrderElementsOf(PermissionFixtures.DATA.medals().keySet());
         assertThat(data.medal("feiticeiro-aprendiz").orElseThrow().symbol()).isEqualTo("⊰⊱");
         assertThat(data.medal("casa-de-gengibre").orElseThrow().symbol()).isEqualTo("۩");
-        assertThat(data.group("vip").orElseThrow().nodes()).extracting(PermissionNode::key).contains("muxe.medal.carinha", "muxe.medal.toxico", "muxe.medal.yin-yang");
+        assertThat(data.group("vip").orElseThrow().nodes()).extracting(PermissionNode::key).contains("muxe.medal.carinha", "muxe.medal.toxico", "muxe.medal.yin-yang", PermissionFixtures.LOBBY_FLY);
 
         transactions.inTransaction("test.medal", () -> {
             repository.saveMedal(new Medal("pascoa", "Páscoa", "✿", "&d", 400));

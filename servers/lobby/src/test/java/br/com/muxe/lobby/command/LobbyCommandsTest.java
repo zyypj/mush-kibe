@@ -26,7 +26,9 @@ class LobbyCommandsTest {
         "players-only", "players-only",
         "no-permission", "no-permission",
         "play-usage", "usage {games}",
-        "play-unknown", "unknown {games}"
+        "play-unknown", "unknown {games}",
+        "fly-enabled", "fly on",
+        "fly-disabled", "fly off"
     ));
 
     private final Map<String, RegisteredCommand> registered = new HashMap<>();
@@ -46,7 +48,8 @@ class LobbyCommandsTest {
             }
         };
         new Commands(ArgumentTypes.basic(), new SuggestionRegistry(), MESSAGES, Logger.getLogger("test"), registrar)
-            .register(new PlayCommand(null, MESSAGES, List.of("skywars", "bedwars")), new SetSpawnCommand(null, MESSAGES));
+            .register(new PlayCommand(null, MESSAGES, List.of("skywars", "bedwars")), new SetSpawnCommand(null, MESSAGES),
+                new FlyCommand(MESSAGES));
     }
 
     @Test
@@ -73,6 +76,55 @@ class LobbyCommandsTest {
 
         assertThat(received).containsExactly("players-only", "no-permission");
         assertThat(registered.get("jogar").definition().aliases()).containsExactly("play");
+    }
+
+    @Test
+    void flyTurnsFlightOnAndOffAndLandsThePlayer() {
+        Map<String, Boolean> state = new HashMap<>(Map.of("allowFlight", false, "flying", false));
+        Player player = flyer(state, true);
+
+        registered.get("fly").run(player, "fly", new String[0]);
+        assertThat(state).containsEntry("allowFlight", true);
+        state.put("flying", true);
+        registered.get("fly").run(player, "voar", new String[0]);
+
+        assertThat(state).containsEntry("allowFlight", false).containsEntry("flying", false);
+        assertThat(received).containsExactly("fly on", "fly off");
+        assertThat(registered.get("fly").definition().aliases()).containsExactly("voar");
+    }
+
+    @Test
+    void flyNeedsTheLobbyFlyPermission() {
+        Map<String, Boolean> state = new HashMap<>(Map.of("allowFlight", false, "flying", false));
+
+        registered.get("fly").run(flyer(state, false), "fly", new String[0]);
+
+        assertThat(state).containsEntry("allowFlight", false);
+        assertThat(received).containsExactly("no-permission");
+    }
+
+    private Player flyer(Map<String, Boolean> state, boolean allowed) {
+        return (Player) Proxy.newProxyInstance(Player.class.getClassLoader(), new Class<?>[] {Player.class}, (proxy, method, args) -> switch (method.getName()) {
+            case "sendMessage" -> {
+                received.add((String) args[0]);
+                yield null;
+            }
+            case "hasPermission" -> allowed;
+            case "getAllowFlight" -> state.get("allowFlight");
+            case "isFlying" -> state.get("flying");
+            case "setAllowFlight" -> {
+                state.put("allowFlight", (Boolean) args[0]);
+                yield null;
+            }
+            case "setFlying" -> {
+                state.put("flying", (Boolean) args[0]);
+                yield null;
+            }
+            case "getName" -> "Steve";
+            case "hashCode" -> System.identityHashCode(proxy);
+            case "equals" -> proxy == args[0];
+            default -> method.getReturnType() == boolean.class ? false : null;
+        });
     }
 
     private <T extends CommandSender> T sender(Class<T> type) {

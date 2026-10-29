@@ -50,6 +50,7 @@ public final class PermissionFixtures {
         new Medal("briga-de-espadas", "Briga de Espadas", "⚔", "&7", 300),
         new Medal("imperial", "Imperial", "⚜", "&6", 310)
     );
+    public static final String LOBBY_FLY = "muxe.lobby.fly";
     public static final Map<String, List<String>> MEDAL_GRANTS = Map.of(
         "vip", List.of("carinha", "toxico", "yin-yang"),
         "ultra", List.of("musico", "flash", "paz-e-amor", "amor", "cafe")
@@ -93,6 +94,9 @@ public final class PermissionFixtures {
                 nodes.add(PermissionNode.group(RANKS.get(index - 1), Optional.empty(), SEEDED_AT));
             }
             MEDAL_GRANTS.getOrDefault(id, List.of()).forEach(medal -> nodes.add(PermissionNode.permanent(Medal.PERMISSION_PREFIX + medal, true, SEEDED_AT)));
+            if (id.equals("vip")) {
+                nodes.add(PermissionNode.permanent(LOBBY_FLY, true, SEEDED_AT));
+            }
             if (id.equals("mod")) {
                 STAFF_PERMISSIONS.forEach(permission -> nodes.add(PermissionNode.permanent(permission, true, SEEDED_AT)));
             }

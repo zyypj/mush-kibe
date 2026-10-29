@@ -9,7 +9,7 @@ O plugin do lobby cuida do spawn e da chegada, do voo, da proteção, da scorebo
 ## Histórias de usuário
 
 - Como jogador, quero chegar a um spawn limpo e seguro, ver a rede num relance e escolher o que jogar.
-- Como membro da equipe, quero voar no lobby.
+- Como VIP ou membro da equipe, quero voar no lobby e desligar o voo quando quiser.
 - Como construtor, quero entrar num modo de construção para editar o lobby, enquanto jogadores comuns não conseguem quebrá-lo.
 
 ## Como funciona
@@ -19,7 +19,8 @@ O plugin do lobby cuida do spawn e da chegada, do voo, da proteção, da scorebo
 - Depois do login, o proxy manda o jogador para o lobby com menos jogadores (veja [Roteamento da rede](../network-routing/README.pt-BR.md)).
 - Ao entrar: modo Aventura, vida e fome cheias, experiência zerada, e teleporte para o spawn configurado (ou o spawn do mundo principal). O Muxe-Core limpa o inventário e a armadura e dá a [hotbar](../hotbar/README.pt-BR.md).
 - Quem tem `muxe.lobby.fly` chega `arrival.fly-height` blocos (5) acima do spawn, já voando. Os outros chegam no spawn. Cair abaixo de `protection.void-level` manda o jogador de volta do mesmo jeito.
-- O [parkour](../parkour/README.pt-BR.md) desliga o voo enquanto o jogador faz a corrida e o devolve quando ela acaba.
+- O `/fly` (`/voar`) liga o voo (`&eVocê ativou o &bmodo voar&e!`) ou desliga (`&cVocê desativou o modo voar!`). Desligar faz quem está voando descer. Entrar no lobby ou cair no void devolve o voo a todos que têm `muxe.lobby.fly`.
+- O [parkour](../parkour/README.pt-BR.md) desliga o voo enquanto o jogador faz a corrida e o devolve quando ela acaba. Ninguém consegue levantar voo durante a corrida, nem depois do `/fly`.
 - As mensagens de entrada e saída ficam escondidas.
 - Meio segundo depois de entrar, o jogador ouve um som de level up e vê o título `&b&lMUXE` com o subtítulo `&eBoas-vindas!`. Essa saudação vem do Muxe-Core e acontece em todo servidor `LOBBY`, nunca nos servidores de autenticação ou de jogo.
 - Trocar de lobby pelo [seletor de lobby](../hotbar/README.pt-BR.md#seletor-de-lobby), ou usar `/lobby`, não mostra mensagem de "conectando": o jogador só é movido.
@@ -71,6 +72,7 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 |---|---|---|
 | `/jogar <modo>` (`/play`) | Envia o jogador para um grupo de jogo. | Nenhuma |
 | `/setspawn` | Salva a posição atual como spawn do lobby. | `muxe.lobby.setspawn` |
+| `/fly` (`/voar`) | Liga ou desliga o voo. | `muxe.lobby.fly` |
 | `/build <on\|off>` | Liga ou desliga o modo construção em qualquer servidor; sem argumento, alterna. Vem do Muxe-Core. | `muxe.build` |
 
 O `/jogar` completa os jogos configurados com tab.
@@ -79,7 +81,7 @@ O `/jogar` completa os jogos configurados com tab.
 
 | Permissão | Libera | Padrão |
 |---|---|---|
-| `muxe.lobby.fly` | Chegar acima do spawn, voando, e voar de novo depois do modo construção. | op |
+| `muxe.lobby.fly` | Usar o `/fly`, chegar acima do spawn, voando, e voar de novo depois do modo construção. Semeada no `vip`, então todo cargo acima do VIP também tem. | op |
 | `muxe.build` | Usar o `/build` (Muxe-Core) para quebrar, colocar, largar e pegar itens no Criativo. | op |
 | `muxe.lobby.setspawn` | Usar `/setspawn`. | op |
 
@@ -97,7 +99,7 @@ O `/jogar` completa os jogos configurados com tab.
 | `scoreboard.update-interval` | `1s` | De quanto em quanto tempo a scoreboard é atualizada. |
 | `scoreboard.default-tag`, `scoreboard.default-credits` | `&7Membro`, `0` | Tag mostrada enquanto os cargos do jogador não carregaram, e os créditos mostrados até existir uma carteira. |
 | `spawn.*` | não definido | Escrito pelo `/setspawn`. |
-| `messages.*` | Textos em português | Mensagens do `/jogar` e do `/setspawn`; as mensagens compartilhadas vêm do Muxe-Core. |
+| `messages.*` | Textos em português | Mensagens do `/jogar`, do `/setspawn` e do `/fly` (`fly-enabled`, `fly-disabled`); as mensagens compartilhadas vêm do Muxe-Core. |
 
 `spam`, `hotbar`, `lobby-selector` e as mensagens de visibilidade e do seletor de lobby não são mais lidos deste arquivo: eles ficam no `plugins/Muxe-Core/config.yml`, descritos em [Hotbar](../hotbar/README.pt-BR.md#configuração).
 
@@ -138,6 +140,7 @@ As métricas de servidor Spigot do Muxe-Core. As métricas de visibilidade foram
 ## Critérios de aceitação
 
 - [x] Quem tem a permissão de voar chega 5 blocos acima do spawn, voando; os outros chegam nele.
+- [x] O `/fly` liga e desliga o voo com as mensagens de referência, faz quem está voando descer e precisa de `muxe.lobby.fly`.
 - [x] A saudação de entrada só fica ativa em servidores `LOBBY`, com o título e o subtítulo de referência.
 - [x] A boss bar alterna `&e&lMUXE` e `&6&lMUXE` a cada 10 ticks, e a scoreboard preenche as linhas de referência.
 - [ ] Boss bar, scoreboard e o voo depois do modo construção funcionam no jogo (conferido no jogo).

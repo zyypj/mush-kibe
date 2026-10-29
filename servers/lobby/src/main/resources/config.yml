@@ -36,3 +36,5 @@ messages:
   play-connecting: "&7Procurando uma sala de &b{game}&7..."
   play-failed: "&cNão foi possível entrar agora. Tente novamente."
   spawn-set: "&aSpawn do lobby definido."
+  fly-enabled: "&eVocê ativou o &bmodo voar&e!"
+  fly-disabled: "&cVocê desativou o modo voar!"
