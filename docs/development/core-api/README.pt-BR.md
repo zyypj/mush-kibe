@@ -151,6 +151,7 @@ SpawnedHologram hologram = holograms.show(player, top, List.of("&b&lSKYWARS", "&
 
 - As linhas descem a partir de `top`, a 0,28 bloco uma da outra. Uma linha vazia mantém o espaço e não mostra nada. `height(lines)` diz a altura do texto.
 - Mesmo transporte dos hologramas de pixels: suportes de armadura invisíveis enviados só para o `player`.
+- A altura de uma linha é onde o texto dela começa: o topo do texto fica 0,09375 bloco acima dela. O cliente 1.8 desenha o nome de um suporte de armadura pequeno como se ele tivesse o tamanho normal (1,975 bloco), então o `PacketHologramTransport` cria cada suporte `LABEL_HEIGHT` (1,39375) bloco abaixo da linha.
 
 ### Explosão de fogo de artifício
 

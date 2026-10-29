@@ -151,6 +151,7 @@ SpawnedHologram hologram = holograms.show(player, top, List.of("&b&lSKYWARS", "&
 
 - Lines go down from `top`, 0.28 blocks apart. A blank line keeps its space and shows nothing. `height(lines)` tells how tall the text is.
 - Same transport as the pixel holograms: invisible armor stands sent only to `player`.
+- The height of a line is where its text starts: the top of the text sits 0.09375 blocks above it. The 1.8 client draws the name of a small armor stand as if the stand were full size (1.975 blocks), so `PacketHologramTransport` spawns each stand `LABEL_HEIGHT` (1.39375) blocks below the line.
 
 ### Firework burst
 
