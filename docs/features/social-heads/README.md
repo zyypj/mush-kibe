@@ -15,7 +15,7 @@ A player head placed in the world that shows, one at a time, the social networks
 ### The head
 
 - `/redes criar <id>` places a player head on the floor of the block where you stand, turned to where you look (16 directions, like a head placed by hand). The head replaces whatever was in that block.
-- A label sits `social-heads.label-height` (0.5125) blocks above the bottom of the head block, centered on it.
+- A label sits `social-heads.label-height` (0.9) blocks above the bottom of the head block, centered on it.
 - Every `social-heads.interval` (1 minute) the head switches to the next network of `social-heads.networks`, in the order of the config, and starts over after the last one. The texture of the head and the label change together.
 - The network shown comes from the clock: `floor(epochMillis / interval) % networks`. Every server of every group computes the same index, so all heads of the network show the same network at the same time, with no message between servers. Each server checks the clock once per second.
 - A network without `texture` shows the default player head.
@@ -67,10 +67,11 @@ Clicking a head needs no permission.
 ```yaml
 social-heads:
   interval: 1m
-  label-height: 0.5125
+  label-height: 0.9
   networks:
     instagram:
       label: "&d@muxe"
+      texture: "90d464186e1a50ddaa14be2259611a4e8458515a5367a9389a9cc7c89c94a93b"
       message:
         - ""
         - "&d&lINSTAGRAM:"
@@ -89,10 +90,10 @@ social-heads:
 | Key | Default | Description |
 |---|---|---|
 | `social-heads.interval` | `1m` | How long each network is shown. Must be positive. |
-| `social-heads.label-height` | `0.5125` | Height of the label above the bottom of the head block. |
+| `social-heads.label-height` | `0.9` | Height of the label above the bottom of the head block. |
 | `social-heads.networks.<id>` | `instagram`, `twitch`, `tiktok`, `twitter`, `youtube` | The networks, shown in this order. At least one is needed. |
 | `social-heads.networks.<id>.label` | `&d@muxe`, `&5@muxe`, `&b@muxe`, `&b@muxe`, `&c@muxe` | Text of the label above the head. |
-| `social-heads.networks.<id>.texture` | Twitch, TikTok and YouTube only | Head texture: the hash after `textures.minecraft.net/texture/`, the texture URL or the base64 value, as `skull-texture` on [items](../../development/core-api/README.md#items). Without it, the default player head. |
+| `social-heads.networks.<id>.texture` | Every network has one | Head texture: the hash after `textures.minecraft.net/texture/`, the texture URL or the base64 value, as `skull-texture` on [items](../../development/core-api/README.md#items). Without it, the default player head. |
 | `social-heads.networks.<id>.message` | A blank line, the name of the network, its link and another blank line | Chat lines sent on click. `""` is a blank line. |
 | `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam shared with NPCs, cash registers, the hotbar and the parkour items. |
 
@@ -146,6 +147,7 @@ None of its own. Saving, removing and loading heads count in the placement metri
 - [x] The default config has five networks and changes every minute.
 - [x] The network shown follows the clock, so every server shows the same one at the same time.
 - [x] Each network has its label, optional texture and message.
+- [x] Every default network has a logo texture, so the head never shows the default player.
 - [x] An interval that is not positive, or no network, is refused.
 - [x] The head looks where the staff member who placed it was looking.
 - [x] A head survives a round trip through PostgreSQL, can be moved and removed, and other groups stay apart.
@@ -169,4 +171,3 @@ None of its own. Saving, removing and loading heads count in the placement metri
 ## Pending
 
 - The handles and links in the default config are placeholders (`muxe`): replace them with the real accounts of the network.
-- Instagram and Twitter have no texture yet and show the default player head until one is set.

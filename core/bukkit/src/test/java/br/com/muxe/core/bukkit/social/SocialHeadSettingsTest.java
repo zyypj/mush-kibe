@@ -43,7 +43,18 @@ class SocialHeadSettingsTest {
         assertThat(twitch.message().get(1)).isEqualTo("&5&lTWITCH:");
         assertThat(twitch.texture()).contains(SkullTexture.value("8e8e38b532051fce3b3b7212f4ed1dd4b52ed976abdd286d9132c5b3a54db123"));
         assertThat(youtube.label()).isEqualTo("&c@muxe");
-        assertThat(instagram.texture()).isEmpty();
+        assertThat(instagram.texture()).contains(SkullTexture.value("90d464186e1a50ddaa14be2259611a4e8458515a5367a9389a9cc7c89c94a93b"));
+    }
+
+    @Test
+    void everyNetworkShowsItsLogoSoTheHeadIsNeverTheDefaultPlayer() {
+        assertThat(settings.networks()).allSatisfy(network -> assertThat(network.texture()).as(network.id()).isPresent());
+        assertThat(settings.networks().get(3).texture()).contains(SkullTexture.value("6ad46a422ae59603fd889c25344ff67bc843af8ee518932c2e2ad07cdbf939b3"));
+    }
+
+    @Test
+    void theLabelFloatsClearOfTheHead() {
+        assertThat(settings.labelHeight()).isEqualTo(SocialHeadSettings.DEFAULT_LABEL_HEIGHT).isEqualTo(0.9);
     }
 
     @Test

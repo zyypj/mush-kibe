@@ -10,6 +10,8 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public record SocialHeadSettings(Duration interval, double labelHeight, List<SocialNetwork> networks) {
 
+    public static final double DEFAULT_LABEL_HEIGHT = 0.9;
+
     public SocialHeadSettings {
         Objects.requireNonNull(interval, "interval");
         if (interval.isNegative() || interval.isZero()) {
@@ -29,7 +31,7 @@ public record SocialHeadSettings(Duration interval, double labelHeight, List<Soc
         }
         return new SocialHeadSettings(
             DurationParser.parse(section.getString("interval", "1m")),
-            section.getDouble("label-height", 0.5125),
+            section.getDouble("label-height", DEFAULT_LABEL_HEIGHT),
             networks
         );
     }

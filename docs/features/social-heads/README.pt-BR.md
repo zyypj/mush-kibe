@@ -15,7 +15,7 @@ Uma cabeça de jogador colocada no mundo que mostra, uma por vez, as redes socia
 ### A cabeça
 
 - O `/redes criar <id>` coloca uma cabeça de jogador no chão do bloco onde você está, virada para onde você olha (16 direções, como uma cabeça colocada à mão). A cabeça substitui o que estava naquele bloco.
-- Um rótulo fica `social-heads.label-height` (0.5125) blocos acima da base do bloco da cabeça, centralizado nele.
+- Um rótulo fica `social-heads.label-height` (0.9) blocos acima da base do bloco da cabeça, centralizado nele.
 - A cada `social-heads.interval` (1 minuto) a cabeça passa para a próxima rede de `social-heads.networks`, na ordem da config, e recomeça depois da última. A textura da cabeça e o rótulo mudam juntos.
 - A rede mostrada vem do relógio: `floor(epochMillis / interval) % networks`. Todo servidor de todo grupo calcula o mesmo índice, então todas as cabeças da rede mostram a mesma rede ao mesmo tempo, sem nenhuma mensagem entre servidores. Cada servidor confere o relógio uma vez por segundo.
 - Uma rede sem `texture` mostra a cabeça de jogador padrão.
@@ -67,10 +67,11 @@ Clicar numa cabeça não precisa de permissão.
 ```yaml
 social-heads:
   interval: 1m
-  label-height: 0.5125
+  label-height: 0.9
   networks:
     instagram:
       label: "&d@muxe"
+      texture: "90d464186e1a50ddaa14be2259611a4e8458515a5367a9389a9cc7c89c94a93b"
       message:
         - ""
         - "&d&lINSTAGRAM:"
@@ -89,10 +90,10 @@ social-heads:
 | Chave | Padrão | Descrição |
 |---|---|---|
 | `social-heads.interval` | `1m` | Quanto tempo cada rede fica aparecendo. Precisa ser positivo. |
-| `social-heads.label-height` | `0.5125` | Altura do rótulo acima da base do bloco da cabeça. |
+| `social-heads.label-height` | `0.9` | Altura do rótulo acima da base do bloco da cabeça. |
 | `social-heads.networks.<id>` | `instagram`, `twitch`, `tiktok`, `twitter`, `youtube` | As redes, mostradas nesta ordem. Precisa de pelo menos uma. |
 | `social-heads.networks.<id>.label` | `&d@muxe`, `&5@muxe`, `&b@muxe`, `&b@muxe`, `&c@muxe` | Texto do rótulo acima da cabeça. |
-| `social-heads.networks.<id>.texture` | Só Twitch, TikTok e YouTube | Textura da cabeça: o hash depois de `textures.minecraft.net/texture/`, a URL da textura ou o valor em base64, como o `skull-texture` dos [itens](../../development/core-api/README.pt-BR.md#itens). Sem ela, a cabeça de jogador padrão. |
+| `social-heads.networks.<id>.texture` | Toda rede tem uma | Textura da cabeça: o hash depois de `textures.minecraft.net/texture/`, a URL da textura ou o valor em base64, como o `skull-texture` dos [itens](../../development/core-api/README.pt-BR.md#itens). Sem ela, a cabeça de jogador padrão. |
 | `social-heads.networks.<id>.message` | Uma linha em branco, o nome da rede, o link e outra linha em branco | Linhas de chat enviadas no clique. `""` é uma linha em branco. |
 | `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam compartilhado com os NPCs, as caixas registradoras, a hotbar e os itens do parkour. |
 
@@ -146,6 +147,7 @@ Nenhuma própria. Salvar, remover e carregar cabeças conta nas métricas de pos
 - [x] A config padrão tem cinco redes e troca a cada minuto.
 - [x] A rede mostrada segue o relógio, então todo servidor mostra a mesma ao mesmo tempo.
 - [x] Cada rede tem o seu rótulo, a sua textura opcional e a sua mensagem.
+- [x] Toda rede padrão tem uma textura de logo, então a cabeça nunca mostra o jogador padrão.
 - [x] Um intervalo que não é positivo, ou nenhuma rede, é recusado.
 - [x] A cabeça olha para onde olhava o membro da equipe que a colocou.
 - [x] Uma cabeça sobrevive a ir e voltar do PostgreSQL, pode ser movida e removida, e os grupos ficam separados.
@@ -169,4 +171,3 @@ Nenhuma própria. Salvar, remover e carregar cabeças conta nas métricas de pos
 ## Pendências
 
 - Os nomes e links da config padrão são provisórios (`muxe`): troque pelas contas reais da rede.
-- O Instagram e o Twitter ainda não têm textura e mostram a cabeça de jogador padrão até uma ser definida.

@@ -84,10 +84,11 @@ holograms:
 
 social-heads:
   interval: 1m
-  label-height: 0.5125
+  label-height: 0.9
   networks:
     instagram:
       label: "&d@muxe"
+      texture: "90d464186e1a50ddaa14be2259611a4e8458515a5367a9389a9cc7c89c94a93b"
       message:
         - ""
         - "&d&lINSTAGRAM:"
@@ -111,6 +112,7 @@ social-heads:
         - ""
     twitter:
       label: "&b@muxe"
+      texture: "6ad46a422ae59603fd889c25344ff67bc843af8ee518932c2e2ad07cdbf939b3"
       message:
         - ""
         - "&b&lTWITTER:"
