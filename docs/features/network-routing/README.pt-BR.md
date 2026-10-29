@@ -25,6 +25,7 @@ Como os jogadores são colocados nos servidores e levados de um para outro. Fica
 - **Menos jogadores:** entre os servidores vivos do grupo que têm vaga, o que tem menos jogadores; empates são desfeitos pelo id.
 - **Desconexão:** a passagem esquece o jogador.
 - **Lista de servidores:** o proxy responde todo ping com as `motd.lines` (uma barra nas cores do arco-íris com `&b&lMUXE` no meio, e depois `&a&lVENHA JOGAR`) e mostra `motd.max-players` (3000) como máximo. Cada linha ganha espaços para ficar no meio da lista de servidores (`TextWidth.center`, 271 pixels). O número de jogadores online continua o real, e o ícone é o `server-icon.png` do Velocity.
+- **Tab:** toda vez que um jogador conecta em um servidor (autenticação, lobby ou jogo), o proxy coloca o cabeçalho do tab (`&b&lMUXE`) e o rodapé (`&eWebsite &bmuxe.com.br`, `&eLoja &bloja.muxe.com.br`, `&eDiscord &bmuxe.com.br/discord`), cada um com uma linha em branco em volta. Os nomes na lista mantêm o prefixo do cargo, dos [cargos](../ranks-and-tags/README.pt-BR.md).
 
 ## Comandos
 
@@ -46,6 +47,7 @@ Não se aplica.
 | `routing.lobby-group` | `lobby` | Grupo para onde os jogadores vão depois de se autenticar. |
 | `motd.lines` | A barra do MUXE e `&a&lVENHA JOGAR` | As duas linhas da lista de servidores. Escreva sem espaços na frente: o proxy centraliza. |
 | `motd.max-players` | `3000` | Máximo mostrado na lista de servidores. |
+| `tab-list.header`, `tab-list.footer` | O título MUXE; as linhas do site, da loja e do Discord | Linhas acima e abaixo da lista de jogadores, em todos os servidores. Listas YAML, `""` para uma linha em branco. |
 | `messages.no-auth-server` | Tela de seis linhas: não foi possível conectar, motivo, dica para tentar de novo, uma linha em branco, onde acompanhar as notícias e o Discord da equipe | Mostrada quando o login é recusado porque nenhum servidor de autenticação está vivo. Uma lista YAML, um item por linha. |
 | `messages.server-restarting` | Tela de cinco linhas: desconectado, motivo (servidor reiniciando), dica para tentar de novo, uma linha em branco e o Discord para mais informações | Mostrada quando o servidor do jogador desliga e não há outro lobby, ou nenhum servidor. Uma lista YAML, um item por linha. |
 | `messages.server-moved` | `&eO servidor em que você estava está reiniciando. Você foi levado para outro servidor.` | Mensagem no chat depois de ser levado para outro servidor porque o seu desligou. |
@@ -93,6 +95,8 @@ Não se aplica. A passagem fica na memória do proxy.
 - [ ] Jogadores premium e sessões retomadas começam direto em um lobby (conferido no jogo).
 - [x] A lista de servidores mostra as linhas do MUXE centralizadas e 3000 como máximo, mantendo o número real de jogadores online.
 - [ ] A MOTD aparece centralizada no cliente 1.8 (conferido no jogo).
+- [x] Todo servidor em que o jogador conecta recebe o cabeçalho e o rodapé do tab.
+- [ ] O tab fica igual à referência em todos os servidores (conferido no jogo).
 
 ## Falhas e recuperação
 

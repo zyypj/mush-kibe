@@ -56,6 +56,18 @@ motd:
     - "&c&m  &6&m  &e&m  &a&m  &b&m  &r &b&lMUXE&r &b&m  &a&m  &e&m  &6&m  &c&m  "
     - "&a&lVENHA JOGAR"
 
+tab-list:
+  header:
+    - ""
+    - "&b&lMUXE"
+    - ""
+  footer:
+    - ""
+    - "&eWebsite &bmuxe.com.br"
+    - "&eLoja &bloja.muxe.com.br"
+    - "&eDiscord &bmuxe.com.br/discord"
+    - ""
+
 geoip:
   enabled: true
   account-id: ""
