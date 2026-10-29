@@ -6,8 +6,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.bukkit.Location;
+import org.bukkit.inventory.ItemStack;
 
-public record Npc(String id, Location location, Optional<NpcSkin> skin) {
+public record Npc(String id, Location location, Optional<NpcSkin> skin, Optional<ItemStack> hand) {
 
     private static final String PROFILE_PREFIX = "npc-";
     private static final int PROFILE_HASH_LENGTH = 8;
@@ -16,7 +17,13 @@ public record Npc(String id, Location location, Optional<NpcSkin> skin) {
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(location, "location");
         Objects.requireNonNull(skin, "skin");
+        Objects.requireNonNull(hand, "hand");
         location = location.clone();
+        hand = hand.map(ItemStack::clone);
+    }
+
+    public Npc(String id, Location location, Optional<NpcSkin> skin) {
+        this(id, location, skin, Optional.empty());
     }
 
     public String profileName() {

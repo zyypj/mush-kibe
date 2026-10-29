@@ -12,12 +12,14 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public final class PacketNpcTransport {
 
     private static final int SKIN_LAYERS_INDEX = 10;
     private static final byte ALL_SKIN_LAYERS = 127;
     private static final float DEGREES_TO_BYTE = 256f / 360f;
+    private static final int HAND_SLOT = 0;
 
     private static final PacketNpcTransport INSTANCE = new PacketNpcTransport();
 
@@ -60,6 +62,8 @@ public final class PacketNpcTransport {
         private final Constructor<?> spawnPacket;
         private final Constructor<?> headRotationPacket;
         private final Constructor<?> destroyPacket;
+        private final Method nmsCopy;
+        private final Constructor<?> equipmentPacket;
 
         private Handles(ServerInternals internals) throws ReflectiveOperationException {
             this.internals = internals;
@@ -86,6 +90,8 @@ public final class PacketNpcTransport {
             this.spawnPacket = ServerInternals.constructor(internals.nms("PacketPlayOutNamedEntitySpawn"), internals.nms("EntityHuman"));
             this.headRotationPacket = ServerInternals.constructor(internals.nms("PacketPlayOutEntityHeadRotation"), entity, byte.class);
             this.destroyPacket = ServerInternals.constructor(internals.nms("PacketPlayOutEntityDestroy"), int[].class);
+            this.nmsCopy = internals.craft("inventory.CraftItemStack").getMethod("asNMSCopy", ItemStack.class);
+            this.equipmentPacket = ServerInternals.constructor(internals.nms("PacketPlayOutEntityEquipment"), int.class, int.class, internals.nms("ItemStack"));
         }
 
         private static Optional<Handles> resolve(ServerInternals internals) {
@@ -111,7 +117,8 @@ public final class PacketNpcTransport {
                 Object player = entityPlayer.newInstance(minecraftServer.invoke(Bukkit.getServer()), world, profile, interactManager.newInstance(world));
                 setLocation.invoke(player, location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
                 watch.invoke(dataWatcher.invoke(player), SKIN_LAYERS_INDEX, ALL_SKIN_LAYERS);
-                return new PacketNpc(player, (int) entityId.invoke(player), (byte) (location.getYaw() * DEGREES_TO_BYTE));
+                Optional<Object> hand = npc.hand().isPresent() ? Optional.of(nmsCopy.invoke(null, npc.hand().get())) : Optional.empty();
+                return new PacketNpc(player, (int) entityId.invoke(player), (byte) (location.getYaw() * DEGREES_TO_BYTE), hand);
             } catch (ReflectiveOperationException | RuntimeException exception) {
                 Bukkit.getLogger().log(Level.WARNING, "[Muxe] Could not build NPC " + npc.id(), exception);
                 return NpcBody.NONE;
@@ -129,11 +136,13 @@ public final class PacketNpcTransport {
             private final Object player;
             private final int id;
             private final byte headYaw;
+            private final Optional<Object> hand;
 
-            private PacketNpc(Object player, int id, byte headYaw) {
+            private PacketNpc(Object player, int id, byte headYaw, Optional<Object> hand) {
                 this.player = player;
                 this.id = id;
                 this.headYaw = headYaw;
+                this.hand = hand;
             }
 
             @Override
@@ -147,6 +156,9 @@ public final class PacketNpcTransport {
                     internals.send(viewer, info(addPlayer, player));
                     internals.send(viewer, spawnPacket.newInstance(player));
                     internals.send(viewer, headRotationPacket.newInstance(player, headYaw));
+                    if (hand.isPresent()) {
+                        internals.send(viewer, equipmentPacket.newInstance(id, HAND_SLOT, hand.get()));
+                    }
                 });
             }
 

@@ -28,7 +28,8 @@ public final class NpcLines {
     }
 
     public List<String> render(NpcPlacement npc, int players) {
-        return templates.getOrDefault(npc.action().type(), List.of()).stream()
+        List<String> lines = npc.hasOwnLines() ? npc.lines() : templates.getOrDefault(npc.action().type(), List.of());
+        return lines.stream()
             .map(line -> line.replace("{name}", npc.name()).replace("{players}", Integer.toString(players)))
             .toList();
     }

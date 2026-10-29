@@ -66,6 +66,31 @@ class PlacementTest {
     }
 
     @Test
+    void npcsKeepTheirOwnLinesAndItemInHandThroughOtherChanges() {
+        NpcPlacement npc = new NpcPlacement("lobby", "duels", SPAWN, "DUELS", NpcAction.game("duels"), "", Optional.empty());
+        assertThat(npc.hasOwnLines()).isFalse();
+        assertThat(npc.hand()).isEmpty();
+
+        NpcPlacement changed = npc.showing(List.of("&d&lNOVIDADE!", "&b&l{name}"))
+            .holding(Optional.of(new HeldItem("diamond_sword", 0)))
+            .named("Duelos")
+            .movedTo(SPAWN);
+
+        assertThat(changed.hasOwnLines()).isTrue();
+        assertThat(changed.lines()).containsExactly("&d&lNOVIDADE!", "&b&l{name}");
+        assertThat(changed.hand()).contains(new HeldItem("DIAMOND_SWORD", 0));
+        assertThat(changed.showing(List.of()).hasOwnLines()).isFalse();
+    }
+
+    @Test
+    void anItemInHandNeedsAMaterialAndAValidData() {
+        assertThat(new HeldItem(" wool ", 14)).isEqualTo(new HeldItem("WOOL", 14));
+        assertThatThrownBy(() -> new HeldItem(" ", 0)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new HeldItem("WOOL", -1)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new HeldItem("WOOL", 40000)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void placementsAreFoundById() {
         RegisterPlacement register = new RegisterPlacement("lobby", "caixa", SPAWN, Optional.empty());
         Placements placements = new Placements(List.of(), List.of(), List.of(register), List.of(), List.of());

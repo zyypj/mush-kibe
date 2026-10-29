@@ -2,6 +2,7 @@ package br.com.muxe.core.bukkit.placement;
 
 import br.com.muxe.core.bukkit.config.BukkitConfigSource;
 import br.com.muxe.core.bukkit.location.StoredLocation;
+import br.com.muxe.core.common.placement.domain.HeldItem;
 import br.com.muxe.core.common.placement.domain.NpcAction;
 import br.com.muxe.core.common.placement.domain.NpcPlacement;
 import br.com.muxe.core.common.placement.domain.ParkourPoint;
@@ -107,8 +108,18 @@ public final class PlacementImport {
             section.getString("name", id),
             NpcAction.parse(section.getString("group", NpcAction.NONE_WORD)),
             section.getString("skin-name", ""),
-            skin
+            skin,
+            section.getStringList("lines"),
+            hand(section)
         );
+    }
+
+    private static Optional<HeldItem> hand(ConfigurationSection section) {
+        String material = section.getString("hand.material", "");
+        if (material.isBlank()) {
+            return Optional.empty();
+        }
+        return Optional.of(new HeldItem(material, section.getInt("hand.data", 0)));
     }
 
     private static Optional<ParkourPointPlacement> parkourPoint(ConfigurationSection section, String key, ParkourPoint point, String group, Logger logger) {

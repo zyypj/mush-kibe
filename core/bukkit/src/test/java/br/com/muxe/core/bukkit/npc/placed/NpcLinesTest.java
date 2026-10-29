@@ -6,6 +6,7 @@ import br.com.muxe.core.bukkit.shop.ShopFixtures;
 import br.com.muxe.core.common.placement.domain.NpcAction;
 import br.com.muxe.core.common.placement.domain.NpcPlacement;
 import br.com.muxe.core.common.placement.domain.Position;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +30,17 @@ class NpcLinesTest {
 
         assertThat(lines.render(shop, 0)).containsExactly("&b&lLoja", "&eClique para abrir a loja");
         assertThat(lines.render(plain, 0)).containsExactly("&b&lGuia");
+    }
+
+    @Test
+    void anNpcWithItsOwnLinesShowsThemInsteadOfTheActionLines() {
+        NpcPlacement duels = new NpcPlacement("lobby", "duels", SPAWN, "DUELS", NpcAction.game("duels"), "", Optional.empty(),
+            List.of("&d&lNOVIDADE!", "&b&l{name}", "&e{players} jogando"), Optional.empty());
+        NpcPlacement bridge = new NpcPlacement("lobby", "treino-ponte", SPAWN, "TREINO: PONTE", NpcAction.game("treinoponte"), "", Optional.empty(),
+            List.of("&b&l{name}", "&eClique aqui!"), Optional.empty());
+
+        assertThat(lines.render(duels, 177)).containsExactly("&d&lNOVIDADE!", "&b&lDUELS", "&e177 jogando");
+        assertThat(lines.render(bridge, 5)).containsExactly("&b&lTREINO: PONTE", "&eClique aqui!");
     }
 
     @Test

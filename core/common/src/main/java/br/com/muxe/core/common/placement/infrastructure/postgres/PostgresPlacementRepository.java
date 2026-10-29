@@ -2,6 +2,7 @@ package br.com.muxe.core.common.placement.infrastructure.postgres;
 
 import br.com.muxe.core.common.persistence.PersistenceException;
 import br.com.muxe.core.common.persistence.transaction.TransactionContext;
+import br.com.muxe.core.common.placement.domain.HeldItem;
 import br.com.muxe.core.common.placement.domain.HologramPlacement;
 import br.com.muxe.core.common.placement.domain.NpcAction;
 import br.com.muxe.core.common.placement.domain.NpcPlacement;
@@ -31,7 +32,7 @@ public final class PostgresPlacementRepository implements PlacementRepository {
     private static final String POSITION = "world, x, y, z, yaw, pitch";
 
     private static final String FIND_NPCS = "SELECT id, " + POSITION
-        + ", name, action, action_target, skin_name, skin_value, skin_signature FROM core.npc_placements WHERE server_group = ? ORDER BY id";
+        + ", name, action, action_target, skin_name, skin_value, skin_signature, lines, hand_material, hand_data FROM core.npc_placements WHERE server_group = ? ORDER BY id";
 
     private static final String FIND_HOLOGRAMS = "SELECT id, " + POSITION + ", lines FROM core.hologram_placements WHERE server_group = ? ORDER BY id";
 
@@ -43,12 +44,14 @@ public final class PostgresPlacementRepository implements PlacementRepository {
     private static final String FIND_PARKOUR_POINTS = "SELECT id, " + POSITION + " FROM core.parkour_placements WHERE server_group = ? ORDER BY id";
 
     private static final String SAVE_NPC = """
-        INSERT INTO core.npc_placements (server_group, id, world, x, y, z, yaw, pitch, name, action, action_target, skin_name, skin_value, skin_signature)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO core.npc_placements (server_group, id, world, x, y, z, yaw, pitch, name, action, action_target, skin_name, skin_value, skin_signature,
+            lines, hand_material, hand_data)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (server_group, id) DO UPDATE
         SET world = EXCLUDED.world, x = EXCLUDED.x, y = EXCLUDED.y, z = EXCLUDED.z, yaw = EXCLUDED.yaw, pitch = EXCLUDED.pitch,
             name = EXCLUDED.name, action = EXCLUDED.action, action_target = EXCLUDED.action_target,
-            skin_name = EXCLUDED.skin_name, skin_value = EXCLUDED.skin_value, skin_signature = EXCLUDED.skin_signature
+            skin_name = EXCLUDED.skin_name, skin_value = EXCLUDED.skin_value, skin_signature = EXCLUDED.skin_signature,
+            lines = EXCLUDED.lines, hand_material = EXCLUDED.hand_material, hand_data = EXCLUDED.hand_data
         """;
 
     private static final String SAVE_HOLOGRAM = """
@@ -141,6 +144,8 @@ public final class PostgresPlacementRepository implements PlacementRepository {
                     String value = rows.getString("skin_value");
                     String signature = rows.getString("skin_signature");
                     Optional<SkinTexture> skin = value == null || signature == null ? Optional.empty() : Optional.of(new SkinTexture(value, signature));
+                    String handMaterial = rows.getString("hand_material");
+                    Optional<HeldItem> hand = handMaterial == null ? Optional.empty() : Optional.of(new HeldItem(handMaterial, rows.getInt("hand_data")));
                     npcs.add(new NpcPlacement(
                         group,
                         rows.getString("id"),
@@ -148,7 +153,9 @@ public final class PostgresPlacementRepository implements PlacementRepository {
                         rows.getString("name"),
                         new NpcAction(NpcAction.Type.valueOf(rows.getString("action")), rows.getString("action_target")),
                         rows.getString("skin_name"),
-                        skin
+                        skin,
+                        Arrays.asList((String[]) rows.getArray("lines").getArray()),
+                        hand
                     ));
                 }
             }
@@ -223,6 +230,9 @@ public final class PostgresPlacementRepository implements PlacementRepository {
             statement.setString(12, npc.skinName());
             statement.setString(13, npc.skin().map(SkinTexture::value).orElse(null));
             statement.setString(14, npc.skin().map(SkinTexture::signature).orElse(null));
+            statement.setArray(15, connection.createArrayOf("text", npc.lines().toArray()));
+            statement.setString(16, npc.hand().map(HeldItem::material).orElse(null));
+            statement.setShort(17, (short) npc.hand().map(HeldItem::data).orElse(0).intValue());
             statement.executeUpdate();
         }
     }

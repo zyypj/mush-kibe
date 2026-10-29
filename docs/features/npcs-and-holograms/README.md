@@ -33,7 +33,10 @@ NPCs and text holograms that staff place by command, on any server. They live in
 | Shop | `loja` | `npcs.lines.shop`: `&b&l{name}`, `&eClique para abrir a loja` | Opens the [shop](../shop/README.md) on the Ranks tab. |
 | None | `nenhuma` | `npcs.lines.none`: `&b&l{name}` | Nothing. |
 
-- `{name}` is the NPC name and `{players}` the players online on the live servers of the game group.
+- `{name}` is the NPC name and `{players}` the players online on the live servers of the game group, 0 when the group has no live server. The lines are refreshed every half second, so the count follows the servers.
+- An NPC can have its own lines instead of the lines of its action, with the same `{name}` and `{players}`: for example `&d&lNOVIDADE!` above the name, or `&eClique aqui!` instead of the count. An NPC without its own lines shows the lines of its action.
+- An NPC can hold a 1.8 item in its hand (a material and its data, such as `WOOL` with data `14` for red wool). An unknown material is skipped with a warning and the NPC holds nothing.
+- Own lines and the item in hand are set through `import.yml` (see below).
 - The skin is the one of an original player name, fetched from Mojang when the NPC is created or the skin changes, and stored with the NPC. When the name has no skin, the NPC keeps the default skin and staff see `&eSkin de &f{skin} &enão encontrada. O NPC fica com a skin padrão.`
 - NPCs exist only in packets, are shown to players within 48 blocks and do not stay in the tab list. Left and right clicks both count. See [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.md).
 - Clicks on game and shop NPCs share the anti-spam of Muxe-Core (`spam.*`): three clicks within 1 second block them for 3 seconds with `&cAguarde 2,9s para usar novamente.`
@@ -58,6 +61,13 @@ npcs:
     skin:
       value: "..."
       signature: "..."
+    lines:
+      - "&d&lNOVIDADE!"
+      - "&b&l{name}"
+      - "&e{players} jogando"
+    hand:
+      material: EYE_OF_ENDER
+      data: 0
     location:
       world: lobby
       x: 10.5
@@ -83,7 +93,7 @@ registers:
       pitch: 0.0
 ```
 
-Broken entries are skipped with a warning. Entries with an id that already exists replace it. If saving fails, the file stays and the import runs again on the next start. Put the file on one server of the group only.
+`lines` and `hand` are optional: without `lines` the NPC shows the lines of its action, and without `hand` it holds nothing. Broken entries are skipped with a warning. Entries with an id that already exists replace it. If saving fails, the file stays and the import runs again on the next start. Put the file on one server of the group only.
 
 ## Commands
 
@@ -143,13 +153,13 @@ Without arguments, or with missing or extra words, each command shows its usage.
 
 | Table | Content |
 |---|---|
-| `core.npc_placements` | `server_group`, `id`, position (`world`, `x`, `y`, `z`, `yaw`, `pitch`), `name`, `action` (`NONE`, `GAME`, `SHOP`), `action_target` (the game group, empty otherwise), `skin_name`, `skin_value`, `skin_signature`. |
+| `core.npc_placements` | `server_group`, `id`, position (`world`, `x`, `y`, `z`, `yaw`, `pitch`), `name`, `action` (`NONE`, `GAME`, `SHOP`), `action_target` (the game group, empty otherwise), `skin_name`, `skin_value`, `skin_signature`, `lines` (text array, empty for the lines of the action), `hand_material` and `hand_data` (the item in hand, no material for none). |
 | `core.hologram_placements` | `server_group`, `id`, position, `lines` (text array, empty string for a blank line). |
 | `core.register_placements` | Cash registers, see [Shop](../shop/README.md#data). |
 | `core.social_head_placements` | Social media heads, see [Social media heads](../social-heads/README.md#data). |
 | `core.parkour_placements` | Parkour points, see [Parkour](../parkour/README.md#data). |
 
-The primary key of each table is `(server_group, id)`. Created by the core migration `V4__create_placements_and_promotion.sql`, except `core.social_head_placements`, created by `V6__create_social_head_placements.sql`, and `core.parkour_placements`, created by `V7__create_parkour.sql`.
+The primary key of each table is `(server_group, id)`. Created by the core migration `V4__create_placements_and_promotion.sql`, except `core.social_head_placements`, created by `V6__create_social_head_placements.sql`, and `core.parkour_placements`, created by `V7__create_parkour.sql`. `V13__add_npc_lines_and_held_item.sql` adds `lines`, `hand_material` and `hand_data` to `core.npc_placements`.
 
 Commands and queries: `SavePlacementCommand`, `RemovePlacementCommand` (fails with `placement.not_found` when the id does not exist), `FindPlacementsQuery(group)`, registered by `PlacementModule`.
 
@@ -173,6 +183,7 @@ Commands and queries: `SavePlacementCommand`, `RemovePlacementCommand` (fails wi
 - [x] A change on one server shows up on every server of the group, removals too, and a server loads what was placed before it started.
 - [x] Only changed placements are shown again, and missing ones are removed.
 - [x] NPC lines are filled per action with `{name}` and `{players}`.
+- [x] An NPC with its own lines shows them instead of the lines of its action, and its own lines and item in hand survive a round trip through PostgreSQL and the import.
 - [x] Hologram lines go down from the first line, which never moves.
 - [x] The old `npcs.yml` format, registers and parkour points are read from `import.yml` into the server's group.
 - [ ] Placing, editing and clicking NPCs and holograms works in game, and the change appears on a second server of the group (checked in game).
@@ -190,7 +201,7 @@ Commands and queries: `SavePlacementCommand`, `RemovePlacementCommand` (fails wi
 ## Known limitations
 
 - NPCs look in a fixed direction, the one you faced when placing or moving them; they do not turn to players.
-- NPC lines are the same for every NPC of an action; only `{name}` and `{players}` change.
+- An NPC's own lines and its item in hand are only set through `import.yml`; `/npc` has no subcommand for them yet, and the other `/npc` subcommands keep them.
 - Placements belong to a whole group: a single server of the group cannot have its own.
 - Two staff members editing the same placement at the same time: the last save wins.
 - The import file must be placed by hand and is only read on startup.

@@ -33,7 +33,10 @@ NPCs e hologramas de texto que a equipe coloca por comando, em qualquer servidor
 | Loja | `loja` | `npcs.lines.shop`: `&b&l{name}`, `&eClique para abrir a loja` | Abre a [loja](../shop/README.pt-BR.md) na aba Ranks. |
 | Nenhuma | `nenhuma` | `npcs.lines.none`: `&b&l{name}` | Nada. |
 
-- `{name}` é o nome do NPC e `{players}` os jogadores online nos servidores vivos do grupo do jogo.
+- `{name}` é o nome do NPC e `{players}` os jogadores online nos servidores vivos do grupo do jogo, 0 quando o grupo não tem servidor vivo. As linhas são atualizadas a cada meio segundo, então a contagem acompanha os servidores.
+- Um NPC pode ter linhas próprias no lugar das linhas da sua ação, com os mesmos `{name}` e `{players}`: por exemplo `&d&lNOVIDADE!` acima do nome, ou `&eClique aqui!` no lugar da contagem. Um NPC sem linhas próprias mostra as linhas da sua ação.
+- Um NPC pode segurar um item da 1.8 na mão (um material e o seu data, como `WOOL` com data `14` para lã vermelha). Um material desconhecido é pulado com um aviso e o NPC fica sem item.
+- As linhas próprias e o item na mão são definidos pelo `import.yml` (veja abaixo).
 - A skin é a de um nome original, buscada na Mojang quando o NPC é criado ou a skin muda, e guardada com o NPC. Quando o nome não tem skin, o NPC fica com a skin padrão e a equipe vê `&eSkin de &f{skin} &enão encontrada. O NPC fica com a skin padrão.`
 - Os NPCs existem só em pacotes, aparecem para jogadores a até 48 blocos e não ficam no tab. Os cliques esquerdo e direito contam. Veja a [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.pt-BR.md).
 - Os cliques nos NPCs de jogo e de loja usam o anti-spam do Muxe-Core (`spam.*`): três cliques dentro de 1 segundo bloqueiam por 3 segundos com `&cAguarde 2,9s para usar novamente.`
@@ -58,6 +61,13 @@ npcs:
     skin:
       value: "..."
       signature: "..."
+    lines:
+      - "&d&lNOVIDADE!"
+      - "&b&l{name}"
+      - "&e{players} jogando"
+    hand:
+      material: EYE_OF_ENDER
+      data: 0
     location:
       world: lobby
       x: 10.5
@@ -83,7 +93,7 @@ registers:
       pitch: 0.0
 ```
 
-Entradas quebradas são puladas com um aviso. Entradas com um id que já existe o substituem. Se salvar falhar, o arquivo fica e a importação roda de novo no próximo início. Coloque o arquivo em um só servidor do grupo.
+`lines` e `hand` são opcionais: sem `lines` o NPC mostra as linhas da sua ação, e sem `hand` ele fica sem item. Entradas quebradas são puladas com um aviso. Entradas com um id que já existe o substituem. Se salvar falhar, o arquivo fica e a importação roda de novo no próximo início. Coloque o arquivo em um só servidor do grupo.
 
 ## Comandos
 
@@ -143,13 +153,13 @@ O `/npc` não grava mais o `plugins/Muxe-Lobby/npcs.yml`; use o `import.yml` par
 
 | Tabela | Conteúdo |
 |---|---|
-| `core.npc_placements` | `server_group`, `id`, posição (`world`, `x`, `y`, `z`, `yaw`, `pitch`), `name`, `action` (`NONE`, `GAME`, `SHOP`), `action_target` (o grupo do jogo, vazio nos outros casos), `skin_name`, `skin_value`, `skin_signature`. |
+| `core.npc_placements` | `server_group`, `id`, posição (`world`, `x`, `y`, `z`, `yaw`, `pitch`), `name`, `action` (`NONE`, `GAME`, `SHOP`), `action_target` (o grupo do jogo, vazio nos outros casos), `skin_name`, `skin_value`, `skin_signature`, `lines` (array de texto, vazio para as linhas da ação), `hand_material` e `hand_data` (o item na mão, sem material para nenhum). |
 | `core.hologram_placements` | `server_group`, `id`, posição, `lines` (array de texto, string vazia para uma linha em branco). |
 | `core.register_placements` | Caixas registradoras, veja [Loja](../shop/README.pt-BR.md#dados). |
 | `core.social_head_placements` | Cabeças de redes sociais, veja [Cabeças de redes sociais](../social-heads/README.pt-BR.md#dados). |
 | `core.parkour_placements` | Pontos do parkour, veja [Parkour](../parkour/README.pt-BR.md#dados). |
 
-A chave primária de cada tabela é `(server_group, id)`. Criadas pela migração do core `V4__create_placements_and_promotion.sql`, menos a `core.social_head_placements`, criada pela `V6__create_social_head_placements.sql`, e a `core.parkour_placements`, criada pela `V7__create_parkour.sql`.
+A chave primária de cada tabela é `(server_group, id)`. Criadas pela migração do core `V4__create_placements_and_promotion.sql`, menos a `core.social_head_placements`, criada pela `V6__create_social_head_placements.sql`, e a `core.parkour_placements`, criada pela `V7__create_parkour.sql`. A `V13__add_npc_lines_and_held_item.sql` adiciona `lines`, `hand_material` e `hand_data` à `core.npc_placements`.
 
 Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha com `placement.not_found` quando o id não existe), `FindPlacementsQuery(group)`, registrados pelo `PlacementModule`.
 
@@ -173,6 +183,7 @@ Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha co
 - [x] Uma mudança num servidor aparece em todos os servidores do grupo, remoções também, e um servidor carrega o que foi colocado antes de ele ligar.
 - [x] Só o que mudou é mostrado de novo, e o que sumiu é removido.
 - [x] As linhas dos NPCs são preenchidas por ação com `{name}` e `{players}`.
+- [x] Um NPC com linhas próprias as mostra no lugar das linhas da sua ação, e as linhas próprias e o item na mão sobrevivem a ir e voltar do PostgreSQL e à importação.
 - [x] As linhas do holograma descem a partir da primeira linha, que nunca se move.
 - [x] O formato antigo do `npcs.yml`, as caixas e os pontos do parkour são lidos do `import.yml` para o grupo do servidor.
 - [ ] Colocar, editar e clicar em NPCs e hologramas funciona no jogo, e a mudança aparece num segundo servidor do grupo (conferido no jogo).
@@ -190,7 +201,7 @@ Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha co
 ## Limitações conhecidas
 
 - Os NPCs olham sempre para a mesma direção, a que você olhava ao colocá-los ou movê-los; eles não se viram para os jogadores.
-- As linhas são as mesmas para todos os NPCs de uma ação; só `{name}` e `{players}` mudam.
+- As linhas próprias e o item na mão de um NPC só são definidos pelo `import.yml`; o `/npc` ainda não tem subcomando para eles, e os outros subcomandos do `/npc` os mantêm.
 - O que é colocado pertence ao grupo inteiro: um servidor sozinho do grupo não pode ter os seus.
 - Duas pessoas da equipe editando a mesma coisa ao mesmo tempo: o último a salvar vence.
 - O arquivo de importação precisa ser colocado à mão e só é lido ao ligar.

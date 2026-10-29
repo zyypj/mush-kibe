@@ -9,6 +9,7 @@ import br.com.muxe.core.common.persistence.database.Database;
 import br.com.muxe.core.common.persistence.database.DatabaseConfig;
 import br.com.muxe.core.common.persistence.migration.MigrationRunner;
 import br.com.muxe.core.common.persistence.transaction.JdbcTransactions;
+import br.com.muxe.core.common.placement.domain.HeldItem;
 import br.com.muxe.core.common.placement.domain.HologramPlacement;
 import br.com.muxe.core.common.placement.domain.NpcAction;
 import br.com.muxe.core.common.placement.domain.NpcPlacement;
@@ -67,15 +68,17 @@ class PostgresPlacementRepositoryIntegrationTest {
         String group = group();
         NpcPlacement npc = new NpcPlacement(group, "skywars", SPAWN, "&bSkyWars", NpcAction.game("skywars"), "Notch", Optional.of(new SkinTexture("value", "signature")));
         NpcPlacement plain = new NpcPlacement(group, "guia", SPAWN, "Guia", NpcAction.NONE, "", Optional.empty());
+        NpcPlacement dressed = new NpcPlacement(group, "ctf", SPAWN, "CTF", NpcAction.game("ctf"), "", Optional.empty(),
+            List.of("&d&lNOVIDADE!", "&b&l{name}", "&e{players} jogando"), Optional.of(new HeldItem("WOOL", 14)));
         HologramPlacement hologram = new HologramPlacement(group, "boas-vindas", SPAWN, List.of("&b&lMUXE", "", "&eBem-vindo!"));
         RegisterPlacement register = new RegisterPlacement(group, "caixa", SPAWN, Optional.of(new Position("lobby", 8, 33, -10, 0, 0)));
         RegisterPlacement alone = new RegisterPlacement(group, "sem-vendedor", SPAWN, Optional.empty());
         SocialHeadPlacement head = new SocialHeadPlacement(group, "redes", SPAWN);
 
-        save(npc, plain, hologram, register, alone, head);
+        save(npc, plain, dressed, hologram, register, alone, head);
 
         Placements found = transactions.readOnly("test.find", () -> repository.findByGroup(group));
-        assertThat(found.npcs()).containsExactly(plain, npc);
+        assertThat(found.npcs()).containsExactly(dressed, plain, npc);
         assertThat(found.holograms()).containsExactly(hologram);
         assertThat(found.registers()).containsExactly(register, alone);
         assertThat(found.socialHeads()).containsExactly(head);

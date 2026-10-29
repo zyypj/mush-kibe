@@ -327,6 +327,7 @@ MojangSkins.standard().byName("Notch").thenAccept(found -> ...);
 
 - NPCs are players that only exist in packets: they are sent to each player within 48 blocks and removed beyond 64. They stay in the tab list for 2 seconds so the client loads the skin, and their name tag is hidden with a team; the text above them is a text hologram.
 - Clicks are read from the network: `PacketInterceptor` adds a Netty handler to each player's connection and reports `PacketPlayInUseEntity`, because the server ignores clicks on entities it does not know. Every interceptor gets its own handler name, so several services (NPCs, display stands) can read clicks at once. The click handler runs on the main thread.
+- `new Npc(id, location, skin, Optional.of(item))` puts an item in the NPC's hand, sent to each viewer as equipment right after the NPC appears. `PlacedNpcs.hand(HeldItem)` turns a stored material and data into that item.
 - `MojangSkins` finds the signed skin of an original player name (`api.mojang.com` and `sessionserver.mojang.com`). Store the result instead of asking on every start.
 - See [ADR 0008](../../decisions/0008-packet-npcs-and-click-interception.md).
 

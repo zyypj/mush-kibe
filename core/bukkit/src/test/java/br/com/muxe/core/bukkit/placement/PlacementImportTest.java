@@ -2,6 +2,7 @@ package br.com.muxe.core.bukkit.placement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import br.com.muxe.core.common.placement.domain.HeldItem;
 import br.com.muxe.core.common.placement.domain.NpcAction;
 import br.com.muxe.core.common.placement.domain.NpcPlacement;
 import br.com.muxe.core.common.placement.domain.ParkourPoint;
@@ -106,6 +107,48 @@ class PlacementImportTest {
             new ParkourPointPlacement("lobby", ParkourPoint.start(), new Position("lobby", 28.5, 34, -8.5, 0, 0)),
             new ParkourPointPlacement("lobby", ParkourPoint.checkpoint(2), new Position("lobby", -56.5, 87, -58.5, 180, 0)),
             new ParkourPointPlacement("lobby", ParkourPoint.end(), new Position("lobby", 48.5, 118, -73.5, 180, 0))
+        );
+    }
+
+    @Test
+    void npcsReadTheirOwnLinesAndTheItemInTheirHand() throws InvalidConfigurationException {
+        YamlConfiguration yaml = new YamlConfiguration();
+        yaml.loadFromString(String.join("\n",
+            "npcs:",
+            "  ctf:",
+            "    group: ctf",
+            "    name: CTF",
+            "    lines:",
+            "      - '&d&lNOVIDADE!'",
+            "      - '&b&l{name}'",
+            "    hand:",
+            "      material: WOOL",
+            "      data: 14",
+            "    location:",
+            "      world: lobby",
+            "      x: -9.5",
+            "      y: 33.375",
+            "      z: 1.5",
+            "      yaw: -151.875",
+            "      pitch: 0.0",
+            "  pvp:",
+            "    group: pvp",
+            "    name: PVP",
+            "    location:",
+            "      world: lobby",
+            "      x: 8.5",
+            "      y: 33.375",
+            "      z: 3.5",
+            "      yaw: 163.125",
+            "      pitch: 0.0",
+            ""));
+
+        List<Placement> placements = PlacementImport.read(yaml, "lobby", Logger.getLogger("test"));
+
+        assertThat(placements).containsExactly(
+            new NpcPlacement("lobby", "ctf", new Position("lobby", -9.5, 33.375, 1.5, -151.875f, 0), "CTF", NpcAction.game("ctf"), "", Optional.empty(),
+                List.of("&d&lNOVIDADE!", "&b&l{name}"), Optional.of(new HeldItem("WOOL", 14))),
+            new NpcPlacement("lobby", "pvp", new Position("lobby", 8.5, 33.375, 3.5, 163.125f, 0), "PVP", NpcAction.game("pvp"), "", Optional.empty())
         );
     }
 
