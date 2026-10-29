@@ -363,7 +363,7 @@ O próprio Muxe-Core coloca os NPCs, os hologramas, as caixas registradoras da l
 - O `Placement` é selado: `NpcPlacement`, `HologramPlacement`, `RegisterPlacement`, `SocialHeadPlacement` (veja [Cabeças de redes sociais](../../features/social-heads/README.pt-BR.md)) e `ParkourPointPlacement` (veja [Parkour](../../features/parkour/README.pt-BR.md)), cada um com um grupo de servidores, um id e uma `Position`. O `Placements` guarda tudo de um grupo.
 - O `PlacementSync` carrega o que foi colocado no grupo deste servidor ao ligar, salva e remove pelo `SavePlacementCommand` e pelo `RemovePlacementCommand`, publica `placement.changed` para o grupo, e recarrega com a `FindPlacementsQuery` quando esse pacote chega. Os ouvintes registrados com `onChange` rodam na main thread.
 - O `Reconciler<T>` compara a lista desejada com o que está aparecendo, por id, e devolve só o que foi adicionado ou mudou e o que foi removido, então recarregar nunca recria o que não mudou.
-- O `PlacementImport` lê o `plugins/Muxe-Core/import.yml` uma vez ao ligar: NPCs, caixas registradoras e pontos do parkour.
+- O `PlacementImport` lê o `plugins/Muxe-Core/import.yml` ao ligar e no `/npc importar`: NPCs (com linhas próprias e item na mão), caixas registradoras e pontos do parkour. O `PlacementImport.withSkins` preenche a skin dos NPCs que têm `skin-name` e não têm textura, e o `run` devolve um `Outcome` (arquivo encontrado, entradas importadas).
 
 ## Modo construção
 

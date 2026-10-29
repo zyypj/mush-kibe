@@ -51,7 +51,7 @@ NPCs e hologramas de texto que a equipe coloca por comando, em qualquer servidor
 
 ### Importando o que já existia
 
-Ao ligar, se o `plugins/Muxe-Core/import.yml` existir, o Muxe-Core o importa para o grupo do servidor e o renomeia para `import.yml.done`. Ele lê NPCs no formato antigo do `npcs.yml` do lobby em `npcs:` (cole o arquivo antigo ali, um nível para dentro, já que o arquivo antigo os guardava na raiz; o `group` vira a ação, então um grupo de jogo dá um NPC de jogo), as caixas registradoras em `registers:` e o início, os checkpoints (identificados pelo número) e o fim do [parkour](../parkour/README.pt-BR.md#montando-um-percurso) em `parkour:` (cada ponto com `world`, `x`, `y`, `z`, `yaw` e `pitch`):
+Ao ligar, ou na hora com `/npc importar`, se o `plugins/Muxe-Core/import.yml` existir, o Muxe-Core o importa para o grupo do servidor e o renomeia para `import.yml.done` (substituindo um `.done` antigo). O `/npc importar` responde `&a{count} itens de &fimport.yml &aimportados no grupo &f{group}&a.`, ou `&cO arquivo &fplugins/Muxe-Core/import.yml &cnão existe.` quando não há arquivo. Ele lê NPCs no formato antigo do `npcs.yml` do lobby em `npcs:` (cole o arquivo antigo ali, um nível para dentro, já que o arquivo antigo os guardava na raiz; o `group` vira a ação, então um grupo de jogo dá um NPC de jogo), as caixas registradoras em `registers:` e o início, os checkpoints (identificados pelo número) e o fim do [parkour](../parkour/README.pt-BR.md#montando-um-percurso) em `parkour:` (cada ponto com `world`, `x`, `y`, `z`, `yaw` e `pitch`):
 
 ```yaml
 npcs:
@@ -94,7 +94,7 @@ registers:
       pitch: 0.0
 ```
 
-`lines` e `hand` são opcionais: sem `lines` o NPC mostra as linhas da sua ação, e sem `hand` ele fica sem item. Entradas quebradas são puladas com um aviso. Entradas com um id que já existe o substituem. Se salvar falhar, o arquivo fica e a importação roda de novo no próximo início. Coloque o arquivo em um só servidor do grupo.
+`lines` e `hand` são opcionais: sem `lines` o NPC mostra as linhas da sua ação, e sem `hand` ele fica sem item. Um NPC com `skin-name` e sem `skin` recebe a skin desse nome original da Mojang durante a importação; quando o nome não tem skin ou a Mojang não responde, ele fica com a skin padrão e um aviso no log. Um `skin-name` vazio mantém a skin padrão. Entradas quebradas são puladas com um aviso. Entradas com um id que já existe o substituem. Se salvar falhar, o arquivo fica e a importação roda de novo no próximo início. Coloque o arquivo em um só servidor do grupo.
 
 ## Comandos
 
@@ -107,6 +107,7 @@ registers:
 | `/npc nome <id> <nome>` | Troca o nome mostrado acima do NPC. | `muxe.npc` |
 | `/npc remover <id>` | Remove um NPC. | `muxe.npc` |
 | `/npc listar` | Lista os NPCs deste grupo de servidores. | `muxe.npc` |
+| `/npc importar` | Importa o `plugins/Muxe-Core/import.yml` para este grupo de servidores agora, sem reiniciar. | `muxe.npc` |
 | `/holograma criar <id> <texto>` (`/hologram`, `/holo`) | Cria um holograma onde você está. | `muxe.hologram` |
 | `/holograma adicionar <id> <texto>` | Adiciona uma linha no fim. | `muxe.hologram` |
 | `/holograma linha <id> <número> <texto>` | Troca uma linha. | `muxe.hologram` |
@@ -191,6 +192,8 @@ Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha co
 - [x] Um NPC com linhas próprias as mostra no lugar das linhas da sua ação, e as linhas próprias e o item na mão sobrevivem a ir e voltar do PostgreSQL e à importação.
 - [x] As linhas do holograma descem a partir da primeira linha, que nunca se move.
 - [x] O formato antigo do `npcs.yml`, as caixas e os pontos do parkour são lidos do `import.yml` para o grupo do servidor.
+- [x] O `/npc importar` importa o arquivo na hora e diz quantas entradas entraram, que o arquivo não existe, ou que salvar falhou.
+- [x] NPCs importados com `skin-name` e sem textura recebem a skin desse nome, e ficam com a skin padrão quando ela não é encontrada ou a Mojang falha.
 - [ ] Colocar, editar e clicar em NPCs e hologramas funciona no jogo, e a mudança aparece num segundo servidor do grupo (conferido no jogo).
 
 ## Falhas e recuperação
@@ -198,7 +201,8 @@ Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha co
 - PostgreSQL indisponível quando um comando roda: a equipe vê `&cNão foi possível salvar agora. Tente novamente em instantes.` e nada muda.
 - PostgreSQL indisponível ao ligar: nada aparece, com um aviso no log. A próxima mudança no grupo, ou um reinício, carrega tudo de novo.
 - Redis indisponível: a mudança é salva e aparece no servidor onde foi feita; os outros servidores a mostram no próximo recarregamento.
-- Mojang indisponível ou nome desconhecido: o NPC fica com a skin padrão; o `/npc skin` pode ser usado de novo depois.
+- Mojang indisponível ou nome desconhecido: o NPC fica com a skin padrão; o `/npc skin` pode ser usado de novo depois. Numa importação, o NPC é importado com a skin padrão e um aviso.
+- Falha ao salvar a importação: o `/npc importar` responde `placement-failed`, o arquivo fica e pode ser importado de novo.
 - Proxy indisponível ou nenhum servidor vivo no grupo do jogo: o jogador vê uma mensagem de falha e continua onde está.
 - Mundo não carregado num servidor: aquele NPC ou holograma é pulado naquele servidor com um aviso.
 - Internos do servidor ausentes (outra versão de servidor): NPCs e hologramas são pulados com um aviso cada.
@@ -209,4 +213,4 @@ Comandos e consultas: `SavePlacementCommand`, `RemovePlacementCommand` (falha co
 - As linhas próprias e o item na mão de um NPC só são definidos pelo `import.yml`; o `/npc` ainda não tem subcomando para eles, e os outros subcomandos do `/npc` os mantêm.
 - O que é colocado pertence ao grupo inteiro: um servidor sozinho do grupo não pode ter os seus.
 - Duas pessoas da equipe editando a mesma coisa ao mesmo tempo: o último a salvar vence.
-- O arquivo de importação precisa ser colocado à mão e só é lido ao ligar.
+- O arquivo de importação precisa ser colocado à mão; ele é lido ao ligar e com o `/npc importar`.

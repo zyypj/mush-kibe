@@ -8,6 +8,7 @@ import br.com.muxe.core.bukkit.command.framework.annotation.Subcommand;
 import br.com.muxe.core.bukkit.command.framework.annotation.Suggest;
 import br.com.muxe.core.bukkit.npc.placed.PlacedNpcs;
 import br.com.muxe.core.bukkit.npc.skin.MojangSkins;
+import br.com.muxe.core.bukkit.placement.PlacementImport;
 import br.com.muxe.core.bukkit.placement.PlacementSync;
 import br.com.muxe.core.bukkit.placement.Positions;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
@@ -18,7 +19,9 @@ import br.com.muxe.core.common.placement.domain.PlacementKind;
 import br.com.muxe.core.common.placement.domain.SkinTexture;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 import org.bukkit.entity.Player;
 
 @Command(name = NpcCommand.NAME, description = "Creates and manages the NPCs of this server group.", usage = "npc-usage")
@@ -30,13 +33,22 @@ public final class NpcCommand {
 
     private final PlacementSync placements;
     private final MojangSkins skins;
+    private final Supplier<CompletableFuture<PlacementImport.Outcome>> importer;
     private final Executor mainThread;
     private final MessageCatalog messages;
     private final AsyncReply reply;
 
-    public NpcCommand(PlacementSync placements, MojangSkins skins, Executor mainThread, MessageCatalog messages, AsyncReply reply) {
+    public NpcCommand(
+        PlacementSync placements,
+        MojangSkins skins,
+        Supplier<CompletableFuture<PlacementImport.Outcome>> importer,
+        Executor mainThread,
+        MessageCatalog messages,
+        AsyncReply reply
+    ) {
         this.placements = placements;
         this.skins = skins;
+        this.importer = importer;
         this.mainThread = mainThread;
         this.messages = messages;
         this.reply = reply;
@@ -113,6 +125,23 @@ public final class NpcCommand {
                 "skin", npc.skinName().isEmpty() ? "-" : npc.skinName(),
                 "location", npc.position().describe()));
         }
+    }
+
+    @Subcommand("importar")
+    public void importFile(Player player) {
+        player.sendMessage(messages.get("npc-importing", "file", PlacementImport.FILE));
+        importer.get().whenCompleteAsync((outcome, error) -> {
+            if (!player.isOnline()) {
+                return;
+            }
+            if (error != null) {
+                player.sendMessage(messages.get(AsyncReply.FAILED));
+            } else if (!outcome.fileFound()) {
+                player.sendMessage(messages.get("npc-import-missing", "file", PlacementImport.FILE));
+            } else {
+                player.sendMessage(messages.get("npc-imported", "count", Integer.toString(outcome.imported()), "file", PlacementImport.FILE, "group", placements.group()));
+            }
+        }, mainThread);
     }
 
     private void changeSkin(Player player, NpcPlacement npc, String skinName) {

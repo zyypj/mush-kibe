@@ -1240,6 +1240,7 @@ messages:
     - "&f/npc nome <id> <nome> &7- troca o nome mostrado no holograma"
     - "&f/npc remover <id> &7- remove o NPC"
     - "&f/npc listar &7- lista os NPCs deste grupo de servidores"
+    - "&f/npc importar &7- importa o import.yml do Muxe-Core agora"
     - "&7Ação: &floja&7, &fnenhuma &7ou o grupo do jogo (ex.: &fskywars&7)."
   npc-invalid-id: "&cO id precisa ter só letras minúsculas, números, - e _."
   npc-exists: "&cJá existe um NPC com o id &f{id}&c."
@@ -1255,6 +1256,9 @@ messages:
   npc-list-empty: "&7Nenhum NPC criado. Use &f/npc criar&7."
   npc-list-header: "&eNPCs do grupo &f{group} &e({count}):"
   npc-list-line: "&8- &f{id} &7→ &b{action} &7({name}, skin {skin}) &8{location}"
+  npc-importing: "&7Importando &f{file}&7..."
+  npc-import-missing: "&cO arquivo &fplugins/Muxe-Core/{file} &cnão existe."
+  npc-imported: "&a{count} itens de &f{file} &aimportados no grupo &f{group}&a."
   hologram-usage:
     - "&eUso do /holograma:"
     - "&f/holograma criar <id> <texto> &7- cria um holograma onde você está"

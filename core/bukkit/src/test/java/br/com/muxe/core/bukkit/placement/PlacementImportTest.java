@@ -11,14 +11,18 @@ import br.com.muxe.core.common.placement.domain.Placement;
 import br.com.muxe.core.common.placement.domain.Position;
 import br.com.muxe.core.common.placement.domain.RegisterPlacement;
 import br.com.muxe.core.common.placement.domain.SkinTexture;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
 class PlacementImportTest {
+
+    private static final Position HERE = new Position("lobby", 0.5, 33.375, 1.5, 180, 0);
 
     private static final String FILE = String.join("\n",
         "npcs:",
@@ -150,6 +154,28 @@ class PlacementImportTest {
                 List.of("&d&lNOVIDADE!", "&b&l{name}"), Optional.of(new HeldItem("WOOL", 14))),
             new NpcPlacement("lobby", "pvp", new Position("lobby", 8.5, 33.375, 3.5, 163.125f, 0), "PVP", NpcAction.game("pvp"), "", Optional.empty())
         );
+    }
+
+    @Test
+    void npcsWithASkinNameAndNoTextureGetTheSkinOfThatName() {
+        NpcPlacement named = new NpcPlacement("lobby", "hg", HERE, "HG", NpcAction.game("hg"), "Notch", Optional.empty());
+        NpcPlacement plain = new NpcPlacement("lobby", "pvp", HERE, "PVP", NpcAction.game("pvp"), "", Optional.empty());
+        NpcPlacement dressed = new NpcPlacement("lobby", "ctf", HERE, "CTF", NpcAction.game("ctf"), "jeb_", Optional.of(new SkinTexture("own", "signed")));
+        NpcPlacement unknown = new NpcPlacement("lobby", "murder", HERE, "MURDER", NpcAction.game("murder"), "Ninguem", Optional.empty());
+        NpcPlacement offline = new NpcPlacement("lobby", "party", HERE, "PARTY", NpcAction.game("party"), "Caiu", Optional.empty());
+        List<String> asked = new ArrayList<>();
+
+        List<Placement> filled = PlacementImport.withSkins(List.of(named, plain, dressed, unknown, offline), name -> {
+            asked.add(name);
+            return switch (name) {
+                case "Notch" -> CompletableFuture.completedFuture(Optional.of(new SkinTexture("value", "signature")));
+                case "Caiu" -> CompletableFuture.failedFuture(new IllegalStateException("Mojang down"));
+                default -> CompletableFuture.completedFuture(Optional.empty());
+            };
+        }, Logger.getLogger("test")).join();
+
+        assertThat(asked).containsExactly("Notch", "Ninguem", "Caiu");
+        assertThat(filled).containsExactly(named.wearing("Notch", Optional.of(new SkinTexture("value", "signature"))), plain, dressed, unknown, offline);
     }
 
     @Test

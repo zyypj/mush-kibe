@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,6 +26,11 @@ public final class PlacementImport {
 
     public static final String FILE = "import.yml";
     public static final String DONE_SUFFIX = ".done";
+
+    public record Outcome(boolean fileFound, int imported) {
+
+        public static final Outcome NO_FILE = new Outcome(false, 0);
+    }
 
     private PlacementImport() {
     }
@@ -72,12 +78,39 @@ public final class PlacementImport {
         return placements;
     }
 
-    public static CompletableFuture<Void> run(File dataFolder, PlacementSync sync, Logger logger) {
+    public static CompletableFuture<List<Placement>> withSkins(List<Placement> placements, Function<String, CompletableFuture<Optional<SkinTexture>>> skins, Logger logger) {
+        List<CompletableFuture<Placement>> filled = new ArrayList<>(placements.size());
+        for (Placement placement : placements) {
+            if (placement instanceof NpcPlacement npc && npc.skin().isEmpty() && !npc.skinName().isBlank()) {
+                filled.add(skins.apply(npc.skinName())
+                    .<Placement>thenApply(found -> {
+                        if (found.isEmpty()) {
+                            logger.warning("NPC '" + npc.id() + "' of " + FILE + ": skin '" + npc.skinName() + "' not found, it keeps the default skin");
+                        }
+                        return npc.wearing(npc.skinName(), found);
+                    })
+                    .exceptionally(error -> {
+                        logger.warning("NPC '" + npc.id() + "' of " + FILE + ": could not fetch skin '" + npc.skinName() + "', it keeps the default skin: " + error);
+                        return npc;
+                    }));
+            } else {
+                filled.add(CompletableFuture.completedFuture(placement));
+            }
+        }
+        return CompletableFuture.allOf(filled.toArray(CompletableFuture[]::new))
+            .thenApply(ignored -> filled.stream().map(CompletableFuture::join).toList());
+    }
+
+    public static CompletableFuture<Outcome> run(File dataFolder, PlacementSync sync, Function<String, CompletableFuture<Optional<SkinTexture>>> skins, Logger logger) {
         File file = new File(dataFolder, FILE);
         if (!file.isFile()) {
-            return CompletableFuture.completedFuture(null);
+            return CompletableFuture.completedFuture(Outcome.NO_FILE);
         }
-        List<Placement> placements = read(YamlConfiguration.loadConfiguration(file), sync.group(), logger);
+        List<Placement> read = read(YamlConfiguration.loadConfiguration(file), sync.group(), logger);
+        return withSkins(read, skins, logger).thenCompose(placements -> save(placements, sync, file, dataFolder, logger));
+    }
+
+    private static CompletableFuture<Outcome> save(List<Placement> placements, PlacementSync sync, File file, File dataFolder, Logger logger) {
         CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
         for (Placement placement : placements) {
             chain = chain.thenCompose(ignored -> sync.save(placement)).thenAccept(result -> {
@@ -91,11 +124,12 @@ public final class PlacementImport {
                 logger.log(Level.WARNING, "The import of " + FILE + " stopped; it will run again on the next start", error);
                 return;
             }
-            if (!file.renameTo(new File(dataFolder, FILE + DONE_SUFFIX))) {
+            File done = new File(dataFolder, FILE + DONE_SUFFIX);
+            if (done.exists() && !done.delete() || !file.renameTo(done)) {
                 logger.warning("Imported " + FILE + " but could not rename it; delete it to avoid importing it again");
             }
             logger.info("Imported " + placements.size() + " NPCs, registers and parkour points from " + FILE + " into group '" + sync.group() + "'");
-        });
+        }).thenApply(ignored -> new Outcome(true, placements.size()));
     }
 
     private static NpcPlacement npc(String group, String id, ConfigurationSection section) {

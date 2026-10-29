@@ -32,8 +32,12 @@ import br.com.muxe.core.bukkit.social.SocialHeads;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.config.source.DurationParser;
 import br.com.muxe.core.common.cooldown.SpamGuard;
+import br.com.muxe.core.common.placement.domain.SkinTexture;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -110,12 +114,15 @@ final class PlacedFeatures {
             parkour.ifPresent(course -> course.show(current.parkourPoints()));
         });
         shop.ifPresent(found -> found.start(placements));
-        placements.start().thenRun(() -> PlacementImport.run(plugin.getDataFolder(), placements, plugin.getLogger()));
+        MojangSkins mojang = MojangSkins.standard();
+        Function<String, CompletableFuture<Optional<SkinTexture>>> skins = name -> mojang.byName(name).thenApply(found -> found.map(PlacedNpcs::texture));
+        Supplier<CompletableFuture<PlacementImport.Outcome>> importer = () -> PlacementImport.run(plugin.getDataFolder(), placements, skins, plugin.getLogger());
+        placements.start().thenRun(importer::get);
 
         AsyncReply reply = new AsyncReply(core.mainThread(), messages, plugin.getLogger());
         PlacementArgument.registerAll(commands, placements::current);
         commands.register(
-            new NpcCommand(placements, MojangSkins.standard(), core.mainThread(), messages, reply),
+            new NpcCommand(placements, mojang, importer, core.mainThread(), messages, reply),
             new HologramCommand(placements, messages, reply),
             new ShopCommand(shop, placements, messages, reply),
             new SocialHeadCommand(placements, messages, reply),

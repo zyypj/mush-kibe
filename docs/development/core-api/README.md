@@ -363,7 +363,7 @@ Muxe-Core itself places the NPCs, holograms, shop cash registers, social media h
 - `Placement` is sealed: `NpcPlacement`, `HologramPlacement`, `RegisterPlacement`, `SocialHeadPlacement` (see [Social media heads](../../features/social-heads/README.md)) and `ParkourPointPlacement` (see [Parkour](../../features/parkour/README.md)), each with a server group, an id and a `Position`. `Placements` holds everything of a group.
 - `PlacementSync` loads the placements of this server's group on startup, saves and removes them through `SavePlacementCommand` and `RemovePlacementCommand`, publishes `placement.changed` to the group, and reloads with `FindPlacementsQuery` when that packet arrives. Listeners registered with `onChange` run on the main thread.
 - `Reconciler<T>` compares the wanted list with what is shown, by id, and returns only what was added or changed and what was removed, so a reload never respawns what did not change.
-- `PlacementImport` reads `plugins/Muxe-Core/import.yml` once on startup: NPCs, cash registers and parkour points.
+- `PlacementImport` reads `plugins/Muxe-Core/import.yml` on startup and on `/npc importar`: NPCs (with their own lines and item in hand), cash registers and parkour points. `PlacementImport.withSkins` fills the skin of NPCs that have a `skin-name` and no texture, and `run` returns an `Outcome` (file found, entries imported).
 
 ## Build mode
 

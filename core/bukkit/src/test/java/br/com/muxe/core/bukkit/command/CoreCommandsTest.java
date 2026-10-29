@@ -39,7 +39,7 @@ class CoreCommandsTest {
         commands.commands().suggestions(SuggestionRegistry.PLAYERS, sender -> List.of("Ana"));
         PlacementArgument.registerAll(commands.commands(), () -> PLACEMENTS);
         commands.register(
-            new NpcCommand(null, null, null, MESSAGES, null),
+            new NpcCommand(null, null, null, null, MESSAGES, null),
             new HologramCommand(null, MESSAGES, null),
             new SocialHeadCommand(null, MESSAGES, null),
             new ParkourCommand(null, MESSAGES, null),
@@ -149,7 +149,7 @@ class CoreCommandsTest {
         FakeSender staff = FakeSender.named("Staff", NpcCommand.PERMISSION, HologramCommand.PERMISSION, ParkourCommand.PERMISSION, "muxe.build");
         FakeSender player = FakeSender.named("Steve");
 
-        assertThat(commands.complete(staff.player(), "npc ")).containsExactly("acao", "criar", "listar", "mover", "nome", "remover", "skin");
+        assertThat(commands.complete(staff.player(), "npc ")).containsExactly("acao", "criar", "importar", "listar", "mover", "nome", "remover", "skin");
         assertThat(commands.complete(staff.player(), "npc mover ")).containsExactly("vendedor");
         assertThat(commands.complete(staff.player(), "npc criar guia ")).containsExactly("loja", "nenhuma");
         assertThat(commands.complete(staff.player(), "holograma ver b")).containsExactly("boas-vindas");
