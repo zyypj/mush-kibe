@@ -138,6 +138,7 @@ Todo plugin que registra comandos precisa destas chaves em `messages` no seu `co
 | Chave | Padrão |
 |---|---|
 | `no-permission` | `&cVocê não possui permissão para usar este comando.` |
+| `unknown-command` | `&cComando não encontrado.` |
 | `players-only` | `&cApenas jogadores podem usar este comando.` |
 | `console-only` | `&cApenas o console pode usar este comando.` |
 | `command-usage` | `&cUso: &f{usage}` |
@@ -149,6 +150,8 @@ Todo plugin que registra comandos precisa destas chaves em `messages` no seu `co
 | `command-failed` | `&cNão foi possível executar este comando agora.` |
 
 O Muxe-Core também coloca a sua mensagem `no-permission` em todos os comandos do mapa de comandos do servidor, inclusive os de outros plugins e os do próprio Bukkit (`/plugins`, `/version`), assim que o servidor termina de ligar e de novo sempre que um plugin é ativado (`PermissionMessages`). Assim, quem não tem permissão sempre vê a mesma mensagem.
+
+Quando um jogador digita um comando que nenhum plugin registrou, o Muxe-Core cancela o comando e manda `unknown-command` no lugar do texto em inglês do Bukkit (`UnknownCommands`). Apelidos e prefixos `plugin:comando` contam como comandos registrados. Os comandos do proxy nunca chegam ao servidor, então não são afetados.
 
 ## Testes
 

@@ -1194,6 +1194,7 @@ shop:
 
 messages:
   no-permission: "&cVocê não possui permissão para usar este comando."
+  unknown-command: "&cComando não encontrado."
   players-only: "&cApenas jogadores podem usar este comando."
   console-only: "&cApenas o console pode usar este comando."
   command-usage: "&cUso: &f{usage}"
