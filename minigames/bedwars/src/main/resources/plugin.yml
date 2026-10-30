@@ -6,6 +6,9 @@ description: BedWars for the Muxe network.
 depend:
   - Muxe-Core
 permissions:
+  muxe.bedwars.admin:
+    description: Allows /bedwars iniciar to start a match without the minimum players.
+    default: op
   muxe.minigame.setup:
     description: Allows /arena to create and set up arenas.
     default: op

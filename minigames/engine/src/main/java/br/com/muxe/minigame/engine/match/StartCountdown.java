@@ -46,6 +46,13 @@ public final class StartCountdown {
         return Change.NONE;
     }
 
+    public void force(int seconds) {
+        if (seconds < 1) {
+            throw new IllegalArgumentException("A forced countdown needs at least one second");
+        }
+        remaining = remaining < 0 ? seconds : Math.min(remaining, seconds);
+    }
+
     public OptionalInt remaining() {
         return remaining < 0 ? OptionalInt.empty() : OptionalInt.of(remaining);
     }

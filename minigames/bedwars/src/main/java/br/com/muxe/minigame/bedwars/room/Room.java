@@ -41,6 +41,7 @@ public final class Room {
     private final Map<TeamColor, RoomTeam> teams = new LinkedHashMap<>();
     private final Set<Long> placed = new HashSet<>();
     private Phase phase = Phase.WAITING;
+    private boolean forced;
     private int elapsed;
     private int ending;
     private Instant startedAt;
@@ -128,6 +129,16 @@ public final class Room {
         }
         players.remove(id);
         return updateCountdown();
+    }
+
+    public boolean forceStart(int seconds) {
+        if (phase != Phase.WAITING && phase != Phase.STARTING || players.isEmpty()) {
+            return false;
+        }
+        countdown.force(seconds);
+        phase = Phase.STARTING;
+        forced = true;
+        return true;
     }
 
     public void forget(UUID id) {
@@ -277,6 +288,9 @@ public final class Room {
     }
 
     private Change updateCountdown() {
+        if (forced) {
+            return Change.NONE;
+        }
         Change change = countdown.players(players.size());
         if (change == Change.STARTED) {
             phase = Phase.STARTING;

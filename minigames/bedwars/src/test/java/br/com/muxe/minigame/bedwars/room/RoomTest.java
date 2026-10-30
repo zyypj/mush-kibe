@@ -125,6 +125,21 @@ class RoomTest {
     }
 
     @Test
+    void staffCanForceAStartThatPlayersJoiningOrLeavingDoNotCancel() {
+        Room room = RoomFixtures.room("abc123", RoomFixtures.SOLO, RoomFixtures.arena("solo", "Athens", EIGHT));
+        assertThat(room.forceStart(10)).isFalse();
+        UUID first = join(room, "tadeu");
+
+        assertThat(room.forceStart(10)).isTrue();
+        UUID second = join(room, "x572");
+        room.leaveBeforeStart(second);
+
+        assertThat(room.phase()).isEqualTo(Room.Phase.STARTING);
+        assertThat(room.countdown().remaining()).hasValue(10);
+        assertThat(room.player(first)).isPresent();
+    }
+
+    @Test
     void onlyBlocksPlacedByPlayersAreRemembered() {
         Room room = RoomFixtures.room("abc123", RoomFixtures.ONE_V_ONE, RoomFixtures.arena("1v1", "Slip", RED_BLUE));
 

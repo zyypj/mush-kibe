@@ -305,3 +305,635 @@ messages:
   result-rank-2: "<center>&e2º {player} &7- {score}"
   result-rank-3: "<center>&c3º {player} &7- {score}"
   result-nobody: "<center>&7Ninguém"
+  coming-soon: "&cEste item chega em breve."
+  unknown-mode: "&cModo inválido. Modos: &f{modes}&c."
+  forced-start: "&aA partida vai começar."
+  cannot-force-start: "&cVocê não está numa sala de espera."
+  bedwars-usage:
+    - "&e/bedwars entrar <modo> &7- Entra numa sala do modo."
+    - "&e/bedwars iniciar &7- Começa a partida sem esperar o mínimo."
+  inventory-full: "&cSeu inventário está cheio."
+  trap-triggered: "&c&lARMADILHA! &cUm inimigo ativou uma armadilha da sua ilha."
+
+shop:
+  quick-buy-title: "Compra Rápida"
+  category-title: "Loja: {category}"
+  currencies:
+    iron:
+      material: IRON_INGOT
+      one: "Ferro"
+      many: "Ferros"
+      color: "&f"
+    gold:
+      material: GOLD_INGOT
+      one: "Ouro"
+      many: "Ouros"
+      color: "&6"
+    emerald:
+      material: EMERALD
+      one: "Esmeralda"
+      many: "Esmeraldas"
+      color: "&2"
+  price: "&7Preço: {color}{amount} {currency}"
+  level: "&7Nível: &e{level}"
+  quick-buy-add:
+    - "&bClique segurando Shift para adicionar"
+    - "&bà compra rápida."
+  quick-buy-remove:
+    - "&bClique segurando Shift para remover"
+    - "&bda compra rápida."
+  cannot-afford: "&cVocê não tem {currency} o suficiente."
+  can-afford: "&eClique para comprar."
+  maxed: "&aVocê já tem o nível máximo."
+  owned: "&aVocê já tem este item."
+  open-category: "&eClique para ver."
+  name-affordable: "&a"
+  name-unaffordable: "&c"
+  tracker-locked:
+    - "&cDisponível apenas quando não há camas inimigas"
+    - "&crestantes."
+  hotbar-editor:
+    slot: 53
+    material: BLAZE_POWDER
+    name: "&aEditor de hotbar"
+    lore:
+      - "&7Altere as predefinições"
+      - "&7da hotbar."
+      - ""
+      - "&eClique para ver mais."
+  tabs:
+    - slot: 0
+      category: compra-rapida
+      material: NETHER_STAR
+      name: "&aCompra Rápida"
+    - slot: 1
+      category: blocos
+      material: HARD_CLAY
+      name: "&aBlocos"
+    - slot: 2
+      category: combate
+      material: GOLD_SWORD
+      name: "&aCombate"
+    - slot: 3
+      category: armadura
+      material: CHAINMAIL_BOOTS
+      name: "&aArmadura"
+    - slot: 4
+      category: ferramentas
+      material: STONE_PICKAXE
+      name: "&aFerramentas"
+    - slot: 5
+      category: arcos
+      material: BOW
+      name: "&aArcos"
+    - slot: 6
+      category: pocoes
+      material: BREWING_STAND_ITEM
+      name: "&aPoções"
+    - slot: 7
+      category: utilidades
+      material: TNT
+      name: "&aUtilidades"
+  quick-buy:
+    - argila
+    - armadura-ferro
+    - tnt
+    - bola-de-fogo
+    - maca-dourada
+    - pocao-agilidade
+    - pocao-invisibilidade
+    - pedra-do-fim
+    - espada-ferro
+    - picareta
+    - machado
+    - estilingue
+    - armadura-diamante
+    - perola
+    - madeira
+    - escada
+    - espada-pedra
+    - la
+    - tesoura
+    - leite
+    - ovo-das-pontes
+  categories:
+    blocos:
+      name: "Blocos"
+      items:
+        - la
+        - argila
+        - vidro
+        - pedra-do-fim
+        - escada
+        - madeira
+    combate:
+      name: "Combate"
+      items:
+        - espada-pedra
+        - espada-ferro
+        - espada-diamante
+        - graveto
+    armadura:
+      name: "Armadura"
+      items:
+        - armadura-malha
+        - armadura-ferro
+        - armadura-diamante
+    ferramentas:
+      name: "Ferramentas"
+      items:
+        - tesoura
+        - picareta
+        - machado
+    arcos:
+      name: "Arcos"
+      items:
+        - flecha
+        - arco
+        - arco-forca
+        - arco-forca-impacto
+    pocoes:
+      name: "Poções"
+      items:
+        - pocao-agilidade
+        - pocao-pulo
+        - pocao-invisibilidade
+        - pocao-lentidao
+    utilidades:
+      name: "Utilidades"
+      items:
+        - maca-dourada
+        - percevejo
+        - bola-de-fogo
+        - golem
+        - tnt
+        - perola
+        - balde-de-agua
+        - leite
+        - esponja
+        - torre-compacta
+        - ovo-das-pontes
+        - rastreador
+        - estilingue
+  items:
+    la:
+      type: wool
+      material: WOOL
+      amount: 16
+      name: "Lã"
+      price: 4
+      currency: iron
+      description:
+        - "&7Ótimo para fazer pontes."
+    argila:
+      type: block
+      material: HARD_CLAY
+      amount: 16
+      name: "Argila"
+      price: 12
+      currency: iron
+      description:
+        - "&7Bloco básico para proteger a sua"
+        - "&7cama."
+    vidro:
+      type: block
+      material: GLASS
+      amount: 4
+      name: "Vidro à prova de explosões"
+      price: 12
+      currency: iron
+      description:
+        - "&7Imune à explosão."
+    pedra-do-fim:
+      type: block
+      material: ENDER_STONE
+      amount: 12
+      name: "Pedra do Fim"
+      price: 24
+      currency: iron
+      description:
+        - "&7Bloco sólido para defender a sua"
+        - "&7cama."
+    escada:
+      type: block
+      material: LADDER
+      amount: 16
+      name: "Escada"
+      price: 4
+      currency: iron
+      description:
+        - "&7Perfeito para resgatar gatos presos"
+        - "&7em árvores."
+    madeira:
+      type: block
+      material: WOOD
+      amount: 16
+      name: "Madeira"
+      price: 4
+      currency: gold
+      description:
+        - "&7Ótimo bloco para defender a sua"
+        - "&7cama. Forte contra picaretas."
+    espada-pedra:
+      type: sword
+      material: STONE_SWORD
+      name: "Espada de Pedra"
+      price: 10
+      currency: iron
+    espada-ferro:
+      type: sword
+      material: IRON_SWORD
+      name: "Espada de Ferro"
+      price: 7
+      currency: gold
+    espada-diamante:
+      type: sword
+      material: DIAMOND_SWORD
+      name: "Espada de Diamante"
+      price: 4
+      currency: emerald
+    graveto:
+      type: item
+      material: STICK
+      name: "Graveto"
+      price: 5
+      currency: gold
+      enchantments:
+        - KNOCKBACK:1
+    armadura-malha:
+      type: armor
+      tier: 1
+      material: CHAINMAIL_BOOTS
+      name: "Armadura de Malha (Permanente)"
+      price: 20
+      currency: iron
+      description:
+        - "&7Bota e Calças de Cota de malha."
+    armadura-ferro:
+      type: armor
+      tier: 2
+      material: IRON_BOOTS
+      name: "Armadura de Ferro (Permanente)"
+      price: 12
+      currency: gold
+      description:
+        - "&7Bota e Calças de Ferro."
+    armadura-diamante:
+      type: armor
+      tier: 3
+      material: DIAMOND_BOOTS
+      name: "Armadura de Diamante (Permanente)"
+      price: 6
+      currency: emerald
+      description:
+        - "&7Bota e Calças de Diamante."
+    tesoura:
+      type: shears
+      material: SHEARS
+      name: "Tesoura (Permanente)"
+      price: 20
+      currency: iron
+      description:
+        - "&7Ótimo para destruir Lã."
+    picareta:
+      type: pickaxe
+      description:
+        - "&7Você sempre renascerá com ao mínimo"
+        - "&7o último nível."
+      tiers:
+        - material: WOOD_PICKAXE
+          name: "Picareta de Madeira (Eficiência I)"
+          price: 10
+          currency: iron
+        - material: IRON_PICKAXE
+          name: "Picareta de Ferro (Eficiência II)"
+          price: 10
+          currency: iron
+        - material: GOLD_PICKAXE
+          name: "Picareta de Ouro (Eficiência III, Afiação II)"
+          price: 3
+          currency: gold
+        - material: DIAMOND_PICKAXE
+          name: "Picareta de Diamante (Eficiência III)"
+          price: 6
+          currency: gold
+    machado:
+      type: axe
+      description:
+        - "&7Você sempre renascerá com ao mínimo"
+        - "&7o último nível."
+      tiers:
+        - material: WOOD_AXE
+          name: "Machado de Madeira (Eficiência I)"
+          price: 10
+          currency: iron
+        - material: STONE_AXE
+          name: "Machado de Pedra (Eficiência I)"
+          price: 10
+          currency: iron
+        - material: IRON_AXE
+          name: "Machado de Ferro (Eficiência II)"
+          price: 3
+          currency: gold
+        - material: DIAMOND_AXE
+          name: "Machado de Diamante (Eficiência III)"
+          price: 6
+          currency: gold
+    flecha:
+      type: item
+      material: ARROW
+      amount: 8
+      name: "Flecha"
+      price: 2
+      currency: gold
+    arco:
+      type: item
+      material: BOW
+      name: "Arco"
+      price: 12
+      currency: gold
+      unbreakable: true
+    arco-forca:
+      type: item
+      material: BOW
+      name: "Arco (Força I)"
+      price: 24
+      currency: gold
+      unbreakable: true
+      enchantments:
+        - ARROW_DAMAGE:1
+    arco-forca-impacto:
+      type: item
+      material: BOW
+      name: "Arco (Força I e Impacto I)"
+      price: 6
+      currency: emerald
+      unbreakable: true
+      enchantments:
+        - ARROW_DAMAGE:1
+        - ARROW_KNOCKBACK:1
+    pocao-agilidade:
+      type: potion
+      data: 2
+      name: "Poção de Agilidade II (45 segundos)"
+      price: 1
+      currency: emerald
+      effect: SPEED
+      amplifier: 1
+      seconds: 45
+    pocao-pulo:
+      type: potion
+      data: 11
+      name: "Poção de Super Pulo V (45 segundos)"
+      price: 1
+      currency: emerald
+      effect: JUMP
+      amplifier: 4
+      seconds: 45
+    pocao-invisibilidade:
+      type: potion
+      data: 14
+      name: "Poção de Invisibilidade (30 segundos)"
+      price: 2
+      currency: emerald
+      effect: INVISIBILITY
+      amplifier: 0
+      seconds: 30
+    pocao-lentidao:
+      type: potion
+      data: 16394
+      name: "Poção de Lentidão Arremessável (15 segundos)"
+      price: 1
+      currency: emerald
+      effect: SLOW
+      amplifier: 0
+      seconds: 15
+    maca-dourada:
+      type: item
+      material: GOLDEN_APPLE
+      name: "Maçã Dourada"
+      price: 3
+      currency: gold
+    percevejo:
+      type: special
+      material: SNOW_BALL
+      name: "Percevejo"
+      price: 24
+      currency: iron
+      description:
+        - "&7Invoque uma traça onde sua Bola"
+        - "&7de Neve cair para distrair os"
+        - "&7seus inimigos. Dura 15 segundos."
+    bola-de-fogo:
+      type: item
+      material: FIREBALL
+      name: "Bola de Fogo"
+      price: 40
+      currency: iron
+      description:
+        - "&7Use Direito para lançar! Ótimo"
+        - "&7para empurrar jogadores fazendo"
+        - "&7ponte."
+    golem:
+      type: special
+      material: MONSTER_EGG
+      data: 99
+      name: "Golem de Ferro"
+      price: 90
+      currency: iron
+      description:
+        - "&7Invoque um Golem de Ferro para"
+        - "&7proteger sua base. Dura 4 minutos."
+    tnt:
+      type: item
+      material: TNT
+      name: "TNT"
+      price: 4
+      currency: gold
+      description:
+        - "&7Explode imediatamente, apropriado"
+        - "&7para destruir coisas!"
+    perola:
+      type: item
+      material: ENDER_PEARL
+      name: "Pérola do Fim"
+      price: 2
+      currency: emerald
+      description:
+        - "&7A forma mais rápida de invadir"
+        - "&7bases inimigas."
+    balde-de-agua:
+      type: item
+      material: WATER_BUCKET
+      name: "Balde de Água"
+      price: 3
+      currency: gold
+      description:
+        - "&7Ótimo para atrasar inimigos. Também"
+        - "&7protege contra TNT."
+    leite:
+      type: special
+      material: MILK_BUCKET
+      name: "Leite Mágico"
+      price: 2
+      currency: gold
+      description:
+        - "&7Fique imune às Armadilhas por"
+        - "&730 segundos após o consumo."
+    esponja:
+      type: item
+      material: SPONGE
+      amount: 4
+      name: "Esponja"
+      price: 1
+      currency: gold
+      description:
+        - "&7Ótimo para secar água."
+    torre-compacta:
+      type: special
+      material: CHEST
+      name: "Torre Compacta"
+      price: 16
+      currency: iron
+      description:
+        - "&7Coloca uma mini torre."
+    ovo-das-pontes:
+      type: special
+      material: EGG
+      name: "Ovo das Pontes"
+      price: 1
+      currency: emerald
+      description:
+        - "&7Utilize este ovo para criar uma"
+        - "&7ponte."
+    rastreador:
+      type: special
+      material: COMPASS
+      name: "Rastreador"
+      price: 2
+      currency: emerald
+      description:
+        - "&7Localize o time inimigo. Uso único."
+    estilingue:
+      type: special
+      material: MAGMA_CREAM
+      name: "Estilingue"
+      price: 7
+      currency: gold
+      description:
+        - "&7Dê um leve impulso."
+
+upgrades:
+  title: "Melhorias do Time"
+  tier-bought: "&a&l✓ &7"
+  tier-missing: "&c✗ &7"
+  price: "&7Preço: &b{amount} {currency}"
+  diamond-one: "Diamante"
+  diamond-many: "Diamantes"
+  cannot-afford: "&cVocê não tem Diamantes o suficiente."
+  can-afford: "&eClique para melhorar."
+  maxed: "&aMelhorado ao máximo."
+  name-unaffordable: "&c"
+  name-affordable: "&e"
+  name-maxed: "&a"
+  list:
+    afiacao:
+      slot: 10
+      material: IRON_SWORD
+      name: "Afiação nas Espadas"
+      upgrade: SHARPNESS
+      description:
+        - "&7O seu time ganha Afiação"
+        - "&7permanente em todas"
+        - "&7as espadas."
+      tiers:
+        - label: "Nível 1: Afiação I, &b4 Diamantes"
+          price: 4
+        - label: "Nível 2: Afiação II, &b16 Diamantes"
+          price: 16
+    reforco:
+      slot: 11
+      material: IRON_CHESTPLATE
+      name: "Reforço na Armadura"
+      upgrade: PROTECTION
+      description:
+        - "&7O seu time ganha Proteção"
+        - "&7em todas as peças armaduras."
+      tiers:
+        - label: "Nível 1: Proteção I, &b2 Diamantes"
+          price: 2
+        - label: "Nível 2: Proteção II, &b4 Diamantes"
+          price: 4
+        - label: "Nível 3: Proteção III, &b8 Diamantes"
+          price: 8
+        - label: "Nível 4: Proteção IV, &b16 Diamantes"
+          price: 16
+    pressa:
+      slot: 12
+      material: GOLD_PICKAXE
+      name: "Sem tempo Irmão"
+      upgrade: HASTE
+      description:
+        - "&7O seu time ganha o efeito"
+        - "&7de Pressa permanente."
+      tiers:
+        - label: "Nível 1: Pressa I, &b2 Diamantes"
+          price: 2
+        - label: "Nível 2: Pressa II, &b4 Diamantes"
+          price: 4
+    forja:
+      slot: 13
+      material: FURNACE
+      name: "Forja"
+      upgrade: FORGE
+      description:
+        - "&7Aumente o número de"
+        - "&7recursos que nascem"
+        - "&7em sua ilha."
+      tiers:
+        - label: "Nível 1: +50% de Recursos, &b2 Diamantes"
+          price: 2
+        - label: "Nível 2: +100% de Recursos, &b4 Diamantes"
+          price: 4
+        - label: "Nível 3: Nasce Esmeraldas, &b6 Diamantes"
+          price: 6
+        - label: "Nível 4: +200% de Recursos, &b8 Diamantes"
+          price: 8
+    regeneracao:
+      slot: 14
+      material: BEACON
+      name: "Regeneração na Ilha"
+      upgrade: HEAL_POOL
+      single: true
+      description:
+        - "&7Crie um campo de Regeneração"
+        - "&7em volta de sua ilha."
+      tiers:
+        - label: ""
+          price: 1
+    cilada:
+      slot: 15
+      material: TRIPWIRE_HOOK
+      name: "É uma Cilada!"
+      upgrade: TRAP_BLINDNESS
+      single: true
+      description:
+        - "&7Cause Cegueira e Lentidão"
+        - "&7por 8 segundos em invasores."
+      tiers:
+        - label: ""
+          price: 1
+    fadiga:
+      slot: 16
+      material: REDSTONE_COMPARATOR
+      name: "Fadiga"
+      upgrade: TRAP_FATIGUE
+      description:
+        - "&7Cause Fadiga em invasores."
+      tiers:
+        - label: "Nível 1: Fadiga I por 7 segundos, &b1"
+          extra: "&bDiamante"
+          price: 1
+        - label: "Nível 2: Fadiga I por 10 segundos,"
+          extra: "&7&b2 Diamantes"
+          price: 2

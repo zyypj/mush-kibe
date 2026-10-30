@@ -63,6 +63,22 @@ class StartCountdownTest {
     }
 
     @Test
+    void aForcedCountdownStartsAtTheGivenSecondsAndNeverAddsTime() {
+        StartCountdown countdown = new StartCountdown(solo);
+
+        countdown.force(10);
+        assertThat(countdown.remaining()).hasValue(10);
+
+        StartCountdown running = new StartCountdown(solo);
+        running.players(6);
+        for (int second = 0; second < 25; second++) {
+            running.tick();
+        }
+        running.force(10);
+        assertThat(running.remaining()).hasValue(5);
+    }
+
+    @Test
     void theCountdownFinishesAfterItsLastSecond() {
         StartCountdown countdown = new StartCountdown(oneVsOne);
         countdown.players(2);
