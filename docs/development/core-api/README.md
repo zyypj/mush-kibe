@@ -480,6 +480,8 @@ ranks.onChange(changed -> refresh(changed));
 - `onChange` runs on the main thread whenever an online player's permissions change (new rank, new tag, world change, expiry).
 - Commands and menus depend on the `PlayerRanks` interface, which tests implement with a `PermissionCache` and a `PermissionSync` over the in-memory fixtures.
 
+- **A plugin can replace a player's name tag**, which also sets the prefix in the tab list. `MuxeCore.get().nameTags().override(player -> Optional.of(tag))` answers a `NameTag(team, prefix)` for the players it wants and `Optional.empty()` for the others, which keep their rank tag. Call `nameTags().refresh(player)` after the answer changes, and `clearOverride()` when the plugin stops. BedWars uses it for the team letter, such as `§9A §9`.
+
 ## Commands
 
 Commands are annotated classes registered with `Commands`; see [Commands](../commands/README.md).

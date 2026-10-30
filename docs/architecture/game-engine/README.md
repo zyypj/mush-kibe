@@ -111,6 +111,19 @@ The setup world is a `muxe_setup_<name>` world, edited in creative and flying. S
 - Permission: `muxe.minigame.setup`.
 - Messages come from `minigame-setup.yml` inside the engine, under `messages`. A game overrides any of them in its own `config.yml`.
 
+## Rooms
+
+Pieces a game uses to run its rooms:
+
+| Class | What it does |
+|---|---|
+| `RoomCodes` | Room codes like the reference: 6 characters, digits and lowercase letters, starting with a digit (`2v7bss`), never repeated on the server. |
+| `TeamAssigner` | Splits the players of a room into the teams when the match starts. Parties (`PartyGroups`) stay together, the largest first; everyone else goes to the team with the fewest players, in join order. A party larger than a team spills into the next. |
+| `PartyGroups` | The hook for the party system. `PartyGroups.NONE` until parties exist. |
+| `CountdownTitles` | The titles of the start countdown, by second, read from `countdown.titles`. |
+| `MatchWorld` | The match world of a game: one `muxe_<game>` world with its cells, plus a task that unloads chunks nobody is watching every 5 seconds (64 at most), keeping what matches changed. |
+| `ArenaCatalog` | The arenas a server can play: every `arenas/<name>.yml` marked ready, with its `maps/<name>.mxw`, that fits a cell. `reload(name)` picks up an arena saved in the setup. |
+
 ## Worlds and maps
 
 Matches never use world folders. See [ADR 0009](../../decisions/0009-own-map-format-and-match-cells.md).

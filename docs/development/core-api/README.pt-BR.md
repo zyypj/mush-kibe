@@ -480,6 +480,8 @@ ranks.onChange(changed -> refresh(changed));
 - `onChange` roda na thread principal sempre que as permissões de um jogador online mudam (cargo novo, tag nova, troca de mundo, expiração).
 - Comandos e menus dependem da interface `PlayerRanks`, que os testes implementam com um `PermissionCache` e um `PermissionSync` sobre os fixtures em memória.
 
+- **Um plugin pode trocar o name tag de um jogador**, o que também troca o prefixo no tab. `MuxeCore.get().nameTags().override(jogador -> Optional.of(tag))` responde um `NameTag(time, prefixo)` para os jogadores que quiser e `Optional.empty()` para os outros, que mantêm a tag do cargo. Chame `nameTags().refresh(jogador)` depois que a resposta mudar, e `clearOverride()` quando o plugin parar. O BedWars usa isso para a letra do time, como `§9A §9`.
+
 ## Comandos
 
 Os comandos são classes anotadas registradas com `Commands`; veja [Comandos](../commands/README.pt-BR.md).

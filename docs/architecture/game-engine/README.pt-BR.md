@@ -111,6 +111,19 @@ O mundo de setup é um mundo `muxe_setup_<nome>`, editado no criativo e voando. 
 - Permissão: `muxe.minigame.setup`.
 - As mensagens vêm do `minigame-setup.yml` dentro da engine, em `messages`. Um jogo sobrescreve qualquer uma delas no próprio `config.yml`.
 
+## Salas
+
+Peças que um jogo usa para rodar as suas salas:
+
+| Classe | O que faz |
+|---|---|
+| `RoomCodes` | Códigos de sala como os da referência: 6 caracteres, dígitos e letras minúsculas, começando com um dígito (`2v7bss`), nunca repetidos no servidor. |
+| `TeamAssigner` | Divide os jogadores de uma sala nos times quando a partida começa. As parties (`PartyGroups`) ficam juntas, as maiores primeiro; os outros vão para o time com menos jogadores, na ordem de entrada. Uma party maior que um time transborda para o próximo. |
+| `PartyGroups` | O gancho do sistema de parties. `PartyGroups.NONE` até as parties existirem. |
+| `CountdownTitles` | Os títulos da contagem para iniciar, por segundo, lidos de `countdown.titles`. |
+| `MatchWorld` | O mundo das partidas de um jogo: um mundo `muxe_<jogo>` com as células, mais uma tarefa que descarrega a cada 5 segundos os chunks que ninguém está vendo (64 no máximo), guardando o que as partidas mudaram. |
+| `ArenaCatalog` | As arenas que um servidor pode jogar: cada `arenas/<nome>.yml` marcada como pronta, com o seu `maps/<nome>.mxw`, que cabe numa célula. `reload(nome)` traz uma arena salva no setup. |
+
 ## Mundos e mapas
 
 As partidas nunca usam pastas de mundo. Veja a [ADR 0009](../../decisions/0009-own-map-format-and-match-cells.pt-BR.md).
