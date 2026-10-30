@@ -52,6 +52,10 @@ public final class ArenaFiles {
     }
 
     public void write(ArenaDraft draft, boolean ready) throws IOException {
+        writeRendered(draft.name(), render(draft, ready));
+    }
+
+    public static String render(ArenaDraft draft, boolean ready) {
         YamlConfiguration yaml = new YamlConfiguration();
         yaml.set("name", draft.name());
         yaml.set("mode", draft.mode());
@@ -64,10 +68,14 @@ public final class ArenaFiles {
         for (Map.Entry<String, Double> entry : draft.allNumbers().entrySet()) {
             yaml.set(NUMBERS + "." + entry.getKey(), entry.getValue());
         }
+        return yaml.saveToString();
+    }
+
+    public void writeRendered(String name, String yaml) throws IOException {
         Files.createDirectories(folder);
-        Path partial = folder.resolve(draft.name() + EXTENSION + ".part");
-        Files.writeString(partial, yaml.saveToString());
-        Files.move(partial, file(draft.name()), StandardCopyOption.REPLACE_EXISTING);
+        Path partial = folder.resolve(name + EXTENSION + ".part");
+        Files.writeString(partial, yaml);
+        Files.move(partial, file(name), StandardCopyOption.REPLACE_EXISTING);
     }
 
     public Optional<StoredArena> read(String name) throws IOException {

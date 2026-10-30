@@ -12,6 +12,10 @@ public record Point(double x, double y, double z, float yaw, float pitch) {
         return new Point(Math.floor(x) + 0.5, Math.floor(y), Math.floor(z) + 0.5, snap(yaw), 0);
     }
 
+    public Point standing() {
+        return new Point(Math.floor(x) + 0.5, y, Math.floor(z) + 0.5, snap(yaw), 0);
+    }
+
     public int blockX() {
         return (int) Math.floor(x);
     }

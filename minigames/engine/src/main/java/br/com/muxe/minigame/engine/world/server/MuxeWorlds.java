@@ -97,6 +97,19 @@ public final class MuxeWorlds implements Listener {
         return unloaded;
     }
 
+    public int sweep(World world, int max) {
+        int unloaded = 0;
+        for (Chunk chunk : world.getLoadedChunks()) {
+            if (unloaded >= max) {
+                break;
+            }
+            if (world.unloadChunk(chunk.getX(), chunk.getZ(), true, true)) {
+                unloaded++;
+            }
+        }
+        return unloaded;
+    }
+
     public void deleteLeftovers() {
         Path container = plugin.getServer().getWorldContainer().toPath();
         List<Path> leftovers;
