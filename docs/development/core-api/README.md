@@ -97,6 +97,18 @@ ChatLines.send(player, messages.lines("shop-payment"), CenteredText.DEFAULT_CENT
 - A line that starts with `<link>` opens the URL when clicked. Both markers can be combined.
 - `ChatLines.send(player, lines, center, url, hover)` also shows `hover` (a list of lines) when the mouse is over a `<link>` line. `ChatLines.linked(text, url, hover)` builds that clickable line, which is what tests check.
 
+### Command buttons in chat
+
+```java
+ClickableText.send(player,
+    ChatButton.text("&c✘ &fCama do &9Azul"),
+    ChatButton.run(" &e[Definir]", "/arena definir cama azul", "&7Clique para definir."),
+    ChatButton.suggest(" &b[Nome]", "/arena nome "));
+```
+
+- `ChatButton.run` runs the command on click, `ChatButton.suggest` puts it in the chat box, and `ChatButton.text` is plain text. Each takes optional hover lines.
+- `ClickableText.line(buttons)` builds the components, which is what tests check.
+
 ### Chat prompts
 
 ```java
