@@ -11,6 +11,7 @@ import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.minigame.bedwars.cosmetic.animation.BedAnimations;
 import br.com.muxe.minigame.bedwars.cosmetic.catalog.BedCosmetic;
 import br.com.muxe.minigame.bedwars.cosmetic.menu.CosmeticMenus.PreviewGate;
+import br.com.muxe.minigame.engine.world.server.VoidGenerator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +68,7 @@ public final class BedPreview implements PreviewGate, Listener {
             plugin.getLogger().warning("The bed preview is off: there is no world folder named " + settings.world());
             return false;
         }
-        world = new WorldCreator(settings.world()).createWorld();
+        world = new WorldCreator(settings.world()).generator(new VoidGenerator()).generateStructures(false).createWorld();
         world.setAutoSave(false);
         world.setKeepSpawnInMemory(true);
         world.setDifficulty(Difficulty.PEACEFUL);
