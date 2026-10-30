@@ -79,7 +79,7 @@ Each game describes what an arena needs in a `SetupSchema`, and the engine gives
 |---|---|
 | `SetupSchema` | The game's modes, the team rule of each mode (`TeamRule`: fixed teams, or a number of colours to choose) and the steps of each mode. Its default methods read the mode and display name from the arena name: `1v1_slip` is mode `1v1`, map `Slip`. |
 | `SetupStep` | One thing to mark: id, label, kind, whether it repeats per team, minimum and maximum, and hologram lines (`{team}`, `{index}`). |
-| `StepKind` | `LOCATION` (where the player stands, centred, with the direction snapped to 45°), `CENTER` (the block under the player), `BLOCK` (the block the player looks at), `HEIGHT` (the player's Y) and `REGION` (two corners). |
+| `StepKind` | `LOCATION` (where the player stands, centred, with the direction snapped to 45°), `CENTER` (the block under the player), `BLOCK` (the block the player looks at), `HEIGHT` (the player's Y) and `REGION` (Pos 1 and Pos 2, two opposite corners stored as `<step>.pos1` and `<step>.pos2`). |
 | `ArenaDraft` | The arena being set up: mode, display name, teams, points and heights. |
 | `SetupChecklist` | What is done and what is missing. An arena is ready when its teams are complete and every required step has its minimum. |
 | `ArenaFiles` | Reads and writes `arenas/<name>.yml` in expanded YAML, with `ready: true` once nothing is missing. |
@@ -97,7 +97,8 @@ The setup world is a `muxe_setup_<name>` world, edited in creative and flying. S
 | Command | What it does |
 |---|---|
 | `/arena` or `/arena ajuda` | The checklist, with one clickable line per step and team: `✔` done, `✘` missing, `○` optional. `[Definir]`, `[+]` and `[-]` run the command, and the hover says how to stand. |
-| `/arena definir <step> [team]` | Marks the step at the player's position. A single point is replaced, a list grows up to its maximum, a region takes two corners and starts over on the third. |
+| `/arena definir <step> [team]` | Marks the step at the player's position. A single point is replaced and a list grows up to its maximum. |
+| `/arena definir <region> <1\|2>` | Marks Pos 1 or Pos 2 of a region; the help shows `[Pos 1]` and `[Pos 2]` buttons. Without the number, the first missing corner is marked. |
 | `/arena remover <step> [team]` | Removes the point nearest to the player, or the whole step when it has a single point. |
 | `/arena time <adicionar\|remover> <colour>` | Chooses the teams in modes whose teams are not fixed. Removing a team removes its points. |
 | `/arena nome <name>` | Changes the display name of the map. |
@@ -136,6 +137,7 @@ Matches never use world folders. See [ADR 0009](../../decisions/0009-own-map-for
 | `EditableMap` | `world.map` | A map being edited in the setup. It takes every saved chunk, and `snapshot()` gives the map to write. |
 | `MatchCells` | `world.cell` | Splits the match world into cells and serves each match its map around the cell centre. Chunks a match changes are kept until `release`. |
 | `Cell` | `world.cell` | A match's cell. Converts map coordinates to world coordinates and back. |
+| `BlockBox`, `RegionEraser` | `world.cell`, `world.server` | Empties a box of blocks in one pass: zeroes the block arrays of the chunk sections it covers, removes the tile entities inside, relights each chunk once and resends each changed chunk as one packet to the players watching it. Used to remove waiting areas. |
 | `MuxeWorlds` | `world.server` | Creates a void world named `muxe_<name>` whose chunks come from a `ChunkSource`. It also clears a cell, destroys a world and deletes leftover `muxe_` folders. |
 
 - A world created by `MuxeWorlds` never writes region files, never keeps spawn chunks loaded and has autosave off.

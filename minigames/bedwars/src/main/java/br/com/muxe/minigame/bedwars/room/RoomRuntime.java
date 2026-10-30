@@ -17,6 +17,8 @@ import br.com.muxe.minigame.engine.match.StartCountdown.Change;
 import br.com.muxe.minigame.engine.match.StartCountdown.Second;
 import br.com.muxe.minigame.engine.setup.Point;
 import br.com.muxe.minigame.engine.team.TeamColor;
+import br.com.muxe.minigame.engine.world.cell.BlockBox;
+import br.com.muxe.minigame.engine.world.server.RegionEraser;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -49,7 +51,6 @@ import org.bukkit.scoreboard.Scoreboard;
 
 public final class RoomRuntime {
 
-    private static final int BLOCKS_PER_TICK = 4000;
     private static final int RESEND_EVERY = 3;
     private static final String HEALTH_OBJECTIVE = "muxe-vida";
     private static final Map<Material, String> LOOT = new LinkedHashMap<>();
@@ -176,7 +177,6 @@ public final class RoomRuntime {
     void start() {
         Instant now = core.clock().instant();
         room.start(List.of(), now);
-        clearWaitingArea();
         for (Map.Entry<TeamColor, RoomTeam> entry : room.teams().entrySet()) {
             TeamBase base = room.arena().teams().get(entry.getKey());
             boolean occupied = !entry.getValue().members().isEmpty();
@@ -209,6 +209,7 @@ public final class RoomRuntime {
                 announcedEliminations.add(color);
             }
         });
+        clearWaitingArea();
         refreshScoreboards();
     }
 
@@ -672,26 +673,9 @@ public final class RoomRuntime {
         }
         Location a = location(corners.get(0));
         Location b = location(corners.get(1));
-        int minX = Math.min(a.getBlockX(), b.getBlockX());
-        int minY = Math.min(a.getBlockY(), b.getBlockY());
-        int minZ = Math.min(a.getBlockZ(), b.getBlockZ());
-        int maxX = Math.max(a.getBlockX(), b.getBlockX());
-        int maxY = Math.max(a.getBlockY(), b.getBlockY());
-        int maxZ = Math.max(a.getBlockZ(), b.getBlockZ());
-        List<int[]> blocks = new ArrayList<>();
-        for (int x = minX; x <= maxX; x++) {
-            for (int y = minY; y <= maxY; y++) {
-                for (int z = minZ; z <= maxZ; z++) {
-                    blocks.add(new int[] {x, y, z});
-                }
-            }
-        }
-        service.batch(blocks, BLOCKS_PER_TICK, block -> {
-            Block target = world.getBlockAt(block[0], block[1], block[2]);
-            if (target.getType() != Material.AIR) {
-                target.setType(Material.AIR, false);
-            }
-        });
+        BlockBox box = BlockBox.of(a.getBlockX(), a.getBlockY(), a.getBlockZ(), b.getBlockX(), b.getBlockY(), b.getBlockZ());
+        RegionEraser.Result result = RegionEraser.erase(world, box);
+        service.plugin().getLogger().fine("Room " + room.code() + " removed its waiting area: " + result);
     }
 
     private void countdownChanged(Change change) {

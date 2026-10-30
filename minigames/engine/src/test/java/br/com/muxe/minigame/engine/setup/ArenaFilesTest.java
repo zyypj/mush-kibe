@@ -29,6 +29,8 @@ class ArenaFilesTest {
         draft.set(TestSchema.IRON, TeamColor.ROSA, Point.block(10, 70, -3));
         draft.set(TestSchema.IRON, TeamColor.ROSA, Point.block(11, 70, -3));
         draft.set(TestSchema.VOID, null, Point.block(0, 38, 0));
+        draft.setCorner(TestSchema.LOBBY, null, 1, Point.block(-8, 110, -8));
+        draft.setCorner(TestSchema.LOBBY, null, 2, Point.block(8, 125, 8));
 
         files.write(draft, false);
         StoredArena read = files.read("solo_slip").orElseThrow();
@@ -42,6 +44,7 @@ class ArenaFilesTest {
         assertThat(read.draft().points("espera")).containsExactly(new Point(0.5, 120, 0.5, 90, 0));
         assertThat(read.draft().points("ferro.rosa")).containsExactly(Point.block(10, 70, -3), Point.block(11, 70, -3));
         assertThat(read.draft().number("void")).hasValue(38);
+        assertThat(read.draft().points(TestSchema.LOBBY, null)).containsExactly(Point.block(-8, 110, -8), Point.block(8, 125, 8));
         assertThat(files.names()).containsExactly("solo_slip");
     }
 

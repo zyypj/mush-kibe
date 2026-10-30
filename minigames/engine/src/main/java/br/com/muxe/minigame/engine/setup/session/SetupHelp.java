@@ -104,7 +104,12 @@ public final class SetupHelp {
         List<ChatButton> line = new ArrayList<>();
         line.add(ChatButton.text(mark + messages.get("setup-help-item", "label", label(step, item.team()), "count", count)));
         String hint = messages.get("setup-help-hint-" + step.kind().name().toLowerCase(Locale.ROOT));
-        if (step.isList()) {
+        if (step.kind() == StepKind.REGION) {
+            for (int corner = 1; corner <= 2; corner++) {
+                line.add(ChatButton.run(messages.get("setup-help-pos", "index", String.valueOf(corner)),
+                    command("definir", step, item.team()) + " " + corner, messages.get("setup-help-pos-hover", "index", String.valueOf(corner)), hint));
+            }
+        } else if (step.isList()) {
             if (!item.full()) {
                 line.add(ChatButton.run(messages.get("setup-help-add"), command("definir", step, item.team()), messages.get("setup-help-add-hover"), hint));
             }

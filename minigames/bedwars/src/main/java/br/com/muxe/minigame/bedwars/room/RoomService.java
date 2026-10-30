@@ -19,7 +19,6 @@ import br.com.muxe.minigame.engine.world.server.MatchWorld;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import org.bukkit.Location;
@@ -215,19 +213,6 @@ public final class RoomService {
         } catch (RuntimeException exception) {
             plugin.getLogger().log(Level.WARNING, "Could not release the cell of room " + runtime.room().code(), exception);
         }
-    }
-
-    <T> void batch(List<T> items, int perTick, Consumer<T> action) {
-        Iterator<T> iterator = items.iterator();
-        BukkitTask[] task = new BukkitTask[1];
-        task[0] = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-            for (int count = 0; count < perTick && iterator.hasNext(); count++) {
-                action.accept(iterator.next());
-            }
-            if (!iterator.hasNext()) {
-                task[0].cancel();
-            }
-        }, 0L, 1L);
     }
 
     private Optional<RoomRuntime> create(String mode) {

@@ -19,7 +19,7 @@ public final class BedWarsSchema implements SetupSchema {
 
     public static final SetupStep WAITING_SPAWN = SetupStep.single("espera", "Spawn da espera", StepKind.LOCATION, false, "&e&lESPERA");
     public static final SetupStep WAITING_AREA = new SetupStep("area-espera", "Área da espera", StepKind.REGION, false, 2, 2,
-        List.of("&e&lÁREA DA ESPERA", "&7Canto {index}"));
+        List.of("&e&lÁREA DA ESPERA", "&7Pos {index}"));
     public static final SetupStep SPECTATOR = SetupStep.single("espectador", "Spawn dos espectadores", StepKind.LOCATION, false, "&7&lESPECTADORES");
     public static final SetupStep VOID = SetupStep.single("void", "Altura do void", StepKind.HEIGHT, false);
     public static final SetupStep BUILD_LIMIT = SetupStep.optional("limite", "Altura máxima de construção", StepKind.HEIGHT, false);

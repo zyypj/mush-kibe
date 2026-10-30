@@ -24,6 +24,7 @@ class SetupHelpTest {
     private static final SetupStep BED = SetupStep.single("cama", "Cama", StepKind.BLOCK, true, "&c&lCAMA", "{team}");
     private static final SetupStep IRON = SetupStep.many("ferro", "Gerador de ferro", StepKind.CENTER, true, 1, 4, "&f&lFERRO #{index}", "{team}");
     private static final SetupStep VOID = SetupStep.single("void", "Altura do void", StepKind.HEIGHT, false);
+    private static final SetupStep AREA = new SetupStep("area-espera", "Área da espera", StepKind.REGION, false, 2, 2, List.of("&e&lÁREA", "&7Pos {index}"));
 
     private final MessageCatalog messages = SetupMessages.defaults();
     private final SetupHelp help = new SetupHelp(messages);
@@ -40,7 +41,7 @@ class SetupHelpTest {
 
         @Override
         public List<SetupStep> steps(String mode) {
-            return List.of(WAITING, BED, IRON, VOID);
+            return List.of(WAITING, BED, IRON, VOID, AREA);
         }
     };
 
@@ -58,6 +59,7 @@ class SetupHelpTest {
             "✘ Cama do Vermelho [Definir]",
             "✔ Gerador de ferro do Azul (1) [+] [-]",
             "✘ Altura do void [Definir]",
+            "✘ Área da espera [Pos 1] [Pos 2]",
             "[SALVAR]  [NOME]  [SAIR]"
         );
         assertThat(commands(lines)).contains(
@@ -65,6 +67,8 @@ class SetupHelpTest {
             "/arena definir cama vermelho",
             "/arena remover cama azul",
             "/arena definir ferro azul",
+            "/arena definir area-espera 1",
+            "/arena definir area-espera 2",
             "/arena salvar",
             "/arena sair"
         );
@@ -89,7 +93,7 @@ class SetupHelpTest {
 
         String bar = ChatColor.stripColor(help.actionBar(SetupChecklist.of(schema, draft)));
 
-        assertThat(bar).isEqualTo("Falta: Spawn da espera (+5)");
+        assertThat(bar).isEqualTo("Falta: Spawn da espera (+6)");
     }
 
     @Test
@@ -97,6 +101,8 @@ class SetupHelpTest {
         ArenaDraft draft = ArenaDraft.create("1v1_slip", "1v1", schema);
         draft.set(WAITING, null, Point.block(0, 120, 0));
         draft.set(VOID, null, Point.block(0, 30, 0));
+        draft.setCorner(AREA, null, 1, Point.block(-5, 110, -5));
+        draft.setCorner(AREA, null, 2, Point.block(5, 120, 5));
         for (TeamColor team : draft.teams()) {
             draft.set(BED, team, Point.block(0, 70, 0));
             draft.set(IRON, team, Point.block(0, 70, 0));
@@ -112,13 +118,15 @@ class SetupHelpTest {
         draft.set(IRON, TeamColor.VERMELHO, Point.block(2, 70, 1));
         draft.set(BED, TeamColor.AZUL, Point.block(5, 70, 5));
         draft.set(VOID, null, Point.block(0, 30, 0));
+        draft.setCorner(AREA, null, 2, Point.block(5, 120, 5));
 
         List<Marker> markers = SetupMarkers.markers(schema, draft, help);
 
         assertThat(markers).extracting(Marker::lines).containsExactly(
             List.of("&c&lCAMA", "&9Azul"),
             List.of("&f&lFERRO #1", "&cVermelho"),
-            List.of("&f&lFERRO #2", "&cVermelho")
+            List.of("&f&lFERRO #2", "&cVermelho"),
+            List.of("&e&lÁREA", "&7Pos 2")
         );
         assertThat(markers.getFirst().height()).isEqualTo(SetupMarkers.height(StepKind.BLOCK));
     }

@@ -79,7 +79,7 @@ Cada jogo descreve o que uma arena precisa num `SetupSchema`, e a engine dá a t
 |---|---|
 | `SetupSchema` | Os modos do jogo, a regra de times de cada modo (`TeamRule`: times fixos ou uma quantidade de cores a escolher) e os passos de cada modo. Os métodos padrão leem o modo e o nome de exibição do nome da arena: `1v1_slip` é o modo `1v1`, mapa `Slip`. |
 | `SetupStep` | Uma coisa a marcar: id, rótulo, tipo, se repete por time, mínimo e máximo, e as linhas do holograma (`{team}`, `{index}`). |
-| `StepKind` | `LOCATION` (onde o jogador está, centralizado, com a direção arredondada para 45°), `CENTER` (o bloco sob o jogador), `BLOCK` (o bloco para onde o jogador olha), `HEIGHT` (o Y do jogador) e `REGION` (dois cantos). |
+| `StepKind` | `LOCATION` (onde o jogador está, centralizado, com a direção arredondada para 45°), `CENTER` (o bloco sob o jogador), `BLOCK` (o bloco para onde o jogador olha), `HEIGHT` (o Y do jogador) e `REGION` (Pos 1 e Pos 2, dois cantos opostos guardados como `<passo>.pos1` e `<passo>.pos2`). |
 | `ArenaDraft` | A arena em configuração: modo, nome de exibição, times, pontos e alturas. |
 | `SetupChecklist` | O que está feito e o que falta. Uma arena está pronta quando os times estão completos e todo passo obrigatório tem o seu mínimo. |
 | `ArenaFiles` | Lê e grava `arenas/<nome>.yml` em YAML expandido, com `ready: true` quando não falta nada. |
@@ -97,7 +97,8 @@ O mundo de setup é um mundo `muxe_setup_<nome>`, editado no criativo e voando. 
 | Comando | O que faz |
 |---|---|
 | `/arena` ou `/arena ajuda` | A checklist, com uma linha clicável por passo e time: `✔` feito, `✘` faltando, `○` opcional. `[Definir]`, `[+]` e `[-]` executam o comando, e o hover diz como se posicionar. |
-| `/arena definir <passo> [time]` | Marca o passo na posição do jogador. Um ponto único é substituído, uma lista cresce até o máximo, e uma região recebe dois cantos e recomeça no terceiro. |
+| `/arena definir <passo> [time]` | Marca o passo na posição do jogador. Um ponto único é substituído e uma lista cresce até o máximo. |
+| `/arena definir <região> <1\|2>` | Marca a Pos 1 ou a Pos 2 de uma região; a ajuda mostra os botões `[Pos 1]` e `[Pos 2]`. Sem o número, marca o primeiro canto que falta. |
 | `/arena remover <passo> [time]` | Remove o ponto mais perto do jogador, ou o passo inteiro quando ele tem um ponto só. |
 | `/arena time <adicionar\|remover> <cor>` | Escolhe os times nos modos em que eles não são fixos. Remover um time remove os pontos dele. |
 | `/arena nome <nome>` | Muda o nome de exibição do mapa. |
@@ -136,6 +137,7 @@ As partidas nunca usam pastas de mundo. Veja a [ADR 0009](../../decisions/0009-o
 | `EditableMap` | `world.map` | Um mapa em edição no setup. Recebe cada chunk salvo, e o `snapshot()` devolve o mapa a gravar. |
 | `MatchCells` | `world.cell` | Divide o mundo das partidas em células e serve a cada partida o mapa dela em volta do centro da célula. Os chunks que a partida altera ficam guardados até o `release`. |
 | `Cell` | `world.cell` | A célula de uma partida. Converte coordenadas do mapa para o mundo e de volta. |
+| `BlockBox`, `RegionEraser` | `world.cell`, `world.server` | Esvazia uma caixa de blocos de uma vez: zera os arrays de blocos das seções de chunk que ela cobre, tira as tile entities de dentro, recalcula a luz de cada chunk uma vez e reenvia cada chunk alterado como um pacote só aos jogadores que o veem. Usado para remover as áreas de espera. |
 | `MuxeWorlds` | `world.server` | Cria um mundo vazio chamado `muxe_<nome>` cujos chunks vêm de uma `ChunkSource`. Também limpa uma célula, destrói um mundo e apaga pastas `muxe_` que sobraram. |
 
 - Um mundo criado pelo `MuxeWorlds` nunca grava arquivos de região, não mantém os chunks do spawn carregados e tem o salvamento automático desligado.

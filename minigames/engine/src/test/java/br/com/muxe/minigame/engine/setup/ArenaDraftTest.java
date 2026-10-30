@@ -68,6 +68,22 @@ class ArenaDraftTest {
     }
 
     @Test
+    void eachCornerOfARegionCanBeSetOnItsOwnInAnyOrder() {
+        ArenaDraft draft = ArenaDraft.create("1v1_slip", "1v1", schema);
+
+        assertThat(draft.setCorner(TestSchema.LOBBY, null, 2, Point.block(10, 130, 10))).isEqualTo(new Change(Change.Type.SET, 2, 1));
+        assertThat(draft.corner(TestSchema.LOBBY, null, 1)).isEmpty();
+        draft.setCorner(TestSchema.LOBBY, null, 1, Point.block(-10, 110, -10));
+        assertThat(draft.setCorner(TestSchema.LOBBY, null, 2, Point.block(12, 131, 12)).type()).isEqualTo(Change.Type.REPLACED);
+
+        assertThat(draft.points(TestSchema.LOBBY, null)).containsExactly(Point.block(-10, 110, -10), Point.block(12, 131, 12));
+        assertThat(draft.count(TestSchema.LOBBY, null)).isEqualTo(2);
+        assertThat(draft.allPoints()).containsOnlyKeys("area-espera.pos1", "area-espera.pos2");
+        assertThat(draft.remove(TestSchema.LOBBY, null, null)).isTrue();
+        assertThat(draft.points(TestSchema.LOBBY, null)).isEmpty();
+    }
+
+    @Test
     void theHeightStepKeepsTheBlockYOfThePlayer() {
         ArenaDraft draft = ArenaDraft.create("1v1_slip", "1v1", schema);
 

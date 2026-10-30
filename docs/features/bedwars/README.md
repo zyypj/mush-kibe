@@ -33,7 +33,7 @@ An arena is named `<mode>_<map>`, such as `1v1_slip` or `quartetos_air_nation`. 
 | Step | Per team | Kind | Required |
 |---|---|---|---|
 | `espera`: waiting spawn | no | where the player stands | yes |
-| `area-espera`: waiting area, removed when the match starts | no | two corners | yes |
+| `area-espera`: waiting area, removed when the match starts | no | Pos 1 and Pos 2 | yes |
 | `espectador`: spectator spawn | no | where the player stands | yes |
 | `void`: void height | no | the player's Y | yes |
 | `limite`: highest block players may place | no | the player's Y | no |
@@ -52,7 +52,7 @@ A player who reaches a BedWars server goes back to the match they left if they s
 |---|---|
 | Waiting | Players wait in the waiting area above the map, in adventure, without damage or hunger. The hotbar has the emerald `&aMenu do Bed Wars` (slot 5, does nothing yet) and `&aVoltar ao Lobby` (slot 9). The scoreboard follows annex 2, and annex 3 once the countdown runs. |
 | Countdown | The [start countdown](../../architecture/game-engine/README.md#start-countdown) of the engine, with the titles `&a30 segundos`, `&610 segundos` and `&c5` to `&c1`. |
-| Playing | Teams are drawn, the waiting area is removed, players spawn at their island with full leather armour in the team colour and a wooden sword. The shop and upgrades NPCs appear with their holograms, and the generators start. |
+| Playing | Teams are drawn, players spawn at their island with full leather armour in the team colour and a wooden sword. The shop and upgrades NPCs appear with their holograms, and the generators start. Right after, the waiting area between Pos 1 and Pos 2 disappears at once, chunk by chunk (`RegionEraser`). |
 | Ending | When one team is left, every player gets the result (annex 11), centred: winner, match time, top final kills and top beds broken, with names in the colour of their tag. After 30 seconds everyone goes to `lobby-group` and the room closes. |
 
 **During the match:**

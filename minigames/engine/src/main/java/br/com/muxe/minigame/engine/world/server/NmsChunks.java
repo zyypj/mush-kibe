@@ -84,6 +84,10 @@ final class NmsChunks {
         return (boolean) MODIFIED.get(chunk);
     }
 
+    static void markModified(Chunk chunk) {
+        MODIFIED.set(chunk, true);
+    }
+
     private static boolean hasSky(World world) {
         return world.getWorld().getEnvironment() == Environment.NORMAL;
     }

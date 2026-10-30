@@ -34,6 +34,13 @@ final class SetupMarkers {
             }
             List<TeamColor> teams = step.perTeam() ? draft.teams() : Collections.singletonList(null);
             for (TeamColor team : teams) {
+                if (step.kind() == StepKind.REGION) {
+                    for (int corner = 1; corner <= 2; corner++) {
+                        int index = corner;
+                        draft.corner(step, team, corner).ifPresent(point -> markers.add(new Marker(point, lines(step, team, index, help), height(step.kind()))));
+                    }
+                    continue;
+                }
                 List<Point> points = draft.points(step, team);
                 for (int index = 0; index < points.size(); index++) {
                     markers.add(new Marker(points.get(index), lines(step, team, index + 1, help), height(step.kind())));

@@ -33,7 +33,7 @@ Uma arena se chama `<modo>_<mapa>`, como `1v1_slip` ou `quartetos_air_nation`. `
 | Passo | Por time | Tipo | Obrigatório |
 |---|---|---|---|
 | `espera`: spawn da espera | não | onde o jogador está | sim |
-| `area-espera`: área da espera, removida quando a partida começa | não | dois cantos | sim |
+| `area-espera`: área da espera, removida quando a partida começa | não | Pos 1 e Pos 2 | sim |
 | `espectador`: spawn dos espectadores | não | onde o jogador está | sim |
 | `void`: altura do void | não | o Y do jogador | sim |
 | `limite`: bloco mais alto que os jogadores podem colocar | não | o Y do jogador | não |
@@ -52,7 +52,7 @@ Quem chega num servidor de BedWars volta para a partida que deixou, se ainda pud
 |---|---|
 | Espera | Os jogadores esperam na área de espera acima do mapa, no modo aventura, sem dano nem fome. A hotbar tem a esmeralda `&aMenu do Bed Wars` (slot 5, ainda não faz nada) e `&aVoltar ao Lobby` (slot 9). O placar segue o anexo 2, e o anexo 3 quando a contagem roda. |
 | Contagem | A [contagem para iniciar](../../architecture/game-engine/README.pt-BR.md#contagem-para-iniciar) da engine, com os títulos `&a30 segundos`, `&610 segundos` e `&c5` a `&c1`. |
-| Jogando | Os times são sorteados, a área de espera é removida, os jogadores nascem na ilha com couro completo na cor do time e uma espada de madeira. Os NPCs da loja e das melhorias aparecem com os hologramas, e os geradores começam. |
+| Jogando | Os times são sorteados, os jogadores nascem na ilha com couro completo na cor do time e uma espada de madeira. Os NPCs da loja e das melhorias aparecem com os hologramas, e os geradores começam. Logo depois, a área de espera entre a Pos 1 e a Pos 2 some de uma vez, chunk por chunk (`RegionEraser`). |
 | Fim | Quando sobra um time, todos recebem o resultado (anexo 11), centralizado: vencedor, tempo da partida, top kills finais e top camas quebradas, com os nomes na cor da tag. Depois de 30 segundos todos vão para o `lobby-group` e a sala fecha. |
 
 **Durante a partida:**

@@ -199,6 +199,17 @@ public final class SetupService implements Listener {
     }
 
     public void define(Player player, String stepId, Optional<String> teamId) {
+        Optional<SetupSession> current = sessionOf(player);
+        Optional<SetupStep> region = current.flatMap(session -> schema.step(session.draft().mode(), stepId.toLowerCase(Locale.ROOT)))
+            .filter(step -> step.kind() == StepKind.REGION && !step.perTeam());
+        if (region.isPresent() && teamId.filter(value -> value.equals("1") || value.equals("2")).isPresent()) {
+            int corner = Integer.parseInt(teamId.get());
+            Point point = Point.block(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+            current.get().draft().setCorner(region.get(), null, corner, point);
+            player.sendMessage(messages.get("setup-region-corner", "label", help.label(region.get(), null), "index", String.valueOf(corner), "position", point.describe()));
+            changed(current.get());
+            return;
+        }
         withStep(player, stepId, teamId, (session, step, team) -> {
             Optional<Point> point = pointFor(player, step);
             if (point.isEmpty()) {

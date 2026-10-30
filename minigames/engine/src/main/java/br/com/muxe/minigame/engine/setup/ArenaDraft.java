@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.regex.Pattern;
 
@@ -81,7 +82,7 @@ public final class ArenaDraft {
             return false;
         }
         String suffix = "." + team.id();
-        points.keySet().removeIf(key -> key.endsWith(suffix));
+        points.keySet().removeIf(key -> key.endsWith(suffix) || key.contains(suffix + "."));
         numbers.keySet().removeIf(key -> key.endsWith(suffix));
         return true;
     }
@@ -96,7 +97,25 @@ public final class ArenaDraft {
     }
 
     public List<Point> points(SetupStep step, TeamColor team) {
+        if (step.kind() == StepKind.REGION) {
+            List<Point> corners = new ArrayList<>();
+            corner(step, team, 1).ifPresent(corners::add);
+            corner(step, team, 2).ifPresent(corners::add);
+            return corners;
+        }
         return points(key(step, team));
+    }
+
+    public Optional<Point> corner(SetupStep step, TeamColor team, int corner) {
+        List<Point> found = points(cornerKey(key(step, team), corner));
+        return found.isEmpty() ? Optional.empty() : Optional.of(found.getFirst());
+    }
+
+    public static String cornerKey(String key, int corner) {
+        if (corner != 1 && corner != 2) {
+            throw new IllegalArgumentException("A region has corners 1 and 2, got " + corner);
+        }
+        return key + ".pos" + corner;
     }
 
     public OptionalDouble number(String key) {
@@ -117,7 +136,7 @@ public final class ArenaDraft {
         if (step.kind() == StepKind.HEIGHT) {
             return numbers.containsKey(key) ? 1 : 0;
         }
-        return points(key).size();
+        return points(step, team).size();
     }
 
     public Change set(SetupStep step, TeamColor team, Point point) {
@@ -127,14 +146,14 @@ public final class ArenaDraft {
             numbers.put(key, (double) point.blockY());
             return new Change(existed ? Change.Type.REPLACED : Change.Type.SET, 1, 1);
         }
-        List<Point> list = points.computeIfAbsent(key, ignored -> new ArrayList<>());
         if (step.kind() == StepKind.REGION) {
-            if (list.size() >= 2) {
-                list.clear();
+            int corner = corner(step, team, 1).isEmpty() ? 1 : corner(step, team, 2).isEmpty() ? 2 : 1;
+            if (corner == 1 && count(step, team) == 2) {
+                points.remove(cornerKey(key, 2));
             }
-            list.add(point);
-            return new Change(Change.Type.ADDED, list.size(), list.size());
+            return setCorner(step, team, corner, point);
         }
+        List<Point> list = points.computeIfAbsent(key, ignored -> new ArrayList<>());
         if (step.maximum() == 1) {
             boolean existed = !list.isEmpty();
             list.clear();
@@ -148,10 +167,25 @@ public final class ArenaDraft {
         return new Change(Change.Type.ADDED, list.size(), list.size());
     }
 
+    public Change setCorner(SetupStep step, TeamColor team, int corner, Point point) {
+        if (step.kind() != StepKind.REGION) {
+            throw new IllegalArgumentException("Step " + step.id() + " is not a region");
+        }
+        String key = cornerKey(key(step, team), corner);
+        boolean existed = points.containsKey(key);
+        points.put(key, new ArrayList<>(List.of(point)));
+        return new Change(existed ? Change.Type.REPLACED : Change.Type.SET, corner, count(step, team));
+    }
+
     public boolean remove(SetupStep step, TeamColor team, Point near) {
         String key = key(step, team);
         if (step.kind() == StepKind.HEIGHT) {
             return numbers.remove(key) != null;
+        }
+        if (step.kind() == StepKind.REGION) {
+            boolean first = points.remove(cornerKey(key, 1)) != null;
+            boolean second = points.remove(cornerKey(key, 2)) != null;
+            return first || second;
         }
         List<Point> list = points.get(key);
         if (list == null || list.isEmpty()) {
