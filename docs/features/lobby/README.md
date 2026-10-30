@@ -42,7 +42,7 @@ muxe.com.br
 ```
 
 - `{lobby}` is the number at the end of the server id (`lobby-4` shows `#4`), and `{players}` counts every player on the network's Spigot servers. Lines refresh every `scoreboard.update-interval`.
-- `Tag` shows the tag the player displays (`&aVIP`, `&dUltra`, `&cNatal`...), as described in [Ranks and tags](../ranks-and-tags/README.md); it changes within a second of `/tag` or a new rank. `scoreboard.default-tag` is shown until the player's ranks are loaded. There is no credit system yet: every player shows `scoreboard.default-credits`. The values come from `PlayerInfoSource` (`RankInfoSource`).
+- `Tag` shows the tag the player displays (`&aVIP`, `&dUltra`, `&cNatal`...), as described in [Ranks and tags](../ranks-and-tags/README.md); it changes within a second of `/tag` or a new rank. `scoreboard.default-tag` is shown until the player's ranks are loaded. `Créditos` is the player's balance, described in [Credits and cosmetics](../credits/README.md); it is loaded on join and reloaded every 30 seconds. The values come from `PlayerInfoSource` (`RankInfoSource`).
 
 ### Hotbar, menus and player visibility
 
@@ -126,7 +126,7 @@ Players are always in Adventure mode: any change to another game mode is cancell
 | `bossbar.frames`, `bossbar.interval` | `&e&lMUXE`, `&6&lMUXE`, `500ms` | Boss bar texts and how long each one stays. |
 | `scoreboard.title`, `scoreboard.lines` | See above | Scoreboard text. Placeholders: `{tag}`, `{credits}`, `{lobby}`, `{players}`. |
 | `scoreboard.update-interval` | `1s` | How often the scoreboard refreshes. |
-| `scoreboard.default-tag`, `scoreboard.default-credits` | `&7Membro`, `0` | Tag shown while the player's ranks are not loaded, and the credits shown until a wallet exists. |
+| `scoreboard.default-tag`, `scoreboard.default-credits` | `&7Membro`, `0` | Tag shown while the player's ranks are not loaded. `default-credits` is no longer used: the scoreboard shows the real balance. |
 | `spawn.*` | not set | Written by `/setspawn`. |
 | `messages.*` | Portuguese texts | Messages of `/jogar`, `/setspawn` and `/fly` (`fly-enabled`, `fly-disabled`); shared messages come from Muxe-Core. |
 
@@ -184,6 +184,5 @@ The Spigot server metrics of Muxe-Core. The visibility metrics moved with it and
 
 ## Known limitations
 
-- Credits do not exist yet; the scoreboard shows `scoreboard.default-credits`.
 - No game server group exists yet besides `skywars` and `bedwars`, so the other game NPCs show `0 jogando` and answer that no room is available.
 - The limits of the hotbar and its menus are listed in [Hotbar](../hotbar/README.md#known-limitations).

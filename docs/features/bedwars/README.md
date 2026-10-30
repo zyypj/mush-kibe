@@ -96,6 +96,29 @@ The upgrades NPC opens `Melhorias do Time` with the seven exported upgrades, pai
 
 The whole team sees `<player> adquiriu a melhoria <upgrade>.`
 
+### Bed destruction cosmetics
+
+Players pick an animation that plays when they break an enemy bed. The menus follow the recorded exports:
+
+- **Menu do Bed Wars** (emerald): in the waiting room on BedWars servers, and in hotbar slot 3 on the BedWars lobby. Only **Cosméticos** works for now.
+- **Cosméticos do Bed Wars**: the **Destruição de Cama** category shows `owned/total (percent%)` and the selected cosmetic. The other categories, **Cor preferida** and the **Loja** button answer "coming soon".
+- **Destruição de Cama (page/pages)**: 28 entries per page. Page 1 starts with **Nenhuma** and **Aleatório** (the default). Owned cosmetics come first, then the ones for sale, then the unavailable ones, each group in configuration order.
+  - Owned: left click selects, right click previews. The selected one glows and shows `Já selecionado.`
+  - For sale: left click buys with credits (price by stars: 750, 900, 1.300, 1.750, 2.000), right click previews. When the player lacks credits, the lore shows `Faltam <n> créditos!`.
+  - Unavailable (event cosmetics the player does not own, or cosmetics without an animation yet): right click previews when there is an animation.
+  - `Incluso no ULTRA` cosmetics are owned by everyone with `muxe.cosmetic.ultra`.
+- 30 cosmetics are listed; 13 have an animation (Ajudante de Papai Noel, Avalanche, Coelhos, Passarinhos, Friaca, Fogos de Artifício, Colheita de Abóboras, Apavorante, Deserto, Tinta, Bola de Canhão, Enderman, Sal na Ferida). The other 17 show `Indisponível.` until their animation exists.
+- Animations are drawn only with packets (armor stands, falling blocks, items, fireworks, particles, sounds and fake block changes), so the real world never changes. They are our own reproductions of the recorded behaviour, with original pixel sprites and community heads.
+
+**In a match** the breaker's selection plays at the broken bed for everyone in the room. `Aleatório` picks one of the player's owned animations; `Nenhuma` plays nothing.
+
+**Preview** (BedWars lobby only; anywhere else the player gets `Você só pode visualizar cosméticos no lobby.`):
+
+1. The player is saved (place, inventory, armor, game mode, scoreboard) and teleported to the preview world, with an empty inventory.
+2. Other previewers are hidden both ways. The scoreboard shows `Visualizando:` and the cosmetic name, and the action bar repeats `&eQuebre a cama!`.
+3. Left-clicking the bed hides it for that player only and plays the animation for that player only.
+4. `preview.return-delay` after the animation ends (2 s), or after `preview.timeout` without breaking the bed (2 min), the player goes back to where they were, with their lobby items.
+
 ## Commands
 
 | Command | Permission | Description |
@@ -103,6 +126,8 @@ The whole team sees `<player> adquiriu a melhoria <upgrade>.`
 | `/arena ...` | `muxe.minigame.setup` | Creates and sets up arenas. See [arena setup](../../architecture/game-engine/README.md#arena-setup). |
 | `/bedwars entrar <modo>` (`/bw`) | none | Moves the player to a room of that mode, while waiting. |
 | `/bedwars iniciar` | `muxe.bedwars.admin` | Starts the countdown at 10 seconds without the minimum players, for tests. |
+| `/cosmeticos` (`/cosmeticosbw`) | none | Opens Cosméticos do Bed Wars. |
+| `/cosmeticos dar <jogador> <cosmetico>` | `muxe.cosmetics.admin` | Gives a bed destruction cosmetic, for event and award cosmetics. |
 
 ## Permissions
 
@@ -110,6 +135,8 @@ The whole team sees `<player> adquiriu a melhoria <upgrade>.`
 |---|---|---|
 | `muxe.minigame.setup` | op | Allows `/arena`. |
 | `muxe.bedwars.admin` | op | Allows `/bedwars iniciar`. |
+| `muxe.cosmetics.admin` | op | Allows `/cosmeticos dar`. |
+| `muxe.cosmetic.ultra` | false | Owns the `Incluso no ULTRA` cosmetics. The `ultra` group has it (migration V14). |
 
 ## Configuration
 
@@ -134,7 +161,16 @@ The whole team sees `<player> adquiriu a melhoria <upgrade>.`
 | `scoreboard.*` | annexes 2, 3, 5 and 12 | Scoreboard lines; `{teams}` and `{event}` become the team lines and the next event. |
 | `holograms.*` | annexes 7 and 8 | NPC and generator holograms. |
 | `shop.*`, `upgrades.*` | the exports | Shop categories, items, prices and texts; upgrades, tiers and prices. |
-| `messages.*` | annexes 4, 6, 9, 10, 11, 13, 14, 15 | Every match message. `setup-*` overrides the engine's setup messages. |
+| `messages.*` | annexes 4, 6, 9, 10, 11, 13, 14, 15 | Every match message. `setup-*` overrides the engine's setup messages. `cosmetic-*` and `preview-*` are the cosmetic messages. |
+| `cosmetics.category` | `bedwars-cama` | Category under which ownership and selection are saved. |
+| `cosmetics.prices.<stars>` | 750, 900, 1300, 1750, 2000 | Price in credits by stars. |
+| `cosmetics.bed-destruction.<id>` | the 30 cosmetics | `name`, `icon` (item), `stars`, `tag`, `availability` (`SALE`, `ULTRA`, `EVENT`) and `description`. The id must match an animation id to have an animation. |
+| `cosmetics.menus.*` | the exports | Titles, slots, items and lore lines of the three menus. |
+| `preview.world` | `previa_quebra_de_cama` | Folder of the preview world in the server root. Without it the preview is off. |
+| `preview.spawn`, `preview.bed` | 6.5 11 21.5; foot 6 11 17, head 6 16 | Where the player stands and the bed they break. |
+| `preview.timeout`, `preview.return-delay` | `120s`, `2s` | Time to break the bed and wait after the animation. |
+| `preview.action-bar`, `preview.scoreboard` | `&eQuebre a cama!`, MUXE / Visualizando | Preview texts; `{name}` is the cosmetic. |
+| `lobby.menu-item` | slot 3, emerald | Menu do Bed Wars item on the BedWars lobby. |
 
 ## Packets
 
@@ -146,6 +182,8 @@ None yet.
 |---|---|
 | `plugins/Muxe-BedWars/maps/<arena>.mxw` | The map, in the [Muxe map format](../../decisions/0009-own-map-format-and-match-cells.md). Copied to every BedWars server. |
 | `plugins/Muxe-BedWars/arenas/<arena>.yml` | Mode, display name, teams, points and heights, with `ready: true` when nothing is missing. Copied with the map. |
+| `core.owned_cosmetics`, `core.selected_cosmetics` | Owned and selected cosmetics, category `bedwars-cama`. See [Credits and cosmetics](../credits/README.md). |
+| `<server>/previa_quebra_de_cama/` | The preview world. Deployed to the BedWars lobby only, never committed. |
 
 ## Metrics
 
@@ -154,6 +192,7 @@ None yet.
 ## Integrations
 
 - [Lobby](../lobby/README.md): `/jogar bedwars`.
+- [Credits and cosmetics](../credits/README.md): prices, purchases and ownership.
 - [Game engine](../../architecture/game-engine/README.md).
 
 ## Acceptance criteria
@@ -163,7 +202,10 @@ None yet.
 - [x] An arena can be set up in game, with a checklist of what is missing (engine tests).
 - [x] Scoreboards, team indicators and the forge, timeline, kill credit, level, XP and ranking rules follow the spec (`RoomTest`, `GameRulesTest`, `GeneratorTimerTest`).
 - [x] Shop and upgrade names and lore follow the exports (`ShopCatalogTest`, `UpgradeCatalogTest`).
+- [x] The 13 animations end without leftovers and follow the recorded timings (`BedAnimationsTest`).
+- [x] Cosmetic states, prices, sorting and lore follow the exports (`CosmeticCatalogTest`).
 - [ ] A full match checked in game.
+- [ ] Every animation and the preview checked in game.
 
 ## Failures and recovery
 
@@ -175,3 +217,5 @@ If Muxe-Core is not enabled, the plugin disables itself.
 - Statistics, levels and XP are shown but not saved.
 - The special shop items, the quick buy editor, the dragons, the spinning blocks above the generators, and the victory and defeat titles are not in yet.
 - A restart or crash ends every match on the server without compensation.
+- 17 bed destruction cosmetics have no animation yet. The other cosmetic categories, Cor preferida and the cosmetic shop are not in yet.
+- A purchase updates the menu at once, but another server sees it only when the player joins it again.

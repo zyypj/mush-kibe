@@ -447,6 +447,25 @@ Location target = spawn.location().orElseGet(world::getSpawnLocation);
 - `ConfigLocation`: one `StoredLocation` saved under a path of a plugin's `config.yml`, saved to disk on every change. It implements `LocationSlot`, so services can be tested with an in-memory slot.
 - `Anchors.lookingAt(content, viewerEyes, height)`: places content, such as `ParticleText` or `PixelHolograms`, so it faces a viewer standing elsewhere.
 
+## Credits
+
+Package `br.com.muxe.core.bukkit.credit`. Feature behaviour is in [Credits and cosmetics](../../features/credits/README.md).
+
+- `CreditBalancesListener.start(plugin, core, Duration.ofSeconds(30))` returns a `CreditBalances` that loads every online player's balance on join, forgets it on quit and reloads all of them on the given period. `of(playerId)` reads the cached value (0 until loaded) without blocking; `refresh(playerId)` reloads one now.
+- `CreditFormat.format(1750)` gives `1.750`.
+- Changing credits or cosmetics goes through the core commands: `ChangeCreditsCommand`, `BuyCosmeticCommand`, `GrantCosmeticCommand`, `SelectCosmeticCommand`; reads through `FindCreditsQuery` and `FindCosmeticsQuery`.
+
+## Bed animations
+
+Packages `br.com.muxe.core.bukkit.cosmetic.animation` (pure) and `br.com.muxe.core.bukkit.cosmetic.stage` (NMS).
+
+- A `BedAnimation` writes a script: given the `BedFrame` (foot, head, forward, right), the breaker position, a `Stage` and a `Timeline`, it schedules what happens on each tick.
+- `Stage` spawns packet-only actors (armor stands, mobs, falling blocks, items, fireworks, snowballs), sends particles and sounds and fakes block changes. `Actor` moves, equips, poses, rides and removes them.
+- `Timeline.at(tick, action)` and `repeat(from, until, period, action)` schedule steps; `lasts(ticks)` keeps the animation alive longer.
+- `AnimationPlayer.play(animation, world, bed, breaker, viewers, onFinish)` runs it one step per tick for the viewers only and, at the end or on `cancel()`, removes every actor and restores every faked block.
+- `BedFrame.ofBlock(x, y, z, data)` builds the frame from either half of a 1.8 bed.
+- Animations are tested without a server with a recording `Stage`, as `BedAnimationsTest` does in BedWars.
+
 ## Platform-free helpers
 
 In `core:common`, usable on the proxy too:

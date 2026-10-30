@@ -96,6 +96,29 @@ O NPC das melhorias abre `Melhorias do Time` com as sete melhorias dos exports, 
 
 O time inteiro vê `<jogador> adquiriu a melhoria <melhoria>.`
 
+### Cosméticos de destruição de cama
+
+O jogador escolhe uma animação que toca quando ele quebra uma cama inimiga. Os menus seguem os exports gravados:
+
+- **Menu do Bed Wars** (esmeralda): na sala de espera dos servidores de BedWars e no slot 3 da hotbar do lobby de BedWars. Por enquanto só **Cosméticos** funciona.
+- **Cosméticos do Bed Wars**: a categoria **Destruição de Cama** mostra `possuídos/total (porcentagem%)` e o cosmético selecionado. As outras categorias, **Cor preferida** e o botão **Loja** respondem "em breve".
+- **Destruição de Cama (página/páginas)**: 28 itens por página. A página 1 começa com **Nenhuma** e **Aleatório** (o padrão). Primeiro vêm os cosméticos possuídos, depois os à venda e por último os indisponíveis, cada grupo na ordem da configuração.
+  - Possuído: botão esquerdo seleciona, botão direito visualiza. O selecionado brilha e mostra `Já selecionado.`
+  - À venda: botão esquerdo compra com créditos (preço por estrelas: 750, 900, 1.300, 1.750, 2.000), botão direito visualiza. Quando faltam créditos, a lore mostra `Faltam <n> créditos!`.
+  - Indisponível (cosméticos de evento que o jogador não tem, ou cosméticos ainda sem animação): botão direito visualiza quando existe animação.
+  - Os cosméticos `Incluso no ULTRA` são de todos que têm `muxe.cosmetic.ultra`.
+- São 30 cosméticos; 13 têm animação (Ajudante de Papai Noel, Avalanche, Coelhos, Passarinhos, Friaca, Fogos de Artifício, Colheita de Abóboras, Apavorante, Deserto, Tinta, Bola de Canhão, Enderman, Sal na Ferida). Os outros 17 mostram `Indisponível.` até a animação deles existir.
+- As animações são feitas só com pacotes (armor stands, falling blocks, itens, fogos, partículas, sons e blocos falsos), então o mundo real nunca muda. São reproduções nossas do comportamento gravado, com sprites originais e cabeças da comunidade.
+
+**Na partida** a seleção de quem quebrou toca na cama quebrada para todos da sala. `Aleatório` sorteia uma animação que o jogador possui; `Nenhuma` não toca nada.
+
+**Prévia** (só no lobby de BedWars; em outro lugar o jogador recebe `Você só pode visualizar cosméticos no lobby.`):
+
+1. O jogador é salvo (lugar, inventário, armadura, modo de jogo, scoreboard) e teleportado para o mundo da prévia, com o inventário vazio.
+2. Quem está em prévia não vê os outros em prévia. A scoreboard mostra `Visualizando:` e o nome do cosmético, e a action bar repete `&eQuebre a cama!`.
+3. Ao bater na cama, ela some só para esse jogador e a animação toca só para ele.
+4. `preview.return-delay` depois do fim da animação (2 s), ou depois de `preview.timeout` sem quebrar a cama (2 min), o jogador volta para onde estava, com os itens do lobby.
+
 ## Comandos
 
 | Comando | Permissão | Descrição |
@@ -103,6 +126,8 @@ O time inteiro vê `<jogador> adquiriu a melhoria <melhoria>.`
 | `/arena ...` | `muxe.minigame.setup` | Cria e configura arenas. Veja o [setup de arenas](../../architecture/game-engine/README.pt-BR.md#setup-de-arenas). |
 | `/bedwars entrar <modo>` (`/bw`) | nenhuma | Leva o jogador para uma sala desse modo, enquanto espera. |
 | `/bedwars iniciar` | `muxe.bedwars.admin` | Começa a contagem em 10 segundos sem o mínimo de jogadores, para testes. |
+| `/cosmeticos` (`/cosmeticosbw`) | nenhuma | Abre Cosméticos do Bed Wars. |
+| `/cosmeticos dar <jogador> <cosmetico>` | `muxe.cosmetics.admin` | Dá um cosmético de destruição de cama, para cosméticos de evento e premiações. |
 
 ## Permissões
 
@@ -110,6 +135,8 @@ O time inteiro vê `<jogador> adquiriu a melhoria <melhoria>.`
 |---|---|---|
 | `muxe.minigame.setup` | op | Permite o `/arena`. |
 | `muxe.bedwars.admin` | op | Permite o `/bedwars iniciar`. |
+| `muxe.cosmetics.admin` | op | Permite o `/cosmeticos dar`. |
+| `muxe.cosmetic.ultra` | false | Possui os cosméticos `Incluso no ULTRA`. O grupo `ultra` tem essa permissão (migração V14). |
 
 ## Configuração
 
@@ -134,7 +161,16 @@ O time inteiro vê `<jogador> adquiriu a melhoria <melhoria>.`
 | `scoreboard.*` | anexos 2, 3, 5 e 12 | Linhas do placar; `{teams}` e `{event}` viram as linhas dos times e o próximo evento. |
 | `holograms.*` | anexos 7 e 8 | Hologramas dos NPCs e dos geradores. |
 | `shop.*`, `upgrades.*` | os exports | Categorias, itens, preços e textos da loja; melhorias, níveis e preços. |
-| `messages.*` | anexos 4, 6, 9, 10, 11, 13, 14, 15 | Todas as mensagens da partida. `setup-*` sobrescreve as mensagens de setup da engine. |
+| `messages.*` | anexos 4, 6, 9, 10, 11, 13, 14, 15 | Todas as mensagens da partida. `setup-*` sobrescreve as mensagens de setup da engine. `cosmetic-*` e `preview-*` são as mensagens dos cosméticos. |
+| `cosmetics.category` | `bedwars-cama` | Categoria em que a posse e a seleção são salvas. |
+| `cosmetics.prices.<estrelas>` | 750, 900, 1300, 1750, 2000 | Preço em créditos por estrelas. |
+| `cosmetics.bed-destruction.<id>` | os 30 cosméticos | `name`, `icon` (item), `stars`, `tag`, `availability` (`SALE`, `ULTRA`, `EVENT`) e `description`. O id precisa ser o de uma animação para ter animação. |
+| `cosmetics.menus.*` | os exports | Títulos, slots, itens e linhas de lore dos três menus. |
+| `preview.world` | `previa_quebra_de_cama` | Pasta do mundo da prévia na raiz do servidor. Sem ela a prévia fica desligada. |
+| `preview.spawn`, `preview.bed` | 6.5 11 21.5; pé 6 11 17, cabeceira 6 16 | Onde o jogador fica e a cama que ele quebra. |
+| `preview.timeout`, `preview.return-delay` | `120s`, `2s` | Tempo para quebrar a cama e espera depois da animação. |
+| `preview.action-bar`, `preview.scoreboard` | `&eQuebre a cama!`, MUXE / Visualizando | Textos da prévia; `{name}` é o cosmético. |
+| `lobby.menu-item` | slot 3, esmeralda | Item Menu do Bed Wars no lobby de BedWars. |
 
 ## Pacotes
 
@@ -146,6 +182,8 @@ Nenhum ainda.
 |---|---|
 | `plugins/Muxe-BedWars/maps/<arena>.mxw` | O mapa, no [formato de mapa da Muxe](../../decisions/0009-own-map-format-and-match-cells.pt-BR.md). Copiado para cada servidor de BedWars. |
 | `plugins/Muxe-BedWars/arenas/<arena>.yml` | Modo, nome de exibição, times, pontos e alturas, com `ready: true` quando não falta nada. Copiado junto com o mapa. |
+| `core.owned_cosmetics`, `core.selected_cosmetics` | Cosméticos possuídos e selecionados, categoria `bedwars-cama`. Veja [Créditos e cosméticos](../credits/README.pt-BR.md). |
+| `<servidor>/previa_quebra_de_cama/` | O mundo da prévia. Vai só para o lobby de BedWars, nunca para o repositório. |
 
 ## Métricas
 
@@ -154,6 +192,7 @@ Nenhum ainda.
 ## Integrações
 
 - [Lobby](../lobby/README.pt-BR.md): `/jogar bedwars`.
+- [Créditos e cosméticos](../credits/README.pt-BR.md): preços, compras e posse.
 - [Motor de jogo](../../architecture/game-engine/README.pt-BR.md).
 
 ## Critérios de aceitação
@@ -163,7 +202,10 @@ Nenhum ainda.
 - [x] Uma arena pode ser configurada no jogo, com uma checklist do que falta (testes do motor).
 - [x] Placares, indicadores dos times e as regras de forja, linha do tempo, kills, níveis, XP e ranking seguem a especificação (`RoomTest`, `GameRulesTest`, `GeneratorTimerTest`).
 - [x] Nomes e lores da loja e das melhorias seguem os exports (`ShopCatalogTest`, `UpgradeCatalogTest`).
+- [x] As 13 animações terminam sem deixar nada e seguem os tempos gravados (`BedAnimationsTest`).
+- [x] Estados, preços, ordem e lore dos cosméticos seguem os exports (`CosmeticCatalogTest`).
 - [ ] Uma partida completa conferida no jogo.
+- [ ] Todas as animações e a prévia conferidas no jogo.
 
 ## Falhas e recuperação
 
@@ -175,3 +217,5 @@ Se o Muxe-Core não estiver habilitado, o plugin se desabilita.
 - Estatísticas, níveis e XP aparecem mas não são salvos.
 - Os itens especiais da loja, o editor da compra rápida, os dragões, os blocos girando sobre os geradores e os títulos de vitória e derrota ainda não entraram.
 - Um reinício ou crash encerra todas as partidas do servidor sem compensação.
+- 17 cosméticos de destruição de cama ainda não têm animação. As outras categorias de cosméticos, Cor preferida e a loja de cosméticos ainda não existem.
+- Uma compra atualiza o menu na hora, mas outro servidor só vê quando o jogador entra nele de novo.

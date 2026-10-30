@@ -447,6 +447,25 @@ Location target = spawn.location().orElseGet(world::getSpawnLocation);
 - `ConfigLocation`: uma `StoredLocation` salva em um caminho do `config.yml` de um plugin, gravada em disco a cada mudança. Implementa `LocationSlot`, então os serviços podem ser testados com uma posição em memória.
 - `Anchors.lookingAt(content, viewerEyes, height)`: posiciona um conteúdo, como um `ParticleText` ou um `PixelHolograms`, virado para quem o vê de outro lugar.
 
+## Créditos
+
+Pacote `br.com.muxe.core.bukkit.credit`. O comportamento está em [Créditos e cosméticos](../../features/credits/README.pt-BR.md).
+
+- `CreditBalancesListener.start(plugin, core, Duration.ofSeconds(30))` devolve um `CreditBalances` que carrega o saldo de cada jogador ao entrar, esquece ao sair e recarrega todos no período dado. `of(playerId)` lê o valor em cache (0 até carregar) sem bloquear; `refresh(playerId)` recarrega um agora.
+- `CreditFormat.format(1750)` dá `1.750`.
+- Créditos e cosméticos mudam pelos comandos do core: `ChangeCreditsCommand`, `BuyCosmeticCommand`, `GrantCosmeticCommand`, `SelectCosmeticCommand`; leituras por `FindCreditsQuery` e `FindCosmeticsQuery`.
+
+## Animações de cama
+
+Pacotes `br.com.muxe.core.bukkit.cosmetic.animation` (puro) e `br.com.muxe.core.bukkit.cosmetic.stage` (NMS).
+
+- Uma `BedAnimation` escreve um roteiro: com o `BedFrame` (pé, cabeceira, frente, direita), a posição de quem quebrou, um `Stage` e uma `Timeline`, ela agenda o que acontece em cada tick.
+- O `Stage` cria atores só de pacote (armor stands, mobs, falling blocks, itens, fogos, bolas de neve), manda partículas e sons e finge mudanças de bloco. O `Actor` move, equipa, posiciona, monta e remove.
+- `Timeline.at(tick, ação)` e `repeat(de, até, período, ação)` agendam passos; `lasts(ticks)` mantém a animação viva por mais tempo.
+- `AnimationPlayer.play(animação, mundo, cama, quebrador, espectadores, aoTerminar)` roda um passo por tick só para os espectadores e, no fim ou no `cancel()`, remove todos os atores e restaura todos os blocos fingidos.
+- `BedFrame.ofBlock(x, y, z, data)` monta o frame a partir de qualquer metade de uma cama 1.8.
+- As animações são testadas sem servidor com um `Stage` que grava, como o `BedAnimationsTest` faz no BedWars.
+
 ## Utilitários independentes de plataforma
 
 No `core:common`, usáveis também no proxy:

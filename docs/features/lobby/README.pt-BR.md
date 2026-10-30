@@ -42,7 +42,7 @@ muxe.com.br
 ```
 
 - `{lobby}` é o número no fim do id do servidor (`lobby-4` mostra `#4`), e `{players}` conta todos os jogadores nos servidores Spigot da rede. As linhas são atualizadas a cada `scoreboard.update-interval`.
-- `Tag` mostra a tag que o jogador exibe (`&aVIP`, `&dUltra`, `&cNatal`...), como descrito em [Cargos e tags](../ranks-and-tags/README.pt-BR.md); ela muda em até um segundo depois de um `/tag` ou de um cargo novo. `scoreboard.default-tag` aparece enquanto os cargos do jogador não carregaram. Ainda não existe sistema de créditos: todo jogador mostra `scoreboard.default-credits`. Os valores vêm do `PlayerInfoSource` (`RankInfoSource`).
+- `Tag` mostra a tag que o jogador exibe (`&aVIP`, `&dUltra`, `&cNatal`...), como descrito em [Cargos e tags](../ranks-and-tags/README.pt-BR.md); ela muda em até um segundo depois de um `/tag` ou de um cargo novo. `scoreboard.default-tag` aparece enquanto os cargos do jogador não carregaram. `Créditos` é o saldo do jogador, descrito em [Créditos e cosméticos](../credits/README.pt-BR.md); ele carrega ao entrar e recarrega a cada 30 segundos. Os valores vêm do `PlayerInfoSource` (`RankInfoSource`).
 
 ### Hotbar, menus e visibilidade dos jogadores
 
@@ -126,7 +126,7 @@ O `/jogar` completa os jogos configurados com tab.
 | `bossbar.frames`, `bossbar.interval` | `&e&lMUXE`, `&6&lMUXE`, `500ms` | Textos da boss bar e quanto tempo cada um fica. |
 | `scoreboard.title`, `scoreboard.lines` | Veja acima | Texto da scoreboard. Placeholders: `{tag}`, `{credits}`, `{lobby}`, `{players}`. |
 | `scoreboard.update-interval` | `1s` | De quanto em quanto tempo a scoreboard é atualizada. |
-| `scoreboard.default-tag`, `scoreboard.default-credits` | `&7Membro`, `0` | Tag mostrada enquanto os cargos do jogador não carregaram, e os créditos mostrados até existir uma carteira. |
+| `scoreboard.default-tag`, `scoreboard.default-credits` | `&7Membro`, `0` | Tag mostrada enquanto os cargos do jogador não carregaram. `default-credits` não é mais usado: a scoreboard mostra o saldo real. |
 | `spawn.*` | não definido | Escrito pelo `/setspawn`. |
 | `messages.*` | Textos em português | Mensagens do `/jogar`, do `/setspawn` e do `/fly` (`fly-enabled`, `fly-disabled`); as mensagens compartilhadas vêm do Muxe-Core. |
 
@@ -184,6 +184,5 @@ As métricas de servidor Spigot do Muxe-Core. As métricas de visibilidade foram
 
 ## Limitações conhecidas
 
-- Créditos ainda não existem; a scoreboard mostra `scoreboard.default-credits`.
 - Ainda não existe grupo de servidores de jogo além de `skywars` e `bedwars`, então os outros NPCs de jogo mostram `0 jogando` e respondem que não há sala disponível.
 - As limitações da hotbar e dos seus menus estão em [Hotbar](../hotbar/README.pt-BR.md#limitações-conhecidas).
