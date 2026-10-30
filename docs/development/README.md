@@ -131,7 +131,19 @@ The rules live in [`build-logic/src/main/kotlin/ModuleRules.kt`](../../build-log
 | `muxe.server-plugin` | Applied by the plugin conventions | Shadow jar named after the module, relocations, merged service files, and the `serverPlugin` artifact. |
 | `muxe.bukkit-plugin` | Spigot plugins | The Spigot API, Bukkit-only relocations and `plugin.yml` with `${version}` filled in. |
 | `muxe.velocity-plugin` | Velocity plugins | The Velocity API and `velocity-plugin.json` with `${version}` filled in. |
+| `muxe.server-internals` | Modules that compile against the 1.8.8 server internals (`net.minecraft.server.v1_8_R3`, `org.bukkit.craftbukkit`) | The patched PandaSpigot jar at compile time only. See below. |
 | `muxe.network` | The root project | The `network { }` block and the server assembly tasks. |
+
+### Server internals
+
+`muxe.server-internals` lets a module use the server classes directly, instead of reflection.
+
+- The `patchPandaSpigot` task downloads the PandaSpigot build named in `libs.versions.toml` (`pandaspigot`) from the official PandaSpigot downloads and checks its `pandaspigot-sha256`.
+- It runs it once with `-Dpaperclip.patchonly=true`, which downloads the vanilla 1.8.8 server from Mojang and patches it.
+- The result stays in `~/.gradle/caches/muxe/pandaspigot/<build>/cache/patched_1.8.8.jar`, so later builds and `clean` do not download it again.
+- The jar is `compileOnly`: it is never bundled into a plugin or committed, since it contains the Mojang server.
+- The first build needs internet access.
+- To update PandaSpigot, change `pandaspigot` and `pandaspigot-sha256` together.
 
 ## Running a local network
 

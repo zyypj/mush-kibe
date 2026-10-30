@@ -131,7 +131,19 @@ As regras ficam em [`build-logic/src/main/kotlin/ModuleRules.kt`](../../build-lo
 | `muxe.server-plugin` | Aplicado pelas convenções de plugin | Shadow jar com o nome do módulo, realocações, arquivos de serviço mesclados e o artefato `serverPlugin`. |
 | `muxe.bukkit-plugin` | Plugins Spigot | A API do Spigot, realocações exclusivas do Bukkit e o `plugin.yml` com `${version}` preenchido. |
 | `muxe.velocity-plugin` | Plugins Velocity | A API do Velocity e o `velocity-plugin.json` com `${version}` preenchido. |
+| `muxe.server-internals` | Módulos que compilam contra as classes internas do servidor 1.8.8 (`net.minecraft.server.v1_8_R3`, `org.bukkit.craftbukkit`) | O jar do PandaSpigot com os patches aplicados, só em tempo de compilação. Veja abaixo. |
 | `muxe.network` | O projeto raiz | O bloco `network { }` e as tasks de montagem dos servidores. |
+
+### Classes internas do servidor
+
+`muxe.server-internals` permite que um módulo use as classes do servidor diretamente, em vez de reflexão.
+
+- A task `patchPandaSpigot` baixa o build do PandaSpigot indicado no `libs.versions.toml` (`pandaspigot`) dos downloads oficiais do PandaSpigot e confere o `pandaspigot-sha256`.
+- Ela o executa uma vez com `-Dpaperclip.patchonly=true`, que baixa o servidor vanilla 1.8.8 da Mojang e aplica os patches.
+- O resultado fica em `~/.gradle/caches/muxe/pandaspigot/<build>/cache/patched_1.8.8.jar`, então os próximos builds e o `clean` não baixam de novo.
+- O jar é `compileOnly`: nunca é embutido em um plugin nem commitado, porque contém o servidor da Mojang.
+- O primeiro build precisa de internet.
+- Para atualizar o PandaSpigot, altere `pandaspigot` e `pandaspigot-sha256` juntos.
 
 ## Rodando uma rede local
 

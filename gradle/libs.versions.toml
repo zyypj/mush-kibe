@@ -1,6 +1,8 @@
 [versions]
 java = "25"
 spigot = "1.8.8-R0.1-SNAPSHOT"
+pandaspigot = "226"
+pandaspigot-sha256 = "ac73146b275230cbd0612ef0f3d6b40333abd3182beae457cad5321efff6359b"
 velocity = "4.3.0"
 netty = "4.0.23.Final"
 shadow = "9.6.1"

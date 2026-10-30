@@ -1,5 +1,6 @@
 plugins {
     id("muxe.bukkit-library")
+    id("muxe.server-internals")
 }
 
 dependencies {
