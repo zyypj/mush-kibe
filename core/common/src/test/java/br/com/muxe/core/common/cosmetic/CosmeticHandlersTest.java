@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import br.com.muxe.core.common.cosmetic.application.command.BuyCosmeticCommand;
 import br.com.muxe.core.common.cosmetic.application.command.BuyCosmeticHandler;
+import br.com.muxe.core.common.cosmetic.application.command.GrantCosmeticCommand;
+import br.com.muxe.core.common.cosmetic.application.command.GrantCosmeticHandler;
 import br.com.muxe.core.common.cosmetic.application.command.SelectCosmeticCommand;
 import br.com.muxe.core.common.cosmetic.application.command.SelectCosmeticHandler;
 import br.com.muxe.core.common.cosmetic.application.query.FindCosmeticsHandler;
@@ -36,6 +38,7 @@ class CosmeticHandlersTest {
     private final FindCreditsHandler balance = new FindCreditsHandler(credits, transactions);
     private final BuyCosmeticHandler buy = new BuyCosmeticHandler(cosmetics, credits, transactions, clock);
     private final SelectCosmeticHandler select = new SelectCosmeticHandler(cosmetics, transactions, clock);
+    private final GrantCosmeticHandler grant = new GrantCosmeticHandler(cosmetics, transactions, clock);
     private final FindCosmeticsHandler find = new FindCosmeticsHandler(cosmetics, transactions);
     private final UUID player = UUID.randomUUID();
 
@@ -91,5 +94,15 @@ class CosmeticHandlersTest {
         assertThatThrownBy(() -> new BuyCosmeticCommand(player, "Camas", "x", 1)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new ChangeCreditsCommand(player, 0, "staff")).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new ChangeCreditsCommand(player, 5, "has space")).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void staffGrantsAnEventCosmeticWithoutTouchingCredits() {
+        assertThat(grant.handle(new GrantCosmeticCommand(player, BEDS, "coelhos", "staff"))).isEqualTo(Result.success(true));
+        assertThat(grant.handle(new GrantCosmeticCommand(player, BEDS, "coelhos", "staff"))).isEqualTo(Result.success(false));
+
+        assertThat(find.handle(new FindCosmeticsQuery(player, BEDS)).owns("coelhos")).isTrue();
+        assertThat(balance.handle(new FindCreditsQuery(player))).isZero();
+        assertThatThrownBy(() -> new GrantCosmeticCommand(player, BEDS, "coelhos", "Staff Grant")).isInstanceOf(IllegalArgumentException.class);
     }
 }

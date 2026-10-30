@@ -7,6 +7,7 @@ import br.com.muxe.core.bukkit.account.AccountProfiles;
 import br.com.muxe.core.bukkit.account.AccountSettings;
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.command.framework.Commands;
+import br.com.muxe.core.bukkit.credit.command.CreditCommand;
 import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.permission.command.EditorCommand;
 import br.com.muxe.core.bukkit.permission.command.MedalCommand;
@@ -82,7 +83,8 @@ final class RankFeatures {
             new AccountCommands(new AccountProfiles(core.queries(), permissions), accountLines, new AccountMenu(accountSettings, accountLines, core.messages()), replies),
             new RankCommand(permissions, targets, replies, reports),
             new PermissionCommand(permissions, targets, replies, reports),
-            new EditorCommand(editor, core.async(), config.getString(EDITOR_URL, DEFAULT_EDITOR_URL), replies)
+            new EditorCommand(editor, core.async(), config.getString(EDITOR_URL, DEFAULT_EDITOR_URL), replies),
+            new CreditCommand(core.commands(), core.queries(), targets, replies)
         );
         return new RankFeatures(teams);
     }

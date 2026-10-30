@@ -1445,6 +1445,12 @@ messages:
   rank-remaining: "{time}"
   rank-invalid-time: "&cTempo inválido: &f{input}&c. Use &f30d&c, &f12h&c, &f1d12h &cou &fpermanente&c."
   rank-player-unknown: "&cO jogador &f{player} &cnunca entrou no servidor."
+  credits-own: "&eVocê tem &d{amount} créditos&e."
+  credits-of: "&f{player} &etem &d{amount} créditos&e."
+  credits-given: "&aVocê deu &d{amount} créditos &apara &f{player}&a. Saldo: &d{balance}&a."
+  credits-taken: "&aVocê removeu &d{amount} créditos &ade &f{player}&a. Saldo: &d{balance}&a."
+  credits-not-enough: "&f{player} &cnão tem créditos suficientes."
+  credits-invalid-amount: "&cA quantia deve ser de 1 a {max}."
   account:
     usage: "&cUso: &f/account <jogador>"
     not-found: "&cO jogador &f{player} &cnunca entrou no servidor."

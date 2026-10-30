@@ -4,6 +4,8 @@ import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.bossbar.BossBars;
 import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.command.framework.Commands;
+import br.com.muxe.core.bukkit.credit.CreditBalances;
+import br.com.muxe.core.bukkit.credit.CreditBalancesListener;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.persistence.migration.MigrationReport;
 import br.com.muxe.lobby.bossbar.LobbyBossBar;
@@ -19,6 +21,7 @@ import br.com.muxe.lobby.scoreboard.LobbyScoreboard;
 import br.com.muxe.lobby.spawn.ArrivalService;
 import br.com.muxe.lobby.spawn.FlightBuildHook;
 import br.com.muxe.lobby.spawn.SpawnService;
+import java.time.Duration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,6 +30,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 public final class LobbyBootstrap {
 
     public static final String MODULE = "lobby";
+    private static final Duration CREDIT_REFRESH = Duration.ofSeconds(30);
 
     private final JavaPlugin plugin;
 
@@ -49,7 +53,9 @@ public final class LobbyBootstrap {
         ArrivalService arrival = new ArrivalService(spawn, settings.flyHeight());
         BuildMode build = core.buildMode();
         build.addHook(new FlightBuildHook());
-        LobbyScoreboard scoreboard = new LobbyScoreboard(core, settings.scoreboard(), new RankInfoSource(player -> core.permissions().display(player).tag(), settings.defaultInfo()));
+        CreditBalances credits = CreditBalancesListener.start(plugin, core, CREDIT_REFRESH);
+        LobbyScoreboard scoreboard = new LobbyScoreboard(core, settings.scoreboard(),
+            new RankInfoSource(player -> core.permissions().display(player).tag(), credits::of, settings.defaultInfo()));
         LobbyBossBar bossBar = new LobbyBossBar(BossBars.start(plugin), settings.bossBar());
 
         PluginManager plugins = plugin.getServer().getPluginManager();

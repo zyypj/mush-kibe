@@ -2,6 +2,8 @@ package br.com.muxe.core.common.cosmetic;
 
 import br.com.muxe.core.common.cosmetic.application.command.BuyCosmeticCommand;
 import br.com.muxe.core.common.cosmetic.application.command.BuyCosmeticHandler;
+import br.com.muxe.core.common.cosmetic.application.command.GrantCosmeticCommand;
+import br.com.muxe.core.common.cosmetic.application.command.GrantCosmeticHandler;
 import br.com.muxe.core.common.cosmetic.application.command.SelectCosmeticCommand;
 import br.com.muxe.core.common.cosmetic.application.command.SelectCosmeticHandler;
 import br.com.muxe.core.common.cosmetic.application.query.FindCosmeticsHandler;
@@ -20,6 +22,7 @@ public final class CosmeticModule {
 
     public static void register(CommandBus commands, QueryBus queries, CosmeticRepository cosmetics, CreditRepository credits, Transactions transactions, Clock clock) {
         commands.register(BuyCosmeticCommand.class, new BuyCosmeticHandler(cosmetics, credits, transactions, clock));
+        commands.register(GrantCosmeticCommand.class, new GrantCosmeticHandler(cosmetics, transactions, clock));
         commands.register(SelectCosmeticCommand.class, new SelectCosmeticHandler(cosmetics, transactions, clock));
         queries.register(FindCosmeticsQuery.class, new FindCosmeticsHandler(cosmetics, transactions));
     }
