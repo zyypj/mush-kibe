@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -75,6 +76,8 @@ public final class SetupService implements Listener {
     private final ExecutorService disk = Executors.newSingleThreadExecutor(Thread.ofVirtual().name("muxe-setup-disk").factory());
     private BukkitTask ticker;
     private int ticks;
+    private Consumer<String> onSaved = name -> {
+    };
 
     public SetupService(Plugin plugin, SetupSchema schema, MessageCatalog messages, MuxeWorlds worlds, Path dataFolder) {
         this.plugin = plugin;
@@ -104,6 +107,10 @@ public final class SetupService implements Listener {
             close(session);
         }
         disk.close();
+    }
+
+    public void onSaved(Consumer<String> listener) {
+        this.onSaved = listener;
     }
 
     public SetupSchema schema() {
@@ -283,6 +290,7 @@ public final class SetupService implements Listener {
                 MapFiles.write(mapFile(draft.name()), snapshot);
                 arenas.writeRendered(draft.name(), yaml);
                 main(() -> {
+                    onSaved.accept(draft.name());
                     if (checklist.isReady()) {
                         player.sendMessage(messages.get("setup-saved-ready", "arena", draft.name()));
                     } else if (checklist.missingCount() == 1) {
