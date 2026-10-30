@@ -55,6 +55,27 @@ AVAILABLE → RESERVED → IN_USE → RESETTING → AVAILABLE
 - A instância é **desativada** quando a falha é permanente (um erro de configuração ou um modelo corrompido) ou depois de `maxFailures` falhas consecutivas (5 por padrão). Ela fica fora de uso até a equipe corrigir e reativá-la.
 - Um reset bem-sucedido zera a contagem de falhas.
 
+## Mundos e mapas
+
+As partidas nunca usam pastas de mundo. Veja a [ADR 0009](../../decisions/0009-own-map-format-and-match-cells.pt-BR.md).
+
+| Classe | Pacote | O que faz |
+|---|---|---|
+| `MapTemplate` | `world.map` | Um mapa na memória: os chunks dele, cada um comprimido. `chunk(x, z)` descomprime um. |
+| `MapFiles` | `world.map` | Lê e grava arquivos `.mxw`. |
+| `AnvilImporter` | `world.anvil` | Transforma uma pasta de mundo (`region/*.mca`) num `MapTemplate`, sem servidor. As entidades ficam de fora. |
+| `EditableMap` | `world.map` | Um mapa em edição no setup. Recebe cada chunk salvo, e o `snapshot()` devolve o mapa a gravar. |
+| `MatchCells` | `world.cell` | Divide o mundo das partidas em células e serve a cada partida o mapa dela em volta do centro da célula. Os chunks que a partida altera ficam guardados até o `release`. |
+| `Cell` | `world.cell` | A célula de uma partida. Converte coordenadas do mapa para o mundo e de volta. |
+| `MuxeWorlds` | `world.server` | Cria um mundo vazio chamado `muxe_<nome>` cujos chunks vêm de uma `ChunkSource`. Também limpa uma célula, destrói um mundo e apaga pastas `muxe_` que sobraram. |
+
+- Um mundo criado pelo `MuxeWorlds` nunca grava arquivos de região, não mantém os chunks do spawn carregados e tem o salvamento automático desligado.
+- Os padrões dele: horário fixo ao meio-dia, sem chuva, sem mobs nascendo, sem ticks aleatórios, sem fogo se espalhando e sem mobs destruindo blocos.
+- Uma partida pega uma célula com `MatchCells.allocate(mapa)`.
+- Quando a partida acaba, `MuxeWorlds.clear(mundo, célula)` descarrega os chunks da célula sem salvar, e `MatchCells.release(célula)` a libera.
+- O `MatchCells` recusa um mapa que não cabe na célula com a margem.
+- Os chunks são montados com as classes do servidor, então o `minigames:engine` usa o `muxe.server-internals`.
+
 ## Isolamento
 
 - Todo evento envolvendo um jogador, entidade, bloco ou mundo precisa ser roteado para a partida dona dele; interações entre partidas são canceladas.
@@ -74,4 +95,4 @@ O fim de uma partida será salvo em **uma única transação do PostgreSQL** que
 
 ## Estado atual
 
-Implementado e testado: modos, ciclos de vida de partida e de arena, a regra de uma partida por jogador, o pool de arenas, os escopos de tarefas e as métricas. Ainda não implementado: cópias e resets de mundos, roteamento de eventos por partida, gameplay, resultados e recompensas.
+Implementado e testado: modos, ciclos de vida de partida e de arena, a regra de uma partida por jogador, o pool de arenas, os escopos de tarefas e as métricas. Também implementado: o formato de mapa `.mxw`, a importação de pastas de mundo, o carregador de chunks em memória e as células das partidas (testes unitários e uma execução no PandaSpigot 226). Ainda não implementado: roteamento de eventos por partida, gameplay, resultados e recompensas.

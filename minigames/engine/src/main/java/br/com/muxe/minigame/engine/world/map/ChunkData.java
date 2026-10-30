@@ -1,5 +1,9 @@
 package br.com.muxe.minigame.engine.world.map;
 
+import br.com.muxe.minigame.engine.world.nbt.NbtIo;
+import br.com.muxe.minigame.engine.world.nbt.NbtTag.CompoundTag;
+import br.com.muxe.minigame.engine.world.nbt.NbtTag.IntTag;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -46,7 +50,16 @@ public record ChunkData(int x, int z, List<SectionData> sections, byte[] biomes,
         return sections.stream().filter(section -> section.y() == y).findFirst();
     }
 
-    public ChunkData movedTo(int newX, int newZ) {
-        return new ChunkData(newX, newZ, sections, biomes, heightMap, tileEntities);
+    public ChunkData shiftedBy(int chunksX, int chunksZ) {
+        if (chunksX == 0 && chunksZ == 0) {
+            return this;
+        }
+        List<byte[]> moved = new ArrayList<>(tileEntities.size());
+        for (byte[] tile : tileEntities) {
+            CompoundTag nbt = NbtIo.fromBytes(tile);
+            nbt = nbt.with("x", new IntTag(nbt.intValue("x", 0) + chunksX * 16)).with("z", new IntTag(nbt.intValue("z", 0) + chunksZ * 16));
+            moved.add(NbtIo.toBytes(nbt));
+        }
+        return new ChunkData(x + chunksX, z + chunksZ, sections, biomes, heightMap, moved);
     }
 }

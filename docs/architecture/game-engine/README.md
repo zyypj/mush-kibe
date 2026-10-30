@@ -55,6 +55,27 @@ AVAILABLE → RESERVED → IN_USE → RESETTING → AVAILABLE
 - The instance is **disabled** when the failure is permanent (a configuration error or a corrupted template) or after `maxFailures` consecutive failures (5 by default). It stays out of use until staff fix it and enable it again.
 - A successful reset clears the failure count.
 
+## Worlds and maps
+
+Matches never use world folders. See [ADR 0009](../../decisions/0009-own-map-format-and-match-cells.md).
+
+| Class | Package | What it does |
+|---|---|---|
+| `MapTemplate` | `world.map` | A map in memory: its chunks, each one compressed. `chunk(x, z)` decompresses one. |
+| `MapFiles` | `world.map` | Reads and writes `.mxw` files. |
+| `AnvilImporter` | `world.anvil` | Turns a world folder (`region/*.mca`) into a `MapTemplate`, with no server. Entities are left out. |
+| `EditableMap` | `world.map` | A map being edited in the setup. It takes every saved chunk, and `snapshot()` gives the map to write. |
+| `MatchCells` | `world.cell` | Splits the match world into cells and serves each match its map around the cell centre. Chunks a match changes are kept until `release`. |
+| `Cell` | `world.cell` | A match's cell. Converts map coordinates to world coordinates and back. |
+| `MuxeWorlds` | `world.server` | Creates a void world named `muxe_<name>` whose chunks come from a `ChunkSource`. It also clears a cell, destroys a world and deletes leftover `muxe_` folders. |
+
+- A world created by `MuxeWorlds` never writes region files, never keeps spawn chunks loaded and has autosave off.
+- Its defaults: time fixed at noon, no weather, no mob spawning, no random ticks, no fire spread, no mob griefing.
+- A match takes a cell with `MatchCells.allocate(map)`.
+- When the match ends, `MuxeWorlds.clear(world, cell)` unloads the cell's chunks without saving, and `MatchCells.release(cell)` frees it.
+- `MatchCells` refuses a map that does not fit the cell with its margin.
+- Chunks are built with the server classes, so `minigames:engine` uses `muxe.server-internals`.
+
 ## Isolation
 
 - Every event involving a player, entity, block or world must be routed to the match that owns it; interactions between matches are cancelled.
@@ -74,4 +95,4 @@ The end of a match will be saved in **one PostgreSQL transaction** that records 
 
 ## Status
 
-Implemented and tested: modes, match and arena lifecycles, the one-match-per-player rule, the arena pool, task scopes and metrics. Not implemented yet: world copies and resets, event routing per match, gameplay, results and rewards.
+Implemented and tested: modes, match and arena lifecycles, the one-match-per-player rule, the arena pool, task scopes and metrics. Also implemented: the `.mxw` map format, importing world folders, the in-memory chunk loader and match cells (unit tests, plus a run on PandaSpigot 226). Not implemented yet: event routing per match, gameplay, results and rewards.

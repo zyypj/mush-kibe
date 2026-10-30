@@ -14,6 +14,7 @@ Short records of decisions that shape the architecture: the context, the decisio
 | [0006](0006-cqrs-with-in-process-buses.md) | CQRS with asynchronous in-process buses and `Result` values | Accepted |
 | [0007](0007-jedis-as-redis-client.md) | Jedis as the Redis client | Accepted |
 | [0008](0008-packet-npcs-and-click-interception.md) | NPCs, holograms and boss bars live only in packets | Accepted |
+| [0009](0009-own-map-format-and-match-cells.md) | Maps use our own format and matches share one world in cells | Accepted |
 
 ## Writing a new ADR
 

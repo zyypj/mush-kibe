@@ -14,6 +14,7 @@ Registros curtos das decisões que moldam a arquitetura: o contexto, a decisão 
 | [0006](0006-cqrs-with-in-process-buses.pt-BR.md) | CQRS com barramentos assíncronos dentro do processo e valores `Result` | Aceita |
 | [0007](0007-jedis-as-redis-client.pt-BR.md) | Jedis como cliente do Redis | Aceita |
 | [0008](0008-packet-npcs-and-click-interception.pt-BR.md) | NPCs, hologramas e boss bars existem só em pacotes | Aceita |
+| [0009](0009-own-map-format-and-match-cells.pt-BR.md) | Os mapas usam um formato próprio e as partidas dividem um mundo em células | Aceita |
 
 ## Escrevendo uma nova ADR
 
