@@ -70,3 +70,238 @@ modes:
     fixed-teams:
       - azul
       - vermelho
+
+lobby-group: lobby
+default-mode: solo
+
+timings:
+  respawn-seconds: 5
+  rejoin-seconds: 180
+  restart-seconds: 30
+  respawn-protection-seconds: 4
+  island-radius: 17
+  spawn-protection-radius: 5
+  npc-protection-radius: 1
+  generator-protection-radius: 1
+
+countdown:
+  titles:
+    '30': "&a30 segundos"
+    '10': "&610 segundos"
+    '5': "&c5"
+    '4': "&c4"
+    '3': "&c3"
+    '2': "&c2"
+    '1': "&c1"
+
+forges:
+  stack-items: false
+  split-radius: 2
+  island:
+    iron:
+      delay: 0.9
+      amount-per-player: 1
+      max-amount: 4
+      spawn-limit: 48
+    gold:
+      delay: 7.0
+      amount: 1
+      spawn-limit: 14
+    emerald:
+      delay: 10.0
+      amount: 1
+      spawn-limit: 10
+  diamond:
+    tierI:
+      delay: 30.0
+      amount: 1
+      spawn-limit: 4
+    tierII:
+      delay: 20.0
+      amount: 1
+      spawn-limit: 4
+      start: 360
+    tierIII:
+      delay: 15.0
+      amount: 1
+      spawn-limit: 6
+      start: 1080
+  emerald:
+    tierI:
+      delay: 60.0
+      amount: 1
+      spawn-limit: 4
+    tierII:
+      delay: 40.0
+      amount: 1
+      spawn-limit: 4
+      start: 720
+    tierIII:
+      delay: 24.0
+      amount: 1
+      spawn-limit: 6
+      start: 1440
+
+events:
+  beds-destroyed: 1800
+  dragons: 2400
+  game-end: 2520
+  names:
+    diamond: "Diamante {tier}"
+    emerald: "Esmeralda {tier}"
+    beds-destroyed: "Camas destruídas"
+    dragons: "Morte súbita"
+    game-end: "Fim de jogo"
+
+xp-rewards:
+  per-minute: 10
+  per-teammate: 5
+  game-win: 250
+  bed-destroyed: 100
+  regular-kill: 12
+  final-kill: 60
+
+hotbar:
+  waiting:
+    menu:
+      slot: 4
+      material: EMERALD
+      name: "&aMenu do Bed Wars"
+    leave:
+      slot: 8
+      material: BED
+      name: "&aVoltar ao Lobby"
+
+scoreboard:
+  title: "&b&lBED WARS"
+  waiting:
+    - "&8{code}"
+    - ""
+    - "&fMapa: &a{map}"
+    - "&fJogadores: &a{players}/{max}"
+    - ""
+    - "&fAguardando..."
+    - ""
+    - "&fModo: &a{mode}"
+    - "&fWinstreak: &a{winstreak}"
+    - ""
+    - "&amuxe.com.br"
+  starting:
+    - "&8{code}"
+    - ""
+    - "&fMapa: &a{map}"
+    - "&fJogadores: &a{players}/{max}"
+    - ""
+    - "&fInicia em: &a{seconds}s"
+    - ""
+    - "&fModo: &a{mode}"
+    - "&fWinstreak: &a{winstreak}"
+    - ""
+    - "&amuxe.com.br"
+  playing:
+    - "&8{code}"
+    - ""
+    - "{event}"
+    - ""
+    - "{teams}"
+    - ""
+    - "&fKills: &a{kills}"
+    - "&fKills Finais: &a{final-kills}"
+    - "&fCamas Quebradas: &a{beds}"
+    - ""
+    - "&amuxe.com.br"
+  playing-eight-teams:
+    - "&8{code}"
+    - ""
+    - "{event}"
+    - ""
+    - "{teams}"
+    - ""
+    - "&amuxe.com.br"
+  event: "&f{event} em &a{time}"
+  no-event: "&fFim de jogo"
+  team: "{color}{letter} &f{name}: {status}{you}"
+  team-you: " &7VOCÊ"
+  status-online: "&a✔"
+  status-offline: "&e✔"
+  status-players: "&a{count}"
+  status-eliminated: "&c✘"
+
+holograms:
+  shop:
+    - "{color}LOJA"
+    - "&7Clique para ver mais."
+  shop-team:
+    - "{color}LOJA DA EQUIPE"
+    - "&7Clique para ver mais."
+  upgrades:
+    - "{color}MELHORIAS"
+    - "&7Clique para ver mais."
+  upgrades-team:
+    - "{color}MELHORIAS DA EQUIPE"
+    - "&7Clique para ver mais."
+  diamond:
+    - "&fNível &c{tier}"
+    - "&b&lDiamante"
+    - "&fGera em &c{seconds} &fsegundos."
+  emerald:
+    - "&fNível &c{tier}"
+    - "&2&lEsmeralda"
+    - "&fGera em &c{seconds} &fsegundos."
+
+messages:
+  no-arena: "&cNenhuma arena de Bed Wars {mode} está pronta neste servidor."
+  sending-to-room: "&aEnviando para {code}..."
+  bought: "&eVocê comprou &a{item}&e."
+  upgrade-bought: "{player} &eadquiriu a melhoria &a{upgrade}&e."
+  bed-destroyed: "&f&lCAMA DESTRUÍDA &f» &7A {team-color}Cama do {team} &7foi destruída por {player}&7."
+  own-bed: "&cVocê não pode quebrar a sua própria cama."
+  xp: "&b+{xp} XP"
+  kill: "{victim} &7morreu para {killer}&7."
+  final-kill: "{victim} &7morreu para {killer}&7. &b&lKILL FINAL!"
+  void-death: "{victim} &7morreu no void."
+  void-final-death: "{victim} &7morreu no void. &b&lKILL FINAL!"
+  death: "{victim} &7morreu."
+  final-death: "{victim} &7morreu. &b&lKILL FINAL!"
+  loot-iron-one: "&f+1 Ferro"
+  loot-iron-many: "&f+{amount} Ferros"
+  loot-gold-one: "&6+1 Ouro"
+  loot-gold-many: "&6+{amount} Ouros"
+  loot-diamond-one: "&b+1 Diamante"
+  loot-diamond-many: "&b+{amount} Diamantes"
+  loot-emerald-one: "&2+1 Esmeralda"
+  loot-emerald-many: "&2+{amount} Esmeraldas"
+  team-eliminated: "&f&lTIME ELIMINADO &f» &cO {team-color}Time {team} &cfoi eliminado."
+  cannot-place: "&cVocê não pode colocar blocos aqui."
+  left-match: "&cVocê desconectou de uma partida de Bed Wars {mode} em andamento. Utilize /retornar para voltar a jogar."
+  reconnected: "{player} &7reconectou."
+  nothing-to-return: "&cVocê não tem nenhuma partida para retornar."
+  died-title: "&cVOCÊ MORREU!"
+  respawn-subtitle: "&eRenascendo em &c{seconds}&e..."
+  spectator-subtitle: "&7Você agora é um espectador."
+  generator-upgrade: "&eGeradores de {type} &emelhorados para nível &c{tier}&e."
+  generator-diamond: "&bDiamante"
+  generator-emerald: "&2Esmeralda"
+  beds-destroyed-event: "&c&lTODAS AS CAMAS FORAM DESTRUÍDAS!"
+  dragons-event: "&5&lMORTE SÚBITA! &dOs dragões apareceram!"
+  game-draw: "&eA partida terminou empatada."
+  result:
+    - ""
+    - "<center>&eVencedor: {team-color}Time {team}"
+    - "<center>&eTempo de partida: &a{time}"
+    - ""
+    - "<center>&b&lTOP KILLS FINAIS:"
+    - "{top-final-kills}"
+    - ""
+    - "<center>&b&lTOP CAMAS QUEBRADAS:"
+    - "{top-beds}"
+    - ""
+  result-draw:
+    - ""
+    - "<center>&eA partida terminou empatada."
+    - "<center>&eTempo de partida: &a{time}"
+    - ""
+  result-rank-1: "<center>&a1º {player} &7- {score}"
+  result-rank-2: "<center>&e2º {player} &7- {score}"
+  result-rank-3: "<center>&c3º {player} &7- {score}"
+  result-nobody: "<center>&7Ninguém"
