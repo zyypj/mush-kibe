@@ -2,7 +2,6 @@ package br.com.muxe.minigame.engine.mode;
 
 import br.com.muxe.core.bukkit.config.BukkitConfigSource;
 import br.com.muxe.core.common.config.source.ConfigSource;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,7 +23,7 @@ public final class GameModeLoader {
                 mode.string("display-name", id),
                 mode.integer("min-players", 2),
                 mode.integer("max-players", 8),
-                mode.duration("countdown", Duration.ofSeconds(15))
+                mode.integer("team-size", 1)
             ));
         }
         return List.copyOf(loaded);

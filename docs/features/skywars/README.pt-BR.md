@@ -29,7 +29,7 @@ Nenhuma ainda.
 | `modes.<id>.display-name` | `SkyWars Solo`, `SkyWars Duplas` | Nome mostrado aos jogadores. |
 | `modes.<id>.min-players` | `2` (solo), `4` (duplas) | Jogadores necessários para iniciar a contagem regressiva. |
 | `modes.<id>.max-players` | `12` (solo), `24` (duplas) | Jogadores por partida. |
-| `modes.<id>.countdown` | `15s`, `20s` | Contagem regressiva antes de a partida começar. |
+| `modes.<id>.team-size` | `1` (solo), `2` (duplas) | Jogadores por time. |
 
 ## Pacotes
 

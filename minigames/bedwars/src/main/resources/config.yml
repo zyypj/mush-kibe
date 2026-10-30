@@ -1,11 +1,72 @@
 modes:
   solo:
-    display-name: BedWars Solo
-    min-players: 4
+    display-name: Solo
+    min-players: 6
     max-players: 8
-    countdown: 20s
-  quartets:
-    display-name: BedWars Quartetos
+    team-size: 1
+  duplas:
+    display-name: Duplas
     min-players: 8
     max-players: 16
-    countdown: 30s
+    team-size: 2
+  trios:
+    display-name: Trios
+    min-players: 6
+    max-players: 12
+    team-size: 3
+    fixed-teams:
+      - azul
+      - vermelho
+      - verde
+      - amarelo
+  quartetos:
+    display-name: Quartetos
+    min-players: 8
+    max-players: 16
+    team-size: 4
+    fixed-teams:
+      - azul
+      - vermelho
+      - verde
+      - amarelo
+  1v1:
+    display-name: 1v1
+    min-players: 2
+    max-players: 2
+    team-size: 1
+    fixed-teams:
+      - azul
+      - vermelho
+  2v2:
+    display-name: 2v2
+    min-players: 4
+    max-players: 4
+    team-size: 2
+    fixed-teams:
+      - azul
+      - vermelho
+  3v3:
+    display-name: 3v3
+    min-players: 6
+    max-players: 6
+    team-size: 3
+    fixed-teams:
+      - azul
+      - vermelho
+  4v4:
+    display-name: 4v4
+    min-players: 8
+    max-players: 8
+    team-size: 4
+    fixed-teams:
+      - azul
+      - vermelho
+  4s:
+    display-name: 4s
+    min-players: 8
+    max-players: 8
+    team-size: 4
+    extra-islands: true
+    fixed-teams:
+      - azul
+      - vermelho

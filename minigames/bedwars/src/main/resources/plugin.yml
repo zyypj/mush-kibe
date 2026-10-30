@@ -5,3 +5,7 @@ author: Muxe
 description: BedWars for the Muxe network.
 depend:
   - Muxe-Core
+permissions:
+  muxe.minigame.setup:
+    description: Allows /arena to create and set up arenas.
+    default: op

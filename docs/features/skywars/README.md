@@ -29,7 +29,7 @@ None yet.
 | `modes.<id>.display-name` | `SkyWars Solo`, `SkyWars Duplas` | Name shown to players. |
 | `modes.<id>.min-players` | `2` (solo), `4` (duo) | Players needed to start the countdown. |
 | `modes.<id>.max-players` | `12` (solo), `24` (duo) | Players per match. |
-| `modes.<id>.countdown` | `15s`, `20s` | Countdown before the match starts. |
+| `modes.<id>.team-size` | `1` (solo), `2` (duo) | Players per team. |
 
 ## Packets
 

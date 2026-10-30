@@ -5,13 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import br.com.muxe.core.common.result.Result;
 import br.com.muxe.minigame.engine.mode.GameMode;
-import java.time.Duration;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 class MatchServiceTest {
 
-    private final GameMode duo = new GameMode("duo", "Duo", 2, 3, Duration.ofSeconds(10));
+    private final GameMode duo = new GameMode("duo", "Duo", 2, 3, 1);
     private final MatchService service = new MatchService();
 
     @Test
