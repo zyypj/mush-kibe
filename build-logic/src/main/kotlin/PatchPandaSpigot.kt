@@ -28,8 +28,11 @@ abstract class PatchPandaSpigot : DefaultTask() {
     @get:Internal
     abstract val workDirectory: DirectoryProperty
 
-    @get:OutputFile
+    @get:Internal
     abstract val patchedJar: RegularFileProperty
+
+    @get:OutputFile
+    abstract val ready: RegularFileProperty
 
     @get:Nested
     abstract val launcher: Property<JavaLauncher>
@@ -43,6 +46,7 @@ abstract class PatchPandaSpigot : DefaultTask() {
         val patched = patchedJar.get().asFile
         val marker = File(directory, "patched.sha256")
         if (patched.isFile && marker.isFile && marker.readText() == sha256.get()) {
+            ready.get().asFile.writeText(patched.absolutePath)
             return
         }
         directory.mkdirs()
@@ -59,6 +63,7 @@ abstract class PatchPandaSpigot : DefaultTask() {
             throw GradleException("PandaSpigot ${build.get()} did not produce ${patched.absolutePath}")
         }
         marker.writeText(sha256.get())
+        ready.get().asFile.writeText(patched.absolutePath)
     }
 
     private fun download(target: File) {

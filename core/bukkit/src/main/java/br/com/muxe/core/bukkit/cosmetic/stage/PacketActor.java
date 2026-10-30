@@ -4,6 +4,7 @@ import br.com.muxe.core.bukkit.cosmetic.animation.Stage.Actor;
 import br.com.muxe.core.bukkit.cosmetic.animation.Stage.Pose;
 import br.com.muxe.core.bukkit.cosmetic.animation.Stage.Slot;
 import br.com.muxe.core.bukkit.cosmetic.animation.Vec;
+import br.com.muxe.core.bukkit.item.ItemBuilder;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.EntityLiving;
@@ -56,6 +57,22 @@ final class PacketActor implements Actor {
         if (!removed) {
             ItemStack item = material == Material.AIR ? null : new ItemStack(material, 1, (short) data);
             stage.send(new PacketPlayOutEntityEquipment(entity.getId(), slot.ordinal(), CraftItemStack.asNMSCopy(item)));
+        }
+    }
+
+    @Override
+    public void equipSkull(Slot slot, String texture) {
+        if (!removed) {
+            ItemStack skull = ItemBuilder.skull().skullTexture(texture).build();
+            stage.send(new PacketPlayOutEntityEquipment(entity.getId(), slot.ordinal(), CraftItemStack.asNMSCopy(skull)));
+        }
+    }
+
+    @Override
+    public void watch(int index, Object value) {
+        if (!removed) {
+            entity.getDataWatcher().watch(index, value);
+            stage.send(new PacketPlayOutEntityMetadata(entity.getId(), entity.getDataWatcher(), true));
         }
     }
 

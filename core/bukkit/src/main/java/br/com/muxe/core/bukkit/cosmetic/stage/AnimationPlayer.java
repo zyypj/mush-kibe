@@ -3,6 +3,7 @@ package br.com.muxe.core.bukkit.cosmetic.stage;
 import br.com.muxe.core.bukkit.cosmetic.animation.BedAnimation;
 import br.com.muxe.core.bukkit.cosmetic.animation.BedFrame;
 import br.com.muxe.core.bukkit.cosmetic.animation.Timeline;
+import br.com.muxe.core.bukkit.cosmetic.animation.Vec;
 import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
@@ -20,10 +21,10 @@ public final class AnimationPlayer {
         this.plugin = plugin;
     }
 
-    public Playback play(BedAnimation animation, World world, BedFrame bed, Supplier<Collection<Player>> viewers, Runnable onFinish) {
+    public Playback play(BedAnimation animation, World world, BedFrame bed, Vec breaker, Supplier<Collection<Player>> viewers, Runnable onFinish) {
         PacketStage stage = new PacketStage(world, viewers);
         Timeline timeline = new Timeline();
-        animation.script(bed, stage, timeline, ThreadLocalRandom.current());
+        animation.script(bed, breaker, stage, timeline, ThreadLocalRandom.current());
         Playback playback = new Playback(stage, onFinish);
         playback.task = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
             try {

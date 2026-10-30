@@ -17,6 +17,7 @@ import net.minecraft.server.v1_8_R3.EntityFallingBlock;
 import net.minecraft.server.v1_8_R3.EntityFireworks;
 import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.EntitySnowball;
 import net.minecraft.server.v1_8_R3.EntityTypes;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.IBlockData;
@@ -44,6 +45,7 @@ public final class PacketStage implements Stage, AutoCloseable {
     private static final int OBJECT_ITEM = 2;
     private static final int OBJECT_FALLING_BLOCK = 70;
     private static final int OBJECT_FIREWORK = 76;
+    private static final int OBJECT_SNOWBALL = 61;
 
     private final WorldServer world;
     private final Supplier<Collection<Player>> viewers;
@@ -110,6 +112,19 @@ public final class PacketStage implements Stage, AutoCloseable {
         rocket.setItemMeta(meta);
         EntityFireworks firework = new EntityFireworks(world, position.x(), position.y(), position.z(), CraftItemStack.asNMSCopy(rocket));
         return object(firework, new PacketPlayOutSpawnEntity(firework, OBJECT_FIREWORK), true);
+    }
+
+    @Override
+    public Actor snowball(Vec position, Vec velocity) {
+        EntitySnowball snowball = new EntitySnowball(world, position.x(), position.y(), position.z());
+        Actor actor = object(snowball, new PacketPlayOutSpawnEntity(snowball, OBJECT_SNOWBALL), false);
+        actor.velocity(velocity);
+        return actor;
+    }
+
+    @Override
+    public boolean solid(int x, int y, int z) {
+        return world.getType(new BlockPosition(x, y, z)).getBlock().getMaterial().isSolid();
     }
 
     @Override

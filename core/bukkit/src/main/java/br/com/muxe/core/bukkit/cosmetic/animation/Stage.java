@@ -15,6 +15,10 @@ public interface Stage {
 
     Actor firework(Vec position, List<Burst> bursts);
 
+    Actor snowball(Vec position, Vec velocity);
+
+    boolean solid(int x, int y, int z);
+
     void particle(String type, Vec position, int count, Vec spread, double speed, int... data);
 
     void sound(String name, Vec position, float volume, float pitch);
@@ -28,6 +32,10 @@ public interface Stage {
         void velocity(Vec perTick);
 
         void equip(Slot slot, Material material, int data);
+
+        void equipSkull(Slot slot, String texture);
+
+        void watch(int index, Object value);
 
         void pose(Pose pose);
 

@@ -6,5 +6,5 @@ public interface BedAnimation {
 
     String id();
 
-    void script(BedFrame bed, Stage stage, Timeline timeline, RandomGenerator random);
+    void script(BedFrame bed, Vec breaker, Stage stage, Timeline timeline, RandomGenerator random);
 }

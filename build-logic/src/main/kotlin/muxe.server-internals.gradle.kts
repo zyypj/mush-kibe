@@ -13,6 +13,7 @@ val patchPandaSpigot = tasks.register<PatchPandaSpigot>("patchPandaSpigot") {
     sha256 = libs.findVersion("pandaspigot-sha256").get().requiredVersion
     workDirectory = pandaSpigotDirectory
     patchedJar = pandaSpigotDirectory.map { it.file("cache/patched_1.8.8.jar") }
+    ready = layout.buildDirectory.file("pandaspigot/ready.txt")
     launcher = javaToolchains.launcherFor {
         languageVersion = JavaLanguageVersion.of(libs.findVersion("java").get().requiredVersion)
     }
