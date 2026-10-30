@@ -1,6 +1,7 @@
 package br.com.muxe.minigame.bedwars.room;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
+import br.com.muxe.core.bukkit.cosmetic.animation.BedFrame;
 import br.com.muxe.core.bukkit.npc.Npc;
 import br.com.muxe.core.bukkit.scoreboard.Sidebar;
 import br.com.muxe.core.bukkit.text.CenteredText;
@@ -270,7 +271,9 @@ public final class RoomRuntime {
             return true;
         }
         List<RoomPlayer> lost = room.breakBed(owner.get(), player);
+        Optional<BedFrame> frame = bedFrame(owner.get());
         removeBed(owner.get());
+        frame.ifPresent(bed -> service.bedBreaks().broken(breaker, world, bed, online()));
         broadcast(messages.get("bed-destroyed", "team-color", Colors.translate(owner.get().color()), "team", owner.get().displayName(), "player", coloredName(player)));
         breaker.sendMessage(messages.get("xp", "xp", String.valueOf(settings.xp().bedDestroyed())));
         for (RoomPlayer gone : lost) {
@@ -650,6 +653,15 @@ public final class RoomRuntime {
         service.npcLines().put(id, lines.stream().map(line -> line.replace("{color}", color)).toList());
         service.npcs().put(new Npc(id, location(point), Optional.empty()));
         npcs.add(id);
+    }
+
+    @SuppressWarnings("deprecation")
+    private Optional<BedFrame> bedFrame(TeamColor color) {
+        Block bed = location(room.arena().teams().get(color).bed()).getBlock();
+        if (bed.getType() != Material.BED_BLOCK) {
+            return Optional.empty();
+        }
+        return Optional.of(BedFrame.ofBlock(bed.getX(), bed.getY(), bed.getZ(), bed.getData()));
     }
 
     private void removeBed(TeamColor color) {

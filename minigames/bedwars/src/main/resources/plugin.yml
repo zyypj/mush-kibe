@@ -12,3 +12,9 @@ permissions:
   muxe.minigame.setup:
     description: Allows /arena to create and set up arenas.
     default: op
+  muxe.cosmetics.admin:
+    description: Allows /cosmeticos dar to grant BedWars cosmetics.
+    default: op
+  muxe.cosmetic.ultra:
+    description: Unlocks the BedWars cosmetics included in ULTRA.
+    default: false

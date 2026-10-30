@@ -13,6 +13,16 @@ public record BedFrame(Vec foot, Vec forward) {
         return new BedFrame(new Vec(footX + 0.5, footY, footZ + 0.5), new Vec(headX - footX, 0, headZ - footZ));
     }
 
+    public static BedFrame ofBlock(int x, int y, int z, int data) {
+        int direction = data & 3;
+        int dx = direction == 1 ? -1 : direction == 3 ? 1 : 0;
+        int dz = direction == 0 ? 1 : direction == 2 ? -1 : 0;
+        boolean head = (data & 8) != 0;
+        int footX = head ? x - dx : x;
+        int footZ = head ? z - dz : z;
+        return of(footX, y, footZ, footX + dx, footZ + dz);
+    }
+
     public Vec right() {
         return new Vec(-forward.z(), 0, forward.x());
     }

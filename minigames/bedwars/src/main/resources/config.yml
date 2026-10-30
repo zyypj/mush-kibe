@@ -314,6 +314,19 @@ messages:
     - "&e/bedwars iniciar &7- Começa a partida sem esperar o mínimo."
   inventory-full: "&cSeu inventário está cheio."
   trap-triggered: "&c&lARMADILHA! &cUm inimigo ativou uma armadilha da sua ilha."
+  cosmetic-selected: "&aVocê selecionou &f{name}&a."
+  cosmetic-bought: "&aVocê comprou &f{name} &apor &d{price} créditos&a."
+  cosmetic-not-enough: "&cVocê não tem créditos suficientes."
+  cosmetic-already-owned: "&cVocê já possui este cosmético."
+  cosmetic-unavailable: "&cEste cosmético não está disponível."
+  cosmetic-no-preview: "&cEste cosmético ainda não tem prévia."
+  cosmetic-failed: "&cNão foi possível concluir agora. Tente novamente em instantes."
+  preview-only-lobby: "&cVocê só pode visualizar cosméticos no lobby."
+  preview-busy: "&cVocê já está visualizando um cosmético."
+  cosmetic-granted: "&aVocê deu &f{name} &apara &f{player}&a."
+  cosmetic-already-had: "&f{player} &cjá possui &f{name}&c."
+  cosmetic-unknown: "&cCosmético desconhecido: &f{id}&c."
+  player-unknown: "&cO jogador &f{player} &cnunca entrou no servidor."
 
 shop:
   quick-buy-title: "Compra Rápida"
@@ -937,3 +950,582 @@ upgrades:
         - label: "Nível 2: Fadiga I por 10 segundos,"
           extra: "&7&b2 Diamantes"
           price: 2
+
+cosmetics:
+  category: bedwars-cama
+  prices:
+    "1": 750
+    "2": 900
+    "3": 1300
+    "4": 1750
+    "5": 2000
+  bed-destruction:
+    ajudante-do-papai-noel:
+      name: "Ajudante de Papai Noel"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: 18f34a5a6b6a94e72823d6ed4bfa0b2b32e83f87ecf862cd7fde18709fbaf774
+      stars: 4
+      tag: "&cNatal 2025"
+      availability: EVENT
+    avalanche:
+      name: "Avalanche"
+      icon:
+        material: SNOW_BALL
+      stars: 3
+      tag: "&cNatal 2024"
+      availability: EVENT
+      description:
+        - "&7Causa uma nevasca na"
+        - "&7ilha de seu oponente!"
+    coelhos:
+      name: "Coelhos"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: 60dee41976e5d995408870bd9fe50056eec43bcb4e7b1222f599c1e6fab59773
+      stars: 5
+      tag: "&bPáscoa 2024"
+      availability: EVENT
+    passarinhos:
+      name: "Passarinhos"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: 161e257da263849c5d7c5105c558dcb7d1adb2804a57744e8956d9ba9d6e737c
+      stars: 4
+      tag: "&dCarnaval 2024"
+      availability: EVENT
+    friaca:
+      name: "Friaca"
+      icon:
+        material: ICE
+      stars: 4
+      tag: "&cNatal 2023"
+      availability: EVENT
+      description:
+        - "&7Uma destruição congelante"
+        - "&7para sua cama!"
+    fogos-de-artificio:
+      name: "Fogos de Artifício"
+      icon:
+        material: FIREWORK
+      stars: 1
+      availability: ULTRA
+      description:
+        - "&7Solta fogos de artifício"
+    raio:
+      name: "Raio"
+      icon:
+        material: WOOD_AXE
+      stars: 1
+      availability: ULTRA
+      description:
+        - "&7Invoque o poder do Thor"
+    colheita-de-aboboras:
+      name: "Colheita de Abóboras"
+      icon:
+        material: JACK_O_LANTERN
+      stars: 2
+      tag: "&6Halloween 2026"
+      availability: SALE
+    apavorante:
+      name: "Apavorante"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: cea1b8dd35f356cb66c682eea791df88447281c6d006b82cf853d6945ff6add7
+      stars: 4
+      tag: "&6Halloween 2026"
+      availability: SALE
+    deserto:
+      name: "Deserto"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: e156ffc119ecce75f09023f55e74debfcc798a3a0fd2f5388c121cf5497fceba
+      stars: 3
+      availability: SALE
+      description:
+        - "&7Mandacaru quando fulora..."
+        - "&7é sinal que a cama já"
+        - "&7se foi!"
+    tinta:
+      name: "Tinta"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: fef3490dc625bd4e7b5c24ae3d0a1669b30cd1c0064c47d00800e38a5408ec10
+      stars: 4
+      availability: SALE
+      description:
+        - "&7Cuidado, tinta fresca!"
+    bola-de-canhao:
+      name: "Bola de Canhão"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: 18ab5f9ee9e2d3dc6667fe38b07eca344975409daef4fcde19814c563f41e776
+      stars: 3
+      availability: SALE
+      description:
+        - "&7Fogo! Daquela cama só"
+        - "&7sobrou o enchimento."
+    enderman:
+      name: "Enderman"
+      icon:
+        material: ENDER_PEARL
+      stars: 4
+      availability: SALE
+      description:
+        - "&7Não olhe nos olhos dele..."
+        - "&7e esqueça a sua cama."
+    sal-na-ferida:
+      name: "Sal na Ferida"
+      icon:
+        material: SUGAR
+      stars: 1
+      availability: SALE
+      description:
+        - "&7Perder a cama já dói..."
+        - "&7deixa que a gente tempera."
+    tornado:
+      name: "Tornado"
+      icon:
+        material: FEATHER
+      stars: 4
+      availability: SALE
+      description:
+        - "&7Previsão do tempo: 100%"
+        - "&7de chance de cama voando."
+    tesouro-encontrado:
+      name: "Tesouro Encontrado"
+      icon:
+        material: DIAMOND_SPADE
+      stars: 3
+      availability: SALE
+      description:
+        - "&7X marca o lugar... e"
+        - "&7a cama era o tesouro!"
+    encantado:
+      name: "Encantado"
+      icon:
+        material: RED_ROSE
+      stars: 4
+      availability: SALE
+      description:
+        - "&7Era uma vez uma cama..."
+        - "&7até o jardim encantado"
+        - "&7tomar o que é dele."
+    garota-magica:
+      name: "Garota Mágica"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: faaae7b4bfa1b06cb752f6a46475c8d099a23129b13499b5b102805fc609c9ae
+      stars: 5
+      availability: SALE
+      description:
+        - "&7Um coração cintilante"
+        - "&7e uma chuva de estrelas"
+        - "&7mágicas!"
+    anoitecer:
+      name: "Anoitecer"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: 9869f67961f3ee5b68e38f79857068ed16cbdf0f8c9cea2d7504fc8df871d1d7
+      stars: 5
+      availability: SALE
+      description:
+        - "&7A lua surge, o céu escurece..."
+        - "&7e a cama vira ninho"
+        - "&7de coruja."
+    six-seven:
+      name: "Six Seven"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: 7881cc2747ba72cbcb06c3cc331742cd9de271a5bbffd0ecb14f1c6a8b69bc9e
+      stars: 5
+      availability: SALE
+    tubarao:
+      name: "Tubarão"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: 291fdf2bab089de689df75aa6cedb7a1b185aa72448cb50426eb20d0497595d2
+      stars: 5
+      tag: "&aAniversário 2026"
+      availability: EVENT
+    vulcanica:
+      name: "Vulcânica"
+      icon:
+        material: LAVA_BUCKET
+      stars: 5
+      tag: "&aAniversário 2026"
+      availability: EVENT
+    espiral-de-coelhos:
+      name: "Espiral de Coelhos"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: 13bde068fe41e458b0731333ef82821fff8669a06d115bfcd6f1f854fd788f78
+      stars: 5
+      tag: "&bPáscoa 2026"
+      availability: EVENT
+    explosao-da-vitoria:
+      name: "Explosão da Vitória"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: f97e2c8b8276276e38deca8850872d59ecc9c1f38f2adce40858edb9e634d7ba
+      stars: 5
+      tag: "&6Premiação de torneio"
+      availability: EVENT
+    assombrado:
+      name: "Assombrado"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: 8c6cff0af870be81347dc1a79ba1028786c1590e1e11e3af63862dd00b337d16
+      stars: 5
+      tag: "&6Halloween 2025"
+      availability: EVENT
+    chuva-de-bolos:
+      name: "Chuva de bolos"
+      icon:
+        material: CAKE
+      stars: 3
+      tag: "&aAniversário 2025"
+      availability: EVENT
+    carro:
+      name: "Carro"
+      icon:
+        material: MINECART
+      stars: 5
+      tag: "&6Premiação mensal"
+      availability: EVENT
+      description:
+        - "&7Vruuummmmmm"
+    ghor:
+      name: "Ghor"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: 1e421813ed40bd13393b958c9af3e5d5f3ecbfb60451c8b2c20b5e77b117b63f
+      stars: 5
+      availability: EVENT
+      description:
+        - "&7Do outro lado da fenda,"
+        - "&7um olho faminto... e"
+        - "&7ele já viu sua cama."
+    quarto-abandonado:
+      name: "Quarto Abandonado"
+      icon:
+        material: MONSTER_EGG
+        data: 65
+      stars: 2
+      tag: "&6Halloween 2023"
+      availability: EVENT
+      description:
+        - "&7Morcegos aparecem após"
+        - "&7quebrar sua cama"
+    baloes:
+      name: "Balões"
+      icon:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: 6d7f5e2e5235b679f8db9c42e859c88aa7827b1fb5182c07703c456e9125cf5f
+      stars: 5
+      tag: "&6Premiação de torneio"
+      availability: EVENT
+      description:
+        - "&7Comemore a sua destruição"
+        - "&7de cama com balões!"
+  menus:
+    bedwars:
+      title: "Menu do Bed Wars"
+      rows: 3
+      cosmetics:
+        slot: 13
+        item:
+          material: CHEST
+          name: "&aCosméticos"
+          lore:
+            - " "
+            - "&7Customize a sua experiência"
+            - "&7no Bed Wars."
+            - " "
+            - "&eClique para ver mais."
+    categories:
+      title: "Cosméticos do Bed Wars"
+      rows: 6
+      bed-destruction:
+        slot: 10
+        item:
+          material: BED
+          name: "&aDestruição de Cama"
+          lore:
+            - "&8{owned}/{total} ({percent}%)"
+            - " "
+            - "&7Customize a sua animação"
+            - "&7de destruição de cama!"
+            - " "
+            - "&7Selecionado: &a{selected}"
+            - " "
+            - "&eClique para ver mais."
+      soon:
+        "12":
+          material: DIAMOND_SWORD
+          name: "&aKill Final"
+          lore:
+            - "&80/43 (0%)"
+            - " "
+            - "&7Customize a sua animação"
+            - "&7de kill final!"
+            - " "
+            - "&7Selecionado: &aAleatório"
+            - " "
+            - "&eClique para ver mais."
+        "14":
+          material: SKULL_ITEM
+          data: 3
+          skull-texture: 5129b5aa639fa4f19dfc054577ceef100351661f56def257e8630ce68fdd1d85
+          name: "&aSkin dos Vendedores"
+          lore:
+            - "&80/4 (0%)"
+            - " "
+            - "&7Customize a skin dos"
+            - "&7vendedores da ilha."
+            - " "
+            - "&7Selecionado: &aAleatório"
+            - " "
+            - "&eClique para ver mais."
+        "16":
+          material: GOLD_INGOT
+          name: "&aEfeito de Vitória"
+          lore:
+            - "&80/22 (0%)"
+            - " "
+            - "&7Customize o seu efeito"
+            - "&7de vitória!"
+            - " "
+            - "&7Selecionado: &aAleatório"
+            - " "
+            - "&eClique para ver mais."
+        "27":
+          material: ARROW
+          name: "&aRastros de Projétil"
+          lore:
+            - "&80/23 (0%)"
+            - " "
+            - "&7Customize o rastro de"
+            - "&7seus projéteis."
+            - " "
+            - "&7Selecionado: &aAleatório"
+            - " "
+            - "&eClique para ver mais."
+        "29":
+          material: WOOD
+          name: "&aTipos de madeira"
+          lore:
+            - "&80/11 (0%)"
+            - " "
+            - "&7Customize o tipo de"
+            - "&7madeira de sua loja."
+            - " "
+            - "&7Selecionado: &aAleatório"
+            - " "
+            - "&eClique para ver mais."
+        "31":
+          material: PAPER
+          name: "&aMensagens de kill"
+          lore:
+            - "&80/1 (0%)"
+            - " "
+            - "&7Customize as suas mensagens"
+            - "&7de kill."
+            - " "
+            - "&7Selecionado: &aAleatório"
+            - " "
+            - "&eClique para ver mais."
+        "33":
+          material: EMERALD
+          name: "&aAura"
+          lore:
+            - "&80/2 (0%)"
+            - " "
+            - "&7Customize a sua aura."
+            - " "
+            - "&7Selecionado: &aAleatório"
+            - " "
+            - "&eClique para ver mais."
+        "35":
+          material: WOOL
+          data: 7
+          hide-flags: false
+          name: "&aCor preferida"
+          lore:
+            - "&7Escolha a sua cor preferida"
+            - "&7para a partida!"
+            - " "
+            - "&7Exclusivo para &d&lULTRA"
+            - " "
+            - "&eClique para ver mais."
+      back:
+        slot: 48
+        item:
+          material: ARROW
+          hide-flags: false
+          name: "&aVoltar"
+          lore:
+            - "&7Para Menu do Bed Wars"
+    bed-destruction:
+      title: "Destruição de Cama ({page}/{pages})"
+      rows: 6
+      slots:
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 28
+        - 29
+        - 30
+        - 31
+        - 32
+        - 33
+        - 34
+        - 37
+        - 38
+        - 39
+        - 40
+        - 41
+        - 42
+        - 43
+      none:
+        material: BARRIER
+        name: "&aNenhuma"
+      random:
+        material: SKULL_ITEM
+        data: 3
+        skull-texture: 178fceede7c5aa4dfd57a701aa2fe9556bbffdb5101902e320d33f39b2b503f9
+        name: "&aAleatório"
+        lore:
+          - "&7Seleciona um cosmético"
+          - "&7aleatório que você possui"
+      back:
+        slot: 48
+        item:
+          material: ARROW
+          hide-flags: false
+          name: "&aVoltar"
+          lore:
+            - "&7Para Cosméticos do Bed Wars"
+      previous:
+        slot: 48
+        item:
+          material: ARROW
+          hide-flags: false
+          name: "&aPágina {page}"
+      next:
+        slot: 50
+        item:
+          material: ARROW
+          hide-flags: false
+          name: "&aPágina {page}"
+      selected:
+        slot: 49
+        item:
+          material: NAME_TAG
+          hide-flags: false
+          name: "&eSelecionado: &7{name}"
+      shop:
+        slot: 53
+        item:
+          material: EMERALD
+          hide-flags: false
+          name: "&aLoja"
+          lore:
+            - " "
+            - "&7Confira os cosméticos"
+            - "&7à venda."
+            - " "
+            - "&eClique para ver mais."
+      lore:
+        star: "✩"
+        stars-on: "&6&l"
+        stars-off: "&7&l"
+        owned-name: "&a{name}"
+        locked-name: "&c{name}"
+        ultra-tag: "&7Incluso no &d&lULTRA"
+        select-only:
+          - "&eBotão esquerdo: &fSelecionar"
+        select:
+          - "&eBotão esquerdo: &fSelecionar"
+          - "&eBotão direito: &fVisualizar"
+        selected:
+          - "&aJá selecionado."
+        selected-with-preview:
+          - "&aJá selecionado."
+          - "&eBotão direito: &fVisualizar"
+        buy:
+          - "&7Preço: &d{price} créditos"
+          - "&cFaltam {missing} créditos!"
+          - " "
+          - "&eBotão esquerdo: &fComprar"
+          - "&eBotão direito: &fVisualizar"
+        buy-affordable:
+          - "&7Preço: &d{price} créditos"
+          - " "
+          - "&eBotão esquerdo: &fComprar"
+          - "&eBotão direito: &fVisualizar"
+        unavailable:
+          - "&cIndisponível."
+          - "&eBotão direito: &fVisualizar"
+
+preview:
+  world: previa_quebra_de_cama
+  spawn:
+    x: 6.5
+    y: 11.0
+    z: 21.5
+    yaw: 180.0
+    pitch: 10.0
+  bed:
+    foot:
+      x: 6
+      y: 11
+      z: 17
+    head:
+      x: 6
+      z: 16
+  timeout: 120s
+  return-delay: 2s
+  action-bar: "&eQuebre a cama!"
+  scoreboard:
+    title: "&b&lMUXE"
+    lines:
+      - ""
+      - "&fVisualizando:"
+      - "&e{name}"
+      - ""
+      - "&amuxe.com.br"
+
+lobby:
+  menu-item:
+    slot: 3
+    item:
+      material: EMERALD
+      name: "&aMenu do Bed Wars"

@@ -1,6 +1,7 @@
 package br.com.muxe.minigame.bedwars.room;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
+import br.com.muxe.core.bukkit.cosmetic.animation.BedFrame;
 import br.com.muxe.core.bukkit.npc.Npc;
 import br.com.muxe.core.bukkit.npc.NpcService;
 import br.com.muxe.core.bukkit.permission.display.NameTag;
@@ -30,6 +31,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -50,6 +52,8 @@ public final class RoomService {
     private final List<BukkitTask> tasks = new ArrayList<>();
     private Predicate<Player> busy = player -> false;
     private BiConsumer<Player, NpcClick> npcClicks = (player, click) -> {
+    };
+    private BedBreakHandler bedBreaks = (breaker, world, bed, viewers) -> {
     };
     private NpcService npcs;
 
@@ -91,6 +95,14 @@ public final class RoomService {
 
     public void onNpcClick(BiConsumer<Player, NpcClick> handler) {
         this.npcClicks = handler;
+    }
+
+    public void onBedBreak(BedBreakHandler handler) {
+        this.bedBreaks = handler;
+    }
+
+    BedBreakHandler bedBreaks() {
+        return bedBreaks;
     }
 
     public void arrive(Player player) {
@@ -281,5 +293,11 @@ public final class RoomService {
     }
 
     public record NpcClick(RoomRuntime runtime, boolean upgrades) {
+    }
+
+    @FunctionalInterface
+    public interface BedBreakHandler {
+
+        void broken(Player breaker, World world, BedFrame bed, List<Player> viewers);
     }
 }

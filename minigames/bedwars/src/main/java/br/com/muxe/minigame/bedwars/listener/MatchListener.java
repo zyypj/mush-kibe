@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -61,9 +62,11 @@ public final class MatchListener implements Listener {
     private final RoomService rooms;
     private final BedWarsSettings settings;
     private final MessageCatalog messages;
+    private final Consumer<Player> openMenu;
     private final Map<UUID, UUID> explosives = new HashMap<>();
 
-    public MatchListener(Plugin plugin, MuxeCore core, RoomService rooms, BedWarsSettings settings, MessageCatalog messages) {
+    public MatchListener(Plugin plugin, MuxeCore core, RoomService rooms, BedWarsSettings settings, MessageCatalog messages, Consumer<Player> openMenu) {
+        this.openMenu = openMenu;
         this.plugin = plugin;
         this.core = core;
         this.rooms = rooms;
@@ -115,9 +118,12 @@ public final class MatchListener implements Listener {
         ItemStack item = event.getItem();
         if (room.phase() == Room.Phase.WAITING || room.phase() == Room.Phase.STARTING) {
             event.setCancelled(true);
-            if (item != null && player.getInventory().getHeldItemSlot() == settings.hotbar().leave().slot()
-                && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+            boolean rightClick = event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK;
+            int held = player.getInventory().getHeldItemSlot();
+            if (item != null && rightClick && held == settings.hotbar().leave().slot()) {
                 core.network().connectToGroup(player.getUniqueId(), settings.lobbyGroup());
+            } else if (item != null && rightClick && held == settings.hotbar().menu().slot()) {
+                openMenu.accept(player);
             }
             return;
         }

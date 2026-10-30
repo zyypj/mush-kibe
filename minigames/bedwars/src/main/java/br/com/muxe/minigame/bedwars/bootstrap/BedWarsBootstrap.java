@@ -3,6 +3,7 @@ package br.com.muxe.minigame.bedwars.bootstrap;
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.server.ServerKind;
 import br.com.muxe.minigame.bedwars.arena.BedWarsSchema;
 import br.com.muxe.minigame.bedwars.command.BedWarsCommand;
 import br.com.muxe.minigame.bedwars.listener.MatchListener;
@@ -37,6 +38,7 @@ public final class BedWarsBootstrap {
     private final JavaPlugin plugin;
     private SetupService setup;
     private RoomService rooms;
+    private CosmeticFeatures cosmetics;
 
     public BedWarsBootstrap(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -52,6 +54,13 @@ public final class BedWarsBootstrap {
         BedWarsSchema schema = BedWarsSchema.from(modes, modeSection);
         BedWarsSettings settings = BedWarsSettings.from(config);
         MinigameEngine engine = new MinigameEngine(GAME, modes, core.metrics());
+        Commands commands = Commands.of(plugin, messages);
+        boolean lobby = core.identity().kind() == ServerKind.LOBBY;
+        cosmetics = CosmeticFeatures.start(plugin, core, config, messages, commands, lobby);
+        if (lobby) {
+            plugin.getLogger().info("BedWars ready in lobby mode");
+            return engine;
+        }
         Path data = plugin.getDataFolder().toPath();
 
         MuxeWorlds worlds = new MuxeWorlds(plugin);
@@ -66,25 +75,29 @@ public final class BedWarsBootstrap {
 
         rooms = new RoomService(plugin, core, settings, messages, schema, catalog, matchWorld);
         rooms.start();
+        rooms.onBedBreak(cosmetics.bedBreaks());
         ShopService shop = new ShopService(
             ShopCatalog.from(Objects.requireNonNull(config.getConfigurationSection("shop"), "Missing configuration section shop")),
             UpgradeCatalog.from(Objects.requireNonNull(config.getConfigurationSection("upgrades"), "Missing configuration section upgrades")),
             messages
         );
         rooms.onNpcClick((player, click) -> shop.open(player, click.runtime(), click.upgrades()));
-        plugin.getServer().getPluginManager().registerEvents(new MatchListener(plugin, core, rooms, settings, messages), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new MatchListener(plugin, core, rooms, settings, messages, cosmetics::openMenu), plugin);
 
         setup = new SetupService(plugin, schema, messages, worlds, data);
         setup.onSaved(rooms::arenaSaved);
         setup.start();
         rooms.busyWhen(player -> setup.sessionOf(player).isPresent());
-        Commands.of(plugin, messages).register(new SetupCommand(setup), new BedWarsCommand(rooms, messages));
+        commands.register(new SetupCommand(setup), new BedWarsCommand(rooms, messages));
 
         plugin.getLogger().info("BedWars ready with modes " + engine.modes().keySet());
         return engine;
     }
 
     public void disable() {
+        if (cosmetics != null) {
+            cosmetics.stop();
+        }
         if (setup != null) {
             setup.stop();
         }
