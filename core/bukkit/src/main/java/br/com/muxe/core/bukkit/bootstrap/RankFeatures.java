@@ -22,6 +22,7 @@ import br.com.muxe.core.bukkit.permission.command.TargetLookup;
 import br.com.muxe.core.bukkit.permission.display.ChatFormatListener;
 import br.com.muxe.core.bukkit.permission.display.NameTag;
 import br.com.muxe.core.bukkit.permission.display.NameTagTeams;
+import br.com.muxe.core.bukkit.permission.display.NameTags;
 import br.com.muxe.core.common.permission.domain.ResolvedPermissions;
 import br.com.muxe.core.common.permission.editor.EditorSessions;
 import java.util.Objects;
@@ -50,10 +51,12 @@ final class RankFeatures {
     static RankFeatures start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, Commands commands) {
         Server server = plugin.getServer();
         PermissionService permissions = core.permissions();
-        NameTagTeams teams = new NameTagTeams(server, player -> NameTag.of(
-            permissions.resolved(player).flatMap(ResolvedPermissions::primaryGroup),
-            permissions.display(player)
-        ));
+        NameTags nameTags = core.nameTags();
+        NameTagTeams teams = new NameTagTeams(server, player -> nameTags.resolve(player, rank -> NameTag.of(
+            permissions.resolved(rank).flatMap(ResolvedPermissions::primaryGroup),
+            permissions.display(rank)
+        )));
+        nameTags.attach(teams::update);
         permissions.onChange(teams::update);
         server.getPluginManager().registerEvents(teams, plugin);
         server.getScheduler().runTaskTimer(plugin, teams, NameTagTeams.PERIOD_TICKS, NameTagTeams.PERIOD_TICKS);

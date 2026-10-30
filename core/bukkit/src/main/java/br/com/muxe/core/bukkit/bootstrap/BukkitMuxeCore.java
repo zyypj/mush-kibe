@@ -4,6 +4,7 @@ import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.permission.PermissionService;
+import br.com.muxe.core.bukkit.permission.display.NameTags;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cqrs.command.CommandBus;
 import br.com.muxe.core.common.cqrs.query.QueryBus;
@@ -28,6 +29,7 @@ final class BukkitMuxeCore implements MuxeCore {
     private final MessageCatalog messages;
     private final BuildMode buildMode;
     private final PermissionService permissions;
+    private final NameTags nameTags = new NameTags();
 
     BukkitMuxeCore(CoreRuntime runtime, Executor mainThread, NetworkGateway network, MessageCatalog messages, BuildMode buildMode, PermissionService permissions) {
         this.runtime = runtime;
@@ -36,6 +38,11 @@ final class BukkitMuxeCore implements MuxeCore {
         this.messages = messages;
         this.buildMode = buildMode;
         this.permissions = permissions;
+    }
+
+    @Override
+    public NameTags nameTags() {
+        return nameTags;
     }
 
     @Override

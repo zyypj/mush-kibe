@@ -3,6 +3,7 @@ package br.com.muxe.core.bukkit.api;
 import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.permission.PermissionService;
+import br.com.muxe.core.bukkit.permission.display.NameTags;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cqrs.command.CommandBus;
 import br.com.muxe.core.common.cqrs.query.QueryBus;
@@ -65,4 +66,6 @@ public interface MuxeCore {
     BuildMode buildMode();
 
     PermissionService permissions();
+
+    NameTags nameTags();
 }
