@@ -38,7 +38,7 @@ Num servidor cujo tipo está em `hotbar.server-kinds` (só `LOBBY` por padrão; 
 
 - Título `Selecionar jogo`, 4 linhas. Aberto pela bússola.
 - Cada botão pode mandar o jogador para um jogo ou abrir a loja:
-  - `game: <grupo>`: o clique fecha o menu e manda o jogador para o servidor vivo com menos jogadores desse grupo, com `&7Procurando uma sala de &b<nome>&7...`. Quando o grupo não tem servidor vivo, o jogador vê `&cNenhuma sala de &f<nome> &cdisponível no momento.` no lugar. `<nome>` é o nome do botão sem cores.
+  - `game: <grupo>`: o clique fecha o menu e manda o jogador para o servidor vivo com menos jogadores desse grupo, sem mensagem no chat. Quando o grupo não tem servidor vivo, o jogador vê `&cNenhuma sala de &f<nome> &cdisponível no momento.` no lugar. `<nome>` é o nome do botão sem cores.
   - `shop: <categoria>`: abre a [loja](../shop/README.pt-BR.md) nessa categoria. Uma categoria vazia ou desconhecida abre a loja em `shop.default-category` (Ranks).
 - `{players}` no nome ou na lore de um botão é a soma dos jogadores online nos servidores vivos do seu grupo, lida quando o menu abre.
 - Por padrão, ele lista 14 jogos (Bed Wars, HG, Duels, PvP, Sky Wars, The Bridge, CTF, Party, Murder, Quick Builders, Build Battle, Hide and Seek, Treino: Ponte e Nascó Mandou) e um botão `Sala customizada`, no canto inferior direito, que abre a loja na categoria Ultra+.
@@ -177,7 +177,6 @@ menus:
 
 | Chave | Texto |
 |---|---|
-| `messages.game-connecting` | `&7Procurando uma sala de &b{name}&7...` (também usada pelos NPCs de jogo) |
 | `messages.game-unavailable` | `&cNenhuma sala de &f{name} &cdisponível no momento.` (também usada pelos NPCs de jogo) |
 | `messages.connect-failed` | `&cNão foi possível enviar você agora. Tente novamente em instantes.` |
 | `messages.visibility-all`, `visibility-friends`, `visibility-none` | Veja a tabela de visibilidade. |

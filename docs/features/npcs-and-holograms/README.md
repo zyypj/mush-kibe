@@ -143,7 +143,7 @@ Without arguments, or with missing or extra words, each command shows its usage.
 | `holograms.line-spacing` | `0.28` | Space between hologram lines. |
 | `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam for NPC, cash register, hotbar, social media head and parkour item clicks. |
 | `messages.npc-*`, `messages.hologram-*`, `messages.placement-failed`, `messages.spam-cooldown` | Portuguese texts | Command answers, usage lists and click messages. |
-| `messages.game-connecting`, `messages.game-unavailable` | `&7Procurando uma sala de &b{name}&7...`, `&cNenhuma sala de &f{name} &cdisponível no momento.` | Shown when a game NPC is clicked, shared with the [game selector](../hotbar/README.md#game-selector). They replace `npc-connecting` and `npc-unavailable`. |
+| `messages.game-unavailable` | `&cNenhuma sala de &f{name} &cdisponível no momento.` | Shown when a game NPC is clicked and the group has no live server, shared with the [game selector](../hotbar/README.md#game-selector). It replaces `npc-unavailable`; joining a live game shows no message. |
 
 `/npc` no longer writes `plugins/Muxe-Lobby/npcs.yml`; use `import.yml` to bring old NPCs in.
 

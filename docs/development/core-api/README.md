@@ -419,7 +419,7 @@ games.connect(player, "skywars", "Sky Wars");
 ```
 
 - `players(group)` sums the online players of the group's live servers.
-- `connect` answers `game-unavailable` when the group has no live server. Otherwise it shows `game-connecting` and asks the proxy to send the player to the least loaded server of the group, with `connect-failed` if that fails.
+- `connect` answers `game-unavailable` when the group has no live server. Otherwise it asks the proxy, with no chat message, to send the player to the least loaded server of the group, with `connect-failed` if that fails.
 - Game NPCs and the game selector use it, so both show the same messages.
 
 ## Shop access

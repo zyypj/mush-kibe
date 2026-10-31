@@ -32,7 +32,6 @@ public final class GameConnector {
             player.sendMessage(messages.get("game-unavailable", "name", name));
             return;
         }
-        player.sendMessage(messages.get("game-connecting", "name", name));
         network.connectToGroup(player.getUniqueId(), group).exceptionally(error -> {
             mainThread.execute(() -> player.sendMessage(messages.get("connect-failed")));
             return null;

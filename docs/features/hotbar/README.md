@@ -38,7 +38,7 @@ On a server whose kind is in `hotbar.server-kinds` (only `LOBBY` by default; aut
 
 - Title `Selecionar jogo`, 4 rows. Opened by the compass.
 - Each button can send the player to a game or open the shop:
-  - `game: <group>`: clicking closes the menu and sends the player to the least loaded live server of that group, with `&7Procurando uma sala de &b<name>&7...`. When the group has no live server, the player sees `&cNenhuma sala de &f<name> &cdisponível no momento.` instead. `<name>` is the button name without colors.
+  - `game: <group>`: clicking closes the menu and sends the player to the least loaded live server of that group, with no chat message. When the group has no live server, the player sees `&cNenhuma sala de &f<name> &cdisponível no momento.` instead. `<name>` is the button name without colors.
   - `shop: <category>`: opens the [shop](../shop/README.md) on that category. An empty or unknown category opens the shop on `shop.default-category` (Ranks).
 - `{players}` in a button's name or lore is the sum of the players online on the live servers of its group, read when the menu opens.
 - By default it lists 14 games (Bed Wars, HG, Duels, PvP, Sky Wars, The Bridge, CTF, Party, Murder, Quick Builders, Build Battle, Hide and Seek, Treino: Ponte and Nascó Mandou) and a `Sala customizada` button, at the bottom right, that opens the shop on the Ultra+ category.
@@ -177,7 +177,6 @@ menus:
 
 | Key | Text |
 |---|---|
-| `messages.game-connecting` | `&7Procurando uma sala de &b{name}&7...` (also used by game NPCs) |
 | `messages.game-unavailable` | `&cNenhuma sala de &f{name} &cdisponível no momento.` (also used by game NPCs) |
 | `messages.connect-failed` | `&cNão foi possível enviar você agora. Tente novamente em instantes.` |
 | `messages.visibility-all`, `visibility-friends`, `visibility-none` | See the visibility table. |

@@ -23,7 +23,7 @@ O plugin do lobby cuida do spawn e da chegada, do voo, da proteção, da scorebo
 - O [parkour](../parkour/README.pt-BR.md) desliga o voo enquanto o jogador faz a corrida e o devolve quando ela acaba. Ninguém consegue levantar voo durante a corrida, nem depois do `/fly`.
 - As mensagens de entrada e saída ficam escondidas.
 - Meio segundo depois de entrar, o jogador ouve um som de level up e vê o título `&b&lMUXE` com o subtítulo `&eBoas-vindas!`. Essa saudação vem do Muxe-Core e acontece em todo servidor `LOBBY`, nunca nos servidores de autenticação ou de jogo.
-- Trocar de lobby pelo [seletor de lobby](../hotbar/README.pt-BR.md#seletor-de-lobby), ou usar `/lobby`, não mostra mensagem de "conectando": o jogador só é movido.
+- Trocar de lobby pelo [seletor de lobby](../hotbar/README.pt-BR.md#seletor-de-lobby), ou usar `/lobby`, não mostra mensagem de "conectando": o jogador só é movido. O mesmo vale para o `/jogar`, o seletor de jogo e os NPCs de jogo.
 
 ### Boss bar e scoreboard
 

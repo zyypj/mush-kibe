@@ -23,7 +23,7 @@ The lobby plugin handles the spawn and arrival, flight, protection, the scoreboa
 - The [parkour](../parkour/README.md) turns flight off while a player runs it and gives it back when the run ends. Nobody can take off during a run, even after `/fly`.
 - Join and quit messages are hidden.
 - Half a second after joining, the player hears a level-up sound and sees the title `&b&lMUXE` with the subtitle `&eBoas-vindas!`. This greeting comes from Muxe-Core and runs on every `LOBBY` server, never on auth or game servers.
-- Switching lobbies in the [lobby selector](../hotbar/README.md#lobby-selector), or using `/lobby`, shows no "connecting" message: the player is just moved.
+- Switching lobbies in the [lobby selector](../hotbar/README.md#lobby-selector), or using `/lobby`, shows no "connecting" message: the player is just moved. The same goes for `/jogar`, the game selector and game NPCs.
 
 ### Boss bar and scoreboard
 

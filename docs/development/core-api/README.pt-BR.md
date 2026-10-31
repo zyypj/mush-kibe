@@ -419,7 +419,7 @@ games.connect(player, "skywars", "Sky Wars");
 ```
 
 - `players(group)` soma os jogadores online dos servidores vivos do grupo.
-- `connect` responde `game-unavailable` quando o grupo não tem servidor vivo. Senão, mostra `game-connecting` e pede ao proxy que mande o jogador para o servidor com menos jogadores do grupo, com `connect-failed` se isso falhar.
+- `connect` responde `game-unavailable` quando o grupo não tem servidor vivo. Senão, pede ao proxy, sem mensagem no chat, que mande o jogador para o servidor com menos jogadores do grupo, com `connect-failed` se isso falhar.
 - Os NPCs de jogo e o seletor de jogo o usam, então os dois mostram as mesmas mensagens.
 
 ## Acesso à loja

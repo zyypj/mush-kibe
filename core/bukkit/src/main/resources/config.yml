@@ -1225,7 +1225,6 @@ messages:
   connect-failed: "&cNão foi possível enviar você agora. Tente novamente em instantes."
   placement-failed: "&cNão foi possível salvar agora. Tente novamente em instantes."
   spam-cooldown: "&cAguarde {seconds}s para usar novamente."
-  game-connecting: "&7Procurando uma sala de &b{name}&7..."
   game-unavailable: "&cNenhuma sala de &f{name} &cdisponível no momento."
   visibility-all: "&aVocê agora está vendo todos os jogadores."
   visibility-friends: "&bVocê agora está vendo apenas seus amigos."

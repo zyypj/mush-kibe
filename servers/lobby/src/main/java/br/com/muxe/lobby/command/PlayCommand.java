@@ -34,7 +34,6 @@ public final class PlayCommand {
             player.sendMessage(messages.get("play-unknown", "games", String.join(", ", games)));
             return;
         }
-        player.sendMessage(messages.get("play-connecting", "game", game));
         core.network().connectToGroup(player.getUniqueId(), game).exceptionally(error -> {
             core.mainThread().execute(() -> player.sendMessage(messages.get("play-failed")));
             return null;

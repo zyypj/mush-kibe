@@ -34,7 +34,7 @@ class LobbySettingsTest {
     void messagesMatchTheReferenceScreenshots() {
         MessageCatalog messages = MessageCatalog.from(CONFIG.getConfigurationSection("messages"));
 
-        assertThat(messages.get("play-connecting", "game", "skywars")).isEqualTo("§7Procurando uma sala de §bskywars§7...");
+        assertThat(CONFIG.isSet("messages.play-connecting")).isFalse();
         assertThat(messages.get("spawn-set")).isEqualTo("§aSpawn do lobby definido.");
     }
 
