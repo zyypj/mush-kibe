@@ -8,8 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 public final class ServerDirectory {
+
+    public static final String LOBBY_SUFFIX = "-lobby";
 
     private final Clock clock;
     private final Duration timeToLive;
@@ -48,6 +51,25 @@ public final class ServerDirectory {
         return aliveInGroup(group).stream()
             .filter(ServerStatus::hasRoom)
             .min(Comparator.comparingInt(ServerStatus::onlinePlayers).thenComparing(status -> status.identity().id()));
+    }
+
+    public Optional<String> entryGroup(String game) {
+        String lobby = lobbyGroup(game);
+        if (leastLoaded(lobby).isPresent()) {
+            return Optional.of(lobby);
+        }
+        return leastLoaded(game).map(status -> game);
+    }
+
+    public int gamePlayers(String game) {
+        return Stream.of(game, lobbyGroup(game))
+            .flatMap(group -> aliveInGroup(group).stream())
+            .mapToInt(ServerStatus::onlinePlayers)
+            .sum();
+    }
+
+    private static String lobbyGroup(String game) {
+        return game + LOBBY_SUFFIX;
     }
 
     public int onlinePlayers() {

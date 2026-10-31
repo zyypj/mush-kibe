@@ -51,6 +51,29 @@ class ServerDirectoryTest {
         assertThat(directory.onlinePlayers()).isEqualTo(30);
     }
 
+    @Test
+    void aGameIsEnteredThroughItsLobbyWhenOneIsAlive() {
+        reportIn("bedwars-1", "bedwars", ServerKind.MINIGAME, 4);
+        reportIn("bedwars-lobby-1", "bedwars-lobby", ServerKind.LOBBY, 2);
+
+        assertThat(directory.entryGroup("bedwars")).contains("bedwars-lobby");
+        assertThat(directory.gamePlayers("bedwars")).isEqualTo(6);
+    }
+
+    @Test
+    void aGameWithoutALobbyIsEnteredDirectly() {
+        reportIn("skywars-1", "skywars", ServerKind.MINIGAME, 3);
+
+        assertThat(directory.entryGroup("skywars")).contains("skywars");
+        assertThat(directory.gamePlayers("skywars")).isEqualTo(3);
+        assertThat(directory.entryGroup("murder")).isEmpty();
+        assertThat(directory.gamePlayers("murder")).isZero();
+    }
+
+    private void reportIn(String id, String group, ServerKind kind, int online) {
+        directory.update(new ServerStatus(new ServerIdentity(id, group, kind), online, 100, true, clock.instant(), clock.instant()));
+    }
+
     private void report(String id, int online, int max, boolean joinable) {
         directory.update(new ServerStatus(identity(id), online, max, joinable, clock.instant(), clock.instant()));
     }
