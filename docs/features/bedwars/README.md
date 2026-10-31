@@ -213,7 +213,7 @@ If Muxe-Core is not enabled, the plugin disables itself.
 
 ## Known limitations
 
-- Rooms only exist on the server a player reaches; the BedWars lobby, mode NPCs, map choice and `/retornar` from the lobby are not in yet, so a player picks a mode with `/bedwars entrar`.
+- The game selector, game NPCs and `/jogar bedwars` lead to the BedWars lobby (`bedwars-lobby` group), but nothing there sends players to a match yet: mode NPCs, map choice and `/retornar` are not in, so a player on a BedWars server picks a mode with `/bedwars entrar`.
 - Statistics, levels and XP are shown but not saved.
 - The special shop items, the quick buy editor, the dragons, the spinning blocks above the generators, and the victory and defeat titles are not in yet.
 - A restart or crash ends every match on the server without compensation.

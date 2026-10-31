@@ -22,7 +22,7 @@ O plugin do lobby cuida do spawn e da chegada, do voo, da proteção, da scorebo
 - O `/fly` (`/voar`) liga o voo (`&eVocê ativou o &bmodo voar&e!`) ou desliga (`&cVocê desativou o modo voar!`). Desligar faz quem está voando descer. Entrar no lobby ou cair no void devolve o voo a todos que têm `muxe.lobby.fly`.
 - O [parkour](../parkour/README.pt-BR.md) desliga o voo enquanto o jogador faz a corrida e o devolve quando ela acaba. Ninguém consegue levantar voo durante a corrida, nem depois do `/fly`.
 - As mensagens de entrada e saída ficam escondidas.
-- Meio segundo depois de entrar, o jogador ouve um som de level up e vê o título `&b&lMUXE` com o subtítulo `&eBoas-vindas!`. Essa saudação vem do Muxe-Core e acontece em todo servidor `LOBBY`, nunca nos servidores de autenticação ou de jogo.
+- Meio segundo depois de entrar, o jogador ouve um som de level up e vê o título `&b&lMUXE` com o subtítulo `&eBoas-vindas!`. Essa saudação vem do Muxe-Core e acontece em todo servidor `LOBBY`, nunca nos servidores de autenticação ou de jogo. Todo servidor limpa o título que sobrou quando um jogador chega, então sair de um lobby durante a saudação nunca leva o `Boas-vindas!` para o próximo servidor.
 - Trocar de lobby pelo [seletor de lobby](../hotbar/README.pt-BR.md#seletor-de-lobby), ou usar `/lobby`, não mostra mensagem de "conectando": o jogador só é movido. O mesmo vale para o `/jogar`, o seletor de jogo e os NPCs de jogo.
 
 ### Boss bar e scoreboard
@@ -54,7 +54,7 @@ NPCs, hologramas e a loja com as caixas registradoras vêm do Muxe-Core e funcio
 
 ### NPCs de jogo
 
-Doze NPCs de jogo ficam em fila na frente do spawn, do x 12.5 ao -9.5 no y 33.375, cada um virado para o spawn e segurando um item do seu jogo. Acima de cada um, o nome em `&b&l` e `&e{players} jogando`, os jogadores online nos servidores vivos do seu grupo (0 quando nenhum está vivo). Clicar num deles manda o jogador para o servidor com menos jogadores do grupo, como o seletor de jogo, ou responde `&cNenhuma sala de &f{name} &cdisponível no momento.`
+Doze NPCs de jogo ficam em fila na frente do spawn, do x 12.5 ao -9.5 no y 33.375, cada um virado para o spawn e segurando um item do seu jogo. Acima de cada um, o nome em `&b&l` e `&e{players} jogando`, os jogadores online nos servidores vivos do seu grupo (0 quando nenhum está vivo). Clicar num deles manda o jogador para o lobby do jogo (ou para o servidor com menos jogadores do grupo quando o jogo não tem lobby), como o seletor de jogo, ou responde `&cNenhuma sala de &f{name} &cdisponível no momento.`
 
 | NPC | Id | Grupo | Na mão | Linhas |
 |---|---|---|---|---|
@@ -99,7 +99,7 @@ O `/build` vem do Muxe-Core e funciona em todos os servidores, como descrito na 
 
 | Comando | Descrição | Permissão |
 |---|---|---|
-| `/jogar <modo>` (`/play`) | Envia o jogador para um grupo de jogo. | Nenhuma |
+| `/jogar <modo>` (`/play`) | Envia o jogador para o lobby do jogo (`<modo>-lobby`) quando há um vivo, senão para o grupo do jogo. | Nenhuma |
 | `/setspawn` | Salva a posição atual como spawn do lobby. | `muxe.lobby.setspawn` |
 | `/fly` (`/voar`) | Liga ou desliga o voo. | `muxe.lobby.fly` |
 | `/build <on\|off>` | Liga ou desliga o modo construção em qualquer servidor; sem argumento, alterna. Vem do Muxe-Core. | `muxe.build` |

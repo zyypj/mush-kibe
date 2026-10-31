@@ -21,6 +21,7 @@ How players are placed on servers and moved between them. Lives in `core:proxy` 
   - If no other lobby is alive, even when the auth server is, the logged-in player is disconnected with the `server-restarting` screen. The same screen is shown when every server is down.
   - A player still logging in moves to another auth server only when theirs is closing; with no other auth server they get `server-restarting`. A kick on purpose by an auth server that is still up (a wrong password, the login time running out) works as before.
   - A server counts as closing when it already left the server list (its core announced the shutdown), when the kick has no reason, or when the reason is the Bukkit shutdown message (`Server closed`).
+- **Entering a game:** the game selector, game NPCs and `/jogar` send the player to the game's lobby group (`<game>-lobby`, such as `bedwars-lobby`) when one of its servers is alive, and to the game group itself otherwise.
 - **Moving later:** any server can publish `player.connect` to send a player to a server id or to the least loaded server of a group. The proxy ignores it for unauthenticated players, and tells the player `no-server` when there is no destination.
 - **Least loaded:** among alive servers of the group with room, the one with fewest players; ties are broken by id.
 - **Disconnect:** the gate forgets the player.

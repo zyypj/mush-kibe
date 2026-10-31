@@ -29,7 +29,7 @@ NPCs and text holograms that staff place by command, on any server. They live in
 
 | Action | Word | Lines above the NPC | Click |
 |---|---|---|---|
-| Game | The group, such as `skywars` | `npcs.lines.game`: `&b&l{name}`, `&e{players} jogando` | Sends the player to the least loaded server of the group, or answers `&cNenhuma sala de &f{name} &cdisponível no momento.` |
+| Game | The group, such as `skywars` | `npcs.lines.game`: `&b&l{name}`, `&e{players} jogando` | Sends the player to the game's lobby, or to the least loaded server of the group when it has no lobby, like the [game selector](../hotbar/README.md#game-selector), or answers `&cNenhuma sala de &f{name} &cdisponível no momento.` |
 | Shop | `loja` | `npcs.lines.shop`: `&b&l{name}`, `&eClique para abrir a loja` | Opens the [shop](../shop/README.md) on the Ranks tab. |
 | None | `nenhuma` | `npcs.lines.none`: `&b&l{name}` | Nothing. |
 

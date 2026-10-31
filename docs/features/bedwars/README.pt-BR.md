@@ -213,7 +213,7 @@ Se o Muxe-Core não estiver habilitado, o plugin se desabilita.
 
 ## Limitações conhecidas
 
-- As salas só existem no servidor onde o jogador chega; o lobby do BedWars, os NPCs dos modos, a escolha de mapa e o `/retornar` a partir do lobby ainda não entraram, então o jogador escolhe o modo com `/bedwars entrar`.
+- O seletor de jogo, os NPCs de jogo e o `/jogar bedwars` levam ao lobby do BedWars (grupo `bedwars-lobby`), mas nada lá manda o jogador para uma partida ainda: os NPCs dos modos, a escolha de mapa e o `/retornar` ainda não entraram, então quem está num servidor de BedWars escolhe o modo com `/bedwars entrar`.
 - Estatísticas, níveis e XP aparecem mas não são salvos.
 - Os itens especiais da loja, o editor da compra rápida, os dragões, os blocos girando sobre os geradores e os títulos de vitória e derrota ainda não entraram.
 - Um reinício ou crash encerra todas as partidas do servidor sem compensação.

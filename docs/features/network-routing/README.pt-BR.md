@@ -21,6 +21,7 @@ Como os jogadores são colocados nos servidores e levados de um para outro. Fica
   - Se nenhum outro lobby estiver vivo, mesmo com o servidor de autenticação ligado, o jogador logado é desconectado com a tela `server-restarting`. A mesma tela aparece quando todos os servidores desligam.
   - Um jogador que ainda está fazendo login só vai para outro servidor de autenticação quando o dele está desligando; sem outro, recebe `server-restarting`. Uma expulsão de propósito por um servidor de autenticação ligado (senha errada, tempo de login esgotado) continua como antes.
   - Um servidor conta como desligando quando já saiu da lista de servidores (o core dele avisou o desligamento), quando a expulsão não tem motivo ou quando o motivo é a mensagem de desligamento do Bukkit (`Server closed`).
+- **Entrando num jogo:** o seletor de jogo, os NPCs de jogo e o `/jogar` mandam o jogador para o grupo do lobby do jogo (`<jogo>-lobby`, como `bedwars-lobby`) quando um servidor dele está vivo, e para o próprio grupo do jogo nos outros casos.
 - **Mudando depois:** qualquer servidor pode publicar `player.connect` para enviar um jogador a um id de servidor ou ao servidor com menos jogadores de um grupo. O proxy ignora o pacote para jogadores não autenticados e avisa o jogador com `no-server` quando não há destino.
 - **Menos jogadores:** entre os servidores vivos do grupo que têm vaga, o que tem menos jogadores; empates são desfeitos pelo id.
 - **Desconexão:** a passagem esquece o jogador.

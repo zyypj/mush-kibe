@@ -22,7 +22,7 @@ The lobby plugin handles the spawn and arrival, flight, protection, the scoreboa
 - `/fly` (`/voar`) turns flight on (`&eVocê ativou o &bmodo voar&e!`) or off (`&cVocê desativou o modo voar!`). Turning it off lands a player who is flying. Joining or falling into the void gives flight back to everyone with `muxe.lobby.fly`.
 - The [parkour](../parkour/README.md) turns flight off while a player runs it and gives it back when the run ends. Nobody can take off during a run, even after `/fly`.
 - Join and quit messages are hidden.
-- Half a second after joining, the player hears a level-up sound and sees the title `&b&lMUXE` with the subtitle `&eBoas-vindas!`. This greeting comes from Muxe-Core and runs on every `LOBBY` server, never on auth or game servers.
+- Half a second after joining, the player hears a level-up sound and sees the title `&b&lMUXE` with the subtitle `&eBoas-vindas!`. This greeting comes from Muxe-Core and runs on every `LOBBY` server, never on auth or game servers. Every server clears whatever title is left when a player arrives, so leaving a lobby during the greeting never carries `Boas-vindas!` to the next server.
 - Switching lobbies in the [lobby selector](../hotbar/README.md#lobby-selector), or using `/lobby`, shows no "connecting" message: the player is just moved. The same goes for `/jogar`, the game selector and game NPCs.
 
 ### Boss bar and scoreboard
@@ -54,7 +54,7 @@ NPCs, holograms and the shop with its cash registers come from Muxe-Core and wor
 
 ### Game NPCs
 
-Twelve game NPCs stand in a row in front of the spawn, from x 12.5 to -9.5 at y 33.375, each turned towards the spawn and holding an item of its game. Above each one, its name in `&b&l` and `&e{players} jogando`, the players online on the live servers of its group (0 when none is alive). Clicking one sends the player to the least loaded server of its group, like the game selector, or answers `&cNenhuma sala de &f{name} &cdisponível no momento.`
+Twelve game NPCs stand in a row in front of the spawn, from x 12.5 to -9.5 at y 33.375, each turned towards the spawn and holding an item of its game. Above each one, its name in `&b&l` and `&e{players} jogando`, the players online on the live servers of its group (0 when none is alive). Clicking one sends the player to the game's lobby (or to the least loaded server of its group when the game has no lobby), like the game selector, or answers `&cNenhuma sala de &f{name} &cdisponível no momento.`
 
 | NPC | Id | Group | In hand | Lines |
 |---|---|---|---|---|
@@ -99,7 +99,7 @@ Players are always in Adventure mode: any change to another game mode is cancell
 
 | Command | Description | Permission |
 |---|---|---|
-| `/jogar <mode>` (`/play`) | Sends the player to a game group. | None |
+| `/jogar <mode>` (`/play`) | Sends the player to the game's lobby (`<mode>-lobby`) when one is alive, otherwise to the game group. | None |
 | `/setspawn` | Saves the current position as the lobby spawn. | `muxe.lobby.setspawn` |
 | `/fly` (`/voar`) | Turns flight on or off. | `muxe.lobby.fly` |
 | `/build <on\|off>` | Turns build mode on or off on any server; without an argument it toggles. Provided by Muxe-Core. | `muxe.build` |

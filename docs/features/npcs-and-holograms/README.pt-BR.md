@@ -29,7 +29,7 @@ NPCs e hologramas de texto que a equipe coloca por comando, em qualquer servidor
 
 | Ação | Palavra | Linhas acima do NPC | Clique |
 |---|---|---|---|
-| Jogo | O grupo, como `skywars` | `npcs.lines.game`: `&b&l{name}`, `&e{players} jogando` | Manda o jogador para o servidor com menos jogadores do grupo, ou responde `&cNenhuma sala de &f{name} &cdisponível no momento.` |
+| Jogo | O grupo, como `skywars` | `npcs.lines.game`: `&b&l{name}`, `&e{players} jogando` | Manda o jogador para o lobby do jogo, ou para o servidor com menos jogadores do grupo quando não há lobby, como o [seletor de jogo](../hotbar/README.pt-BR.md#seletor-de-jogo), ou responde `&cNenhuma sala de &f{name} &cdisponível no momento.` |
 | Loja | `loja` | `npcs.lines.shop`: `&b&l{name}`, `&eClique para abrir a loja` | Abre a [loja](../shop/README.pt-BR.md) na aba Ranks. |
 | Nenhuma | `nenhuma` | `npcs.lines.none`: `&b&l{name}` | Nada. |
 

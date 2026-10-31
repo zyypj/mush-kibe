@@ -38,7 +38,7 @@ On a server whose kind is in `hotbar.server-kinds` (only `LOBBY` by default; aut
 
 - Title `Selecionar jogo`, 4 rows. Opened by the compass.
 - Each button can send the player to a game or open the shop:
-  - `game: <group>`: clicking closes the menu and sends the player to the least loaded live server of that group, with no chat message. When the group has no live server, the player sees `&cNenhuma sala de &f<name> &cdisponível no momento.` instead. `<name>` is the button name without colors.
+  - `game: <group>`: clicking closes the menu and sends the player to the game's lobby (`<group>-lobby`, such as `bedwars-lobby`) or, when the game has no live lobby, to the least loaded live server of the group, with no chat message. `{players}` counts the game and its lobby. When neither has a live server, the player sees `&cNenhuma sala de &f<name> &cdisponível no momento.` instead. `<name>` is the button name without colors.
   - `shop: <category>`: opens the [shop](../shop/README.md) on that category. An empty or unknown category opens the shop on `shop.default-category` (Ranks).
 - `{players}` in a button's name or lore is the sum of the players online on the live servers of its group, read when the menu opens.
 - By default it lists 14 games (Bed Wars, HG, Duels, PvP, Sky Wars, The Bridge, CTF, Party, Murder, Quick Builders, Build Battle, Hide and Seek, Treino: Ponte and Nascó Mandou) and a `Sala customizada` button, at the bottom right, that opens the shop on the Ultra+ category.

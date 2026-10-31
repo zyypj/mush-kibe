@@ -12,6 +12,8 @@ MuxeCore core = MuxeCore.get();
 
 Os plugins declaram `depend: [Muxe-Core]` no `plugin.yml` e `compileOnly(projects.core.bukkit)` no Gradle.
 
+O Muxe-Core carrega todas as classes de `br.com.muxe.core` quando o servidor o carrega (`ClassPreloader`, no `onLoad`). O class loader de plugins do 1.8 não é seguro quando uma thread de outro plugin e uma thread do core carregam a mesma classe ao mesmo tempo (falha com `LinkageError: duplicate class definition`), e carregar tudo antes elimina essa corrida.
+
 | Método | O que oferece |
 |---|---|
 | `identity()` | O id, o grupo e o tipo deste servidor. |
@@ -55,6 +57,7 @@ Title.clear(player);
 - As cores com `&` são traduzidas automaticamente.
 - Os tempos são em ticks (padrões 10, 70 e 20). Em um servidor que não expõe os tempos de título, o título ainda aparece, com os tempos padrão do cliente.
 - `Title.clear` esconde o título e o subtítulo de uma vez. O cliente 1.8 mantém o subtítulo na tela depois de um reset simples, então o `clear` primeiro zera os tempos, depois esvazia o subtítulo e só então faz o reset.
+- Todo servidor limpa o título quando um jogador entra (`LeftoverTitleCleaner`), antes de qualquer plugin mandar o seu. O Velocity só faz um reset do título na troca de servidor, o que deixaria o subtítulo do servidor anterior na tela.
 
 ### Action bar
 
@@ -418,8 +421,10 @@ int playing = games.players("skywars");
 games.connect(player, "skywars", "Sky Wars");
 ```
 
-- `players(group)` soma os jogadores online dos servidores vivos do grupo.
-- `connect` responde `game-unavailable` quando o grupo não tem servidor vivo. Senão, pede ao proxy, sem mensagem no chat, que mande o jogador para o servidor com menos jogadores do grupo, com `connect-failed` se isso falhar.
+Um jogo é acessado pelo seu lobby: o grupo `<jogo>-lobby` (como `bedwars-lobby`) quando um servidor dele está vivo, senão o próprio grupo do jogo. `ServerDirectory.entryGroup(jogo)` dá esse grupo e `gamePlayers(jogo)` conta os dois.
+
+- `players(group)` soma os jogadores online dos servidores vivos do jogo e do seu lobby.
+- `connect` responde `game-unavailable` quando nem o lobby nem o jogo têm servidor vivo. Senão, pede ao proxy, sem mensagem no chat, que mande o jogador para o servidor com menos jogadores do grupo de entrada, com `connect-failed` se isso falhar.
 - Os NPCs de jogo e o seletor de jogo o usam, então os dois mostram as mesmas mensagens.
 
 ## Acesso à loja

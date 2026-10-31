@@ -12,6 +12,8 @@ MuxeCore core = MuxeCore.get();
 
 Plugins declare `depend: [Muxe-Core]` in `plugin.yml` and `compileOnly(projects.core.bukkit)` in Gradle.
 
+Muxe-Core loads every `br.com.muxe.core` class when the server loads it (`ClassPreloader`, in `onLoad`). The 1.8 plugin class loader is not safe when another plugin's thread and a core thread load the same class at the same moment (it fails with `LinkageError: duplicate class definition`), and loading everything up front removes that race.
+
 | Method | What it gives |
 |---|---|
 | `identity()` | This server's id, group and kind. |
@@ -55,6 +57,7 @@ Title.clear(player);
 - Colors with `&` are translated automatically.
 - Timings are in ticks (defaults 10, 70 and 20). On a server that does not expose title timings, the title is still shown with the client's default timings.
 - `Title.clear` hides the title and the subtitle at once. The 1.8 client keeps the subtitle on screen after a plain reset, so `clear` first zeroes the timings, then empties the subtitle and only then resets.
+- Every server clears the title when a player joins (`LeftoverTitleCleaner`), before any plugin sends its own. Velocity only resets the title on a server switch, which would leave the previous server's subtitle on screen.
 
 ### Action bar
 
@@ -418,8 +421,10 @@ int playing = games.players("skywars");
 games.connect(player, "skywars", "Sky Wars");
 ```
 
-- `players(group)` sums the online players of the group's live servers.
-- `connect` answers `game-unavailable` when the group has no live server. Otherwise it asks the proxy, with no chat message, to send the player to the least loaded server of the group, with `connect-failed` if that fails.
+A game is entered through its lobby: the group `<game>-lobby` (such as `bedwars-lobby`) when one of its servers is alive, otherwise the game group itself. `ServerDirectory.entryGroup(game)` gives that group and `gamePlayers(game)` counts both.
+
+- `players(group)` sums the online players of the game's live servers and of its lobby.
+- `connect` answers `game-unavailable` when neither the lobby nor the game has a live server. Otherwise it asks the proxy, with no chat message, to send the player to the least loaded server of the entry group, with `connect-failed` if that fails.
 - Game NPCs and the game selector use it, so both show the same messages.
 
 ## Shop access
