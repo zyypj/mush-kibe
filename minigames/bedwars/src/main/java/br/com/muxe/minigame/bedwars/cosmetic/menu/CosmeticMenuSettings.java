@@ -11,6 +11,8 @@ public record CosmeticMenuSettings(
     String bedwarsTitle,
     int bedwarsRows,
     MenuSlot cosmetics,
+    Map<Integer, ItemBuilder> bedwarsItems,
+    Map<Integer, ItemBuilder> bedwarsSoon,
     String categoriesTitle,
     int categoriesRows,
     MenuSlot bedDestruction,
@@ -30,6 +32,8 @@ public record CosmeticMenuSettings(
 ) {
 
     public CosmeticMenuSettings {
+        bedwarsItems = Map.copyOf(bedwarsItems);
+        bedwarsSoon = Map.copyOf(bedwarsSoon);
         soon = Map.copyOf(soon);
         listSlots = List.copyOf(listSlots);
     }
@@ -38,19 +42,16 @@ public record CosmeticMenuSettings(
         ConfigurationSection bedwars = section(menus, "bedwars");
         ConfigurationSection categories = section(menus, "categories");
         ConfigurationSection list = section(menus, "bed-destruction");
-        Map<Integer, ItemBuilder> soon = new LinkedHashMap<>();
-        ConfigurationSection soonSection = section(categories, "soon");
-        for (String slot : soonSection.getKeys(false)) {
-            soon.put(Integer.parseInt(slot), ItemBuilder.from(section(soonSection, slot)));
-        }
         return new CosmeticMenuSettings(
             bedwars.getString("title", "Menu do Bed Wars"),
             bedwars.getInt("rows", 3),
             MenuSlot.from(section(bedwars, "cosmetics")),
+            itemsBySlot(section(bedwars, "items")),
+            itemsBySlot(section(bedwars, "soon")),
             categories.getString("title", "Cosméticos do Bed Wars"),
             categories.getInt("rows", 6),
             MenuSlot.from(section(categories, "bed-destruction")),
-            soon,
+            itemsBySlot(section(categories, "soon")),
             MenuSlot.from(section(categories, "back")),
             list.getString("title", "Destruição de Cama ({page}/{pages})"),
             list.getInt("rows", 6),
@@ -64,6 +65,14 @@ public record CosmeticMenuSettings(
             MenuSlot.from(section(list, "shop")),
             LoreTexts.from(section(list, "lore"))
         );
+    }
+
+    private static Map<Integer, ItemBuilder> itemsBySlot(ConfigurationSection section) {
+        Map<Integer, ItemBuilder> items = new LinkedHashMap<>();
+        for (String slot : section.getKeys(false)) {
+            items.put(Integer.parseInt(slot), ItemBuilder.from(section(section, slot)));
+        }
+        return items;
     }
 
     static ConfigurationSection section(ConfigurationSection parent, String path) {

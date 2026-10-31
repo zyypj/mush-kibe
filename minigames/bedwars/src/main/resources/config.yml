@@ -1247,16 +1247,62 @@ cosmetics:
   menus:
     bedwars:
       title: "Menu do Bed Wars"
-      rows: 3
+      rows: 5
       cosmetics:
         slot: 13
         item:
-          material: CHEST
+          material: RAW_FISH
+          data: 3
           name: "&aCosméticos"
           lore:
+            - "&7Visualize os cosméticos"
+            - "&7disponíveis."
             - " "
-            - "&7Customize a sua experiência"
-            - "&7no Bed Wars."
+            - "&eClique para ver mais."
+      items:
+        "15":
+          material: PAPER
+          name: "&aLista de Níveis"
+          lore:
+            - " "
+            - "&7[0&l✫&7] &a[10&l✶&a] &b[20&l✽&b]"
+            - "&d[30&l✿&d] &e[40&l✸&e] &6[50&l✹&6]"
+            - "&5[60&l✣&5] &2[70&l✦&2] &9[80&l✵&9]"
+            - "&c[90&l❊&c] &4[100&l❤&4] &e[&6200✪&e]"
+            - "&b[&3300❂&b] &d[&5400❁&d] &7[&f500❋&7]"
+            - "&1[&9600✟&1] &2[&a700&l۞&2] &6[&e800&l✌&6]"
+            - "&4[&c900&l⚝&4] &c[&61&e0&a0&b0&dΩ&5]"
+      soon:
+        "11":
+          material: STORAGE_MINECART
+          name: "&aMissões"
+          lore:
+            - "&7Complete as missões"
+            - "&7e ganhe recompensas."
+            - " "
+            - "&eClique para ver mais."
+        "29":
+          material: CHEST
+          name: "&aCompra rápida"
+          lore:
+            - "&7Customize os itens de"
+            - "&7sua compra rápida."
+            - " "
+            - "&eClique para ver mais."
+        "31":
+          material: BLAZE_POWDER
+          name: "&aEditor de hotbar"
+          lore:
+            - "&7Altere as predefinições"
+            - "&7da hotbar."
+            - " "
+            - "&eClique para ver mais."
+        "33":
+          material: DIODE
+          name: "&aPreferências"
+          lore:
+            - "&7Altere as preferências"
+            - "&7do modo."
             - " "
             - "&eClique para ver mais."
     categories:

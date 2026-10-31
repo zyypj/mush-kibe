@@ -13,6 +13,7 @@ import br.com.muxe.core.common.cqrs.command.CommandBus;
 import br.com.muxe.core.common.result.Result;
 import br.com.muxe.minigame.bedwars.cosmetic.catalog.BedCosmetic;
 import br.com.muxe.minigame.bedwars.cosmetic.catalog.CosmeticCatalog;
+import br.com.muxe.minigame.bedwars.cosmetic.profile.CosmeticAccess;
 import br.com.muxe.minigame.bedwars.cosmetic.profile.CosmeticProfiles;
 import br.com.muxe.minigame.bedwars.cosmetic.profile.CosmeticState;
 import br.com.muxe.minigame.bedwars.cosmetic.profile.CosmeticWallet;
@@ -52,9 +53,10 @@ public final class CosmeticMenus {
     }
 
     public void openBedWars(Player player) {
-        Menu.builder(settings.bedwarsTitle())
-            .rows(settings.bedwarsRows())
-            .button(settings.cosmetics().slot(), settings.cosmetics().item(), context -> openCategories(context.player()))
+        Menu.Builder menu = Menu.builder(settings.bedwarsTitle()).rows(settings.bedwarsRows());
+        settings.bedwarsItems().forEach(menu::button);
+        settings.bedwarsSoon().forEach((slot, item) -> menu.button(slot, item, context -> context.player().sendMessage(messages.get("coming-soon"))));
+        menu.button(settings.cosmetics().slot(), settings.cosmetics().item(), context -> openCategories(context.player()))
             .build()
             .open(player);
     }
@@ -180,7 +182,7 @@ public final class CosmeticMenus {
     }
 
     private void withWallet(Player player, Consumer<CosmeticWallet> action) {
-        profiles.load(player.getUniqueId(), player.hasPermission(CosmeticProfiles.ULTRA_PERMISSION)).whenCompleteAsync((wallet, error) -> {
+        profiles.load(player.getUniqueId(), CosmeticAccess.of(player::hasPermission)).whenCompleteAsync((wallet, error) -> {
             if (!player.isOnline()) {
                 return;
             }
