@@ -13,12 +13,14 @@ import br.com.muxe.core.bukkit.command.framework.registry.UnknownCommands;
 import br.com.muxe.core.bukkit.config.BukkitConfigSource;
 import br.com.muxe.core.bukkit.greeting.GreetingSettings;
 import br.com.muxe.core.bukkit.greeting.JoinGreeting;
+import br.com.muxe.core.bukkit.greeting.LeftoverTitleCleaner;
 import br.com.muxe.core.bukkit.menu.MenuListener;
 import br.com.muxe.core.bukkit.monitor.BukkitServerLoad;
 import br.com.muxe.core.bukkit.monitor.TickMonitor;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.bukkit.text.Title;
 import br.com.muxe.core.bukkit.thread.BukkitMainThreadExecutor;
 import br.com.muxe.core.bukkit.thread.BukkitMainThreadGuard;
 import br.com.muxe.core.common.buildmode.BuildState;
@@ -80,6 +82,7 @@ public final class CoreBukkitBootstrap {
         plugin.getServer().getPluginManager().registerEvents(new MenuListener(), plugin);
         plugin.getServer().getPluginManager().registerEvents(buildMode, plugin);
         plugin.getServer().getScheduler().runTaskTimer(plugin, buildMode, BuildMode.ACTION_BAR_PERIOD_TICKS, BuildMode.ACTION_BAR_PERIOD_TICKS);
+        plugin.getServer().getPluginManager().registerEvents(new LeftoverTitleCleaner(Title::clear), plugin);
         GreetingSettings greeting = GreetingSettings.from(config.getConfigurationSection("join-greeting"));
         if (greeting.appliesTo(settings.server().kind())) {
             plugin.getServer().getPluginManager().registerEvents(new JoinGreeting(plugin, greeting, messages), plugin);
