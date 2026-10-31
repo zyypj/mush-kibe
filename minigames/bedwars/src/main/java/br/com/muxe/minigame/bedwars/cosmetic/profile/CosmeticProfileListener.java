@@ -29,7 +29,7 @@ public final class CosmeticProfileListener implements Listener {
     }
 
     public void load(Player player) {
-        profiles.load(player.getUniqueId(), player.hasPermission(CosmeticProfiles.ULTRA_PERMISSION)).exceptionally(error -> {
+        profiles.load(player.getUniqueId(), CosmeticAccess.of(player::hasPermission)).exceptionally(error -> {
             logger.log(Level.WARNING, "Could not load the cosmetics of " + player.getName(), error);
             return null;
         });

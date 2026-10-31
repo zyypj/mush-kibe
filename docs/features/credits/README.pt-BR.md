@@ -36,6 +36,7 @@ Os cosméticos do BedWars têm o próprio `/cosmeticos dar`, descrito no [BedWar
 | Permissão | Concede |
 |---|---|
 | `muxe.credits.admin` | `/creditos ver`, `dar` e `remover`. |
+| `muxe.cosmetic.all` | Possuir todos os cosméticos do BedWars (ops, por padrão). |
 | `muxe.cosmetic.ultra` | Possuir os cosméticos marcados `Incluso no ULTRA`. A migração V14 dá essa permissão ao grupo `ultra`. |
 
 ## Configuração

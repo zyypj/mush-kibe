@@ -42,7 +42,7 @@ final class CosmeticFeatures {
         ConfigurationSection section = section(config, "cosmetics");
         BedAnimations animations = new BedAnimations();
         CosmeticCatalog catalog = CosmeticCatalog.from(section, id -> animations.find(id).isPresent());
-        CosmeticProfiles profiles = new CosmeticProfiles(core.queries(), core.mainThread(), catalog.category(), id -> plugin.getServer().getPlayer(id) != null);
+        CosmeticProfiles profiles = new CosmeticProfiles(core.queries(), core.mainThread(), catalog, id -> plugin.getServer().getPlayer(id) != null);
         CosmeticProfileListener profileListener = new CosmeticProfileListener(profiles, plugin.getLogger());
         plugin.getServer().getPluginManager().registerEvents(profileListener, plugin);
         plugin.getServer().getOnlinePlayers().forEach(profileListener::load);

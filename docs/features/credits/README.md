@@ -36,6 +36,7 @@ The BedWars cosmetics have their own `/cosmeticos dar`, described in [BedWars](.
 | Permission | Grants |
 |---|---|
 | `muxe.credits.admin` | `/creditos ver`, `dar` and `remover`. |
+| `muxe.cosmetic.all` | Owning every BedWars cosmetic (ops by default). |
 | `muxe.cosmetic.ultra` | Owning the cosmetics marked `Incluso no ULTRA`. Migration V14 gives it to the `ultra` group. |
 
 ## Configuration

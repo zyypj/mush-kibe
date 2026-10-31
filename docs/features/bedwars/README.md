@@ -100,13 +100,14 @@ The whole team sees `<player> adquiriu a melhoria <upgrade>.`
 
 Players pick an animation that plays when they break an enemy bed. The menus follow the recorded exports:
 
-- **Menu do Bed Wars** (emerald): in the waiting room on BedWars servers, and in hotbar slot 3 on the BedWars lobby. Only **Cosméticos** works for now.
+- **Menu do Bed Wars** (emerald): in the waiting room on BedWars servers, and in hotbar slot 3 on the BedWars lobby. Five rows, as in the reference export: `Missões` (slot 11), `Cosméticos` (pufferfish, slot 13), `Lista de Níveis` (slot 15, the level badges in its lore), `Compra rápida` (29), `Editor de hotbar` (31) and `Preferências` (33). Only **Cosméticos** works for now; Missões, Compra rápida, Editor de hotbar and Preferências answer `coming-soon`.
 - **Cosméticos do Bed Wars**: the **Destruição de Cama** category shows `owned/total (percent%)` and the selected cosmetic. The other categories, **Cor preferida** and the **Loja** button answer "coming soon".
 - **Destruição de Cama (page/pages)**: 28 entries per page. Page 1 starts with **Nenhuma** and **Aleatório** (the default). Owned cosmetics come first, then the ones for sale, then the unavailable ones, each group in configuration order.
   - Owned: left click selects, right click previews. The selected one glows and shows `Já selecionado.`
   - For sale: left click buys with credits (price by stars: 750, 900, 1.300, 1.750, 2.000), right click previews. When the player lacks credits, the lore shows `Faltam <n> créditos!`.
   - Unavailable (event cosmetics the player does not own, or cosmetics without an animation yet): right click previews when there is an animation.
   - `Incluso no ULTRA` cosmetics are owned by everyone with `muxe.cosmetic.ultra`.
+  - Players with `muxe.cosmetic.all` (ops by default) own every cosmetic. The ones without an animation still show `Indisponível`.
 - 30 cosmetics are listed; 13 have an animation (Ajudante de Papai Noel, Avalanche, Coelhos, Passarinhos, Friaca, Fogos de Artifício, Colheita de Abóboras, Apavorante, Deserto, Tinta, Bola de Canhão, Enderman, Sal na Ferida). The other 17 show `Indisponível.` until their animation exists.
 - Animations are drawn only with packets (armor stands, falling blocks, items, fireworks, particles, sounds and fake block changes), so the real world never changes. They are our own reproductions of the recorded behaviour, with original pixel sprites and community heads.
 
@@ -136,6 +137,7 @@ Players pick an animation that plays when they break an enemy bed. The menus fol
 | `muxe.minigame.setup` | op | Allows `/arena`. |
 | `muxe.bedwars.admin` | op | Allows `/bedwars iniciar`. |
 | `muxe.cosmetics.admin` | op | Allows `/cosmeticos dar`. |
+| `muxe.cosmetic.all` | op | Owns every BedWars cosmetic. |
 | `muxe.cosmetic.ultra` | false | Owns the `Incluso no ULTRA` cosmetics. The `ultra` group has it (migration V14). |
 
 ## Configuration

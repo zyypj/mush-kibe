@@ -20,6 +20,14 @@ public record CosmeticWallet(Set<String> owned, String selected, long credits, b
         selected = selected == null ? RANDOM : selected;
     }
 
+    public static CosmeticWallet loaded(Set<String> owned, String selected, long credits, CosmeticAccess access, CosmeticCatalog catalog) {
+        Set<String> all = new HashSet<>(owned);
+        if (access == CosmeticAccess.ALL) {
+            catalog.all().forEach(cosmetic -> all.add(cosmetic.id()));
+        }
+        return new CosmeticWallet(all, selected, credits, access != CosmeticAccess.REGULAR);
+    }
+
     public boolean owns(BedCosmetic cosmetic) {
         return owned.contains(cosmetic.id()) || cosmetic.availability() == Availability.ULTRA && ultra;
     }

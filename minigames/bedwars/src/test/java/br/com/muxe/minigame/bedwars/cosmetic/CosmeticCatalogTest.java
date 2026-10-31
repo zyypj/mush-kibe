@@ -10,6 +10,7 @@ import br.com.muxe.minigame.bedwars.cosmetic.catalog.CosmeticCatalog;
 import br.com.muxe.minigame.bedwars.cosmetic.menu.CosmeticIcons;
 import br.com.muxe.minigame.bedwars.cosmetic.menu.CosmeticMenuSettings;
 import br.com.muxe.minigame.bedwars.cosmetic.preview.PreviewSettings;
+import br.com.muxe.minigame.bedwars.cosmetic.profile.CosmeticAccess;
 import br.com.muxe.minigame.bedwars.cosmetic.profile.CosmeticState;
 import br.com.muxe.minigame.bedwars.cosmetic.profile.CosmeticWallet;
 import br.com.muxe.minigame.bedwars.room.RoomFixtures;
@@ -49,6 +50,26 @@ class CosmeticCatalogTest {
         assertThat(fireworks.availability()).isEqualTo(Availability.ULTRA);
         assertThat(new CosmeticWallet(Set.of(), CosmeticWallet.RANDOM, 0, true).state(fireworks)).isEqualTo(CosmeticState.OWNED);
         assertThat(new CosmeticWallet(Set.of(), CosmeticWallet.RANDOM, 0, false).state(fireworks)).isEqualTo(CosmeticState.UNAVAILABLE);
+    }
+
+    @Test
+    void opsOwnEveryCosmeticButStillCannotUseTheOnesWithoutAnimation() {
+        CosmeticAccess access = CosmeticAccess.of(permission -> permission.equals(CosmeticAccess.ALL_PERMISSION));
+        CosmeticWallet wallet = CosmeticWallet.loaded(Set.of(), CosmeticWallet.RANDOM, 0, access, catalog);
+
+        assertThat(access).isEqualTo(CosmeticAccess.ALL);
+        assertThat(wallet.ownedCount(catalog)).isEqualTo(30);
+        assertThat(wallet.state(catalog.find("apavorante").orElseThrow())).isEqualTo(CosmeticState.OWNED);
+        assertThat(wallet.state(catalog.find("tubarao").orElseThrow())).isEqualTo(CosmeticState.UNAVAILABLE);
+    }
+
+    @Test
+    void accessFollowsThePermissions() {
+        assertThat(CosmeticAccess.of(permission -> false)).isEqualTo(CosmeticAccess.REGULAR);
+        assertThat(CosmeticAccess.of(permission -> permission.equals(CosmeticAccess.ULTRA_PERMISSION))).isEqualTo(CosmeticAccess.ULTRA);
+        assertThat(CosmeticWallet.loaded(Set.of("tinta"), "tinta", 10, CosmeticAccess.ULTRA, catalog))
+            .isEqualTo(new CosmeticWallet(Set.of("tinta"), "tinta", 10, true));
+        assertThat(CosmeticWallet.loaded(Set.of(), null, 0, CosmeticAccess.REGULAR, catalog)).isEqualTo(CosmeticWallet.EMPTY);
     }
 
     @Test

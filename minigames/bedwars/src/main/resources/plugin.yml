@@ -15,6 +15,9 @@ permissions:
   muxe.cosmetics.admin:
     description: Allows /cosmeticos dar to grant BedWars cosmetics.
     default: op
+  muxe.cosmetic.all:
+    description: Owns every BedWars cosmetic.
+    default: op
   muxe.cosmetic.ultra:
     description: Unlocks the BedWars cosmetics included in ULTRA.
     default: false
