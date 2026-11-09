@@ -380,7 +380,7 @@ menus:
             - "&aClique para entrar!"
       custom-room:
         slot: 35
-        shop: ultra-plus
+        command: salacustom
         item:
           material: BREWING_STAND_ITEM
           name: "&aSala customizada (/salacustom)"
@@ -1219,6 +1219,483 @@ shop:
           bob-period: 40
           phase: 180
 
+custom-room:
+  selector:
+    title: "Selecionar modo"
+    rows: 4
+    back-slot: 30
+    back-title: "Selecionar jogo"
+    lore:
+      - " "
+      - "&eClique para continuar."
+    games:
+      bedwars:
+        slot: 10
+        material: BED
+        name: "&aBed Wars"
+        menu: bedwars
+      duels:
+        slot: 11
+        material: DIAMOND_SWORD
+        name: "&aDuels"
+        menu: duels
+      skywars:
+        slot: 12
+        material: EYE_OF_ENDER
+        name: "&aSky Wars"
+      ctf:
+        slot: 13
+        material: WOOL
+        data: 14
+        name: "&aCTF"
+      party:
+        slot: 14
+        material: CAKE
+        name: "&aParty"
+      block-party:
+        slot: 15
+        material: JUKEBOX
+        name: "&aBlock Party"
+      murder:
+        slot: 16
+        material: REDSTONE
+        name: "&aMurder"
+      build-battle:
+        slot: 19
+        material: WORKBENCH
+        name: "&aBuild Battle"
+      quick-builders:
+        slot: 20
+        material: DIAMOND_PICKAXE
+        name: "&aQuick Builders"
+      hide-and-seek:
+        slot: 21
+        material: MELON_BLOCK
+        name: "&aHide and Seek"
+      nasco-mandou:
+        slot: 22
+        material: STICK
+        name: "&aNascó Mandou"
+      spleef:
+        slot: 23
+        material: SNOW_BLOCK
+        name: "&aSpleef"
+  mode-menus:
+    bedwars:
+      title: "Selecionar modo (Bed Wars)"
+      rows: 4
+      back-slot: 30
+      game: bedwars
+      modes:
+        solo:
+          slot: 10
+          material: BED
+          name: "&aBed Wars Solo"
+        duplas:
+          slot: 11
+          material: BED
+          amount: 2
+          name: "&aBed Wars Duplas"
+        trios:
+          slot: 12
+          material: BED
+          amount: 3
+          name: "&aBed Wars Trios"
+        quartetos:
+          slot: 13
+          material: BED
+          amount: 4
+          name: "&aBed Wars Quartetos"
+        1v1:
+          slot: 14
+          material: BED
+          name: "&aBed Wars 1v1"
+        2v2:
+          slot: 15
+          material: BED
+          amount: 2
+          name: "&aBed Wars 2v2"
+        3v3:
+          slot: 16
+          material: BED
+          amount: 3
+          name: "&aBed Wars 3v3"
+        4v4:
+          slot: 19
+          material: BED
+          amount: 4
+          name: "&aBed Wars 4v4"
+        4s:
+          slot: 20
+          material: BED
+          amount: 4
+          name: "&aBed Wars 4s"
+        mega:
+          slot: 21
+          material: BED
+          amount: 10
+          name: "&aBed Wars Mega"
+        temporary:
+          slot: 22
+          material: SLIME_BALL
+          name: "&aModos temporários"
+    duels:
+      title: "Selecionar modo (Duels)"
+      rows: 5
+      back-slot: 39
+      game: duels
+      modes:
+        sopa:
+          slot: 10
+          material: MUSHROOM_SOUP
+          name: "&aSopa"
+        gladiator:
+          slot: 11
+          material: IRON_FENCE
+          name: "&aGladiator"
+        no-debuff:
+          slot: 12
+          material: POTION
+          data: 16421
+          name: "&aNo Debuff"
+        uhc:
+          slot: 13
+          material: FISHING_ROD
+          name: "&aUHC"
+        combo:
+          slot: 14
+          material: DIAMOND_SWORD
+          name: "&aCombo"
+        gapple:
+          slot: 15
+          material: GOLDEN_APPLE
+          data: 1
+          name: "&aGapple"
+        lava:
+          slot: 16
+          material: SKULL_ITEM
+          data: 3
+          name: "&aLava"
+          skull-texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWFlOTdkYTM1ZGQzMjNkNGRiODY2YTE2ZTQ3M2IxYTJiNDNkNjIwNmFhMzk4NDMwZTkxYTJjZWYwY2FhNzA2ZCJ9fX0="
+        the-bridge:
+          slot: 19
+          material: STAINED_CLAY
+          data: 11
+          name: "&aThe Bridge"
+        sumo:
+          slot: 20
+          material: STICK
+          name: "&aSumô"
+        boxing:
+          slot: 21
+          material: INK_SACK
+          data: 1
+          name: "&aBoxing"
+        bed-fight:
+          slot: 22
+          material: BED
+          name: "&aBed Fight"
+        fireball-fight:
+          slot: 23
+          material: FIREBALL
+          name: "&aFireball Fight"
+        hg-simulator:
+          slot: 24
+          material: COBBLE_WALL
+          name: "&aHG Simulator"
+        pearl-fight:
+          slot: 25
+          material: ENDER_PEARL
+          name: "&aPearl Fight"
+        bed-rush:
+          slot: 28
+          material: INK_SACK
+          data: 14
+          name: "&aBed Rush"
+        classic:
+          slot: 29
+          material: WOOD_SWORD
+          name: "&aClassic"
+        block-fight:
+          slot: 30
+          material: WOOL
+          data: 14
+          name: "&aBlock Fight"
+        block-sumo:
+          slot: 31
+          material: GOLD_BLOCK
+          name: "&aBlock Sumô"
+  room-menu:
+    create-title: "Criando sala..."
+    room-title: "Sua sala"
+    rows: 5
+    game:
+      slot: 11
+      lore:
+        - " "
+        - "&eClique para trocar de jogo."
+    maps:
+      slot: 13
+      material: PAPER
+      name: "&aMapas"
+      lore:
+        - "&7Escolha os mapas de"
+        - "&7sua sala."
+        - " "
+        - "&7Selecionado: &a{maps}"
+        - " "
+        - "&eClique para editar."
+      room-lore:
+        - "&7Escolha os mapas de"
+        - "&7sua sala."
+        - " "
+        - "&cSerá aplicado na próxima"
+        - "&creinicialização."
+        - " "
+        - "&7Selecionado: &a{maps}"
+        - " "
+        - "&eClique para editar."
+      none: "Nenhum"
+    options:
+      slot: 15
+      material: DIODE
+      name: "&aOpções"
+      lore:
+        - "&7Veja e altere opções"
+        - "&7específicas do modo."
+        - " "
+        - "&eClique para ver mais"
+    create:
+      slot: 31
+      material: SKULL_ITEM
+      data: 3
+      skull-texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmU4MzBlM2Y3YmViZmQ5MzA3ZmMxMTFjYjEwMGVmODdhMzZmMDg1NjQ1ZmI3NGMyMmI1NTI1MzZkYjAwMjBjMiJ9fX0="
+      name: "&aCriar sala"
+      lore:
+        - " "
+        - "&eClique para criar a sala."
+    back:
+      slot: 39
+    presets:
+      slot: 44
+      material: BOOK_AND_QUILL
+      name: "&aPredefinições"
+      lore:
+        - "&7Salve, carregue e compartilhe"
+        - "&7as opções da sala."
+        - " "
+        - "&eClique para ver mais."
+    start:
+      slot: 28
+      material: SKULL_ITEM
+      data: 3
+      skull-texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmU4MzBlM2Y3YmViZmQ5MzA3ZmMxMTFjYjEwMGVmODdhMzZmMDg1NjQ1ZmI3NGMyMmI1NTI1MzZkYjAwMjBjMiJ9fX0="
+      name: "&aIniciar sala"
+      lore:
+        - " "
+        - "&eClique para iniciar a sala."
+    pause:
+      slot: 30
+      material: SKULL_ITEM
+      data: 3
+      skull-texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzUxMDA1MTUyMjljYmU0NWEyNGE0NjNkZGNmOTAyZDY2Y2JkYjIyOTlhNGFmYzM4N2QwZjA0OTI5YjFkZjAxIn19fQ=="
+      name: "&9Pausar contador"
+      lore:
+        - " "
+        - "&eClique para pausar o contador."
+    restart:
+      slot: 32
+      playing-slot: 30
+      material: SKULL_ITEM
+      data: 3
+      skull-texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjZjMjUwMGFjYzdmZjc4MDRkNGRjYmM2YjViNDczZmFkNTg4MjBmNTMxMDdmMDBlNzEyYzgxMDI4NTQ2Yzk0NiJ9fX0="
+      name: "&eReiniciar sala"
+      lore:
+        - " "
+        - "&eClique para reiniciar a sala."
+    close:
+      slot: 34
+      playing-slot: 32
+      material: SKULL_ITEM
+      data: 3
+      skull-texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmVmNjMwYmUxNGUwN2RlOWZhOTdhY2NlZjgwNDA5Mzk3MjFlNjgzOTQ2ZDFiZTU2NWRlYjJlOWRlN2U3NmQxNiJ9fX0="
+      name: "&cFechar sala"
+      lore:
+        - " "
+        - "&eClique para fechar a sala."
+    skip-event:
+      slot: 28
+      material: WATCH
+      name: "&aPular evento"
+      lore:
+        - "&7Próximo evento: &f{event}"
+        - " "
+        - "&eClique para pular."
+  maps-menu:
+    title: "Selecione mapas ({page}/{pages})"
+    rows: 6
+    slots:
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+      - 28
+      - 29
+      - 30
+      - 31
+      - 32
+      - 33
+      - 34
+      - 37
+      - 38
+      - 39
+      - 40
+      - 41
+      - 42
+      - 43
+    selected-material: MAP
+    other-material: EMPTY_MAP
+    selected-name: "&a{map}"
+    other-name: "&c{map}"
+    lore:
+      - " "
+      - "&bUtilize shift para adicionar"
+      - "&bmais de um mapa."
+      - " "
+      - "&eClique para alterar."
+    back-slot: 48
+    previous-slot: 48
+    next-slot: 50
+    summary:
+      slot: 49
+      material: PAPER
+      name: "&aMapas"
+      lore:
+        - " "
+        - "&eSelecionado: &a{maps}"
+    external:
+      slot: 53
+      material: SLIME_BALL
+      name: "&aCarregar mapa externo"
+      lore:
+        - " "
+        - "&eClique para selecionar."
+  presets-menu:
+    title: "Predefinições"
+    rows: 4
+    slots:
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+    empty:
+      slot: 13
+      material: STAINED_GLASS_PANE
+      data: 14
+      name: "&cNenhuma predefinição salva"
+      lore:
+        - "&7Salve as opções atuais"
+        - "&7da sala para usá-las"
+        - "&7depois."
+    preset:
+      material: PAPER
+      name: "&a{name}"
+      lore:
+        - " "
+        - "&7Modo: &f{mode}"
+        - "&7Código: &f{code}"
+        - " "
+        - "&eBotão esquerdo: &fCarregar"
+        - "&eBotão direito: &fCompartilhar"
+        - "&eQ: &fExcluir"
+    save:
+      slot: 29
+      material: EMERALD
+      name: "&aSalvar novo"
+      lore:
+        - "&7Salve as opções atuais"
+        - "&7da sala como uma nova"
+        - "&7predefinição."
+        - " "
+        - "&eClique para selecionar."
+    back-slot: 31
+    code:
+      slot: 33
+      material: NAME_TAG
+      name: "&aUsar código"
+      lore:
+        - "&7Use o código de uma"
+        - "&7predefinição compartilhada"
+        - "&7por outro jogador."
+        - " "
+        - "&eClique para selecionar."
+    name-label: "Nome"
+    code-label: "Código"
+  teams-menu:
+    title: "Selecionar time"
+    rows: 4
+    slots:
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+    team:
+      material: WOOL
+      name: "{color}{team}"
+      lore:
+        - " "
+        - "&7Jogadores: &a{players}/{size}"
+        - " "
+        - "&eClique para entrar."
+    spectator:
+      material: COMPASS
+      name: "&7Espectador"
+      lore:
+        - " "
+        - "&7Jogadores: &a{players}"
+        - " "
+        - "&eClique para entrar."
+  hotbar:
+    team:
+      slot: 3
+      material: NAME_TAG
+      name: "&aSelecionar time"
+    room-menu:
+      slot: 7
+      material: BREWING_STAND_ITEM
+      name: "&aMenu da sala &7(/menu)"
+  code-suffix: " (C)"
+
 knockback:
   click-limiter-ticks:
     "off": 0
@@ -1623,6 +2100,28 @@ messages:
   party-no-offline: "&cNão há jogadores offline na party."
   party-leader-only: "&cApenas o líder da party consegue procurar salas!"
   party-too-big: "&cSua party tem jogadores demais para este modo."
+  custom-room-creating: "&aCriando sala..."
+  custom-room-sending: "&aEnviando para {code}..."
+  custom-room-unavailable: "&cNão foi possível criar a sala agora. Tente novamente."
+  custom-room-not-leader: "&cApenas o líder da party pode criar uma sala."
+  custom-room-invalid-value: "&cValor inválido."
+  custom-room-only-leader: "&cApenas o líder da sala pode fazer isso."
+  custom-room-not-in-room: "&cVocê não está em uma sala customizada."
+  custom-room-closed: "&cA sala foi fechada."
+  custom-room-restarted: "&eA sala foi reiniciada."
+  custom-room-paused: "&9O contador foi pausado."
+  custom-room-team-full: "&cEste time está cheio."
+  custom-room-team-chosen: "&aVocê entrou no time {team}&a."
+  custom-room-spectator-chosen: "&7Você vai assistir a próxima partida."
+  custom-room-event-skipped: "&aO evento {event} &afoi antecipado."
+  custom-room-mode-changed: "&aO modo da sala agora é {mode}."
+  custom-room-preset-saved: "&aPredefinição &f{name} &asalva. Código: &f{code}"
+  custom-room-preset-loaded: "&aPredefinição &f{name} &acarregada."
+  custom-room-preset-deleted: "&cPredefinição &f{name} &cexcluída."
+  custom-room-preset-share: "&aCódigo da predefinição &f{name}&a: &f{code}"
+  custom-room-preset-not-found: "&cNenhuma predefinição encontrada com esse código."
+  custom-room-preset-other-game: "&cEssa predefinição é de outro jogo."
+  custom-room-preset-failed: "&cNão foi possível salvar a predefinição."
   party-split: "&4&lAVISO &cEsta partida não conta estatísticas."
   channel-usage: "&cUso /canal <canal>"
   channel-changed: "&eSeu canal de chat agora é &b{channel}&e."

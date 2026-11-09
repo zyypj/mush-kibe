@@ -4,6 +4,9 @@ import br.com.muxe.core.common.messaging.packet.PacketRegistry;
 import br.com.muxe.core.common.network.auth.AuthStatusRequest;
 import br.com.muxe.core.common.network.auth.AuthStatusResponse;
 import br.com.muxe.core.common.network.auth.PlayerAuthenticatedPacket;
+import br.com.muxe.core.common.network.customroom.CreateCustomRoomReply;
+import br.com.muxe.core.common.network.customroom.CreateCustomRoomRequest;
+import br.com.muxe.core.common.network.customroom.CustomRoomCatalogPacket;
 import br.com.muxe.core.common.network.party.PartyActionPacket;
 import br.com.muxe.core.common.network.party.PartyGatherRequest;
 import br.com.muxe.core.common.network.party.PartyGatherResponse;
@@ -50,6 +53,9 @@ public final class NetworkPackets {
             .register(PartySyncRequest.TYPE)
             .register(PartySyncResponse.TYPE)
             .register(PartyGatherRequest.TYPE)
-            .register(PartyGatherResponse.TYPE);
+            .register(PartyGatherResponse.TYPE)
+            .register(CustomRoomCatalogPacket.TYPE)
+            .register(CreateCustomRoomRequest.TYPE)
+            .register(CreateCustomRoomReply.TYPE);
     }
 }

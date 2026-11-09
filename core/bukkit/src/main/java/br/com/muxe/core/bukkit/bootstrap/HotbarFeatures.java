@@ -1,6 +1,7 @@
 package br.com.muxe.core.bukkit.bootstrap;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
+import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.hotbar.Hotbar;
 import br.com.muxe.core.bukkit.hotbar.HotbarActions;
 import br.com.muxe.core.bukkit.hotbar.HotbarBuildHook;
@@ -27,7 +28,7 @@ final class HotbarFeatures {
     private HotbarFeatures() {
     }
 
-    static void start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, PlacedFeatures placed) {
+    static void start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, PlacedFeatures placed, Commands commands) {
         if (!config.isSet(HOTBAR_SECTION)) {
             plugin.getLogger().warning("The hotbar is off: config.yml has no '" + HOTBAR_SECTION + "' section");
             return;
@@ -38,6 +39,7 @@ final class HotbarFeatures {
         }
         ButtonActions buttons = new ButtonActions(placed.games(), placed.shopAccess());
         GameSelectorMenu games = new GameSelectorMenu(GameSelectorSettings.from(section(config, "menus.game-selector")), buttons);
+        CustomRoomFeatures.lobby(plugin, core, commands, games::open, player -> placed.shopAccess().open(player, CustomRoomFeatures.SHOP_CATEGORY));
         ProfileMenu profile = new ProfileMenu(ProfileSettings.from(section(config, "menus.profile")), buttons, core.queries(), core.permissions(), core.mainThread(), plugin.getLogger());
         LobbySelectorMenu lobbies = new LobbySelectorMenu(core, LobbySelectorSettings.from(section(config, "menus.lobby-selector"), core.identity().group()), core.messages());
 

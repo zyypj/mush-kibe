@@ -2,6 +2,7 @@ package br.com.muxe.core.bukkit.api;
 
 import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.combat.knockback.KnockbackService;
+import br.com.muxe.core.bukkit.customroom.CustomRoomKit;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.party.Parties;
 import br.com.muxe.core.bukkit.permission.PermissionService;
@@ -80,4 +81,6 @@ public interface MuxeCore {
     Parties parties();
 
     KnockbackService knockback();
+
+    CustomRoomKit customRooms();
 }

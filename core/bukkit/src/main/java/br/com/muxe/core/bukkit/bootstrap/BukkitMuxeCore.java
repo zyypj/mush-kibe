@@ -3,6 +3,7 @@ package br.com.muxe.core.bukkit.bootstrap;
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.combat.knockback.KnockbackService;
+import br.com.muxe.core.bukkit.customroom.CustomRoomKit;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.party.Parties;
 import br.com.muxe.core.bukkit.permission.PermissionService;
@@ -35,6 +36,7 @@ final class BukkitMuxeCore implements MuxeCore {
     private final PermissionService permissions;
     private final Parties parties;
     private final KnockbackService knockback;
+    private CustomRoomKit customRooms;
     private final NameTags nameTags = new NameTags();
     private final SidebarOverrides sidebars = new SidebarOverrides();
 
@@ -58,6 +60,15 @@ final class BukkitMuxeCore implements MuxeCore {
     @Override
     public KnockbackService knockback() {
         return knockback;
+    }
+
+    @Override
+    public CustomRoomKit customRooms() {
+        return customRooms;
+    }
+
+    void customRooms(CustomRoomKit kit) {
+        this.customRooms = kit;
     }
 
     @Override

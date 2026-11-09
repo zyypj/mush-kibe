@@ -33,7 +33,7 @@ class GameSelectorMenuTest {
         assertThat(settings.buttons()).extracting(ConfiguredButton::slot)
             .containsExactly(10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 35);
         assertThat(settings.buttons().getFirst().action()).isEqualTo(ButtonAction.game("bedwars"));
-        assertThat(settings.buttons().getLast().action()).isEqualTo(ButtonAction.shop("ultra-plus"));
+        assertThat(settings.buttons().getLast().action()).isEqualTo(ButtonAction.command("salacustom"));
     }
 
     @Test

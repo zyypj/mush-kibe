@@ -7,6 +7,9 @@ permissions:
   muxe.party.open:
     description: Allows /party abrir, which lets anyone join the party with /party entrar.
     default: false
+  muxe.customroom.create:
+    description: Allows /salacustom, which creates a custom room led by the player.
+    default: false
   muxe.admin:
     description: Allows /muxe.
     default: op

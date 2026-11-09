@@ -93,7 +93,7 @@ public final class CoreBukkitBootstrap {
         permissions = PermissionService.start(plugin, permissionSync, settings.server().group(), runtime.clock());
         PartyClient parties = PartyFeatures.client(plugin, runtime, mainThread, messages);
         KnockbackService knockback = new KnockbackService(KnockbackProfiles.from(config.getConfigurationSection("knockback")));
-        MuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages, buildMode, permissions, parties, knockback);
+        BukkitMuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages, buildMode, permissions, parties, knockback);
         plugin.getServer().getServicesManager().register(MuxeCore.class, core, plugin, ServicePriority.Normal);
 
         plugin.getServer().getScheduler().runTaskTimer(plugin, new TickMonitor(load, runtime.metrics()), 1L, 1L);
@@ -117,7 +117,8 @@ public final class CoreBukkitBootstrap {
         ranks = RankFeatures.start(plugin, core, config, commands);
         PartyFeatures.start(plugin, core, parties, commands);
         features = PlacedFeatures.start(plugin, core, config, commands);
-        HotbarFeatures.start(plugin, core, config, features);
+        core.customRooms(CustomRoomFeatures.kit(plugin, core, config));
+        HotbarFeatures.start(plugin, core, config, features, commands);
         CommandMapRegistrar.commandMap(plugin.getServer())
             .ifPresent(map -> {
                 new PermissionMessages(plugin, map, messages.get("no-permission")).start();
