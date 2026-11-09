@@ -7,7 +7,12 @@ import java.time.Clock;
 import java.util.random.RandomGenerator;
 
 public record MatchEnvironment(MatchSettings settings, MatchRules rules, MessageCatalog messages, Clock clock, RandomGenerator random, MatchEvents events,
-                               TeamPreferences preferences, PartyGroups parties) {
+                               TeamPreferences preferences, PartyGroups parties, KnockbackLookup knockback) {
+
+    public MatchEnvironment(MatchSettings settings, MatchRules rules, MessageCatalog messages, Clock clock, RandomGenerator random, MatchEvents events,
+                            TeamPreferences preferences, PartyGroups parties) {
+        this(settings, rules, messages, clock, random, events, preferences, parties, KnockbackLookup.NONE);
+    }
 
     public MatchEnvironment(MatchSettings settings, MatchRules rules, MessageCatalog messages, Clock clock, RandomGenerator random, MatchEvents events,
                             TeamPreferences preferences) {

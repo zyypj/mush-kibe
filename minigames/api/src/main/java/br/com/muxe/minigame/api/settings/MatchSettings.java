@@ -12,7 +12,8 @@ public record MatchSettings(
     WaitingHotbar waitingHotbar,
     SpectatorHotbar spectatorHotbar,
     Teleporter teleporter,
-    MatchSounds sounds
+    MatchSounds sounds,
+    KnockbackChoice knockback
 ) {
 
     public static MatchSettings from(ConfigurationSection config) {
@@ -25,7 +26,8 @@ public record MatchSettings(
             WaitingHotbar.from(config.getConfigurationSection("hotbar.waiting")),
             SpectatorHotbar.from(config.getConfigurationSection("hotbar.spectator")),
             Teleporter.from(config.getConfigurationSection("hotbar.teleporter")),
-            MatchSounds.from(config.getConfigurationSection("sounds"))
+            MatchSounds.from(config.getConfigurationSection("sounds")),
+            KnockbackChoice.from(config.getConfigurationSection("knockback"))
         );
     }
 }

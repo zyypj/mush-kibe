@@ -7,6 +7,7 @@ import br.com.muxe.core.bukkit.text.CenteredText;
 import br.com.muxe.core.bukkit.text.ChatLines;
 import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.bukkit.text.Title;
+import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
 import br.com.muxe.core.common.match.MatchReturns;
 import br.com.muxe.minigame.api.runtime.Stage;
 import br.com.muxe.minigame.api.settings.HotbarItem;
@@ -281,5 +282,10 @@ public final class BukkitStage implements Stage {
         meta.setDisplayName(Colors.translate(entry.name()));
         item.setItemMeta(meta);
         return item;
+    }
+
+    @Override
+    public void knockback(UUID id, Optional<KnockbackProfile> profile) {
+        profile.ifPresentOrElse(chosen -> core.knockback().assign(id, chosen), () -> core.knockback().clear(id));
     }
 }

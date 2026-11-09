@@ -26,6 +26,7 @@ Nenhuma ainda.
 
 | Chave | Padrão | Descrição |
 |---|---|---|
+| `knockback.default` | `skywars` | [Perfil de knockback](../../development/core-api/README.pt-BR.md#knockback) das partidas, por enquanto com os mesmos valores do BedWars. |
 | `modes.<id>.display-name` | `SkyWars Solo`, `SkyWars Duplas` | Nome mostrado aos jogadores. |
 | `modes.<id>.min-players` | `2` (solo), `4` (duplas) | Jogadores necessários para iniciar a contagem regressiva. |
 | `modes.<id>.max-players` | `12` (solo), `24` (duplas) | Jogadores por partida. |

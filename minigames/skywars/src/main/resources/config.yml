@@ -8,3 +8,6 @@ modes:
     min-players: 4
     max-players: 24
     team-size: 2
+
+knockback:
+  default: skywars

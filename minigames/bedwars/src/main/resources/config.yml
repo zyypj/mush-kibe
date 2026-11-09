@@ -74,6 +74,9 @@ modes:
 lobby-group: bedwars-lobby
 default-mode: solo
 
+knockback:
+  default: bedwars
+
 timings:
   respawn-seconds: 5
   rejoin-seconds: 180

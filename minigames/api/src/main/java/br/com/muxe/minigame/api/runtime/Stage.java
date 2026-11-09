@@ -2,6 +2,7 @@ package br.com.muxe.minigame.api.runtime;
 
 import br.com.muxe.core.bukkit.effect.SoundCue;
 import br.com.muxe.core.bukkit.text.Title;
+import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
 import br.com.muxe.minigame.api.settings.HotbarItem;
 import br.com.muxe.minigame.engine.setup.Point;
 import java.time.Duration;
@@ -69,6 +70,8 @@ public interface Stage {
     void rememberReturn(UUID id, Duration timeToLive);
 
     void forgetReturn(UUID id);
+
+    void knockback(UUID id, Optional<KnockbackProfile> profile);
 
     enum Look {
         PLAYER,

@@ -26,6 +26,7 @@ None yet.
 
 | Key | Default | Description |
 |---|---|---|
+| `knockback.default` | `skywars` | [Knockback profile](../../development/core-api/README.md#knockback) of the matches, the same values as BedWars for now. |
 | `modes.<id>.display-name` | `SkyWars Solo`, `SkyWars Duplas` | Name shown to players. |
 | `modes.<id>.min-players` | `2` (solo), `4` (duo) | Players needed to start the countdown. |
 | `modes.<id>.max-players` | `12` (solo), `24` (duo) | Players per match. |

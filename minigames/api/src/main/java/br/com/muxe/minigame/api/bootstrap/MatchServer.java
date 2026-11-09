@@ -89,7 +89,7 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
         HealthDisplay health = new HealthDisplay(messages.get("health-below-name"));
         MatchReturns returns = new MatchReturns(core.store());
         MatchEnvironment environment = new MatchEnvironment(settings, minigame.rules(), messages, core.clock(), ThreadLocalRandom.current(), events,
-            minigame.teamPreferences(), core.parties()::groupsOf);
+            minigame.teamPreferences(), core.parties()::groupsOf, mode -> settings.knockback().profile(mode, core.knockback().profiles()));
         world.start();
         MatchService<A, S> service = new MatchService<>(minigame, modes, catalog, new MatchWorldCells(world),
             match -> new BukkitStage(core, world.world(), match.cell(), health, endTitles, returns, plugin.getLogger()),

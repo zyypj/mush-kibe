@@ -85,7 +85,7 @@ server.listen(new SkyWarsHandlers());
 
 | When | What the API does | Hooks |
 |---|---|---|
-| A player joins | Resets them to survival, says `room-joined` to the room, teleports them to the waiting spawn, gives the waiting hotbar and the scoreboard. | `arrived` |
+| A player joins | Resets them to survival, says `room-joined` to the room, teleports them to the waiting spawn, gives the waiting hotbar, the scoreboard and the knockback profile of the mode (dropped when they leave the room). | `arrived` |
 | The minimum is reached | Runs the [start countdown](../game-engine/README.md#start-countdown), with the titles of `countdown.titles` (no fade in, 20 ticks on screen, 20 ticks fade out), the `countdown` sound and, on the same seconds, `countdown` in the chat (`countdown-one` on the last second). | |
 | The countdown ends | Draws the teams (favourite colours from `Minigame.teamPreferences`), protects everyone, spawns each player on their team spawn, removes the waiting area, says `match-started` and plays `match-start`. Teams nobody joined stop respawning and are out. | `starting`, `spawned`, `started` |
 | Every second | Counts the time, updates the respawn countdown (`died-title` over `respawn-subtitle`, `respawn-subtitle-one` on the last second, without fading so only the number changes, and the same line in the chat), respawns players whose time is up (`respawned` in the chat and as the subtitle), eliminates players who did not return in time, refreshes the scoreboard. | `everySecond`, `playing` |
@@ -196,6 +196,8 @@ Read by `MatchSettings.from(config)` from the game's `config.yml`:
 | `hotbar.teleporter.title`, `hotbar.teleporter.entry-lore` | | Teleporter menu. |
 | `sounds.countdown`, `sounds.match-start`, `sounds.died`, `sounds.eliminated`, `sounds.team-eliminated`, `sounds.match-end`, `sounds.match-end-firework` | | Match sounds. |
 | `end-titles.victory`, `end-titles.defeat` | `VITÓRIA`, `DERROTA` | Word, colours and sound of the end titles. |
+| `knockback.default` | none | Name of the [knockback profile](../../development/core-api/README.md#knockback) of every mode. Without it the server's own knockback is kept. |
+| `knockback.modes.<mode>` | | Profile of one mode, over `knockback.default`. BedWars and SkyWars use `bedwars` and `skywars`. |
 
 Messages, under `messages`: `room-joined`, `room-left`, `countdown`, `countdown-one`, `died-title`, `respawn-subtitle`, `respawn-subtitle-one`, `respawned`, `spectator-subtitle`, `cannot-break`, `reconnected`, `team-eliminated`, `match-started`, `result` (with `{top-<ranking>}` lines), `result-draw`, `result-nobody`, `result-rank-1` to `result-rank-3`, `kill` and `death` (when the game has no death messages of its own), `no-arena`, `left-match`, `spectator-no-target`, `spectator-no-combat`, `global-prefix`, `health-below-name`, `room-requesting`, `room-sending`, `room-created`, `room-unavailable`. Muxe-Core gives `party-leader-only`, `party-too-big` and `party-split` to every game.
 
@@ -227,6 +229,7 @@ BedWars keeps `bedwars.rooms`, `bedwars.join_request` and `bedwars.join_reply`.
 
 - `MatchTest`, `ChatViewTest`, `TeamStatusTest`, `KillCreditTest`, `TimelineTest`, `RankingTest`: the match rules.
 - `MatchRuntimeTest`: the whole lifecycle with a fake `Stage` (joining, countdown, start, deaths in place and in the void, respawns, final kills, breaking blocks, leaving, returning, timeouts, the end and closing).
+- `MatchKnockbackTest`: the knockback profile of the mode given on joining, dropped on leaving and changed for the whole room.
 - `MatchServiceTest`: arriving, reservations, returning, chat, staff commands, idle matches and switching modes.
 - `CosmeticDefaultsTest`, `CosmeticMenuSettingsTest`, `LifetimeTallyTest` and the tests of every scene animation, aura and trail: the cosmetics.
 - `PartyMatchTest`, `PartyCheckTest`, `JoinRoomRequestTest`: party seats, teams, the split warning, gathering and spectators.

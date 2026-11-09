@@ -4,6 +4,7 @@ import br.com.muxe.core.bukkit.cosmetic.animation.Area;
 import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.bukkit.text.Title;
+import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
 import br.com.muxe.minigame.api.match.Match;
 import br.com.muxe.minigame.api.match.MatchPhase;
 import br.com.muxe.minigame.api.match.Participant.State;
@@ -52,6 +53,7 @@ public final class MatchRuntime<S extends MatchState> {
     private final Set<UUID> boards = new HashSet<>();
     private final Set<UUID> watchers = new LinkedHashSet<>();
     private final S state;
+    private Optional<KnockbackProfile> knockback;
     private int seconds;
     private boolean closed;
 
@@ -63,6 +65,7 @@ public final class MatchRuntime<S extends MatchState> {
         this.messages = environment.messages();
         this.board = new MatchBoard(settings.board());
         this.onClose = onClose;
+        this.knockback = environment.knockback().forMode(match.mode().id());
         this.state = opener.apply(this);
     }
 
@@ -84,6 +87,19 @@ public final class MatchRuntime<S extends MatchState> {
 
     public MessageCatalog messages() {
         return messages;
+    }
+
+    public Optional<KnockbackProfile> knockback() {
+        return knockback;
+    }
+
+    public void knockback(KnockbackProfile profile) {
+        knockback = Optional.of(profile);
+        for (UUID id : online()) {
+            if (match.player(id).isPresent()) {
+                stage.knockback(id, knockback);
+            }
+        }
     }
 
     public World world() {
@@ -159,6 +175,7 @@ public final class MatchRuntime<S extends MatchState> {
     public void join(UUID id, String name) {
         Change change = match.join(id, name);
         stage.prepare(id, Look.PLAYER);
+        stage.knockback(id, knockback);
         String joined = messages.get("room-joined", "player", stage.rankColored(id, name),
             "players", String.valueOf(match.players().size()), "max", String.valueOf(match.mode().maxPlayers()));
         Set<UUID> audience = new LinkedHashSet<>(online());
@@ -221,6 +238,7 @@ public final class MatchRuntime<S extends MatchState> {
         Participant player = match.player(id).orElseThrow();
         match.reconnected(player, settings.timings().respawnSeconds());
         forgetReturn(id);
+        stage.knockback(id, knockback);
         ghost(id, false);
         stage.teleport(id, match.arena().spectator());
         stage.showBoard(id);
@@ -403,6 +421,7 @@ public final class MatchRuntime<S extends MatchState> {
 
     public void forget(UUID id) {
         state.left(id);
+        stage.knockback(id, Optional.empty());
         boards.remove(id);
         stage.dropBoard(id);
     }

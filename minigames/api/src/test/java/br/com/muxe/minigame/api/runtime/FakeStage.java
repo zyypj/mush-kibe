@@ -2,6 +2,7 @@ package br.com.muxe.minigame.api.runtime;
 
 import br.com.muxe.core.bukkit.effect.SoundCue;
 import br.com.muxe.core.bukkit.text.Title;
+import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
 import br.com.muxe.minigame.api.settings.HotbarItem;
 import br.com.muxe.minigame.engine.setup.Point;
 import java.time.Duration;
@@ -38,6 +39,7 @@ public final class FakeStage implements Stage {
     public final Map<UUID, Double> knockedUp = new HashMap<>();
     public final Map<UUID, Point> raised = new HashMap<>();
     public final Map<UUID, List<SoundCue>> sounds = new HashMap<>();
+    public final Map<UUID, KnockbackProfile> knockbacks = new HashMap<>();
 
     @Override
     public World world() {
@@ -173,6 +175,15 @@ public final class FakeStage implements Stage {
     @Override
     public void forgetReturn(UUID id) {
         returns.remove(id);
+    }
+
+    @Override
+    public void knockback(UUID id, Optional<KnockbackProfile> profile) {
+        profile.ifPresentOrElse(chosen -> knockbacks.put(id, chosen), () -> knockbacks.remove(id));
+    }
+
+    public Optional<KnockbackProfile> knockbackOf(UUID id) {
+        return Optional.ofNullable(knockbacks.get(id));
     }
 
     public List<String> messagesOf(UUID id) {
