@@ -15,11 +15,11 @@ class PartySettingsTest {
     private Path folder;
 
     @Test
-    void invitesLastSixtySecondsAndOfflineMembersFiveMinutesByDefault() {
+    void invitesLastSixtySecondsAndOfflineMembersThreeMinutesByDefault() {
         PartySettings settings = PartySettings.from(ProxyConfigFile.load(folder));
 
         assertThat(settings.rules().inviteLifetime()).isEqualTo(Duration.ofSeconds(60));
-        assertThat(settings.rules().offlineGrace()).isEqualTo(Duration.ofMinutes(5));
+        assertThat(settings.rules().offlineGrace()).isEqualTo(Duration.ofMinutes(3));
         assertThat(settings.gatherTimeout()).isEqualTo(Duration.ofSeconds(3));
         assertThat(settings.playersPeriod()).isEqualTo(Duration.ofSeconds(3));
     }

@@ -131,7 +131,7 @@ class PartyCoordinatorTest {
 
         parties.disconnected(TADEU.id());
 
-        assertThat(bedwarsNotices).extracting(PartyNotice::key).containsExactly("party-new-leader");
+        assertThat(bedwarsNotices).extracting(PartyNotice::key).containsExactly("party-member-disconnected", "party-new-leader");
         assertThat(lastParty().leader()).isEqualTo(DOBW.id());
     }
 
@@ -140,7 +140,7 @@ class PartyCoordinatorTest {
         formParty();
         players.remove(DOBW);
         parties.disconnected(DOBW.id());
-        network.clock().advance(Duration.ofMinutes(5));
+        network.clock().advance(Duration.ofMinutes(3));
 
         parties.tick();
 

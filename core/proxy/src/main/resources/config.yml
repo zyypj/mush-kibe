@@ -76,7 +76,7 @@ tab-list:
 
 party:
   invite-duration: 60s
-  offline-grace: 5m
+  offline-grace: 3m
   gather-timeout: 3s
   players-period: 3s
 

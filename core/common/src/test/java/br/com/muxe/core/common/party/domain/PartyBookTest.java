@@ -236,8 +236,8 @@ class PartyBookTest {
 
         PartyOutcome outcome = book.disconnected(TADEU.id(), clock.instant());
 
-        assertThat(outcome.notices()).singleElement().satisfies(notice -> {
-            assertThat(notice.key()).isEqualTo("party-new-leader");
+        assertThat(outcome.notices()).extracting(PartyNotice::key).containsExactly("party-member-disconnected", "party-new-leader");
+        assertThat(outcome.notices().get(1)).satisfies(notice -> {
             assertThat(notice.value("player")).hasValue("&5tadeudobw");
             assertThat(notice.recipients()).containsExactlyInAnyOrder(DOBW.id(), ANA.id());
         });
@@ -248,10 +248,39 @@ class PartyBookTest {
     }
 
     @Test
-    void offlineMembersStayForFiveMinutesThenAreRemoved() {
+    void aMemberWhoDisconnectsIsAnnouncedWithTheMinutesToComeBack() {
+        partyOfThree();
+
+        PartyOutcome outcome = book.disconnected(ANA.id(), clock.instant());
+
+        assertThat(outcome.notices()).singleElement().satisfies(notice -> {
+            assertThat(notice.key()).isEqualTo("party-member-disconnected");
+            assertThat(notice.value("player")).hasValue("&5ana");
+            assertThat(notice.value("minutes")).hasValue("3");
+            assertThat(notice.recipients()).containsExactlyInAnyOrder(TADEU.id(), DOBW.id());
+        });
+    }
+
+    @Test
+    void aMemberWhoComesBackIsAnnouncedToTheOthers() {
         partyOfThree();
         book.disconnected(ANA.id(), clock.instant());
-        clock.advance(Duration.ofMinutes(4));
+
+        PartyOutcome outcome = book.connected(ANA);
+
+        assertThat(outcome.notices()).singleElement().satisfies(notice -> {
+            assertThat(notice.key()).isEqualTo("party-member-reconnected");
+            assertThat(notice.value("player")).hasValue("&5ana");
+            assertThat(notice.recipients()).containsExactlyInAnyOrder(TADEU.id(), DOBW.id());
+        });
+        assertThat(book.connected(ANA).notices()).isEmpty();
+    }
+
+    @Test
+    void offlineMembersStayForThreeMinutesThenAreRemoved() {
+        partyOfThree();
+        book.disconnected(ANA.id(), clock.instant());
+        clock.advance(Duration.ofMinutes(2));
         assertThat(book.tick(clock.instant()).notices()).isEmpty();
 
         clock.advance(Duration.ofMinutes(1));
@@ -269,7 +298,7 @@ class PartyBookTest {
     void comingBackInTimeKeepsTheMember() {
         partyOfThree();
         book.disconnected(ANA.id(), clock.instant());
-        clock.advance(Duration.ofMinutes(4));
+        clock.advance(Duration.ofMinutes(2));
         book.connected(ANA);
         clock.advance(Duration.ofMinutes(2));
 
@@ -284,7 +313,7 @@ class PartyBookTest {
         book.disconnected(TADEU.id(), clock.instant());
         book.disconnected(DOBW.id(), clock.instant());
         book.disconnected(ANA.id(), clock.instant());
-        clock.advance(Duration.ofMinutes(5));
+        clock.advance(Duration.ofMinutes(3));
 
         PartyOutcome outcome = book.tick(clock.instant());
 

@@ -69,6 +69,10 @@ final class Party {
         return members.values().stream().map(Member::player).filter(player -> player.name().toLowerCase(Locale.ROOT).equals(wanted)).findFirst();
     }
 
+    Optional<PartyPlayer> player(UUID id) {
+        return Optional.ofNullable(members.get(id)).map(Member::player);
+    }
+
     List<PartyPlayer> players() {
         return members.values().stream().map(Member::player).toList();
     }

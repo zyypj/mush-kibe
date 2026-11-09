@@ -241,9 +241,15 @@ public final class PartyBook {
         if (found.isEmpty()) {
             return PartyOutcome.nothing();
         }
+        Party party = found.get();
+        boolean wasOffline = !party.isOnline(player.id());
         Effects effects = new Effects();
-        found.get().online(player);
-        effects.changed(found.get());
+        party.online(player);
+        effects.changed(party);
+        if (wasOffline) {
+            List<UUID> others = party.online().stream().filter(id -> !id.equals(player.id())).toList();
+            effects.notice(PartyNotice.of(others, "party-member-reconnected", "player", display(player)));
+        }
         return effects.outcome();
     }
 
@@ -257,6 +263,8 @@ public final class PartyBook {
         Effects effects = new Effects();
         party.offline(player, now);
         effects.changed(party);
+        party.player(player).ifPresent(gone -> effects.notice(PartyNotice.of(party.online(), "party-member-disconnected",
+            "player", display(gone), "minutes", String.valueOf(rules.offlineGrace().toMinutes()))));
         if (party.isLeader(player)) {
             party.oldestOnlineExcept(player).ifPresent(next -> {
                 party.leader(next.id());

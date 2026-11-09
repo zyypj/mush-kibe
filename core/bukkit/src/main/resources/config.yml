@@ -1277,6 +1277,8 @@ messages:
   party-closed: "&d[PARTY] {player} &cfechou a party."
   party-offline-removed: "&d[PARTY] {player} &cremoveu {count} jogadores offline da party."
   party-offline-kicked: "&d[PARTY] {player} &cfoi removido da party por ficar offline."
+  party-member-disconnected: "&d[PARTY] {player} &cdesconectou-se e tem {minutes} minutos para voltar."
+  party-member-reconnected: "&d[PARTY] {player} &ereconectou."
   party-summoned: "&d[PARTY] {player} &elevou a party para a sala dele."
   party-invite-expired-sender: "&eO convite de party para {player} &eexpirou."
   party-invite-expired: "&eO convite de party de {player} &eexpirou."

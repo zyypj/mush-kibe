@@ -27,8 +27,8 @@ Os jogadores se juntam em uma party que vale para a rede inteira: convidam uns a
 ### Saindo e ficando offline
 
 - `/party sair` sai da party. Quando o líder sai, o membro online mais antigo vira líder (`<nick> é agora líder da party.`).
-- Um membro que sai da rede continua na party, em vermelho no `/party membros`, por 5 minutos (`party.offline-grace`); depois disso é removido (`<nick> foi removido da party por ficar offline.`). Voltar a tempo o mantém.
-- Quando o líder sai da rede, o membro online mais antigo vira líder na hora. Se ninguém está online, a liderança espera; a regra dos 5 minutos acaba removendo todos.
+- Um membro que sai da rede continua na party, em vermelho no `/party membros`, por 3 minutos (`party.offline-grace`). Os membros online recebem `<nick> desconectou-se e tem 3 minutos para voltar.` (em vermelho, com os minutos tirados de `party.offline-grace`) e, quando o membro volta a tempo, `<nick> reconectou.` (em amarelo). Depois dos 3 minutos o membro é removido (`<nick> foi removido da party por ficar offline.`).
+- Quando o líder sai da rede, o membro online mais antigo vira líder na hora. Se ninguém está online, a liderança espera; a regra dos 3 minutos acaba removendo todos.
 - `/party removeroffline` remove na hora todos os membros offline.
 
 ### Parties abertas
@@ -95,11 +95,11 @@ O tab completa os subcomandos, os jogadores da rede (cada nome do `/party <jogad
 | Chave | Padrão | Descrição |
 |---|---|---|
 | `party.invite-duration` | `60s` | Quanto tempo dura um convite. |
-| `party.offline-grace` | `5m` | Quanto tempo um membro offline fica na party. |
+| `party.offline-grace` | `3m` | Quanto tempo um membro offline fica na party. |
 | `party.gather-timeout` | `3s` | Quanto o proxy espera o servidor do líder responder um teleporte. |
 | `party.players-period` | `3s` | A cada quanto tempo o proxy envia os nomes online para o tab. |
 
-`config.yml` do Muxe-Core, em `messages`: `party-usage` (a lista de uso), `party-invite-sent`, `party-invite` (duas linhas, a última clicável), `party-disbanded`, `party-joined`, `party-kicked`, `party-new-leader`, `party-members`, `party-members-online`, `party-members-offline`, `party-members-separator`, `party-chat`, `party-chat-usage`, `party-left`, `party-you-left`, `party-opened`, `party-closed`, `party-offline-removed`, `party-offline-kicked`, `party-summoned`, `party-invite-expired-sender`, `party-invite-expired`, as recusas (`party-player-not-found`, `party-not-in-party`, `party-already-in-party`, `party-not-leader`, `party-target-in-party`, `party-already-member`, `party-already-invited`, `party-no-invite`, `party-not-member`, `party-member-offline`, `party-invite-self`, `party-kick-self`, `party-already-leader`, `party-not-open`, `party-open-no-permission`, `party-no-offline`), os textos da procura de salas (`party-leader-only`, `party-too-big`, `party-split`) e os do canal (`channel-usage`, `channel-changed`, `channel-name-default`, `channel-name-party`, `channel-no-clan`).
+`config.yml` do Muxe-Core, em `messages`: `party-usage` (a lista de uso), `party-invite-sent`, `party-invite` (duas linhas, a última clicável), `party-disbanded`, `party-joined`, `party-kicked`, `party-new-leader`, `party-members`, `party-members-online`, `party-members-offline`, `party-members-separator`, `party-chat`, `party-chat-usage`, `party-left`, `party-you-left`, `party-opened`, `party-closed`, `party-offline-removed`, `party-offline-kicked`, `party-member-disconnected` (com `{minutes}`), `party-member-reconnected`, `party-summoned`, `party-invite-expired-sender`, `party-invite-expired`, as recusas (`party-player-not-found`, `party-not-in-party`, `party-already-in-party`, `party-not-leader`, `party-target-in-party`, `party-already-member`, `party-already-invited`, `party-no-invite`, `party-not-member`, `party-member-offline`, `party-invite-self`, `party-kick-self`, `party-already-leader`, `party-not-open`, `party-open-no-permission`, `party-no-offline`), os textos da procura de salas (`party-leader-only`, `party-too-big`, `party-split`) e os do canal (`channel-usage`, `channel-changed`, `channel-name-default`, `channel-name-party`, `channel-no-clan`).
 
 ## Pacotes
 
@@ -135,7 +135,7 @@ Nenhuma além das métricas dos pacotes acima.
 
 - [x] Os convites chegam a jogadores em outros servidores, com a linha clicável de aceitar, e expiram em 60 segundos.
 - [x] Só o líder convida, expulsa, transfere, teleporta e remove os offline.
-- [x] Membros offline saem depois de 5 minutos; a liderança passa adiante quando o líder sai.
+- [x] Desconexões e voltas são avisadas, e membros offline saem depois de 3 minutos; a liderança passa adiante quando o líder sai.
 - [x] `/party abrir` exige Ultra+ e `/party entrar` só entra em parties abertas.
 - [x] `/pc` e o canal `party` chegam a todos os membros online; sem party o chat fica normal.
 - [x] Só o líder procura sala, e a party só vai para uma sala com vaga para todos.

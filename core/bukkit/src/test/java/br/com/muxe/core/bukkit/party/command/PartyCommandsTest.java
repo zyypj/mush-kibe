@@ -247,6 +247,15 @@ class PartyCommandsTest {
     }
 
     @Test
+    void disconnectsAndReturnsMatchTheReference() {
+        PartyNotice left = PartyNotice.of(List.of(id(tadeu)), "party-member-disconnected", "player", "&7tadeudobw", "minutes", "3");
+        PartyNotice back = PartyNotice.of(List.of(id(tadeu)), "party-member-reconnected", "player", "&7tadeudobw");
+
+        assertThat(client.texts().lines(left)).containsExactly("§d[PARTY] §7tadeudobw §cdesconectou-se e tem 3 minutos para voltar.");
+        assertThat(client.texts().lines(back)).containsExactly("§d[PARTY] §7tadeudobw §ereconectou.");
+    }
+
+    @Test
     void rawPartyChatIsShownAsItCame() {
         client.deliver(PartyNotice.raw(List.of(id(dobw)), "§d[PARTY] §7tadeu: §f&aoi"));
 
