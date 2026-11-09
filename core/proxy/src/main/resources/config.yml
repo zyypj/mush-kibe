@@ -74,6 +74,12 @@ tab-list:
     - "&eDiscord &bmuxe.com.br/discord"
     - ""
 
+party:
+  invite-duration: 60s
+  offline-grace: 5m
+  gather-timeout: 3s
+  players-period: 3s
+
 geoip:
   enabled: true
   account-id: ""

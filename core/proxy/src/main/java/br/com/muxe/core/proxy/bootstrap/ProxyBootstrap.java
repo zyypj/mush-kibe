@@ -6,6 +6,7 @@ import br.com.muxe.core.common.config.secret.SecretResolver;
 import br.com.muxe.core.common.config.settings.MuxeSettings;
 import br.com.muxe.core.common.config.settings.SettingsLoader;
 import br.com.muxe.core.common.config.source.MapConfigSource;
+import br.com.muxe.core.common.party.domain.PartyBook;
 import br.com.muxe.core.common.runtime.CoreRuntime;
 import br.com.muxe.core.common.runtime.PlatformHooks;
 import br.com.muxe.core.proxy.auth.AccessPolicy;
@@ -15,6 +16,7 @@ import br.com.muxe.core.common.permission.sync.PermissionSync;
 import br.com.muxe.core.proxy.config.AuthenticationSettings;
 import br.com.muxe.core.proxy.config.EditorSettings;
 import br.com.muxe.core.proxy.config.GeoIpSettings;
+import br.com.muxe.core.proxy.config.PartySettings;
 import br.com.muxe.core.proxy.editor.bootstrap.PermissionEditor;
 import br.com.muxe.core.proxy.editor.http.EditorHttpServer;
 import br.com.muxe.core.proxy.config.ProxyConfigFile;
@@ -35,6 +37,10 @@ import br.com.muxe.core.proxy.listener.PreLoginListener;
 import br.com.muxe.core.proxy.load.ProxyServerLoad;
 import br.com.muxe.core.proxy.login.LoginModeResolver;
 import br.com.muxe.core.proxy.packet.ProxyPacketHandlers;
+import br.com.muxe.core.proxy.party.PartyConnectionListener;
+import br.com.muxe.core.proxy.party.PartyCoordinator;
+import br.com.muxe.core.proxy.party.PlayerDisplays;
+import br.com.muxe.core.proxy.party.VelocityPartyNetwork;
 import br.com.muxe.core.proxy.premium.CachedPremiumLookup;
 import br.com.muxe.core.proxy.premium.MojangPremiumLookup;
 import br.com.muxe.core.proxy.premium.PremiumLookup;
@@ -47,6 +53,7 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public final class ProxyBootstrap {
@@ -94,6 +101,7 @@ public final class ProxyBootstrap {
         proxy.getEventManager().register(plugin, new ConnectionListener(gate, access, router, routing, messages));
         proxy.getEventManager().register(plugin, new MotdListener(MotdSettings.from(config)));
         proxy.getEventManager().register(plugin, new TabListListener(TabListSettings.from(config)));
+        startParties(PartySettings.from(config), gate, router);
         startGeoIp(GeoIpSettings.from(config, SecretResolver.system()));
         startEditor(EditorSettings.from(config));
 
@@ -117,6 +125,17 @@ public final class ProxyBootstrap {
             runtime.close();
             runtime = null;
         }
+    }
+
+    private void startParties(PartySettings settings, AuthenticationGate gate, ServerRouter router) {
+        PlayerDisplays displays = new PlayerDisplays();
+        PartyBook book = new PartyBook(settings.rules(), displays::of);
+        PartyCoordinator parties = new PartyCoordinator(runtime.packets(), book, displays, new VelocityPartyNetwork(proxy, gate, router), runtime.clock(),
+            settings.gatherTimeout(), logger);
+        parties.register();
+        proxy.getEventManager().register(plugin, new PartyConnectionListener(parties));
+        proxy.getScheduler().buildTask(plugin, parties::tick).repeat(1, TimeUnit.SECONDS).schedule();
+        proxy.getScheduler().buildTask(plugin, parties::publishOnlinePlayers).repeat(settings.playersPeriod().toMillis(), TimeUnit.MILLISECONDS).schedule();
     }
 
     private void startEditor(EditorSettings settings) {
