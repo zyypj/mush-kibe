@@ -43,6 +43,12 @@ public final class SetupCommand {
         setup.open(player, name, mode);
     }
 
+    @Subcommand(value = "clonar", aliases = "duplicar")
+    public void cloneArena(Player player, @Arg("origem") @Suggest(provider = ARENAS) String source, @Arg("nome") String name,
+                           @Arg("modo") @Suggest(provider = MODES) Optional<String> mode) {
+        setup.cloneArena(player, source, name, mode);
+    }
+
     @Subcommand("ajuda")
     public void helpCommand(Player player) {
         setup.help(player);

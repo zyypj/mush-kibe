@@ -44,6 +44,47 @@ class ArenaDraftTest {
     }
 
     @Test
+    void aCloneKeepsTheMapPointsAndDisplayNameUnderANewNameAndMode() {
+        ArenaDraft solo = ArenaDraft.create("solo_slip", "solo", schema);
+        TeamRule rule = schema.teams("solo");
+        solo.addTeam(TeamColor.AZUL, rule);
+        solo.addTeam(TeamColor.VERDE, rule);
+        solo.set(TestSchema.WAITING, null, Point.block(0, 120, 0));
+        solo.set(TestSchema.VOID, null, Point.block(0, 40, 0));
+        solo.set(TestSchema.SPAWN, TeamColor.VERDE, Point.block(5, 70, 5));
+        solo.rename("Slip Grande");
+
+        ArenaDraft duplas = solo.cloneAs("duplas_slip", "solo", rule);
+
+        assertThat(duplas.name()).isEqualTo("duplas_slip");
+        assertThat(duplas.displayName()).isEqualTo("Slip Grande");
+        assertThat(duplas.teams()).containsExactly(TeamColor.AZUL, TeamColor.VERDE);
+        assertThat(duplas.allPoints()).isEqualTo(solo.allPoints());
+        assertThat(duplas.allNumbers()).isEqualTo(solo.allNumbers());
+        duplas.set(TestSchema.SPAWN, TeamColor.VERDE, Point.block(9, 70, 9));
+        assertThat(solo.points(TestSchema.SPAWN, TeamColor.VERDE)).containsExactly(Point.block(5, 70, 5));
+    }
+
+    @Test
+    void aCloneIntoAFixedTeamModeKeepsOnlyThatModesTeamsAndTheirPoints() {
+        ArenaDraft solo = ArenaDraft.create("solo_slip", "solo", schema);
+        TeamRule rule = schema.teams("solo");
+        solo.addTeam(TeamColor.AZUL, rule);
+        solo.addTeam(TeamColor.VERDE, rule);
+        solo.set(TestSchema.SPAWN, TeamColor.AZUL, Point.block(1, 70, 1));
+        solo.set(TestSchema.SPAWN, TeamColor.VERDE, Point.block(5, 70, 5));
+        solo.set(TestSchema.DIAMOND, null, Point.block(0, 70, 0));
+
+        ArenaDraft duel = solo.cloneAs("1v1_slip", "1v1", schema.teams("1v1"));
+
+        assertThat(duel.mode()).isEqualTo("1v1");
+        assertThat(duel.teams()).containsExactly(TeamColor.AZUL, TeamColor.VERMELHO);
+        assertThat(duel.points(TestSchema.SPAWN, TeamColor.AZUL)).containsExactly(Point.block(1, 70, 1));
+        assertThat(duel.points("spawn.verde")).isEmpty();
+        assertThat(duel.points(TestSchema.DIAMOND, null)).containsExactly(Point.block(0, 70, 0));
+    }
+
+    @Test
     void aSinglePointIsReplacedAndAListGrowsUntilItsMaximum() {
         ArenaDraft draft = ArenaDraft.create("1v1_slip", "1v1", schema);
 

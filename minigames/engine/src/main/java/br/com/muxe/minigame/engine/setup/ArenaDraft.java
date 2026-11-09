@@ -40,6 +40,23 @@ public final class ArenaDraft {
         return copy;
     }
 
+    public ArenaDraft cloneAs(String newName, String newMode, TeamRule rule) {
+        ArenaDraft clone = new ArenaDraft(newName, newMode, displayName);
+        List<TeamColor> kept = rule.isChosen() ? teams.stream().limit(rule.count()).toList() : rule.fixed();
+        clone.restoreTeams(kept);
+        points.forEach((key, list) -> {
+            if (!ofDroppedTeam(key, kept)) {
+                clone.restorePoints(key, list);
+            }
+        });
+        numbers.forEach((key, value) -> {
+            if (!ofDroppedTeam(key, kept)) {
+                clone.restoreNumber(key, value);
+            }
+        });
+        return clone;
+    }
+
     public static ArenaDraft create(String name, String mode, SetupSchema schema) {
         ArenaDraft draft = new ArenaDraft(name, mode, schema.displayNameFromName(name));
         draft.teams.addAll(schema.teams(mode).fixed());
@@ -218,6 +235,16 @@ public final class ArenaDraft {
 
     public void restoreNumber(String key, double value) {
         numbers.put(key, value);
+    }
+
+    private static boolean ofDroppedTeam(String key, List<TeamColor> kept) {
+        for (TeamColor team : TeamColor.values()) {
+            String suffix = "." + team.id();
+            if (!kept.contains(team) && (key.endsWith(suffix) || key.contains(suffix + "."))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public record Change(Type type, int index, int count) {

@@ -361,6 +361,61 @@ public final class SetupService implements Listener {
         });
     }
 
+    public void cloneArena(Player player, String rawSource, String rawName, Optional<String> rawMode) {
+        String source = rawSource.toLowerCase(Locale.ROOT);
+        String name = rawName.toLowerCase(Locale.ROOT);
+        if (!ArenaDraft.isValidName(source) || !ArenaDraft.isValidName(name)) {
+            player.sendMessage(messages.get("setup-invalid-name"));
+            return;
+        }
+        if (source.equals(name)) {
+            player.sendMessage(messages.get("setup-clone-same", "arena", name));
+            return;
+        }
+        if (sessions.containsKey(name) || loading.contains(name)) {
+            player.sendMessage(messages.get("setup-clone-exists", "arena", name));
+            return;
+        }
+        player.sendMessage(messages.get("setup-cloning", "source", source, "arena", name));
+        disk.execute(() -> {
+            try {
+                Optional<StoredArena> stored = arenas.read(source);
+                Optional<MapTemplate> map = arenas.map(source);
+                if (stored.isEmpty() || map.isEmpty()) {
+                    main(() -> player.sendMessage(messages.get("setup-delete-missing", "arena", source)));
+                    return;
+                }
+                if (arenas.read(name).isPresent()) {
+                    main(() -> player.sendMessage(messages.get("setup-clone-exists", "arena", name)));
+                    return;
+                }
+                Optional<String> mode = rawMode.map(value -> value.toLowerCase(Locale.ROOT))
+                    .or(() -> schema.modeFromName(name))
+                    .or(() -> Optional.of(stored.get().draft().mode()))
+                    .filter(schema.modes()::contains);
+                if (mode.isEmpty()) {
+                    main(() -> player.sendMessage(messages.get("setup-unknown-mode", "arena", name, "modes", String.join(", ", schema.modes()))));
+                    return;
+                }
+                ArenaDraft clone = stored.get().draft().cloneAs(name, mode.get(), schema.teams(mode.get()));
+                SetupChecklist checklist = SetupChecklist.of(schema, clone);
+                arenas.save(clone, checklist.isReady(), map.get());
+                main(() -> {
+                    onSaved.accept(name);
+                    if (checklist.isReady()) {
+                        player.sendMessage(messages.get("setup-cloned-ready", "source", source, "arena", name, "mode", mode.get()));
+                    } else {
+                        player.sendMessage(messages.get("setup-cloned-missing", "source", source, "arena", name, "mode", mode.get(),
+                            "missing", String.valueOf(checklist.missingCount())));
+                    }
+                });
+            } catch (Exception exception) {
+                plugin.getLogger().log(Level.WARNING, "Could not clone arena " + source + " to " + name, exception);
+                main(() -> player.sendMessage(messages.get("setup-clone-failed", "error", String.valueOf(exception.getMessage()))));
+            }
+        });
+    }
+
     public void list(Player player) {
         disk.execute(() -> {
             List<List<ChatButton>> lines = new ArrayList<>();
