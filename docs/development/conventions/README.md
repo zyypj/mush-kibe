@@ -75,6 +75,7 @@ Rules:
 - YAML is written in expanded block style, two spaces per level. No inline maps (`{ a: 1 }`) and no inline lists (`[a, b]`).
 - Keys are `kebab-case`.
 - Durations are strings such as `500ms`, `5s`, `2m`, `1h`.
+- Integer settings must be whole numbers in the 32-bit signed range; fractional or out-of-range values are rejected.
 - Secrets are never written in plain text in the defaults. They use `env:NAME` (environment variable) or `file:/path` (a file such as a Docker secret).
 
 ## Messages

@@ -1,6 +1,7 @@
 package br.com.muxe.core.common.config.source;
 
 import br.com.muxe.core.common.config.ConfigException;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -25,12 +26,12 @@ public interface ConfigSource {
             return fallback;
         }
         Object raw = value.get();
-        if (raw instanceof Number number) {
-            return number.intValue();
-        }
         try {
+            if (raw instanceof Number number) {
+                return new BigDecimal(number.toString()).intValueExact();
+            }
             return Integer.parseInt(String.valueOf(raw).trim());
-        } catch (NumberFormatException exception) {
+        } catch (NumberFormatException | ArithmeticException exception) {
             throw ConfigException.invalid(path, raw, "an integer");
         }
     }
@@ -58,7 +59,7 @@ public interface ConfigSource {
         }
         try {
             return DurationParser.parse(String.valueOf(value.get()));
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException | ArithmeticException exception) {
             throw ConfigException.invalid(path, value.get(), "a duration such as 5s");
         }
     }
