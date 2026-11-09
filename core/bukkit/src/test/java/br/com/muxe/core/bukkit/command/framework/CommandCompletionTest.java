@@ -79,4 +79,14 @@ class CommandCompletionTest {
         assertThat(commands.complete(player.player(), "entrar ")).isEmpty();
         assertThat(commands.complete(player.player(), "painel nota ")).isEmpty();
     }
+
+    @Test
+    void aGreedyArgumentKeepsCompletingEveryWord() {
+        commands.register(new SampleCommands.Guests());
+        FakeSender player = FakeSender.named("Steve");
+
+        assertThat(commands.complete(player.player(), "convidar ")).containsExactly("Ana", "Bia");
+        assertThat(commands.complete(player.player(), "convidar Ana ")).containsExactly("Ana", "Bia");
+        assertThat(commands.complete(player.player(), "convidar Ana B")).containsExactly("Bia");
+    }
 }

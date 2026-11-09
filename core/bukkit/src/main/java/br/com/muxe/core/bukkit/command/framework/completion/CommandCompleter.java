@@ -49,7 +49,7 @@ public final class CommandCompleter {
         int position = last - index;
         node.method()
             .filter(method -> method.usableBy(sender))
-            .flatMap(method -> method.argumentAt(position))
+            .flatMap(method -> method.completionAt(position))
             .ifPresent(argument -> {
                 try {
                     found.addAll(argument.suggestions(sender, prefix));

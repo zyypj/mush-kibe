@@ -65,6 +65,13 @@ public final class CommandMethod {
         return index >= 0 && index < arguments.size() ? Optional.of(arguments.get(index)) : Optional.empty();
     }
 
+    public Optional<ArgumentSpec> completionAt(int index) {
+        if (index >= arguments.size() && !arguments.isEmpty() && arguments.getLast().greedy()) {
+            return Optional.of(arguments.getLast());
+        }
+        return argumentAt(index);
+    }
+
     public String syntax(String label) {
         StringBuilder syntax = new StringBuilder("/").append(label);
         if (!path.isEmpty()) {

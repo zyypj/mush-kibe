@@ -99,6 +99,7 @@ Types are added to `Commands` before the commands that use them: `commands.argum
 
 - Subcommands are completed when the sender may run at least one handler under them. Their aliases appear once something is typed.
 - Arguments complete from `@Suggest` or from their type. Text, numbers and plain `String` arguments complete nothing, so passwords are never completed.
+- A `@Greedy` argument with suggestions completes every word typed after it, so `/party <jogadores>` completes each name of the list.
 - Everything is filtered by what was typed, ignoring case, and sorted.
 - Shared providers are registered by name: `commands.suggestions("games", sender -> games)`. `SuggestionRegistry.PLAYERS` (`"players"`) is always there and lists the online players the sender can see.
 - A provider can also read what has been typed for its argument: `SuggestionProvider.suggest(sender, typed)` has a default that calls `suggest(sender)`, and a provider that overrides it (the configuration paths do) can answer one level at a time instead of listing everything.

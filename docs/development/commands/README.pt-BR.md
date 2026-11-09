@@ -99,6 +99,7 @@ Os tipos são adicionados ao `Commands` antes dos comandos que os usam: `command
 
 - Os subcomandos são completados quando quem enviou pode rodar pelo menos um handler abaixo deles. Os aliases aparecem depois que algo é digitado.
 - Os argumentos completam pelo `@Suggest` ou pelo tipo. Textos, números e argumentos `String` simples não completam nada, então senhas nunca são completadas.
+- Um argumento `@Greedy` com sugestões completa cada palavra digitada depois dele, então `/party <jogadores>` completa cada nome da lista.
 - Tudo é filtrado pelo que foi digitado, sem diferenciar maiúsculas, e ordenado.
 - Provedores compartilhados são registrados por nome: `commands.suggestions("games", sender -> games)`. O `SuggestionRegistry.PLAYERS` (`"players"`) sempre existe e lista os jogadores online que quem enviou consegue ver.
 - Um provedor também pode ler o que foi digitado para o argumento: `SuggestionProvider.suggest(sender, typed)` tem uma implementação padrão que chama `suggest(sender)`, e um provedor que a sobrescreve (os caminhos da configuração fazem isso) pode responder um nível por vez em vez de listar tudo.

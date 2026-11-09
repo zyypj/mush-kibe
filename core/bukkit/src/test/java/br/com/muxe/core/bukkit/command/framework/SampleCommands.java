@@ -98,6 +98,17 @@ final class SampleCommands {
         }
     }
 
+    @Command(name = "convidar")
+    public static final class Guests {
+
+        final List<String> calls = new ArrayList<>();
+
+        @Default
+        public void invite(CommandSender sender, @Arg("nomes") @Suggest(provider = "friends") @Greedy String names) {
+            calls.add("invite " + names);
+        }
+    }
+
     @Command(name = "casa", usage = "custom-usage")
     public static final class Home {
 
