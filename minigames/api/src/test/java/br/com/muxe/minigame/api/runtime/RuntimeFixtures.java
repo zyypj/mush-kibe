@@ -82,7 +82,7 @@ public final class RuntimeFixtures {
 
     public static final MessageCatalog MESSAGES = MessageCatalog.of(Map.ofEntries(
         Map.entry("room-joined", "{player} entrou ({players}/{max})"),
-        Map.entry("room-left", "{player} saiu"),
+        Map.entry("room-left", "{player} saiu ({players}/{max})"),
         Map.entry("died-title", "MORREU"),
         Map.entry("respawn-subtitle", "renasce em {seconds} segundos"),
         Map.entry("respawn-subtitle-one", "renasce em 1 segundo"),

@@ -254,7 +254,7 @@ class MatchRuntimeTest {
 
         assertThat(runtime.match().players()).extracting(Participant::id).containsExactly(blue);
         assertThat(runtime.match().phase()).isEqualTo(MatchPhase.WAITING);
-        assertThat(stage.messagesOf(blue)).contains("red saiu");
+        assertThat(stage.messagesOf(blue)).contains("red saiu (1/2)");
         assertThat(stage.boards).doesNotContainKey(red);
     }
 

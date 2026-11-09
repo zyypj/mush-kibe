@@ -437,7 +437,8 @@ public final class MatchRuntime<S extends MatchState> {
     private void leaveBeforeStart(Participant player) {
         Change change = match.leaveBeforeStart(player.id());
         forget(player.id());
-        broadcast(messages.get("room-left", "player", stage.rankColored(player.id(), player.name())));
+        broadcast(messages.get("room-left", "player", stage.rankColored(player.id(), player.name()),
+            "players", String.valueOf(match.players().size()), "max", String.valueOf(match.mode().maxPlayers())));
         countdownChanged(change);
         refreshBoards();
     }

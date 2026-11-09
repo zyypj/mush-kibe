@@ -583,7 +583,7 @@ messages:
     - "&eBata para"
     - "&eguardar!"
   room-joined: "{player} &eentrou na sala (&b{players}&e/&b{max}&e)."
-  room-left: "{player} &esaiu da sala."
+  room-left: "{player} &esaiu da sala (&b{players}&e/&b{max}&e)."
   countdown: "&eO jogo inicia em &c{seconds} &esegundos&e!"
   countdown-one: "&eO jogo inicia em &c1 &esegundo&e!"
   match-started:
