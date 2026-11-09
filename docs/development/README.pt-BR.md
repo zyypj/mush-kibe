@@ -137,12 +137,25 @@ As regras ficam em [`build-logic/src/main/kotlin/ModuleRules.kt`](../../build-lo
 
 ### 1. Suba o PostgreSQL e o Redis
 
+Copie a configuração de exemplo:
+
 ```bash
 cp .env.example .env
+```
+
+No PowerShell do Windows:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Edite o `.env` e defina as suas senhas e um segredo de mensageria com pelo menos 32 caracteres; depois, inicie os serviços:
+
+```bash
 docker compose up -d
 ```
 
-Edite o `.env` antes e defina as suas senhas e um segredo de mensageria com pelo menos 32 caracteres. Os dois serviços escutam apenas em `127.0.0.1`.
+Os dois serviços escutam apenas em `127.0.0.1`.
 
 ### 2. Exporte as mesmas variáveis para os servidores
 
@@ -153,6 +166,16 @@ export MUXE_DATABASE_PASSWORD=...
 export MUXE_REDIS_PASSWORD=...
 export MUXE_MESSAGING_SECRET=...
 ```
+
+No PowerShell do Windows, use os mesmos valores do `.env`:
+
+```powershell
+$env:MUXE_DATABASE_PASSWORD = '<senha do banco>'
+$env:MUXE_REDIS_PASSWORD = '<senha do redis>'
+$env:MUXE_MESSAGING_SECRET = '<segredo de mensageria>'
+```
+
+Essas variáveis valem para a sessão atual do PowerShell e os processos iniciados nela. Defina-as em cada sessão usada para iniciar um servidor.
 
 ### 3. Prepare os servidores
 
