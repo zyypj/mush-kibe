@@ -77,6 +77,400 @@ default-mode: solo
 knockback:
   default: bedwars
 
+custom-room:
+  root: options
+  diamond-currency:
+    one: "Diamante"
+    many: "Diamantes"
+    color: "&b"
+    material: DIAMOND
+  shop-page-title: "Itens da loja ({page}/{pages})"
+  upgrades-page-title: "Melhorias (1/1)"
+  knockback-title: "Alterar knockback"
+  shop-free-text: "&7Altera o preço de todos os itens da loja."
+  upgrades-free-text: "&7Altera o preço de todas as melhorias."
+  pages:
+    options:
+      title: "Opções"
+      rows: 4
+      back-slot: 30
+      entries:
+        team-size:
+          type: stepper
+          slot: 10
+          key: team-size
+          material: SKULL_ITEM
+          data: 3
+          name: "Tamanho do time"
+          description:
+            - "&7A quantidade de jogadores"
+            - "&7por time."
+          default: mode-team-size
+          min: "1"
+          max: mode-players
+          step: 1
+        teams:
+          type: link
+          slot: 11
+          material: BANNER
+          name: "Times"
+          page: teams
+          lore:
+            - "&7Altera a quantidade"
+            - "&7de times, ativa ou desativa"
+            - "&7e renomeia cada um."
+            - " "
+            - "&eClique para ver mais."
+        generators:
+          type: link
+          slot: 12
+          material: FURNACE
+          name: "Geradores"
+          page: generators
+          lore:
+            - "&7Altera a forja e os"
+            - "&7geradores de diamante"
+            - "&7e esmeralda."
+            - " "
+            - "&eClique para ver mais"
+        shop:
+          type: link
+          slot: 13
+          material: EMERALD
+          name: "Loja"
+          page: shop-1
+          lore:
+            - "&7Altera as opções dos"
+            - "&7itens disponíveis na"
+            - "&7loja."
+            - " "
+            - "&eClique para ver mais."
+        upgrades:
+          type: link
+          slot: 14
+          material: DIAMOND
+          name: "Melhorias"
+          page: upgrades
+          lore:
+            - "&7Altera o status e o"
+            - "&7preço das melhorias"
+            - "&7do time."
+            - " "
+            - "&eClique para ver mais."
+        events:
+          type: link
+          slot: 15
+          material: WATCH
+          name: "Eventos"
+          page: events
+          lore:
+            - "&7Altera o tempo e ativa"
+            - "&7ou desativa os eventos"
+            - "&7da partida."
+            - " "
+            - "&eClique para ver mais."
+        items:
+          type: link
+          slot: 16
+          material: CHEST
+          name: "Itens"
+          page: items
+          lore:
+            - "&7Altera as opções dos"
+            - "&7itens da partida."
+            - " "
+            - "&eClique para ver mais"
+        knockback:
+          type: link
+          slot: 19
+          material: STICK
+          name: "Knockback"
+          page: knockback
+          lore:
+            - "&7Valores de impulso dos"
+            - "&7hits."
+            - " "
+            - "&eClique para ver mais."
+        others:
+          type: link
+          slot: 20
+          material: PAPER
+          name: "Outros"
+          page: others
+          lore:
+            - "&7Altera outras opções"
+            - "&7da partida."
+            - " "
+            - "&eClique para ver mais"
+    teams:
+      title: "Times"
+      rows: 4
+      back-slot: 30
+      back-to: options
+      entries:
+        count:
+          type: stepper
+          slot: 10
+          key: teams.count
+          material: BANNER
+          name: "Quantidade de times"
+          description:
+            - "&7Aumente a quantidade"
+            - "&7de times disponíveis"
+            - "&7no mapa."
+          default: mode-teams
+          min: "2"
+          max: mode-teams
+          step: 1
+          amount-from-value: true
+        team-1:
+          type: team
+          slot: 11
+          index: 1
+        team-2:
+          type: team
+          slot: 12
+          index: 2
+        team-3:
+          type: team
+          slot: 13
+          index: 3
+        team-4:
+          type: team
+          slot: 14
+          index: 4
+        team-5:
+          type: team
+          slot: 15
+          index: 5
+        team-6:
+          type: team
+          slot: 16
+          index: 6
+        team-7:
+          type: team
+          slot: 19
+          index: 7
+        team-8:
+          type: team
+          slot: 20
+          index: 8
+    generators:
+      title: "Geradores"
+      rows: 3
+      back-slot: 21
+      back-to: options
+      entries:
+        forge-speed:
+          type: stepper
+          slot: 10
+          key: generators.forge.speed
+          material: FURNACE
+          name: "Velocidade da forja"
+          description:
+            - "&7Altera a velocidade"
+            - "&7de geração da forja."
+          default: "1"
+          min: "0.25"
+          max: "5"
+          step: 0.25
+          format: multiplier
+        diamond:
+          type: toggle
+          slot: 11
+          key: generators.diamond.enabled
+          material: DIAMOND_BLOCK
+          name: "Gerador de Diamante"
+          description:
+            - "&7Ativa ou desativa os"
+            - "&7geradores de Diamante."
+          default: true
+        diamond-speed:
+          type: stepper
+          slot: 12
+          key: generators.diamond.speed
+          material: DIAMOND
+          name: "Velocidade de Diamante"
+          description:
+            - "&7Altera a velocidade"
+            - "&7dos geradores de Diamante."
+          default: "1"
+          min: "0.25"
+          max: "5"
+          step: 0.25
+          format: multiplier
+        diamond-amount:
+          type: stepper
+          slot: 13
+          key: generators.diamond.amount
+          material: DIAMOND
+          name: "Quantidade de Diamante"
+          description:
+            - "&7Altera quantos itens"
+            - "&7os geradores de Diamante"
+            - "&7soltam por vez."
+          default: "1"
+          min: "1"
+          max: "16"
+          step: 1
+        emerald:
+          type: toggle
+          slot: 14
+          key: generators.emerald.enabled
+          material: EMERALD_BLOCK
+          name: "Gerador de Esmeralda"
+          description:
+            - "&7Ativa ou desativa os"
+            - "&7geradores de Esmeralda."
+          default: true
+        emerald-speed:
+          type: stepper
+          slot: 15
+          key: generators.emerald.speed
+          material: EMERALD
+          name: "Velocidade de Esmeralda"
+          description:
+            - "&7Altera a velocidade"
+            - "&7dos geradores de Esmeralda."
+          default: "1"
+          min: "0.25"
+          max: "5"
+          step: 0.25
+          format: multiplier
+        emerald-amount:
+          type: stepper
+          slot: 16
+          key: generators.emerald.amount
+          material: EMERALD
+          name: "Quantidade de Esmeralda"
+          description:
+            - "&7Altera quantos itens"
+            - "&7os geradores de Esmeralda"
+            - "&7soltam por vez."
+          default: "1"
+          min: "1"
+          max: "16"
+          step: 1
+    events:
+      title: "Eventos"
+      rows: 4
+      back-slot: 31
+      back-to: options
+      entries:
+        diamond-2:
+          type: timer
+          slot: 10
+          key: events.diamond-2
+          material: DIAMOND
+          name: "Diamante II"
+        emerald-2:
+          type: timer
+          slot: 11
+          key: events.emerald-2
+          material: EMERALD
+          name: "Esmeralda II"
+        diamond-3:
+          type: timer
+          slot: 12
+          key: events.diamond-3
+          material: DIAMOND_BLOCK
+          name: "Diamante III"
+        emerald-3:
+          type: timer
+          slot: 13
+          key: events.emerald-3
+          material: EMERALD_BLOCK
+          name: "Esmeralda III"
+        beds-destroyed:
+          type: timer
+          slot: 14
+          key: events.beds-destroyed
+          material: BED
+          name: "Sem Camas"
+        dragons:
+          type: timer
+          slot: 15
+          key: events.dragons
+          material: DIAMOND_SWORD
+          name: "Deathmatch"
+        game-end:
+          type: timer
+          slot: 16
+          key: events.game-end
+          material: WATCH
+          name: "Fim do Jogo"
+          toggleable: false
+    items:
+      title: "Itens"
+      rows: 3
+      back-slot: 21
+      back-to: options
+      entries:
+        fireball:
+          type: choice
+          slot: 10
+          key: items.fireball
+          material: FIREBALL
+          name: "Tipo da Bola de fogo"
+          description:
+            - "&7Altere as predefinições"
+            - "&7da bola de fogo."
+          default: default
+          values:
+            default:
+              label: "Padrão"
+            fireball-fight:
+              label: "Fireball Fight"
+        slingshot:
+          type: stepper
+          slot: 11
+          key: items.slingshot-cooldown
+          material: MAGMA_CREAM
+          name: "Recarga do Estilingue"
+          description:
+            - "&7Altera o tempo de espera"
+            - "&7entre os usos do Estilingue."
+          default: "7"
+          min: "0"
+          max: "60"
+          step: 1
+          format: seconds
+    others:
+      title: "Outros"
+      rows: 3
+      back-slot: 21
+      back-to: options
+      entries:
+        totem:
+          type: choice
+          slot: 10
+          key: others.totem
+          material: BED
+          name: "Totem"
+          description:
+            - "&7Altera o bloco que os"
+            - "&7times precisam proteger."
+          default: bed
+          values:
+            bed:
+              label: "Cama"
+              material: BED
+            dragon-egg:
+              label: "Ovo do Dragão"
+              material: DRAGON_EGG
+        creative:
+          type: toggle
+          slot: 11
+          key: others.creative
+          material: GRASS
+          name: "Criativo"
+          description:
+            - "&7Ativa o modo criativo"
+            - "&7para todos os jogadores"
+            - "&7da partida."
+          default: false
+
+
 timings:
   respawn-seconds: 5
   rejoin-seconds: 180
@@ -655,6 +1049,7 @@ messages:
     - "&e/bedwars iniciar &7- Começa a partida sem esperar o mínimo."
     - "&e/bedwars finalizar &7- Encerra a partida sem vencedor."
   inventory-full: "&cSeu inventário está cheio."
+  purchase-limit: "&cVocê atingiu o limite de compras deste item."
   hotbar-slot-full: "&cEste slot da hotbar já tem o máximo de entradas."
   trap-triggered: "&c&lARMADILHA! &cUm inimigo ativou uma armadilha da sua ilha."
   cosmetic-selected: "&aVocê selecionou &f{name}&a."
@@ -881,6 +1276,11 @@ shop:
       one: "Esmeralda"
       many: "Esmeraldas"
       color: "&2"
+    diamond:
+      material: DIAMOND
+      one: "Diamante"
+      many: "Diamantes"
+      color: "&b"
   price: "&7Preço: {color}{amount} {currency}"
   level: "&7Nível: &e{level}"
   quick-buy-add:

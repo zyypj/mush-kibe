@@ -7,6 +7,7 @@ import br.com.muxe.core.bukkit.display.StandPose;
 import br.com.muxe.core.bukkit.hologram.SpawnedHologram;
 import br.com.muxe.core.bukkit.hologram.TextHolograms;
 import br.com.muxe.core.bukkit.item.ItemBuilder;
+import br.com.muxe.minigame.bedwars.custom.CustomRules;
 import br.com.muxe.minigame.bedwars.game.ForgeHeights;
 import br.com.muxe.minigame.bedwars.game.ForgeLayout;
 import br.com.muxe.minigame.bedwars.game.ForgeLayout.Cell;
@@ -47,6 +48,7 @@ final class RoomForges {
     private final TextHolograms holograms = TextHolograms.standard(ForgeHeights.HOLOGRAM_SPACING);
     private final List<Forge> forges = new ArrayList<>();
     private final Map<UUID, Map<Forge, SpawnedHologram>> shown = new HashMap<>();
+    private CustomRules rules = CustomRules.NONE;
     private int diamondTier = 1;
     private int emeraldTier = 1;
 
@@ -60,13 +62,25 @@ final class RoomForges {
         island(team, location, material, rate, ForgeLayout.single());
     }
 
+    void rules(CustomRules value) {
+        rules = value;
+    }
+
     void island(TeamColor team, Location location, Material material, Rate rate, ForgeLayout layout) {
-        forges.add(new Forge(Kind.ISLAND, team, drop(location), material, new GeneratorTimer(rate), rate, layout, null));
+        Rate tuned = rules.island(rate);
+        forges.add(new Forge(Kind.ISLAND, team, drop(location), material, new GeneratorTimer(tuned), tuned, layout, null));
+    }
+
+    private Rate shared(Material material, Rate rate) {
+        return material == Material.DIAMOND ? rules.diamond(rate) : rules.emerald(rate);
     }
 
     void shared(Location location, Material material) {
         Forges config = settings.forges();
-        Rate rate = (material == Material.DIAMOND ? config.diamond() : config.emerald()).getFirst().rate();
+        if (material == Material.DIAMOND ? !rules.diamonds() : !rules.emeralds()) {
+            return;
+        }
+        Rate rate = shared(material, (material == Material.DIAMOND ? config.diamond() : config.emerald()).getFirst().rate());
         String displayId = "forge-" + UUID.randomUUID();
         Location drop = drop(location);
         Material block = material == Material.DIAMOND ? Material.DIAMOND_BLOCK : Material.EMERALD_BLOCK;
@@ -78,7 +92,7 @@ final class RoomForges {
     void tier(Material material, int tier) {
         Forges config = settings.forges();
         List<BedWarsSettings.Tier> tiers = material == Material.DIAMOND ? config.diamond() : config.emerald();
-        Rate rate = tiers.get(Math.min(tier, tiers.size()) - 1).rate();
+        Rate rate = shared(material, tiers.get(Math.min(tier, tiers.size()) - 1).rate());
         if (material == Material.DIAMOND) {
             diamondTier = tier;
         } else {
@@ -111,7 +125,7 @@ final class RoomForges {
             island(team, emeraldAt, Material.EMERALD, settings.forges().islandEmerald());
         }
         if (level >= 4) {
-            Rate emerald = settings.forges().islandEmerald();
+            Rate emerald = rules.island(settings.forges().islandEmerald());
             for (Forge forge : forges) {
                 if (forge.kind() == Kind.ISLAND && team.equals(forge.team()) && forge.material() == Material.EMERALD) {
                     forge.timer().apply(new Rate(emerald.delaySeconds(), emerald.amount() * 2, emerald.spawnLimit() * 2));

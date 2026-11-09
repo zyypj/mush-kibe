@@ -12,6 +12,7 @@ import br.com.muxe.minigame.api.runtime.MatchRuntime;
 import br.com.muxe.minigame.api.runtime.Playing;
 import br.com.muxe.minigame.bedwars.game.Activity;
 import br.com.muxe.minigame.bedwars.game.ChestDeposits;
+import br.com.muxe.minigame.bedwars.custom.CustomRules;
 import br.com.muxe.minigame.bedwars.game.ExplosionKnockback.Source;
 import br.com.muxe.minigame.bedwars.game.ExplosionKnockback;
 import br.com.muxe.minigame.bedwars.game.Foliage;
@@ -106,6 +107,13 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         Player player = event.getPlayer();
         BedWarsMatch state = playing.state();
         ItemStack item = event.getItem();
+        if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.DRAGON_EGG) {
+            event.setCancelled(true);
+            if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+                state.breakBed(player, event.getClickedBlock());
+            }
+            return;
+        }
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock().getType() == Material.ENDER_CHEST && !(player.isSneaking() && item != null)) {
             event.setCancelled(true);
             player.openInventory(state.enderChest(player));
@@ -133,7 +141,7 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
             state.room().player(player.getUniqueId()).useExplosive();
         } else if (rightClick && item.getType() == Material.MAGMA_CREAM) {
             event.setCancelled(true);
-            sling(player);
+            sling(player, state);
         }
     }
 
@@ -165,7 +173,7 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
     @Override
     public void breakBlock(Playing<BedWarsMatch> playing, BlockBreakEvent event) {
         Block block = event.getBlock();
-        if (block.getType() == Material.BED_BLOCK) {
+        if (block.getType() == Material.BED_BLOCK || block.getType() == Material.DRAGON_EGG && playing.state().bedOwner(block).isPresent()) {
             event.setCancelled(true);
             playing.state().breakBed(event.getPlayer(), block);
             return;
@@ -206,7 +214,7 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
     @Override
     public boolean selfDamage(Playing<BedWarsMatch> victim, Entity damager, EntityDamageEvent event) {
         if (damager instanceof Fireball || damager instanceof TNTPrimed) {
-            launch((Player) event.getEntity(), damager);
+            launch((Player) event.getEntity(), damager, victim.state().rules().fireballFight());
             return true;
         }
         return false;
@@ -218,6 +226,15 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         attacker.filter(other -> !other.id().equals(victimId) && event.getDamager() instanceof Fireball)
             .ifPresent(other -> victim.state().room().player(other.id()).addFireballDamage(event.getFinalDamage()));
         bedbugs.bug(event.getDamager()).ifPresent(bug -> victim.state().bedbugHit(victimId, bug.team()));
+        if (event.getDamager() instanceof Fireball && victim.state().rules().fireballFight() && event.getEntity() instanceof Player hit) {
+            event.setDamage(event.getDamage() * CustomRules.FIGHT_DAMAGE);
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                Vector velocity = hit.getVelocity();
+                if (hit.isOnline() && velocity.getY() > 0) {
+                    hit.setVelocity(velocity.setY(velocity.getY() * CustomRules.FIGHT_LIFT));
+                }
+            });
+        }
     }
 
     @Override
@@ -317,8 +334,9 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         }
     }
 
-    private void sling(Player player) {
-        if (!slingshot.use(player.getUniqueId(), core.clock().instant())) {
+    private void sling(Player player, BedWarsMatch state) {
+        Duration cooldown = state.rules().slingshotCooldown(Slingshot.COOLDOWN);
+        if (!slingshot.use(player.getUniqueId(), core.clock().instant(), cooldown)) {
             return;
         }
         consumeOne(player);
@@ -342,18 +360,19 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
                     cancel();
                     return;
                 }
-                ActionBar.send(player, Slingshot.actionBar(left.get()));
+                ActionBar.send(player, Slingshot.actionBar(left.get(), cooldown));
             }
         }.runTaskTimer(plugin, 0L, SLINGSHOT_BAR_TICKS);
     }
 
     @SuppressWarnings("deprecation")
-    private static void launch(Player player, Entity explosive) {
+    private static void launch(Player player, Entity explosive, boolean fight) {
         Location blast = explosive.getLocation();
         Location feet = player.getLocation();
         Vec push = ExplosionKnockback.of(explosive instanceof Fireball ? Source.FIREBALL : Source.TNT,
             new Vec(blast.getX(), blast.getY(), blast.getZ()), new Vec(feet.getX(), feet.getY(), feet.getZ()), player.isOnGround());
-        player.setVelocity(new Vector(push.x(), push.y(), push.z()));
+        double lift = fight && explosive instanceof Fireball ? push.y() * CustomRules.FIGHT_LIFT : push.y();
+        player.setVelocity(new Vector(push.x(), lift, push.z()));
         player.playEffect(EntityEffect.HURT);
     }
 

@@ -14,6 +14,7 @@ import br.com.muxe.core.bukkit.mission.menu.MissionMenus;
 import br.com.muxe.core.bukkit.npc.NpcService;
 import br.com.muxe.core.bukkit.prompt.AnvilPrompts;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
 import br.com.muxe.core.common.mission.MissionModule;
 import br.com.muxe.core.common.mission.domain.Mission;
 import br.com.muxe.minigame.api.arena.ArenaSchema;
@@ -29,6 +30,7 @@ import br.com.muxe.minigame.bedwars.arena.BedWarsArena;
 import br.com.muxe.minigame.bedwars.arena.BedWarsSchema;
 import br.com.muxe.minigame.bedwars.command.BedWarsCommand;
 import br.com.muxe.minigame.bedwars.command.BedWarsConfigCommand;
+import br.com.muxe.minigame.bedwars.custom.BedWarsRoomSchema;
 import br.com.muxe.minigame.bedwars.game.Activity;
 import br.com.muxe.minigame.bedwars.game.Slingshot;
 import br.com.muxe.minigame.bedwars.hotbar.HotbarChoices;
@@ -174,9 +176,15 @@ public final class BedWarsBootstrap {
             new LevelUps(messages.get("level-up"), badges::of), badges);
         MatchServer<BedWarsArena, BedWarsMatch> server = minigame.matches(new BedWarsGame(services, teamColors::preferred), MatchSettings.from(config), cosmetics);
         MatchService<BedWarsArena, BedWarsMatch> rooms = server.service();
+        UpgradeCatalog upgradeCatalog = UpgradeCatalog.from(Objects.requireNonNull(config.getConfigurationSection("upgrades"), "Missing configuration section upgrades"));
+        MatchSettings matchSettings = MatchSettings.from(config);
+        KnockbackProfile knockback = matchSettings.knockback().profile(matchSettings.defaultMode(), core.knockback().profiles()).orElse(KnockbackProfile.VANILLA);
+        String roomSchema = BedWarsRoomSchema.build(Objects.requireNonNull(config.getConfigurationSection("custom-room"), "Missing configuration section custom-room"),
+            shopCatalog, upgradeCatalog, settings.timeline(), knockback);
+        server.customRooms(() -> roomSchema);
         ShopService shop = new ShopService(
             shopCatalog,
-            UpgradeCatalog.from(Objects.requireNonNull(config.getConfigurationSection("upgrades"), "Missing configuration section upgrades")),
+            upgradeCatalog,
             messages,
             settings.sounds(),
             quickBuys,

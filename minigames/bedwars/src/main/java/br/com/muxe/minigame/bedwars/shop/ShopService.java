@@ -16,6 +16,7 @@ import br.com.muxe.minigame.bedwars.invisibility.Invisibility;
 import br.com.muxe.minigame.bedwars.item.ItemNames;
 import br.com.muxe.minigame.bedwars.listener.Bedbugs;
 import br.com.muxe.minigame.bedwars.quickbuy.domain.QuickBuy;
+import br.com.muxe.minigame.bedwars.custom.CustomShop;
 import br.com.muxe.minigame.bedwars.room.BedWarsMatch;
 import br.com.muxe.minigame.bedwars.room.Kits;
 import br.com.muxe.minigame.bedwars.room.Room;
@@ -117,7 +118,15 @@ public final class ShopService {
                 continue;
             }
             ShopItem item = entry.get();
-            menu.button(ITEM_SLOTS.get(index), icon(player, runtime, roomPlayer, item, layout), context -> {
+            Optional<ItemBuilder> shown = icon(player, runtime, roomPlayer, item, layout);
+            if (shown.isEmpty()) {
+                if (quickBuy) {
+                    QuickBuyTexts texts = shop.quickBuyTexts();
+                    menu.button(ITEM_SLOTS.get(index), ItemBuilder.of(Material.STAINED_GLASS_PANE, PANE_RED).name(texts.emptyName()).lore(texts.empty()));
+                }
+                continue;
+            }
+            menu.button(ITEM_SLOTS.get(index), shown.get(), context -> {
                 if (context.isShiftClick()) {
                     editQuickBuy(context.player(), runtime, item, categoryId);
                     return;
@@ -152,13 +161,14 @@ public final class ShopService {
         QuickBuyTexts texts = shop.quickBuyTexts();
         QuickBuy layout = quickBuys.of(player.getUniqueId());
         Menu.Builder menu = Menu.builder(texts.addingTitle()).rows(SHOP_ROWS);
-        menu.button(ADDING_SLOT, icon(player, runtime, roomPlayer, adding, layout).lore(addingLore(adding, texts)));
+        icon(player, runtime, roomPlayer, adding, layout).ifPresent(shown -> menu.button(ADDING_SLOT, shown.lore(addingLore(adding, texts))));
         List<Optional<String>> positions = positions(layout);
         for (int position = 0; position < positions.size(); position++) {
             int chosen = position;
             Optional<ShopItem> current = positions.get(position).map(shop.items()::get);
             ItemBuilder icon = current
-                .map(item -> icon(player, runtime, roomPlayer, item, layout).lore(texts.replace()))
+                .flatMap(item -> icon(player, runtime, roomPlayer, item, layout))
+                .map(shown -> shown.lore(texts.replace()))
                 .orElseGet(() -> ItemBuilder.of(Material.STAINED_GLASS_PANE, PANE_RED).name(texts.emptyName()).lore(texts.emptyAdd()));
             menu.button(ITEM_SLOTS.get(position), icon, context -> {
                 quickBuys.change(context.player().getUniqueId(), quickBuys.of(context.player().getUniqueId()).place(chosen, adding.id()));
@@ -193,10 +203,17 @@ public final class ShopService {
             return;
         }
         RoomTeam team = runtime.state().room().team(found.get().team());
-        int diamonds = runtime.state().resources(player, true).count(Material.DIAMOND);
         Menu.Builder menu = Menu.builder(upgrades.title()).rows(UPGRADE_ROWS);
-        for (Entry entry : upgrades.entries()) {
+        CustomShop custom = runtime.state().shop(shop.currencies());
+        for (Entry base : upgrades.entries()) {
+            Optional<Entry> priced = custom.upgrade(base);
+            if (priced.isEmpty()) {
+                continue;
+            }
+            Entry entry = priced.get();
             int level = team.level(entry.upgrade());
+            Material currency = entry.currency(level);
+            int diamonds = runtime.state().resources(player, currency == Material.DIAMOND).count(currency);
             ItemBuilder icon = ItemBuilder.of(entry.material())
                 .name(entry.name(upgrades.texts(), level, diamonds))
                 .lore(entry.lore(upgrades.texts(), level, diamonds));
@@ -215,7 +232,8 @@ public final class ShopService {
             return;
         }
         int price = entry.nextPrice(level);
-        if (!runtime.state().resources(player, true).take(Material.DIAMOND, price)) {
+        Material currency = entry.currency(level);
+        if (price > 0 && !runtime.state().resources(player, currency == Material.DIAMOND).take(currency, price)) {
             player.sendMessage(Colors.translate(upgrades.texts().cannotAfford()));
             MatchSounds.play(sounds.cannotAfford(), player);
             return;
@@ -233,9 +251,18 @@ public final class ShopService {
         });
     }
 
-    private ItemBuilder icon(Player player, MatchRuntime<BedWarsMatch> runtime, Participant roomPlayer, ShopItem item, QuickBuy layout) {
+    private Optional<Offer> offer(MatchRuntime<BedWarsMatch> runtime, ShopItem item, RoomPlayer roomPlayer) {
+        Offer offer = Offer.of(item, roomPlayer);
+        return runtime.state().shop(shop.currencies()).tier(item, offer.tier()).map(tier -> new Offer(offer.item(), offer.state(), tier, offer.level()));
+    }
+
+    private Optional<ItemBuilder> icon(Player player, MatchRuntime<BedWarsMatch> runtime, Participant roomPlayer, ShopItem item, QuickBuy layout) {
         Room room = runtime.state().room();
-        Offer offer = Offer.of(item, room.player(roomPlayer.id()));
+        Optional<Offer> found = offer(runtime, item, room.player(roomPlayer.id()));
+        if (found.isEmpty()) {
+            return Optional.empty();
+        }
+        Offer offer = found.get();
         Tier tier = offer.tier();
         boolean affordable = runtime.state().resources(player, false).count(tier.currency().material()) >= tier.price();
         boolean locked = item.id().equals("rastreador") && room.islands().stream()
@@ -246,7 +273,7 @@ public final class ShopService {
             .name(offer.name(shop.texts(), affordable && !locked))
             .lore(offer.lore(shop.texts(), affordable, inQuickBuy, locked));
         boolean glow = !item.enchantments().isEmpty() || item.isTiered() || item.type() == ShopCatalog.Type.POTION;
-        return glow ? icon.glow() : icon;
+        return Optional.of(glow ? icon.glow() : icon);
     }
 
     private void buy(ClickContext context, MatchRuntime<BedWarsMatch> runtime, ShopItem item) {
@@ -254,7 +281,11 @@ public final class ShopService {
         Participant participant = runtime.match().player(player.getUniqueId()).orElseThrow();
         RoomPlayer roomPlayer = runtime.state().room().player(participant.id());
         RoomTeam team = runtime.state().room().team(participant.team());
-        Offer offer = Offer.of(item, roomPlayer);
+        Optional<Offer> found = offer(runtime, item, roomPlayer);
+        if (found.isEmpty()) {
+            return;
+        }
+        Offer offer = found.get();
         if (offer.alreadyHad()) {
             player.sendMessage(messages.get("already-have"));
             return;
@@ -265,6 +296,12 @@ public final class ShopService {
         }
         Tier tier = offer.tier();
         PlayerInventory inventory = player.getInventory();
+        CustomShop custom = runtime.state().shop(shop.currencies());
+        if (!custom.allows(item, tier, participant.team().id(), participant.id().toString(), count(inventory, tier.material()))) {
+            player.sendMessage(messages.get("purchase-limit"));
+            MatchSounds.play(sounds.cannotAfford(), player);
+            return;
+        }
         ResourcePool pool = runtime.state().resources(player, false);
         if (pool.count(tier.currency().material()) < tier.price()) {
             player.sendMessage(Colors.translate(shop.texts().cannotAfford().replace("{currency}", tier.currency().many())));
@@ -277,6 +314,7 @@ public final class ShopService {
             return;
         }
         pool.take(tier.currency().material(), tier.price());
+        custom.bought(item, tier, participant.team().id(), participant.id().toString());
         give(player, roomPlayer, team, item, offer);
         if (tier.material() == Material.HARD_CLAY || tier.material() == Material.STAINED_CLAY) {
             roomPlayer.addClay(item.amount());

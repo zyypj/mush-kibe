@@ -20,9 +20,12 @@ import br.com.muxe.minigame.api.runtime.Death.Cause;
 import br.com.muxe.minigame.api.runtime.Death;
 import br.com.muxe.minigame.api.runtime.MatchRuntime;
 import br.com.muxe.minigame.api.runtime.MatchState;
+import br.com.muxe.minigame.api.timeline.Timeline;
 import br.com.muxe.minigame.api.timeline.Timeline.Upcoming;
 import br.com.muxe.minigame.bedwars.arena.BedWarsArena.TeamBase;
 import br.com.muxe.minigame.bedwars.arena.BedWarsArena;
+import br.com.muxe.minigame.bedwars.custom.CustomRules;
+import br.com.muxe.minigame.bedwars.custom.CustomShop;
 import br.com.muxe.minigame.bedwars.game.BedWarsEvent;
 import br.com.muxe.minigame.bedwars.game.ChestAccess;
 import br.com.muxe.minigame.bedwars.game.ChestDeposits;
@@ -35,6 +38,7 @@ import br.com.muxe.minigame.bedwars.mission.MissionRules;
 import br.com.muxe.minigame.bedwars.settings.BedWarsSettings;
 import br.com.muxe.minigame.bedwars.settings.MatchSounds;
 import br.com.muxe.minigame.bedwars.shop.ResourcePool;
+import br.com.muxe.minigame.bedwars.shop.ShopCatalog;
 import br.com.muxe.minigame.bedwars.stats.application.command.RecordMatchCommand;
 import br.com.muxe.minigame.bedwars.stats.application.query.FindPlayerStatsQuery;
 import br.com.muxe.minigame.bedwars.stats.domain.MatchOutcome;
@@ -57,6 +61,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -108,6 +113,10 @@ public final class BedWarsMatch implements MatchState {
     private final Map<UUID, Long> storedXp = new ConcurrentHashMap<>();
     private final Map<UUID, Map<Block, SpawnedHologram>> chestLabels = new HashMap<>();
     private List<Block> islandChests = List.of();
+    private CustomRules rules = CustomRules.NONE;
+    private CustomShop customShop;
+    private Timeline<BedWarsEvent> timeline;
+    private int skipped;
     private MissionTracker missions;
 
     public BedWarsMatch(MatchRuntime<BedWarsMatch> runtime, BedWarsServices services, BedWarsArena arena) {
@@ -119,6 +128,7 @@ public final class BedWarsMatch implements MatchState {
         this.match = runtime.match();
         this.room = new Room(match, arena);
         this.forges = new RoomForges(services.plugin(), settings, services.displays());
+        this.timeline = settings.timeline();
         this.announcer = new KillAnnouncer(services.messageSets(), id -> services.killMessages().of(id, match.code(), ThreadLocalRandom.current()), tally);
     }
 
@@ -132,6 +142,17 @@ public final class BedWarsMatch implements MatchState {
 
     public RoomForges forges() {
         return forges;
+    }
+
+    public CustomRules rules() {
+        return rules;
+    }
+
+    public CustomShop shop(Map<String, ShopCatalog.Currency> currencies) {
+        if (customShop == null) {
+            customShop = new CustomShop(rules, currencies);
+        }
+        return customShop;
     }
 
     @Override
@@ -158,8 +179,16 @@ public final class BedWarsMatch implements MatchState {
 
     @Override
     public void starting() {
-        missions = new MissionTracker(core, GAME, services.missions(), "room " + match.code(), services.plugin().getLogger());
-        missions.begin(match.players().stream().map(Participant::id).toList());
+        rules = CustomRules.of(runtime.control().options());
+        customShop = null;
+        timeline = rules.timeline(settings.timeline());
+        skipped = 0;
+        forges.rules(rules);
+        missions = null;
+        if (!rules.custom()) {
+            missions = new MissionTracker(core, GAME, services.missions(), "room " + match.code(), services.plugin().getLogger());
+            missions.begin(match.players().stream().map(Participant::id).toList());
+        }
         for (TeamColor color : room.islands()) {
             if (match.team(color).members().isEmpty()) {
                 removeBed(color);
@@ -184,12 +213,24 @@ public final class BedWarsMatch implements MatchState {
         }
         arena.extraIron().forEach(point -> forges.island(null, runtime.location(point), Material.IRON_INGOT, settings.forges().iron(1)));
         arena.extraGold().forEach(point -> forges.island(null, runtime.location(point), Material.GOLD_INGOT, settings.forges().gold()));
+        if (rules.dragonEgg()) {
+            for (TeamColor color : room.islands()) {
+                if (room.bedAlive(color)) {
+                    removeBed(color);
+                    runtime.location(room.arena().teams().get(color).bed()).getBlock().setType(Material.DRAGON_EGG, false);
+                }
+            }
+        }
     }
 
     @Override
     public void spawned(Participant participant) {
-        runtime.player(participant.id()).ifPresent(player ->
-            Kits.spawnKit(player, room.player(participant.id()), room.team(participant.team()), settings.items()));
+        runtime.player(participant.id()).ifPresent(player -> {
+            Kits.spawnKit(player, room.player(participant.id()), room.team(participant.team()), settings.items());
+            if (rules.creative()) {
+                player.setGameMode(GameMode.CREATIVE);
+            }
+        });
     }
 
     @Override
@@ -202,7 +243,7 @@ public final class BedWarsMatch implements MatchState {
         if (missions != null) {
             missions.check(id -> missionTotals(id, Optional.empty()));
         }
-        for (BedWarsEvent event : settings.timeline().dueAt(match.elapsed())) {
+        for (BedWarsEvent event : timeline.dueAt(match.elapsed() + skipped)) {
             runEvent(event);
             if (match.phase() != MatchPhase.PLAYING) {
                 return;
@@ -288,7 +329,24 @@ public final class BedWarsMatch implements MatchState {
 
     @Override
     public Optional<Upcoming> upcoming() {
-        return settings.timeline().next(match.elapsed());
+        return timeline.next(match.elapsed() + skipped);
+    }
+
+    @Override
+    public Optional<String> skipEvent() {
+        int now = match.elapsed() + skipped;
+        Optional<Timeline.Entry<BedWarsEvent>> next = timeline.entries().stream().filter(entry -> entry.at() > now).findFirst();
+        if (next.isEmpty()) {
+            return Optional.empty();
+        }
+        skipped += next.get().at() - now;
+        for (BedWarsEvent event : timeline.dueAt(next.get().at())) {
+            runEvent(event);
+            if (match.phase() != MatchPhase.PLAYING) {
+                break;
+            }
+        }
+        return Optional.of(next.get().name());
     }
 
     @Override
@@ -327,12 +385,16 @@ public final class BedWarsMatch implements MatchState {
         }
         List<Participant> lost = room.breakBed(owner.get(), player);
         Optional<BedFrame> frame = bedFrame(owner.get());
-        removeBed(owner.get());
+        if (block.getType() == Material.DRAGON_EGG) {
+            block.setType(Material.AIR, false);
+        } else {
+            removeBed(owner.get());
+        }
         frame.ifPresent(bed -> services.bedBreaks().broken(breaker, runtime.world(), bed, runtime.onlinePlayers()));
         MatchSounds.play(settings.sounds().bedDestroyed(), breaker);
         match.members(owner.get()).forEach(member -> Optional.ofNullable(Bukkit.getPlayer(member.id()))
             .ifPresent(victim -> MatchSounds.play(settings.sounds().bedLost(), victim)));
-        runtime.broadcast(announcer.bed(player.id(), runtime.coloredName(player), Colors.translate(owner.get().color()), owner.get().displayName()));
+        runtime.broadcast(announcer.bed(player.id(), runtime.coloredName(player), Colors.translate(owner.get().color()), match.teamName(owner.get())));
         breaker.sendMessage(messages.get("xp", "xp", String.valueOf(settings.xp().bedDestroyed())));
         player.addXp(settings.xp().bedDestroyed());
         for (Participant gone : lost) {
@@ -346,6 +408,15 @@ public final class BedWarsMatch implements MatchState {
     }
 
     public Optional<TeamColor> bedOwner(Block block) {
+        if (block.getType() == Material.DRAGON_EGG && rules.dragonEgg()) {
+            for (Map.Entry<TeamColor, TeamBase> entry : room.arena().teams().entrySet()) {
+                Location totem = runtime.location(entry.getValue().bed());
+                if (totem.getBlockX() == block.getX() && totem.getBlockY() == block.getY() && totem.getBlockZ() == block.getZ()) {
+                    return Optional.of(entry.getKey());
+                }
+            }
+            return Optional.empty();
+        }
         if (block.getType() != Material.BED_BLOCK) {
             return Optional.empty();
         }
@@ -489,7 +560,7 @@ public final class BedWarsMatch implements MatchState {
             return true;
         }
         Optional<TeamColor> owner = chestOwner(chest);
-        player.sendMessage(messages.get("chest-locked", "team-color", Colors.translate(owner.get().color()), "team", owner.get().displayName()));
+        player.sendMessage(messages.get("chest-locked", "team-color", Colors.translate(owner.get().color()), "team", match.teamName(owner.get())));
         return false;
     }
 

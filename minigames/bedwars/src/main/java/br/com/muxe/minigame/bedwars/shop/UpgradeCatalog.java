@@ -30,7 +30,8 @@ public record UpgradeCatalog(String title, Texts texts, List<Entry> entries) {
                 Upgrade.valueOf(entry.getString("upgrade", "").toUpperCase(Locale.ROOT)),
                 entry.getBoolean("single", false),
                 entry.getStringList("description"),
-                tiers
+                tiers,
+                List.of()
             ));
         }
         return new UpgradeCatalog(section.getString("title", "Melhorias do Time"), new Texts(
@@ -48,11 +49,34 @@ public record UpgradeCatalog(String title, Texts texts, List<Entry> entries) {
     public record Tier(String label, String extra, int price) {
     }
 
-    public record Entry(String id, int slot, Material material, String name, Upgrade upgrade, boolean single, List<String> description, List<Tier> tiers) {
+    public record Cost(Material material, String text) {
+    }
+
+    public record Entry(String id, int slot, Material material, String name, Upgrade upgrade, boolean single, List<String> description, List<Tier> tiers,
+                        List<Cost> costs) {
 
         public Entry {
             description = List.copyOf(description);
             tiers = List.copyOf(tiers);
+            costs = List.copyOf(costs);
+        }
+
+        public Entry priced(List<Integer> prices, List<Cost> changedCosts) {
+            List<Tier> changed = new ArrayList<>();
+            for (int index = 0; index < tiers.size(); index++) {
+                Tier tier = tiers.get(index);
+                String label = tier.label();
+                if (!single) {
+                    int comma = label.lastIndexOf(',');
+                    label = (comma < 0 ? label : label.substring(0, comma)) + ", " + changedCosts.get(index).text();
+                }
+                changed.add(new Tier(label, single ? tier.extra() : null, prices.get(index)));
+            }
+            return new Entry(id, slot, material, name, upgrade, single, description, changed, changedCosts);
+        }
+
+        public Material currency(int level) {
+            return costs.isEmpty() ? Material.DIAMOND : costs.get(Math.min(level, costs.size() - 1)).material();
         }
 
         public boolean maxed(int level) {
@@ -75,7 +99,9 @@ public record UpgradeCatalog(String title, Texts texts, List<Entry> entries) {
         public List<String> lore(Texts texts, int level, int diamonds) {
             List<String> lore = new ArrayList<>(description);
             lore.add(" ");
-            if (single) {
+            if (single && !costs.isEmpty()) {
+                lore.add(texts.price().replace("&b{amount} {currency}", costs.getFirst().text()));
+            } else if (single) {
                 int price = tiers.getFirst().price();
                 lore.add(texts.price().replace("{amount}", String.valueOf(price)).replace("{currency}", price == 1 ? texts.diamondOne() : texts.diamondMany()));
             } else {

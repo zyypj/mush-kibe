@@ -21,7 +21,6 @@ public final class Slingshot {
     static final double FORWARD = 1.5625;
     static final double LIFT = 1.0;
     private static final String LABEL = "ESTILINGUE:";
-    private static final long TENTHS = COOLDOWN.toMillis() / 100;
 
     private final Map<UUID, Instant> readyAt = new HashMap<>();
 
@@ -30,10 +29,14 @@ public final class Slingshot {
     }
 
     public boolean use(UUID player, Instant now) {
+        return use(player, now, COOLDOWN);
+    }
+
+    public boolean use(UUID player, Instant now, Duration cooldown) {
         if (remaining(player, now).isPresent()) {
             return false;
         }
-        readyAt.put(player, now.plus(COOLDOWN));
+        readyAt.put(player, now.plus(cooldown));
         return true;
     }
 
@@ -50,8 +53,13 @@ public final class Slingshot {
     }
 
     public static String actionBar(Duration remaining) {
+        return actionBar(remaining, COOLDOWN);
+    }
+
+    public static String actionBar(Duration remaining, Duration cooldown) {
+        long total = Math.max(1, cooldown.toMillis() / 100);
         long tenths = (remaining.toMillis() + 99) / 100;
-        int underlined = (int) Math.min(LABEL.length(), (LABEL.length() * tenths + TENTHS - 1) / TENTHS);
+        int underlined = (int) Math.min(LABEL.length(), (LABEL.length() * tenths + total - 1) / total);
         StringBuilder text = new StringBuilder();
         if (underlined > 0) {
             text.append("§c§n§l").append(LABEL, 0, underlined);
