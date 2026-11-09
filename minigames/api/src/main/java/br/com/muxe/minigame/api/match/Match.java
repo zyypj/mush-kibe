@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,16 +27,20 @@ import java.util.random.RandomGenerator;
 public final class Match {
 
     private final String code;
-    private final GameMode mode;
+    private GameMode mode;
     private final MatchArena arena;
     private final Cell cell;
-    private final StartCountdown countdown;
+    private StartCountdown countdown;
+    private final boolean respawns;
     private final KillCredit credit = new KillCredit();
     private final Map<UUID, Participant> players = new LinkedHashMap<>();
     private final Map<TeamColor, MatchTeam> teams = new LinkedHashMap<>();
     private final Set<UUID> unranked = new HashSet<>();
     private final Set<Long> placed = new HashSet<>();
+    private final Map<TeamColor, String> teamNames = new HashMap<>();
     private MatchPhase phase = MatchPhase.WAITING;
+    private String label;
+    private boolean manual;
     private boolean forced;
     private int startingTeams;
     private int elapsed;
@@ -45,12 +50,71 @@ public final class Match {
     private Instant startedAt;
 
     public Match(String code, GameMode mode, MatchArena arena, Cell cell, boolean respawns) {
+        this(code, mode, arena, cell, respawns, arena.teamColors());
+    }
+
+    public Match(String code, GameMode mode, MatchArena arena, Cell cell, boolean respawns, List<TeamColor> colors) {
         this.code = code;
+        this.label = code;
         this.mode = mode;
         this.arena = arena;
         this.cell = cell;
         this.countdown = new StartCountdown(mode);
-        arena.teamColors().forEach(color -> teams.put(color, new MatchTeam(color, respawns)));
+        this.respawns = respawns;
+        colors.forEach(color -> teams.put(color, new MatchTeam(color, respawns)));
+    }
+
+    public boolean reshape(GameMode changed, List<TeamColor> colors) {
+        if (!phase.beforeStart() || players.size() > changed.maxPlayers()) {
+            return false;
+        }
+        mode = changed;
+        countdown = new StartCountdown(changed);
+        phase = MatchPhase.WAITING;
+        forced = false;
+        teams.clear();
+        colors.forEach(color -> teams.put(color, new MatchTeam(color, respawns)));
+        return true;
+    }
+
+    public String label() {
+        return label;
+    }
+
+    public void label(String value) {
+        label = value;
+    }
+
+    public boolean manual() {
+        return manual;
+    }
+
+    public void manual(boolean value) {
+        manual = value;
+    }
+
+    public String teamName(TeamColor color) {
+        return teamNames.getOrDefault(color, color.displayName());
+    }
+
+    public char teamLetter(TeamColor color) {
+        String name = teamName(color);
+        return name.isEmpty() ? color.letter() : name.charAt(0);
+    }
+
+    public void teamNames(Map<TeamColor, String> names) {
+        teamNames.clear();
+        teamNames.putAll(names);
+    }
+
+    public boolean pause() {
+        if (phase != MatchPhase.STARTING) {
+            return false;
+        }
+        countdown.cancel();
+        phase = MatchPhase.WAITING;
+        forced = false;
+        return true;
     }
 
     public String code() {
@@ -375,7 +439,7 @@ public final class Match {
     }
 
     private Change updateCountdown() {
-        if (forced) {
+        if (forced || manual) {
             return Change.NONE;
         }
         Change change = countdown.players(players.size());

@@ -54,6 +54,7 @@ public final class MatchRuntime<S extends MatchState> {
     private final Set<UUID> watchers = new LinkedHashSet<>();
     private final S state;
     private Optional<KnockbackProfile> knockback;
+    private RoomControl control = RoomControl.STANDARD;
     private int seconds;
     private boolean closed;
 
@@ -87,6 +88,20 @@ public final class MatchRuntime<S extends MatchState> {
 
     public MessageCatalog messages() {
         return messages;
+    }
+
+    public RoomControl control() {
+        return control;
+    }
+
+    public void control(RoomControl value) {
+        control = value;
+    }
+
+    public void giveWaitingItems(UUID id) {
+        if (match.phase().beforeStart() && match.player(id).isPresent()) {
+            stage.waitingItems(id, control.waitingItems(id, settings.waitingHotbar().items()));
+        }
     }
 
     public Optional<KnockbackProfile> knockback() {
@@ -182,7 +197,7 @@ public final class MatchRuntime<S extends MatchState> {
         audience.add(id);
         audience.forEach(viewer -> stage.message(viewer, joined));
         stage.teleport(id, match.arena().waitingSpawn());
-        stage.waitingItems(id, settings.waitingHotbar().items());
+        stage.waitingItems(id, control.waitingItems(id, settings.waitingHotbar().items()));
         stage.showBoard(id);
         boards.add(id);
         state.arrived(id);
@@ -271,7 +286,9 @@ public final class MatchRuntime<S extends MatchState> {
                 forgetLostReturns();
                 match.tick();
                 int restart = settings.timings().restartSeconds();
-                if (match.endingFor() == restart) {
+                if (match.endingFor() == restart && control.restartsAtEnd()) {
+                    control.restart();
+                } else if (match.endingFor() == restart) {
                     online().forEach(id -> stage.sendTo(id, settings.lobbyGroup()));
                 } else if (match.endingFor() >= restart + CLOSE_AFTER_RESTART) {
                     close();
@@ -354,7 +371,7 @@ public final class MatchRuntime<S extends MatchState> {
         state.standingsChanged();
         for (TeamColor color : match.teams().keySet()) {
             if (match.status(color).isEliminated() && announcedEliminations.add(color)) {
-                broadcast(messages.get("team-eliminated", "team-color", Colors.translate(color.color()), "team", color.displayName()));
+                broadcast(messages.get("team-eliminated", "team-color", Colors.translate(color.color()), "team", match.teamName(color)));
                 online().forEach(id -> stage.sound(id, settings.sounds().teamEliminated()));
             }
         }
@@ -369,6 +386,14 @@ public final class MatchRuntime<S extends MatchState> {
         }
         stage.message(id, messages.get("cannot-break"));
         return false;
+    }
+
+    public boolean pauseCountdown() {
+        boolean paused = match.pause();
+        if (paused) {
+            refreshBoards();
+        }
+        return paused;
     }
 
     public boolean forceStart(int seconds) {
@@ -464,10 +489,15 @@ public final class MatchRuntime<S extends MatchState> {
 
     private void start() {
         Instant now = environment.clock().instant();
-        List<List<UUID>> parties = environment.parties().groupsOf(match.joinOrder());
-        match.start(parties, environment.preferences().preferred(match.joinOrder()), environment.random(), now);
+        List<UUID> watching = match.joinOrder().stream().filter(control.spectators()::contains).toList();
+        watching.forEach(match::forget);
+        List<List<UUID>> parties = control.parties(environment.parties().groupsOf(match.joinOrder()));
+        match.start(parties, control.preferences(environment.preferences().preferred(match.joinOrder())), environment.random(), now);
         Set<UUID> split = match.splitParties(parties);
         match.unrank(split);
+        if (!control.ranked()) {
+            match.unrank(match.joinOrder());
+        }
         match.protectAll(now.plusSeconds(settings.timings().respawnProtectionSeconds()));
         state.starting();
         for (UUID id : online()) {
@@ -483,6 +513,7 @@ public final class MatchRuntime<S extends MatchState> {
         if (corners.size() >= 2) {
             stage.erase(corners.get(0), corners.get(1));
         }
+        watching.forEach(this::watch);
         state.started();
         refreshBoards();
         messages.lines("match-started").forEach(this::broadcast);
@@ -575,7 +606,7 @@ public final class MatchRuntime<S extends MatchState> {
             return messages.lines("result-draw", "time", time);
         }
         List<String> lines = new ArrayList<>();
-        for (String line : messages.lines("result", "team-color", Colors.translate(winner.get().color()), "team", winner.get().displayName(), "time", time)) {
+        for (String line : messages.lines("result", "team-color", Colors.translate(winner.get().color()), "team", match.teamName(winner.get()), "time", time)) {
             int start = line.indexOf("{top-");
             int finish = start < 0 ? -1 : line.indexOf('}', start);
             if (finish > start) {

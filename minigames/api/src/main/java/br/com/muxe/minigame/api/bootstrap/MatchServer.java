@@ -8,6 +8,7 @@ import br.com.muxe.minigame.api.bukkit.BukkitStage;
 import br.com.muxe.minigame.api.bukkit.MatchTicker;
 import br.com.muxe.minigame.api.bukkit.MatchWorldCells;
 import br.com.muxe.minigame.api.command.GlobalChatCommand;
+import br.com.muxe.minigame.api.customroom.bukkit.CustomRoomServer;
 import br.com.muxe.minigame.api.listener.GameHandlers;
 import br.com.muxe.minigame.api.listener.MatchListener;
 import br.com.muxe.minigame.api.match.MatchArena;
@@ -36,6 +37,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -127,6 +129,13 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
         connector.start();
         publisher.onPublish(connector.directory()::update);
         return connector;
+    }
+
+    public CustomRoomServer<S> customRooms(Supplier<String> schema) {
+        CustomRoomServer<S> server = new CustomRoomServer<>(plugin, core, service.minigame().id(), service, schema,
+            service.environment().settings().lobbyGroup(), this::moveToReserved);
+        server.start(commands);
+        return server;
     }
 
     public void listen(GameHandlers<S> handlers) {

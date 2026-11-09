@@ -53,6 +53,10 @@ public final class StartCountdown {
         remaining = remaining < 0 ? seconds : Math.min(remaining, seconds);
     }
 
+    public void cancel() {
+        remaining = -1;
+    }
+
     public OptionalInt remaining() {
         return remaining < 0 ? OptionalInt.empty() : OptionalInt.of(remaining);
     }

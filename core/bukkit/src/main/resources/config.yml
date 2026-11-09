@@ -1694,6 +1694,7 @@ custom-room:
       slot: 7
       material: BREWING_STAND_ITEM
       name: "&aMenu da sala &7(/menu)"
+  lobby-group: lobby
   code-suffix: " (C)"
 
 knockback:

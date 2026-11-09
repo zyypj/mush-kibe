@@ -57,6 +57,13 @@ public interface MatchState {
         return Map.of();
     }
 
+    default Optional<String> skipEvent() {
+        return Optional.empty();
+    }
+
+    default void optionsChanged() {
+    }
+
     default Optional<Upcoming> upcoming() {
         return Optional.empty();
     }

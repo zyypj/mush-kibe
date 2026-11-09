@@ -17,6 +17,7 @@ import br.com.muxe.minigame.engine.arena.LoadedArena;
 import br.com.muxe.minigame.engine.match.StartCountdown;
 import br.com.muxe.minigame.engine.mode.GameMode;
 import br.com.muxe.minigame.engine.room.RoomCodes;
+import br.com.muxe.minigame.engine.team.TeamColor;
 import br.com.muxe.minigame.engine.world.cell.Cell;
 import java.time.Duration;
 import java.time.Instant;
@@ -30,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,6 +56,7 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
     private final Reservations reservations = new Reservations(RESERVATION);
     private final Map<UUID, Watch> watching = new ConcurrentHashMap<>();
     private final Set<UUID> shouting = ConcurrentHashMap.newKeySet();
+    private final Set<String> hidden = ConcurrentHashMap.newKeySet();
     private volatile Map<UUID, ChatView> chat = Map.of();
     private volatile int activeMatches;
 
@@ -182,7 +185,7 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
             runtime.match().code(),
             runtime.match().mode().id(),
             runtime.match().arena().name(),
-            runtime.match().acceptsPlayers(),
+            runtime.match().acceptsPlayers() && !hidden.contains(runtime.match().code()),
             runtime.match().players().size() + reservations.pending(runtime.match().code(), now),
             runtime.match().mode().maxPlayers()
         )).toList();
@@ -327,8 +330,56 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
         }
     }
 
+    public Optional<MatchRuntime<S>> room(String code) {
+        return Optional.ofNullable(rooms.get(code));
+    }
+
+    public Optional<MatchRuntime<S>> openPrivate(Optional<String> code, String mode, List<String> arenas, RoomShape shape, Consumer<MatchRuntime<S>> prepare) {
+        GameMode base = modes.get(mode);
+        if (base == null) {
+            return Optional.empty();
+        }
+        List<LoadedArena> candidates = catalog.ofMode(mode).stream().filter(loaded -> arenas.isEmpty() || arenas.contains(loaded.name())).toList();
+        if (candidates.isEmpty()) {
+            candidates = catalog.ofMode(mode);
+        }
+        if (candidates.isEmpty()) {
+            return Optional.empty();
+        }
+        LoadedArena loaded = candidates.get(environment.random().nextInt(candidates.size()));
+        A arena;
+        try {
+            arena = minigame.arena(loaded);
+        } catch (RuntimeException exception) {
+            logger.log(Level.WARNING, "Arena " + loaded.name() + " cannot be played", exception);
+            return Optional.empty();
+        }
+        String chosen = code.filter(wanted -> !rooms.containsKey(wanted)).orElseGet(() -> codes.next(rooms.keySet()));
+        Cell cell = cells.allocate(loaded.map());
+        Match match = new Match(chosen, shape.mode(arena.teamColors()), arena, cell, minigame.rules().respawn(), shape.teams(arena.teamColors()));
+        hidden.add(chosen);
+        MatchRuntime<S> runtime = new MatchRuntime<>(match, stages.apply(match), environment, this::closed, opened -> minigame.open(opened, arena));
+        prepare.accept(runtime);
+        rooms.put(chosen, runtime);
+        return Optional.of(runtime);
+    }
+
+    public void hold(UUID player, MatchRuntime<S> runtime) {
+        Instant now = environment.clock().instant();
+        reservations.take(player, now);
+        reservations.hold(player, runtime.match().code(), runtime.match().mode().id(), Optional.of(runtime.match().arena().name()), now);
+    }
+
+    public void place(UUID id, String name, MatchRuntime<S> runtime) {
+        leave(id);
+        byPlayer.put(id, runtime.match().code());
+        runtime.join(id, name);
+        refreshChat();
+    }
+
     private void join(UUID id, String name, String mode, Optional<String> arena, Optional<String> code) {
-        MatchRuntime<S> runtime = pick(mode, arena, code).or(() -> create(mode, arena)).or(() -> pick(mode, Optional.empty(), Optional.empty())).orElse(null);
+        MatchRuntime<S> runtime = code.filter(hidden::contains).map(rooms::get).filter(found -> found.match().acceptsPlayers())
+            .or(() -> pick(mode, arena, code)).or(() -> create(mode, arena)).or(() -> pick(mode, Optional.empty(), Optional.empty())).orElse(null);
         if (runtime == null) {
             tell.accept(id, environment.messages().get("no-arena", "mode", modeName(mode)));
             return;
@@ -349,7 +400,11 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
     }
 
     private void closed(MatchRuntime<S> runtime) {
+        if (rooms.get(runtime.match().code()) != runtime) {
+            return;
+        }
         rooms.remove(runtime.match().code());
+        hidden.remove(runtime.match().code());
         byPlayer.values().removeIf(code -> code.equals(runtime.match().code()));
         try {
             cells.release(runtime.match().cell());
@@ -392,5 +447,12 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
     }
 
     private record Watch(String code, Instant expiresAt) {
+    }
+
+    public interface RoomShape {
+
+        GameMode mode(List<TeamColor> arenaTeams);
+
+        List<TeamColor> teams(List<TeamColor> arenaTeams);
     }
 }

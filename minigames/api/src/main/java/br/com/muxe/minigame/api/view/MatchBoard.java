@@ -44,8 +44,8 @@ public final class MatchBoard {
         };
         return settings.team()
             .replace("{color}", color.color())
-            .replace("{letter}", String.valueOf(color.letter()))
-            .replace("{name}", color.displayName())
+            .replace("{letter}", String.valueOf(match.teamLetter(color)))
+            .replace("{name}", match.teamName(color))
             .replace("{status}", mark)
             .replace("{you}", viewerTeam.filter(color::equals).isPresent() ? settings.you() : "");
     }
@@ -66,7 +66,7 @@ public final class MatchBoard {
                 continue;
             }
             String filled = line
-                .replace("{code}", match.code())
+                .replace("{code}", match.label())
                 .replace("{map}", match.arena().displayName())
                 .replace("{players}", String.valueOf(match.players().size()))
                 .replace("{max}", String.valueOf(match.mode().maxPlayers()))
