@@ -4,9 +4,19 @@ import br.com.muxe.core.common.messaging.packet.PacketRegistry;
 import br.com.muxe.core.common.network.auth.AuthStatusRequest;
 import br.com.muxe.core.common.network.auth.AuthStatusResponse;
 import br.com.muxe.core.common.network.auth.PlayerAuthenticatedPacket;
+import br.com.muxe.core.common.network.party.PartyActionPacket;
+import br.com.muxe.core.common.network.party.PartyGatherRequest;
+import br.com.muxe.core.common.network.party.PartyGatherResponse;
+import br.com.muxe.core.common.network.party.PartyNoticePacket;
+import br.com.muxe.core.common.network.party.PartyRemovedPacket;
+import br.com.muxe.core.common.network.party.PartySyncRequest;
+import br.com.muxe.core.common.network.party.PartySyncResponse;
+import br.com.muxe.core.common.network.party.PartyUpdatedPacket;
 import br.com.muxe.core.common.network.permission.PermissionsChangedPacket;
 import br.com.muxe.core.common.network.placement.PlacementsChangedPacket;
 import br.com.muxe.core.common.network.player.ConnectPlayerPacket;
+import br.com.muxe.core.common.network.player.OnlinePlayersPacket;
+import br.com.muxe.core.common.network.player.PlayerDisplayPacket;
 import br.com.muxe.core.common.network.player.PlayerLocateRequest;
 import br.com.muxe.core.common.network.player.PlayerLocateResponse;
 import br.com.muxe.core.common.network.server.ServerShutdownPacket;
@@ -30,6 +40,16 @@ public final class NetworkPackets {
             .register(AuthStatusResponse.TYPE)
             .register(PlacementsChangedPacket.TYPE)
             .register(PromotionChangedPacket.TYPE)
-            .register(PermissionsChangedPacket.TYPE);
+            .register(PermissionsChangedPacket.TYPE)
+            .register(PlayerDisplayPacket.TYPE)
+            .register(OnlinePlayersPacket.TYPE)
+            .register(PartyActionPacket.TYPE)
+            .register(PartyNoticePacket.TYPE)
+            .register(PartyUpdatedPacket.TYPE)
+            .register(PartyRemovedPacket.TYPE)
+            .register(PartySyncRequest.TYPE)
+            .register(PartySyncResponse.TYPE)
+            .register(PartyGatherRequest.TYPE)
+            .register(PartyGatherResponse.TYPE);
     }
 }
