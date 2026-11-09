@@ -156,6 +156,18 @@ Sempre ligado: fogo amigo desligado, quem não está vivo não bate, o void mata
 - **`MatchListener`** trata os eventos que todo jogo compartilha e chama `GameHandlers` só para um jogador vivo numa partida em jogo, então o jogo nunca repete as checagens de fase e de vivo. Também cuida da hotbar da espera (`menu`, `leave`), da hotbar de espectador (teleportador, jogador aleatório, jogador em combate, jogar novamente, sair), do aviso dos comandos de lobby (`left-match`), do void, fome, drops, crafting, camas, slots de armadura e do chat da partida com `/g`.
 - **`MatchEvents`** avisa os cosméticos sobre vitórias e kills finais.
 
+## Salas custom
+
+Pacote `customroom`. Veja [Sala custom](../../features/custom-room/README.pt-BR.md) para o lado do jogador.
+
+- **`CustomRoom`** (sem servidor) guarda uma sala: código, líder, modo base, mapas, opções, escolhas de time, espectadores e os membros da party já conhecidos. A partir das opções ela dá o modo efetivo (`team-size` e os times ativos), os times ativos, os times renomeados e as escolhas de time (`JOINED`, `SPECTATOR`, `FULL`, `UNAVAILABLE`).
+- **`CustomRooms`** roda as salas em cima do `MatchService`: `create` abre uma partida privada (`MatchService.openPrivate`: código próprio, mapas escolhidos, o modo e os times da sala, fora do matchmaking) e reserva o líder e os companheiros; `start`, `pause`, `skipEvent`, `choose`, `changeOptions` (reformata uma partida em espera com `Match.reshape`, renomeia times, aplica o knockback das opções `knockback.*`), `changeMaps`, `changeMode`, `restart` (fecha a partida e abre outra com o mesmo código, devolvendo todos) e `close`. A cada segundo fecha a sala quando o líder saiu ou perdeu a party, puxa novos membros da party (`RoomPort.pull`) e manda os antigos para o lobby.
+- **`RoomControl`** é como uma partida sabe que é custom: `CustomRoomControl` dá os itens da espera, nenhum agrupamento de party, os times escolhidos como preferência, os espectadores, `ranked() == false` (todo jogador fica sem ranque) e `restartsAtEnd()`. `MatchRuntime.control()` expõe o controle, e `control().options()` dá ao jogo as `RoomOptions`.
+- **`Match`** ganhou `manual` (a contagem só começa com `forceStart`), `pause()`, `reshape(modo, times)`, `label()` (o código mostrado no placar) e nomes de time (`teamName`, `teamLetter`), usados pelo placar e pelo resultado.
+- **`MatchState`** ganhou `skipEvent()` e `optionsChanged()`.
+- **`KnockbackPage`** escreve a página `Alterar knockback` do esquema a partir de um perfil, igual para todo jogo.
+- **Ligação.** `MatchServer.customRooms(esquemaYaml)` inicia o `CustomRoomServer`: publica `custom_room.catalog`, responde `custom_room.create_request`, roda as salas a cada segundo, dá `Selecionar time` e `Menu da sala (/menu)` e registra `/menu`. Os menus vêm do `MuxeCore.customRooms()`.
+
 ## Cosméticos
 
 Efeitos de vitória, efeitos de kill final, auras, rastros de projétil e mensagens de kill são compartilhados por todos os jogos (`CosmeticKind`), junto com o catálogo, os perfis de posse, os menus de cosméticos e as prévias do lobby. Um jogo acrescenta os próprios por cima (BedWars: destruição de cama e tipos de madeira).
@@ -229,6 +241,7 @@ O BedWars mantém `bedwars.rooms`, `bedwars.join_request` e `bedwars.join_reply`
 
 - `MatchTest`, `ChatViewTest`, `TeamStatusTest`, `KillCreditTest`, `TimelineTest`, `RankingTest`: as regras da partida.
 - `MatchRuntimeTest`: o ciclo inteiro com uma `Stage` falsa (entrada, contagem, início, mortes no lugar e no void, renascimento, kills finais, quebra de blocos, saída, volta, tempo esgotado, o fim e o fechamento).
+- `CustomRoomsTest`, `KnockbackPageTest`: salas privadas, início manual e pausa, escolha de time e espectadores, reformatar e renomear, o reinício depois do fim, o fechamento quando o líder sai e a sincronia com a party.
 - `MatchKnockbackTest`: o perfil de knockback do modo dado na entrada, tirado na saída e trocado para a sala toda.
 - `MatchServiceTest`: chegada, reservas, volta, chat, comandos da staff, partidas vazias e troca de modo.
 - `CosmeticDefaultsTest`, `CosmeticMenuSettingsTest`, `LifetimeTallyTest` e os testes de cada animação de cena, aura e rastro: os cosméticos.

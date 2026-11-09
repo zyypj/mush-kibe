@@ -161,7 +161,7 @@ menus:
             - "&aClique para entrar!"
       custom-room:
         slot: 35
-        shop: ultra-plus
+        command: salacustom
         item:
           material: BREWING_STAND_ITEM
           name: "&aSala customizada (/salacustom)"

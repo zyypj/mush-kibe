@@ -49,6 +49,7 @@ Tudo sobre a Muxe está documentado aqui, em inglês e português. As regras de 
 - [Localização da conta (GeoIP)](features/geoip/README.pt-BR.md): país, região, cidade e rede de cada login pela MaxMind GeoLite2, sem guardar o endereço.
 - [Cargos e tags](features/ranks-and-tags/README.pt-BR.md): cargos, permissões e tags aplicados em todo servidor, prefixos no chat e no tab, `/tag`, `/cargo`, `/permissao` e `/editor`.
 - [Conta](features/account/README.pt-BR.md): `/account`, `/accountmenu` e os cargos na cabeça do perfil.
+- [Sala custom](features/custom-room/README.pt-BR.md): salas privadas de líderes de party Ultra+ com todas as regras do jogo abertas, predefinições e knockback por modo.
 - [Party](features/party/README.pt-BR.md): parties em toda a rede, `/party`, `/pc`, `/canal`, procura de salas só pelo líder, teleporte e regras de time.
 
 ## Documentando uma nova feature

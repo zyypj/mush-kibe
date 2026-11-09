@@ -156,6 +156,18 @@ Always on: friendly fire is off, players not alive cannot hit, the void kills, s
 - **`MatchListener`** handles the events every game shares and calls `GameHandlers` only for a player alive in a match being played, so a game never repeats the phase and alive checks. It also handles the waiting hotbar (`menu`, `leave`), the spectator hotbar (teleporter, random player, player in combat, play again, leave), the lobby commands warning (`left-match`), the void, hunger, drops, crafting, beds, armour slots and the match chat with `/g`.
 - **`MatchEvents`** tells cosmetics about victories and final kills.
 
+## Custom rooms
+
+Package `customroom`. See [Custom room](../../features/custom-room/README.md) for the player side.
+
+- **`CustomRoom`** (no server) keeps one room: code, leader, base mode, maps, options, team choices, spectators and the party members already known. From the options it gives the effective mode (`team-size` and the enabled teams), the active teams, the renamed teams and the team choices (`JOINED`, `SPECTATOR`, `FULL`, `UNAVAILABLE`).
+- **`CustomRooms`** runs them on top of `MatchService`: `create` opens a private match (`MatchService.openPrivate`: own code, chosen maps, the room's mode and teams, hidden from matchmaking) and reserves the leader and companions; `start`, `pause`, `skipEvent`, `choose`, `changeOptions` (reshapes a waiting match with `Match.reshape`, renames teams, sets the knockback from the `knockback.*` options), `changeMaps`, `changeMode`, `restart` (closes the match and opens a new one with the same code, putting everyone back) and `close`. Every second it closes the room when the leader left or lost the party, pulls new party members (`RoomPort.pull`) and sends former ones to the lobby.
+- **`RoomControl`** is how a match learns it is custom: `CustomRoomControl` gives the waiting items, no party grouping, the chosen teams as preferences, the spectators, `ranked() == false` (every player is unranked) and `restartsAtEnd()`. `MatchRuntime.control()` exposes it, and `control().options()` gives a game its `RoomOptions`.
+- **`Match`** gained `manual` (the countdown only starts with `forceStart`), `pause()`, `reshape(mode, teams)`, `label()` (the code shown on the board) and team names (`teamName`, `teamLetter`), used by the board and the result.
+- **`MatchState`** gained `skipEvent()` and `optionsChanged()`.
+- **`KnockbackPage`** writes the `Alterar knockback` page of the schema from a profile, the same for every game.
+- **Wiring.** `MatchServer.customRooms(schemaYaml)` starts `CustomRoomServer`: it publishes `custom_room.catalog`, answers `custom_room.create_request`, ticks the rooms, gives `Selecionar time` and `Menu da sala (/menu)` and registers `/menu`. The menus come from `MuxeCore.customRooms()`.
+
 ## Cosmetics
 
 Victory effects, final kill effects, auras, projectile trails and kill messages are shared by every game (`CosmeticKind`), together with the catalog, the ownership profiles, the cosmetic menus and the lobby previews. A game adds its own on top (BedWars: bed destruction and wood types).
@@ -229,6 +241,7 @@ BedWars keeps `bedwars.rooms`, `bedwars.join_request` and `bedwars.join_reply`.
 
 - `MatchTest`, `ChatViewTest`, `TeamStatusTest`, `KillCreditTest`, `TimelineTest`, `RankingTest`: the match rules.
 - `MatchRuntimeTest`: the whole lifecycle with a fake `Stage` (joining, countdown, start, deaths in place and in the void, respawns, final kills, breaking blocks, leaving, returning, timeouts, the end and closing).
+- `CustomRoomsTest`, `KnockbackPageTest`: private rooms, manual start and pause, team choices and spectators, reshaping and renaming, the restart after the end, closing when the leader leaves and the party sync.
 - `MatchKnockbackTest`: the knockback profile of the mode given on joining, dropped on leaving and changed for the whole room.
 - `MatchServiceTest`: arriving, reservations, returning, chat, staff commands, idle matches and switching modes.
 - `CosmeticDefaultsTest`, `CosmeticMenuSettingsTest`, `LifetimeTallyTest` and the tests of every scene animation, aura and trail: the cosmetics.

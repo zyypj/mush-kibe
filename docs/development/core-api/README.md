@@ -667,6 +667,25 @@ knockback.clear(player.getUniqueId());
 - **How a hit is pushed.** On a melee hit between two players, `EntityDamageByEntityEvent` (monitor) reads the victim and the attacker straight from the server objects and computes the push into the victim's `KnockbackState`. The server fires `PlayerVelocityEvent` for that same hit right after; the listener puts the computed push in it, so the client gets one velocity packet with the new value. Nothing is allocated per hit: one `KnockbackHit`, one `Motion` and one `Vector` per player are reused.
 - **The rules** (`KnockbackMath`, `KnockbackState`, tested without a server): the previous motion is divided by the frictions, the base push points away from the attacker (or along the attacker's look with `use-rotation`), the base lift is capped by `vertical-limit`, and each knockback level (enchantment, plus sprint unless `ignore-sprint`) adds the boosts along the attacker's look. A victim still recovering from the last hit only takes the boost. Without `restore-velocity` the previous motion is the last push the player received, slowed by the ticks since then; with it, the server's own motion. `simulate-y` predicts the victim's vertical speed from the last push, the ticks since then and the ping. `attacker-multiplier` slows the attacker's own tracked motion after a hit, `keep-sprint` keeps them sprinting, and the click limiter skips a push that comes fewer ticks after the last one than its level allows.
 
+## Custom rooms
+
+Packages `br.com.muxe.core.bukkit.customroom` and `br.com.muxe.core.common.customroom`. See [Custom room](../../features/custom-room/README.md).
+
+```java
+CustomRoomKit kit = MuxeCore.get().customRooms();
+kit.options().open(player, target, schema.root());
+kit.modes().open(player, choice);
+kit.presets().open(player, presetTarget);
+```
+
+- **Options** (`RoomOptions`, `core:common`): only the values that differ from the defaults, as `key=value`; they travel in packets and are stored in presets.
+- **Schema** (`RoomSchema`, `OptionPage`, `OptionEntry`): the option pages of a game, written in YAML by the game server and read with `SchemaReader`. Entry types: `link`, `stepper` (`integer`, `multiplier` with a comma, `seconds`; bounds can be `mode-team-size`, `mode-players` or `mode-teams`), `toggle`, `decimal`, `choice`, `timer`, `team`, `shop-item`, `upgrade` and `free`.
+- **Rules without a server**: `RoomEditor` reads every value and turns a click (`LEFT`, `RIGHT`, the shift ones, `DROP`) into new options, a page to open or an anvil question, and checks the answers; `RoomLore` builds the name, lore and icon of each entry and of the shop and upgrade editors with the texts of `RoomTexts`.
+- **Menus**: `OptionMenus` draws any page of a schema for an `OptionsTarget` (the lobby draft or a live room); `ModeSelector`, `MapSelector` and `PresetMenu` are the mode, map and preset menus.
+- **`AnvilEdits`** (`prompt`): an anvil with a paper named after the current value whose result is renamed while the player types (`&a<label>: &f<value>`); the answer is what was typed, even when unchanged.
+- **Presets**: `SavePresetCommand`, `DeletePresetCommand`, `ListPresetsQuery` and `FindPresetQuery` over `core.custom_room_presets`.
+- **Lobby**: `CustomRoomLobby` and `/salacustom` run on lobby servers; `CatalogDirectory` keeps the catalogs the game servers publish.
+
 ## Commands
 
 Commands are annotated classes registered with `Commands`; see [Commands](../commands/README.md).

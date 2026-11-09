@@ -669,6 +669,25 @@ knockback.clear(player.getUniqueId());
 - **Como um golpe empurra.** Num golpe corpo a corpo entre dois jogadores, o `EntityDamageByEntityEvent` (monitor) lê a vítima e o atacante direto dos objetos do servidor e calcula o empurrão no `KnockbackState` da vítima. O servidor dispara o `PlayerVelocityEvent` desse mesmo golpe logo depois; o listener coloca nele o empurrão calculado, então o cliente recebe um único pacote de velocidade com o novo valor. Nada é alocado por golpe: um `KnockbackHit`, um `Motion` e um `Vector` por jogador são reaproveitados.
 - **As regras** (`KnockbackMath`, `KnockbackState`, testadas sem servidor): o movimento anterior é dividido pelos atritos, o empurrão base aponta para longe do atacante (ou na direção do olhar do atacante com `use-rotation`), a subida base é limitada por `vertical-limit` e cada nível de knockback (encantamento, mais o sprint quando não há `ignore-sprint`) soma os boosts na direção do olhar do atacante. Uma vítima ainda se recuperando do último golpe só recebe o boost. Sem `restore-velocity` o movimento anterior é o último empurrão que o jogador recebeu, freado pelos ticks desde então; com ele, o movimento do próprio servidor. `simulate-y` prevê a velocidade vertical da vítima a partir do último empurrão, dos ticks desde então e do ping. `attacker-multiplier` freia o movimento do próprio atacante depois de um golpe, `keep-sprint` mantém o sprint dele, e o limitador de cliques pula um empurrão que vem menos ticks depois do último do que o nível permite.
 
+## Salas custom
+
+Pacotes `br.com.muxe.core.bukkit.customroom` e `br.com.muxe.core.common.customroom`. Veja [Sala custom](../../features/custom-room/README.pt-BR.md).
+
+```java
+CustomRoomKit kit = MuxeCore.get().customRooms();
+kit.options().open(player, target, schema.root());
+kit.modes().open(player, choice);
+kit.presets().open(player, presetTarget);
+```
+
+- **Opções** (`RoomOptions`, `core:common`): só os valores diferentes do padrão, como `chave=valor`; vão em pacotes e ficam guardadas nas predefinições.
+- **Esquema** (`RoomSchema`, `OptionPage`, `OptionEntry`): as páginas de opções de um jogo, escritas em YAML pelo servidor de jogo e lidas com o `SchemaReader`. Tipos de entrada: `link`, `stepper` (`integer`, `multiplier` com vírgula, `seconds`; os limites podem ser `mode-team-size`, `mode-players` ou `mode-teams`), `toggle`, `decimal`, `choice`, `timer`, `team`, `shop-item`, `upgrade` e `free`.
+- **Regras sem servidor**: `RoomEditor` lê cada valor e transforma um clique (`LEFT`, `RIGHT`, os com shift, `DROP`) em novas opções, uma página para abrir ou uma pergunta na bigorna, e confere as respostas; `RoomLore` monta nome, lore e ícone de cada entrada e dos editores da loja e das melhorias com os textos do `RoomTexts`.
+- **Menus**: `OptionMenus` desenha qualquer página de um esquema para um `OptionsTarget` (o rascunho do lobby ou uma sala ativa); `ModeSelector`, `MapSelector` e `PresetMenu` são os menus de modo, mapas e predefinições.
+- **`AnvilEdits`** (`prompt`): uma bigorna com um papel com o valor atual cujo resultado é renomeado enquanto o jogador digita (`&a<rótulo>: &f<valor>`); a resposta é o que foi digitado, mesmo sem mudar.
+- **Predefinições**: `SavePresetCommand`, `DeletePresetCommand`, `ListPresetsQuery` e `FindPresetQuery` sobre `core.custom_room_presets`.
+- **Lobby**: `CustomRoomLobby` e `/salacustom` rodam nos lobbies; `CatalogDirectory` guarda os catálogos que os servidores de jogo publicam.
+
 ## Comandos
 
 Os comandos são classes anotadas registradas com `Commands`; veja [Comandos](../commands/README.pt-BR.md).
