@@ -16,7 +16,7 @@ public final class PermissionFixtures {
 
     public static final Instant SEEDED_AT = Instant.parse("2026-10-28T12:00:00Z");
     public static final List<String> STAFF_PERMISSIONS = List.of("muxe.account.others", "muxe.account.staff");
-    public static final List<String> RANKS = List.of("membro", "vip", "mvp", "pro", "ultra", "partner", "partner+", "mod", "mod+", "admin");
+    public static final List<String> RANKS = List.of("membro", "vip", "mvp", "pro", "ultra", "ultra+", "partner", "partner+", "mod", "mod+", "admin");
     public static final List<Medal> MEDALS = List.of(
         new Medal("toxico", "Tóxico", "☣", "&a", 10),
         new Medal("yin-yang", "Yin Yang", "☯", "&f", 20),
@@ -52,6 +52,7 @@ public final class PermissionFixtures {
     );
     public static final String LOBBY_FLY = "muxe.lobby.fly";
     public static final String AFK_BYPASS = "muxe.afk.bypass";
+    public static final String PARTY_OPEN = "muxe.party.open";
     public static final Map<String, List<String>> MEDAL_GRANTS = Map.of(
         "vip", List.of("carinha", "toxico", "yin-yang"),
         "ultra", List.of("musico", "flash", "paz-e-amor", "amor", "cafe")
@@ -62,6 +63,7 @@ public final class PermissionFixtures {
         new Tag("mvp", "MVP", "&9", 20, Optional.empty(), false),
         new Tag("pro", "Pro", "&6", 30, Optional.empty(), false),
         new Tag("ultra", "Ultra", "&d", 40, Optional.empty(), false),
+        new Tag("ultra+", "Ultra&6+", "&d", 45, Optional.of("&d&lULTRA&6+ "), false),
         new Tag("2021", "2021", "&b", 50, Optional.empty(), true),
         new Tag("2022", "2022", "&b", 51, Optional.empty(), true),
         new Tag("2023", "2023", "&b", 52, Optional.empty(), true),
@@ -99,6 +101,9 @@ public final class PermissionFixtures {
                 nodes.add(PermissionNode.permanent(LOBBY_FLY, true, SEEDED_AT));
                 nodes.add(PermissionNode.permanent(AFK_BYPASS, true, SEEDED_AT));
             }
+            if (id.equals("ultra+")) {
+                nodes.add(PermissionNode.permanent(PARTY_OPEN, true, SEEDED_AT));
+            }
             if (id.equals("mod")) {
                 STAFF_PERMISSIONS.forEach(permission -> nodes.add(PermissionNode.permanent(permission, true, SEEDED_AT)));
             }
@@ -108,7 +113,7 @@ public final class PermissionFixtures {
             groups.add(new Group(id, tag.name(), tag.weight(), Optional.of(id), nodes));
         }
         List<Track> tracks = List.of(
-            new Track("doacao", List.of("membro", "vip", "mvp", "pro", "ultra")),
+            new Track("doacao", List.of("membro", "vip", "mvp", "pro", "ultra", "ultra+")),
             new Track("staff", List.of("mod", "mod+", "admin"))
         );
         return PermissionData.of(groups, TAGS, tracks, MEDALS);

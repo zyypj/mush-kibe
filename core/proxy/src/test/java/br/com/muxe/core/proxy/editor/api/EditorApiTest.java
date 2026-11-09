@@ -45,7 +45,7 @@ class EditorApiTest {
 
         JsonArray groups = body.getAsJsonArray("groups");
         assertThat(groups.get(0).getAsJsonObject().get("id").getAsString()).isEqualTo("admin");
-        assertThat(ids(groups)).hasSize(10).contains("membro", "vip", "mod+");
+        assertThat(ids(groups)).hasSize(11).contains("membro", "vip", "ultra+", "mod+");
         JsonObject vip = find(groups, "vip");
         assertThat(vip.get("tag").getAsString()).isEqualTo("vip");
         assertThat(vip.getAsJsonArray("nodes").get(0).getAsJsonObject().get("key").getAsString()).isEqualTo("group.membro");

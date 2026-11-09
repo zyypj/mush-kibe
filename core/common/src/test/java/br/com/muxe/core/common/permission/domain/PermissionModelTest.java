@@ -71,7 +71,8 @@ class PermissionModelTest {
 
         assertThat(track.next("vip")).contains("mvp");
         assertThat(track.previous("vip")).contains("membro");
-        assertThat(track.next("ultra")).isEmpty();
+        assertThat(track.next("ultra")).contains("ultra+");
+        assertThat(track.next("ultra+")).isEmpty();
         assertThat(track.previous("admin")).isEmpty();
         assertThatThrownBy(() -> new Track("x", List.of("vip", "vip"))).isInstanceOf(IllegalArgumentException.class);
     }

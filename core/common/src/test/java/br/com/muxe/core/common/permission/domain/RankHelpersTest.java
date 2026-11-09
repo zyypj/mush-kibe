@@ -79,7 +79,7 @@ class RankHelpersTest {
         assertThat(move(TrackMove.promote(DONATION, user(PermissionNode.group("vip", Optional.empty(), NOW)), NOW)))
             .isEqualTo(new TrackMove(Optional.of("vip"), Optional.of("mvp")));
         assertThat(move(TrackMove.promote(STAFF, user(), NOW))).isEqualTo(new TrackMove(Optional.empty(), Optional.of("mod")));
-        assertThat(TrackMove.promote(DONATION, user(PermissionNode.group("ultra", Optional.empty(), NOW)), NOW).isFailure()).isTrue();
+        assertThat(TrackMove.promote(DONATION, user(PermissionNode.group("ultra+", Optional.empty(), NOW)), NOW).isFailure()).isTrue();
     }
 
     @Test

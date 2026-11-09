@@ -110,7 +110,7 @@ class RankCommandTest {
         assertThat(staff.messages()).contains(
             "§8• §cAdmin §8(admin) §7peso §f150 §8- §7herda §5Mod+",
             "§8• §7Membro §8(membro) §7peso §f0 §8- §7herda §7nenhum",
-            "§8• §fdoacao§8: §7Membro §8→ §aVIP §8→ §9MVP §8→ §6Pro §8→ §dUltra",
+            "§8• §fdoacao§8: §7Membro §8→ §aVIP §8→ §9MVP §8→ §6Pro §8→ §dUltra §8→ §dUltra§6+",
             "§6§lCARGO §8» §9MVP §8(mvp)",
             "§7Peso: §f20",
             "§7Tag: §9MVP §8(no chat: §9§lMVP §9Steve§8)",

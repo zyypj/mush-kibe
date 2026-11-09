@@ -80,7 +80,12 @@ class PostgresPermissionRepositoryIntegrationTest {
         assertThat(data.group("mod").orElseThrow().nodes()).extracting(PermissionNode::key).contains("muxe.account.others", "muxe.account.staff");
         assertThat(data.tag("membro").orElseThrow().formatName("tadeu")).isEqualTo("&7tadeu");
         assertThat(data.tag("partner+").orElseThrow().chatPrefix()).isEqualTo("&1&lPARTNER+ ");
-        assertThat(data.track("doacao").orElseThrow().groups()).containsExactly("membro", "vip", "mvp", "pro", "ultra");
+        assertThat(data.track("doacao").orElseThrow().groups()).containsExactly("membro", "vip", "mvp", "pro", "ultra", "ultra+");
+        assertThat(data.group("ultra+").orElseThrow().parents()).containsExactly("ultra");
+        assertThat(data.group("ultra+").orElseThrow().nodes()).extracting(PermissionNode::key).contains("muxe.party.open");
+        assertThat(data.group("partner").orElseThrow().parents()).containsExactly("ultra+");
+        assertThat(data.tag("ultra+").orElseThrow().chatPrefix()).isEqualTo("&d&lULTRA&6+ ");
+        assertThat(data.tag("ultra+").orElseThrow().display()).isEqualTo("&dUltra&6+");
         assertThat(PermissionRules.check(data)).isEmpty();
     }
 
