@@ -12,8 +12,12 @@ public final class Matchmaker {
     }
 
     public static Optional<Target> plan(List<RoomsPacket> servers, String mode, Optional<String> arena) {
+        return plan(servers, mode, arena, 1);
+    }
+
+    public static Optional<Target> plan(List<RoomsPacket> servers, String mode, Optional<String> arena, int seats) {
         Optional<Target> open = servers.stream()
-            .flatMap(server -> RoomChoice.pick(server.rooms(), mode, arena, Optional.empty()).map(room -> new Candidate(server.serverId(), room)).stream())
+            .flatMap(server -> RoomChoice.pick(server.rooms(), mode, arena, Optional.empty(), seats).map(room -> new Candidate(server.serverId(), room)).stream())
             .max(Comparator.comparingInt((Candidate candidate) -> candidate.room().players()).thenComparing(Candidate::serverId, Comparator.reverseOrder()))
             .map(candidate -> new Target(candidate.serverId(), candidate.room().code()));
         if (open.isPresent()) {

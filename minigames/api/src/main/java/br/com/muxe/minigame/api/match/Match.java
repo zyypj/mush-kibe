@@ -33,6 +33,7 @@ public final class Match {
     private final KillCredit credit = new KillCredit();
     private final Map<UUID, Participant> players = new LinkedHashMap<>();
     private final Map<TeamColor, MatchTeam> teams = new LinkedHashMap<>();
+    private final Set<UUID> unranked = new HashSet<>();
     private final Set<Long> placed = new HashSet<>();
     private MatchPhase phase = MatchPhase.WAITING;
     private boolean forced;
@@ -188,6 +189,30 @@ public final class Match {
         phase = MatchPhase.PLAYING;
         startedAt = now;
         elapsed = 0;
+    }
+
+    public Set<UUID> splitParties(List<List<UUID>> parties) {
+        Set<UUID> split = new HashSet<>();
+        for (List<UUID> party : parties) {
+            List<UUID> present = party.stream().filter(players::containsKey).toList();
+            long teamsUsed = present.stream().map(players::get).map(Participant::team).distinct().count();
+            if (present.size() > 1 && teamsUsed > 1) {
+                split.addAll(present);
+            }
+        }
+        return split;
+    }
+
+    public void unrank(Collection<UUID> ids) {
+        unranked.addAll(ids);
+    }
+
+    public boolean ranked(UUID id) {
+        return !unranked.contains(id);
+    }
+
+    public Set<UUID> unranked() {
+        return Set.copyOf(unranked);
     }
 
     public void tick() {

@@ -13,7 +13,7 @@ public final class MatchPackets {
 
     public MatchPackets(String game) {
         this.rooms = PacketType.of(game + ".rooms", RoomsPacket.class, RoomsPacket.CODEC, DeliveryPolicy.volatileState(Duration.ofSeconds(10)));
-        this.joinRequest = PacketType.of(game + ".join_request", JoinRoomRequest.class, JoinRoomRequest.CODEC,
+        this.joinRequest = new PacketType<>(game + ".join_request", JoinRoomRequest.VERSION, JoinRoomRequest.class, JoinRoomRequest.CODEC,
             DeliveryPolicy.standard().withMaxAge(Duration.ofSeconds(5)));
         this.joinReply = PacketType.of(game + ".join_reply", JoinRoomReply.class, JoinRoomReply.CODEC,
             DeliveryPolicy.standard().withMaxAge(Duration.ofSeconds(5)));

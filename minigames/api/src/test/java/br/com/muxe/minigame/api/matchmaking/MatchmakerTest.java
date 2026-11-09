@@ -36,6 +36,18 @@ class MatchmakerTest {
     }
 
     @Test
+    void aPartyOnlyGoesToARoomWithASeatForEveryMember() {
+        RoomsPacket one = new RoomsPacket("bedwars-1", List.of(new RoomInfo("aaaaaa", "solo", "farol", true, 6, 8), new RoomInfo("bbbbbb", "solo", "farol", true, 4, 8)), List.of(LIGHTHOUSE_SOLO));
+        RoomsPacket two = new RoomsPacket("bedwars-2", List.of(new RoomInfo("cccccc", "solo", "farol", true, 7, 8)), List.of(LIGHTHOUSE_SOLO));
+
+        assertThat(Matchmaker.plan(List.of(one, two), "solo", Optional.empty(), 3)).contains(new Matchmaker.Target("bedwars-1", "bbbbbb"));
+        assertThat(Matchmaker.plan(List.of(one, two), "solo", Optional.empty(), 5)).contains(new Matchmaker.Target("bedwars-2", ""));
+        assertThat(RoomChoice.pick(one.rooms(), "solo", Optional.empty(), Optional.of("aaaaaa"), 3)).map(RoomInfo::code).contains("bbbbbb");
+        assertThat(new RoomInfo("aaaaaa", "solo", "farol", true, 6, 8).hasRoom(2)).isTrue();
+        assertThat(new RoomInfo("aaaaaa", "solo", "farol", true, 6, 8).hasRoom(3)).isFalse();
+    }
+
+    @Test
     void aWantedRoomIsKeptWhileItHasSpace() {
         List<RoomInfo> rooms = List.of(new RoomInfo("aaaaaa", "solo", "farol", true, 2, 8), new RoomInfo("bbbbbb", "solo", "farol", true, 6, 8));
 

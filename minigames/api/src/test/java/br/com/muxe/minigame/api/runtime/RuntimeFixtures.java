@@ -3,6 +3,7 @@ package br.com.muxe.minigame.api.runtime;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.testing.MutableClock;
 import br.com.muxe.minigame.api.settings.MatchSettings;
+import br.com.muxe.minigame.engine.team.PartyGroups;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -101,7 +102,8 @@ public final class RuntimeFixtures {
         Map.entry("result-rank-3", "3. {player} {score}"),
         Map.entry("kill", "{victim} morreu para {killer}"),
         Map.entry("death", "{victim} morreu"),
-        Map.entry("no-arena", "sem arena para {mode}")
+        Map.entry("no-arena", "sem arena para {mode}"),
+        Map.entry("party-split", "AVISO Esta partida não conta estatísticas.")
     ));
 
     private RuntimeFixtures() {
@@ -119,5 +121,9 @@ public final class RuntimeFixtures {
 
     public static MatchEnvironment environment(MutableClock clock, MatchRules rules) {
         return new MatchEnvironment(settings(), rules, MESSAGES, clock, new Random(3), MatchEvents.NONE, TeamPreferences.NONE);
+    }
+
+    public static MatchEnvironment environment(MutableClock clock, MatchRules rules, PartyGroups parties) {
+        return new MatchEnvironment(settings(), rules, MESSAGES, clock, new Random(3), MatchEvents.NONE, TeamPreferences.NONE, parties);
     }
 }

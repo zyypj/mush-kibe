@@ -6,7 +6,11 @@ import br.com.muxe.core.common.messaging.codec.PacketWriter;
 public record RoomInfo(String code, String mode, String arena, boolean open, int players, int maxPlayers) {
 
     public boolean hasRoom() {
-        return open && players < maxPlayers;
+        return hasRoom(1);
+    }
+
+    public boolean hasRoom(int seats) {
+        return open && players + seats <= maxPlayers;
     }
 
     public static void write(PacketWriter out, RoomInfo room) {

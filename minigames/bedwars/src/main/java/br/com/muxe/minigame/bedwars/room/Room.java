@@ -122,7 +122,7 @@ public final class Room {
         List<MatchOutcome> outcomes = new ArrayList<>();
         int minutes = match.elapsed() / 60;
         for (Participant participant : match.players()) {
-            if (participant.team() == null) {
+            if (participant.team() == null || !match.ranked(participant.id())) {
                 continue;
             }
             RoomPlayer player = player(participant.id());

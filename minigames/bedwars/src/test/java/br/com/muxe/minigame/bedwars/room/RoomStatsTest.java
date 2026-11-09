@@ -115,6 +115,17 @@ class RoomStatsTest {
         assertThat(room.player(red.id()).bestEmeralds()).isEqualTo(5);
     }
 
+    @Test
+    void playersOfAPartySplitAcrossTeamsAreNotRecorded() {
+        Room room = started();
+        Participant red = player(room, TeamColor.VERMELHO);
+        Participant blue = player(room, TeamColor.AZUL);
+
+        room.match().unrank(List.of(red.id()));
+
+        assertThat(room.outcomes(Optional.of(TeamColor.VERMELHO), new XpRewards(10, 5, 250, 100, 12, 60))).extracting(MatchOutcome::playerId).containsExactly(blue.id());
+    }
+
     private static Room started() {
         Room room = RoomFixtures.room("2v7bss", RoomFixtures.ONE_V_ONE, RoomFixtures.arena("1v1", "Slip", RED_BLUE));
         room.match().join(UUID.randomUUID(), "tadeu");

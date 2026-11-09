@@ -92,7 +92,7 @@ public final class MinigameBootstrap {
     }
 
     public MatchConnector connector(Function<String, String> modeNames) {
-        MatchConnector connector = new MatchConnector(core, packets, messages, modeNames);
+        MatchConnector connector = new MatchConnector(core, packets, messages, modeNames, id -> modes.stream().filter(mode -> mode.id().equals(id)).findFirst());
         connector.start();
         return connector;
     }

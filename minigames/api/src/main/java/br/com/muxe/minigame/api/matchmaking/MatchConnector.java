@@ -6,7 +6,9 @@ import br.com.muxe.core.common.messaging.channel.PacketTarget;
 import br.com.muxe.minigame.api.network.JoinRoomReply;
 import br.com.muxe.minigame.api.network.JoinRoomRequest;
 import br.com.muxe.minigame.api.network.MatchPackets;
+import br.com.muxe.minigame.engine.mode.GameMode;
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -22,20 +24,24 @@ public final class MatchConnector {
     private final MessageCatalog messages;
     private final RoomDirectory directory;
     private final Function<String, String> modeNames;
+    private final Function<String, Optional<GameMode>> modes;
     private final Set<UUID> pending = ConcurrentHashMap.newKeySet();
     private final LocalJoin local;
     private final MatchPackets packets;
 
-    public MatchConnector(MuxeCore core, MatchPackets packets, MessageCatalog messages, Function<String, String> modeNames) {
-        this(core, packets, messages, modeNames, (player, request) -> false);
+    public MatchConnector(MuxeCore core, MatchPackets packets, MessageCatalog messages, Function<String, String> modeNames,
+                          Function<String, Optional<GameMode>> modes) {
+        this(core, packets, messages, modeNames, modes, (player, request) -> false);
     }
 
-    public MatchConnector(MuxeCore core, MatchPackets packets, MessageCatalog messages, Function<String, String> modeNames, LocalJoin local) {
+    public MatchConnector(MuxeCore core, MatchPackets packets, MessageCatalog messages, Function<String, String> modeNames,
+                          Function<String, Optional<GameMode>> modes, LocalJoin local) {
         this.packets = packets;
         this.local = local;
         this.core = core;
         this.messages = messages;
         this.modeNames = modeNames;
+        this.modes = modes;
         this.directory = new RoomDirectory(core.clock(), DIRECTORY_TIME_TO_LIVE);
     }
 
@@ -50,7 +56,13 @@ public final class MatchConnector {
 
     public void join(Player player, String mode, Optional<String> arena) {
         UUID id = player.getUniqueId();
-        Optional<Matchmaker.Target> target = Matchmaker.plan(directory.alive(), mode, arena);
+        PartyCheck check = PartyCheck.of(core.parties(), id, modes.apply(mode));
+        if (check.refusal().isPresent()) {
+            player.sendMessage(messages.get(check.refusal().get()));
+            return;
+        }
+        List<UUID> companions = check.companions();
+        Optional<Matchmaker.Target> target = Matchmaker.plan(directory.alive(), mode, arena, 1 + companions.size());
         if (target.isEmpty()) {
             player.sendMessage(messages.get("room-unavailable", "mode", modeNames.apply(mode)));
             return;
@@ -59,7 +71,7 @@ public final class MatchConnector {
             return;
         }
         JoinNotices.beforeRequest(target.get()).forEach(key -> player.sendMessage(messages.get(key)));
-        JoinRoomRequest request = new JoinRoomRequest(id, mode, arena.orElse(""), target.get().roomCode());
+        JoinRoomRequest request = new JoinRoomRequest(id, mode, arena.orElse(""), target.get().roomCode(), companions);
         if (target.get().serverId().equals(core.identity().id())) {
             pending.remove(id);
             if (!local.join(player, request)) {
@@ -82,6 +94,7 @@ public final class MatchConnector {
                     core.mainThread().execute(() -> player.sendMessage(messages.get("room-unavailable", "mode", modeNames.apply(mode))));
                     return null;
                 });
+                companions.forEach(companion -> core.network().connectToServer(companion, target.get().serverId()));
             }, core.mainThread());
     }
 

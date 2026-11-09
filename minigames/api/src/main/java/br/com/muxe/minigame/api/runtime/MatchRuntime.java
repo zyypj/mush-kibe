@@ -50,6 +50,7 @@ public final class MatchRuntime<S extends MatchState> {
     private final Set<TeamColor> announcedEliminations = new HashSet<>();
     private final Set<UUID> returnable = new HashSet<>();
     private final Set<UUID> boards = new HashSet<>();
+    private final Set<UUID> watchers = new LinkedHashSet<>();
     private final S state;
     private int seconds;
     private boolean closed;
@@ -98,7 +99,31 @@ public final class MatchRuntime<S extends MatchState> {
     }
 
     public List<UUID> online() {
-        return stage.present(match.joinOrder());
+        if (watchers.isEmpty()) {
+            return stage.present(match.joinOrder());
+        }
+        List<UUID> everyone = new ArrayList<>(match.joinOrder());
+        everyone.addAll(watchers);
+        return stage.present(everyone);
+    }
+
+    public Set<UUID> watchers() {
+        return Set.copyOf(watchers);
+    }
+
+    public boolean isWatching(UUID id) {
+        return watchers.contains(id);
+    }
+
+    public void watch(UUID id) {
+        watchers.add(id);
+        stage.prepare(id, Look.SPECTATOR);
+        stage.teleport(id, match.arena().spectator());
+        stage.spectatorItems(id, settings.spectatorHotbar().spectatorItems());
+        stage.showBoard(id);
+        boards.add(id);
+        refreshVisibility();
+        refreshBoards();
     }
 
     public List<Player> onlinePlayers() {
@@ -118,6 +143,9 @@ public final class MatchRuntime<S extends MatchState> {
     }
 
     public boolean isSpectator(UUID id) {
+        if (watchers.contains(id)) {
+            return true;
+        }
         if (!match.phase().showsTeams()) {
             return false;
         }
@@ -146,6 +174,10 @@ public final class MatchRuntime<S extends MatchState> {
     }
 
     public void quit(UUID id) {
+        if (watchers.remove(id)) {
+            forget(id);
+            return;
+        }
         Optional<Participant> found = match.player(id);
         forget(id);
         if (found.isEmpty()) {
@@ -412,7 +444,10 @@ public final class MatchRuntime<S extends MatchState> {
 
     private void start() {
         Instant now = environment.clock().instant();
-        match.start(List.of(), environment.preferences().preferred(match.joinOrder()), environment.random(), now);
+        List<List<UUID>> parties = environment.parties().groupsOf(match.joinOrder());
+        match.start(parties, environment.preferences().preferred(match.joinOrder()), environment.random(), now);
+        Set<UUID> split = match.splitParties(parties);
+        match.unrank(split);
         match.protectAll(now.plusSeconds(settings.timings().respawnProtectionSeconds()));
         state.starting();
         for (UUID id : online()) {
@@ -431,6 +466,9 @@ public final class MatchRuntime<S extends MatchState> {
         state.started();
         refreshBoards();
         messages.lines("match-started").forEach(this::broadcast);
+        if (!split.isEmpty()) {
+            messages.lines("party-split").forEach(this::broadcast);
+        }
         online().forEach(id -> stage.sound(id, settings.sounds().matchStart()));
     }
 
@@ -495,6 +533,9 @@ public final class MatchRuntime<S extends MatchState> {
 
     private void celebrate(TeamColor team, List<UUID> audience) {
         for (UUID id : audience) {
+            if (watchers.contains(id)) {
+                continue;
+            }
             boolean won = match.player(id).map(Participant::team).filter(team::equals).isPresent();
             if (won && !isSpectator(id)) {
                 stage.spectatorItems(id, settings.spectatorHotbar().winnerItems());

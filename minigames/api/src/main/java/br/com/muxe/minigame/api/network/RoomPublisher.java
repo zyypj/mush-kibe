@@ -35,7 +35,7 @@ public final class RoomPublisher {
         packets.registerAll(core.packetRegistry());
         core.packets().subscribe(packets.joinRequest(), context -> {
             JoinRoomRequest request = context.packet();
-            CompletableFuture.supplyAsync(() -> rooms.reserve(request.playerId(), request.mode(), request.wantedArena(), request.wantedRoom()), core.mainThread())
+            CompletableFuture.supplyAsync(() -> rooms.reserve(request.playerId(), request.companions(), request.mode(), request.wantedArena(), request.wantedRoom()), core.mainThread())
                 .thenAccept(reserved -> context.reply(reserved.map(found -> JoinRoomReply.reserved(found.code(), found.created())).orElse(JoinRoomReply.refused())))
                 .exceptionally(error -> {
                     plugin.getLogger().log(Level.WARNING, "Could not reserve a room for " + request.playerId(), error);

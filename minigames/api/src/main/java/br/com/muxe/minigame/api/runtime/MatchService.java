@@ -20,6 +20,7 @@ import br.com.muxe.minigame.engine.room.RoomCodes;
 import br.com.muxe.minigame.engine.world.cell.Cell;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,6 +52,7 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
     private final Map<String, MatchRuntime<S>> rooms = new LinkedHashMap<>();
     private final Map<UUID, String> byPlayer = new ConcurrentHashMap<>();
     private final Reservations reservations = new Reservations(RESERVATION);
+    private final Map<UUID, Watch> watching = new ConcurrentHashMap<>();
     private final Set<UUID> shouting = ConcurrentHashMap.newKeySet();
     private volatile Map<UUID, ChatView> chat = Map.of();
     private volatile int activeMatches;
@@ -90,6 +92,16 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
 
     public void arrive(UUID id, String name) {
         Instant now = environment.clock().instant();
+        Optional<Reservations.Reservation> reserved = reservations.take(id, now);
+        if (reserved.isPresent()) {
+            join(id, name, reserved.get().mode(), reserved.get().arena(), Optional.of(reserved.get().code()));
+            return;
+        }
+        Watch watch = watching.remove(id);
+        if (watch != null && now.isBefore(watch.expiresAt()) && rooms.containsKey(watch.code())) {
+            watch(id, rooms.get(watch.code()));
+            return;
+        }
         for (MatchRuntime<S> runtime : rooms.values()) {
             if (runtime.canReturn(id, now)) {
                 byPlayer.put(id, runtime.match().code());
@@ -98,25 +110,69 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
                 return;
             }
         }
-        Optional<Reservations.Reservation> reserved = reservations.take(id, now);
-        if (reserved.isPresent()) {
-            join(id, name, reserved.get().mode(), reserved.get().arena(), Optional.of(reserved.get().code()));
-            return;
-        }
         join(id, name, environment.settings().defaultMode());
     }
 
-    @Override
     public Optional<Reserved> reserve(UUID playerId, String mode, Optional<String> arena, Optional<String> code) {
-        if (!modes.containsKey(mode)) {
+        return reserve(playerId, List.of(), mode, arena, code);
+    }
+
+    @Override
+    public Optional<Reserved> reserve(UUID playerId, List<UUID> companions, String mode, Optional<String> arena, Optional<String> code) {
+        GameMode gameMode = modes.get(mode);
+        int seats = 1 + companions.size();
+        if (gameMode == null || gameMode.maxPlayers() < seats) {
             return Optional.empty();
         }
         Instant now = environment.clock().instant();
         reservations.take(playerId, now);
-        Optional<Reserved> reserved = pick(mode, arena, code).map(found -> new Reserved(found.match().code(), false))
+        companions.forEach(companion -> reservations.take(companion, now));
+        Optional<Reserved> reserved = pick(mode, arena, code, seats).map(found -> new Reserved(found.match().code(), false))
             .or(() -> create(mode, arena).map(created -> new Reserved(created.match().code(), true)));
-        reserved.ifPresent(found -> reservations.hold(playerId, found.code(), mode, arena, now));
+        reserved.ifPresent(found -> {
+            reservations.hold(playerId, found.code(), mode, arena, now);
+            companions.forEach(companion -> reservations.hold(companion, found.code(), mode, arena, now));
+        });
         return reserved;
+    }
+
+    public List<UUID> gather(UUID leader, List<UUID> members) {
+        MatchRuntime<S> runtime = of(leader).orElse(null);
+        if (runtime == null) {
+            return members;
+        }
+        Instant now = environment.clock().instant();
+        Match match = runtime.match();
+        List<UUID> accepted = new ArrayList<>();
+        for (UUID member : members) {
+            if (runtime.isWatching(member) || match.player(member).isPresent() && runtime.online().contains(member)) {
+                continue;
+            }
+            if (runtime.canReturn(member, now)) {
+                reservations.take(member, now);
+                watching.remove(member);
+                accepted.add(member);
+                continue;
+            }
+            if (match.phase().beforeStart()) {
+                int taken = match.players().size() + reservations.pending(match.code(), now);
+                if (!match.acceptsPlayers() || taken >= match.mode().maxPlayers()) {
+                    continue;
+                }
+                reservations.hold(member, match.code(), match.mode().id(), Optional.of(match.arena().name()), now);
+            } else {
+                reservations.take(member, now);
+                watching.put(member, new Watch(match.code(), now.plus(RESERVATION)));
+            }
+            accepted.add(member);
+        }
+        return accepted;
+    }
+
+    public void watch(UUID id, MatchRuntime<S> runtime) {
+        byPlayer.put(id, runtime.match().code());
+        runtime.watch(id);
+        refreshChat();
     }
 
     @Override
@@ -242,6 +298,7 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
     public void second() {
         Instant now = environment.clock().instant();
         reservations.purge(now);
+        watching.values().removeIf(watch -> !now.isBefore(watch.expiresAt()));
         for (MatchRuntime<S> runtime : List.copyOf(rooms.values())) {
             try {
                 if (runtime.match().idle(reservations.pending(runtime.match().code(), now) > 0, environment.settings().timings().emptyRoomSeconds())) {
@@ -284,7 +341,9 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
     private void refreshChat() {
         Map<UUID, ChatView> views = new HashMap<>();
         for (MatchRuntime<S> runtime : rooms.values()) {
-            views.putAll(ChatView.of(runtime.match(), Set.copyOf(runtime.online())));
+            Set<UUID> online = Set.copyOf(runtime.online());
+            views.putAll(ChatView.of(runtime.match(), online));
+            runtime.watchers().forEach(watcher -> views.put(watcher, new ChatView(online, online, "")));
         }
         chat = Map.copyOf(views);
     }
@@ -300,7 +359,11 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
     }
 
     private Optional<MatchRuntime<S>> pick(String mode, Optional<String> arena, Optional<String> code) {
-        return RoomChoice.pick(summaries(), mode, arena, code).map(info -> rooms.get(info.code()));
+        return pick(mode, arena, code, 1);
+    }
+
+    private Optional<MatchRuntime<S>> pick(String mode, Optional<String> arena, Optional<String> code, int seats) {
+        return RoomChoice.pick(summaries(), mode, arena, code, seats).map(info -> rooms.get(info.code()));
     }
 
     private Optional<MatchRuntime<S>> create(String mode, Optional<String> wanted) {
@@ -326,5 +389,8 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
         MatchRuntime<S> runtime = new MatchRuntime<>(match, stages.apply(match), environment, this::closed, opened -> minigame.open(opened, arena));
         rooms.put(code, runtime);
         return Optional.of(runtime);
+    }
+
+    private record Watch(String code, Instant expiresAt) {
     }
 }

@@ -32,6 +32,7 @@ import br.com.muxe.minigame.engine.world.server.MuxeWorlds;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
@@ -88,12 +89,17 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
         HealthDisplay health = new HealthDisplay(messages.get("health-below-name"));
         MatchReturns returns = new MatchReturns(core.store());
         MatchEnvironment environment = new MatchEnvironment(settings, minigame.rules(), messages, core.clock(), ThreadLocalRandom.current(), events,
-            minigame.teamPreferences());
+            minigame.teamPreferences(), core.parties()::groupsOf);
         world.start();
         MatchService<A, S> service = new MatchService<>(minigame, modes, catalog, new MatchWorldCells(world),
             match -> new BukkitStage(core, world.world(), match.cell(), health, endTitles, returns, plugin.getLogger()),
             environment, (id, text) -> Optional.ofNullable(Bukkit.getPlayer(id)).ifPresent(player -> player.sendMessage(text)), plugin.getLogger());
         core.nameTags().override(service::nameTag);
+        core.parties().onGather((leader, members) -> {
+            List<UUID> accepted = service.gather(leader, members);
+            accepted.forEach(member -> Optional.ofNullable(Bukkit.getPlayer(member)).ifPresent(player -> arriveAgain(service, player)));
+            return accepted;
+        });
         MatchTicker ticker = MatchTicker.start(plugin, service);
         engine.track(service::activeMatches, () -> catalog.all().size());
         RoomPublisher publisher = new RoomPublisher(plugin, core, service, packets, List.of(settings.lobbyGroup(), game));
@@ -110,11 +116,14 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
     }
 
     public MatchConnector playAgainConnector(Function<String, String> modeNames) {
-        MatchConnector connector = new MatchConnector(core, packets, messages, modeNames,
-            (player, request) -> service.reserve(player.getUniqueId(), request.mode(), request.wantedArena(), request.wantedRoom()).map(reserved -> {
-                moveToReserved(player);
-                return true;
-            }).orElse(false));
+        MatchConnector connector = new MatchConnector(core, packets, messages, modeNames, service::mode,
+            (player, request) -> service.reserve(player.getUniqueId(), request.companions(), request.mode(), request.wantedArena(), request.wantedRoom())
+                .map(reserved -> {
+                    moveToReserved(player);
+                    request.companions().forEach(companion -> Optional.ofNullable(Bukkit.getPlayer(companion)).ifPresentOrElse(this::moveToReserved,
+                        () -> core.network().connectToServer(companion, core.identity().id())));
+                    return true;
+                }).orElse(false));
         connector.start();
         publisher.onPublish(connector.directory()::update);
         return connector;
@@ -126,6 +135,10 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
     }
 
     public void moveToReserved(Player player) {
+        arriveAgain(service, player);
+    }
+
+    private static void arriveAgain(MatchService<?, ?> service, Player player) {
         service.leave(player.getUniqueId());
         for (Player other : Bukkit.getOnlinePlayers()) {
             other.showPlayer(player);

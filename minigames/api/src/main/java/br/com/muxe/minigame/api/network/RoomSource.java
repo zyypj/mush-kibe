@@ -10,5 +10,5 @@ public interface RoomSource {
 
     List<ArenaInfo> arenas();
 
-    Optional<Reserved> reserve(UUID playerId, String mode, Optional<String> arena, Optional<String> code);
+    Optional<Reserved> reserve(UUID playerId, List<UUID> companions, String mode, Optional<String> arena, Optional<String> code);
 }
