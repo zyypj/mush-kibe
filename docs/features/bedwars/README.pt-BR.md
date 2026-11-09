@@ -593,6 +593,7 @@ Comandos e consultas em `br.com.muxe.minigame.bedwars.stats`: `RecordMatchComman
 - [Créditos e cosméticos](../credits/README.pt-BR.md): preços, compras e posse.
 - [Motor de jogo](../../architecture/game-engine/README.pt-BR.md).
 - [API de minigames](../../architecture/minigame-api/README.pt-BR.md).
+- [Party](../party/README.pt-BR.md): só o líder da party escolhe um modo, um mapa ou "jogar novamente"; a party vai para uma sala com vaga para todos e fica em um time. Quando a party precisa ser dividida entre times, `AVISO Esta partida não conta estatísticas.` é dito e seus jogadores ficam fora do `RecordMatchCommand` e do XP da partida.
 
 ## Critérios de aceitação
 

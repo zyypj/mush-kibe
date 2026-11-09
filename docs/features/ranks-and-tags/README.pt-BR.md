@@ -27,13 +27,14 @@ Cargos são grupos. Cada cargo herda o de baixo, então um cargo maior tem todas
 | `mvp` | 20 | `&9MVP` | `vip` |
 | `pro` | 30 | `&6Pro` | `mvp` |
 | `ultra` | 40 | `&dUltra` | `pro` |
-| `partner` | 110 | `&bPartner` | `ultra` |
+| `ultra+` | 45 | `&dUltra&6+` (no chat `&d&lULTRA&6+ `) | `ultra` |
+| `partner` | 110 | `&bPartner` | `ultra+` |
 | `partner+` | 120 | `&1Partner+` | `partner` |
 | `mod` | 130 | `&5Mod` | `partner+` |
 | `mod+` | 140 | `&5Mod+` | `mod` |
 | `admin` | 150 | `&cAdmin` | `mod+`, mais `*` |
 
-Trilhas listam cargos em ordem para `/cargo promover` e `/cargo rebaixar`: `doacao` (`membro`, `vip`, `mvp`, `pro`, `ultra`) e `staff` (`mod`, `mod+`, `admin`).
+Trilhas listam cargos em ordem para `/cargo promover` e `/cargo rebaixar`: `doacao` (`membro`, `vip`, `mvp`, `pro`, `ultra`, `ultra+`) e `staff` (`mod`, `mod+`, `admin`).
 
 Um cargo é um nó `group.<id>` no jogador. Nós têm um valor (`true` ou `false`), contextos opcionais (`server=<grupo de servidores>`, `world=<mundo>`), uma expiração opcional e as datas em que foram adicionados e atualizados. Um nó com contextos só vale onde todos os contextos batem.
 
@@ -216,6 +217,7 @@ Exemplos:
 | `muxe.permissions.editor` | `/editor`. | op |
 | `muxe.tag.<id>` | Ter a tag `<id>`. Tags de cargo vêm com o cargo; tags decorativas são dadas com `/tag dar`. | |
 | `muxe.afk.bypass` | Nunca ser enviado ao [servidor AFK](../afk/README.pt-BR.md) por ficar parado em um lobby. Semeada no `vip`. | |
+| `muxe.party.open` | `/party abrir`, que deixa qualquer um entrar na party (veja [Party](../party/README.pt-BR.md)). Semeada no `ultra+`. | |
 | `muxe.medal.<id>` | Ter a medalha `<id>`. Semeada em `vip` e `ultra` (veja [Medalhas](#medalhas)); as outras são dadas com `/medalha dar`. | |
 | `group.<id>` | Ter o cargo `<id>`. | |
 | `*` | Tudo. Semeada no `admin`, então o Admin tem todas as permissões acima. | |
@@ -300,7 +302,7 @@ Todas em `messages` do `plugins/Muxe-Core/config.yml`:
 | `core.player_medals` | A medalha que cada jogador escolheu (`player_id`, `medal_id`, `updated_at`). |
 | `core.perm_actions` | Toda mudança: `at`, `actor`, `description`. |
 
-Criadas pela migração do core `V8__create_permissions.sql`, que também semeia os cargos, tags e trilhas acima. A `V10__seed_staff_permissions.sql` dá ao `mod` (e, por herança, a todos os cargos acima) `muxe.account.others` e `muxe.account.staff`. A `V11__create_medals.sql` cria as tabelas de medalhas, semeia as 31 medalhas e dá ao `vip` e ao `ultra` as suas. A `V12__grant_lobby_fly_to_vip.sql` dá ao `vip` (e a todos os cargos acima) `muxe.lobby.fly`, o `/fly` do lobby. A `V17__grant_afk_bypass_to_vip.sql` dá ao `vip` (e a todos os cargos acima) `muxe.afk.bypass`, para que os VIPs nunca sejam enviados ao [servidor AFK](../afk/README.pt-BR.md). Lidas com `LoadPermissionDataQuery` e `FindPermissionUserQuery`; mudadas com `ApplyPermissionChangesCommand`, `AddUserNodeCommand`, `RemoveUserNodeCommand`, `SelectTagCommand` e `SelectMedalCommand`.
+Criadas pela migração do core `V8__create_permissions.sql`, que também semeia os cargos, tags e trilhas acima. A `V10__seed_staff_permissions.sql` dá ao `mod` (e, por herança, a todos os cargos acima) `muxe.account.others` e `muxe.account.staff`. A `V11__create_medals.sql` cria as tabelas de medalhas, semeia as 31 medalhas e dá ao `vip` e ao `ultra` as suas. A `V12__grant_lobby_fly_to_vip.sql` dá ao `vip` (e a todos os cargos acima) `muxe.lobby.fly`, o `/fly` do lobby. A `V17__grant_afk_bypass_to_vip.sql` dá ao `vip` (e a todos os cargos acima) `muxe.afk.bypass`, para que os VIPs nunca sejam enviados ao [servidor AFK](../afk/README.pt-BR.md). A `V18__create_ultra_plus.sql` cria o cargo e a tag `ultra+` entre `ultra` e `partner` (que agora o herda), coloca-o no fim da `doacao` e lhe dá `muxe.party.open`. Lidas com `LoadPermissionDataQuery` e `FindPermissionUserQuery`; mudadas com `ApplyPermissionChangesCommand`, `AddUserNodeCommand`, `RemoveUserNodeCommand`, `SelectTagCommand` e `SelectMedalCommand`.
 
 ## Métricas
 

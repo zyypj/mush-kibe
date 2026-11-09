@@ -49,6 +49,7 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 - [Account location (GeoIP)](features/geoip/README.md): country, region, city and network of each login from MaxMind GeoLite2, without storing the address.
 - [Ranks and tags](features/ranks-and-tags/README.md): ranks, permissions and tags applied on every server, chat and tab prefixes, `/tag`, `/cargo`, `/permissao` and `/editor`.
 - [Account](features/account/README.md): `/account`, `/accountmenu` and the ranks on the profile head.
+- [Party](features/party/README.md): network-wide parties, `/party`, `/pc`, `/canal`, leader-only queueing, teleport and team rules.
 
 ## Documenting a new feature
 

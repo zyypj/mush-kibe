@@ -106,6 +106,15 @@ Um time renasce ou não (`MatchTeam.respawns`). `MatchRules.respawning()` faz os
 - Sair quando o time não renasce é morte final, creditada a quem bateu por último.
 - Não voltar a tempo elimina o jogador.
 
+### Parties
+
+Veja [Party](../../features/party/README.pt-BR.md) para o lado do jogador.
+
+- **Procura de salas.** `MatchConnector.join` consulta o `PartyCheck`: um membro que não é o líder recebe `party-leader-only`; um líder cuja party online não cabe no `maxPlayers` do modo recebe `party-too-big`. Caso contrário, `Matchmaker.plan(..., vagas)` só escolhe salas com uma vaga livre para o líder e para cada acompanhante online (`RoomInfo.hasRoom(vagas)`), e cria uma sala quando nenhuma serve. O pedido leva os acompanhantes; o servidor do jogo reserva uma vaga para cada um na mesma sala, e o lobby manda todos para lá. O "jogar novamente" num servidor de partidas faz o mesmo localmente.
+- **Times.** `MatchEnvironment.parties` (`PartyGroups`, vindo do `MuxeCore.parties()`) dá as parties presentes quando a partida começa, e `Match.start` as passa ao `TeamAssigner`, que mantém cada party em um time enquanto couber. `Match.splitParties` acha as parties que ainda ficaram em mais de um time: seus jogadores recebem `Match.unrank` (`Match.ranked(id)` fica `false`) e a partida recebe `party-split`. O jogo deixa os jogadores sem ranking fora das estatísticas.
+- **Teleporte.** Num servidor de partidas, o `MatchServer` responde o `MuxeCore.parties().onGather`: `MatchService.gather` reserva vagas na sala do líder enquanto ela não começou e tem lugar, ou guarda uma vaga de espectador por 30 segundos depois que começou. Membros que já estão no servidor são movidos na hora; os outros chegam pelo proxy. Uma reserva ou vaga de espectador vale mais que voltar a uma partida antiga.
+- **Espectadores.** `MatchRuntime.watch` adiciona um jogador que não participa: ele fica como espectador, recebe a hotbar de espectador e o placar, recebe as mensagens da partida e fala com todos nela, nunca recebe título de fim e é esquecido ao sair.
+
 ### Regras
 
 `MatchRules` guarda o que muda de jogo para jogo, com padrões:
@@ -188,7 +197,7 @@ Lida por `MatchSettings.from(config)` do `config.yml` do jogo:
 | `sounds.countdown`, `sounds.match-start`, `sounds.died`, `sounds.eliminated`, `sounds.team-eliminated`, `sounds.match-end`, `sounds.match-end-firework` | | Sons da partida. |
 | `end-titles.victory`, `end-titles.defeat` | `VITÓRIA`, `DERROTA` | Palavra, cores e som dos títulos de fim. |
 
-Mensagens, em `messages`: `room-joined`, `room-left`, `countdown`, `countdown-one`, `died-title`, `respawn-subtitle`, `respawn-subtitle-one`, `respawned`, `spectator-subtitle`, `cannot-break`, `reconnected`, `team-eliminated`, `match-started`, `result` (com linhas `{top-<ranking>}`), `result-draw`, `result-nobody`, `result-rank-1` a `result-rank-3`, `kill` e `death` (quando o jogo não tem mensagens de morte próprias), `no-arena`, `left-match`, `spectator-no-target`, `spectator-no-combat`, `global-prefix`, `health-below-name`, `room-requesting`, `room-sending`, `room-created`, `room-unavailable`.
+Mensagens, em `messages`: `room-joined`, `room-left`, `countdown`, `countdown-one`, `died-title`, `respawn-subtitle`, `respawn-subtitle-one`, `respawned`, `spectator-subtitle`, `cannot-break`, `reconnected`, `team-eliminated`, `match-started`, `result` (com linhas `{top-<ranking>}`), `result-draw`, `result-nobody`, `result-rank-1` a `result-rank-3`, `kill` e `death` (quando o jogo não tem mensagens de morte próprias), `no-arena`, `left-match`, `spectator-no-target`, `spectator-no-combat`, `global-prefix`, `health-below-name`, `room-requesting`, `room-sending`, `room-created`, `room-unavailable`. O Muxe-Core dá `party-leader-only`, `party-too-big` e `party-split` a todos os jogos.
 
 ## Pacotes
 
@@ -197,7 +206,7 @@ Cada jogo tem seus três pacotes, com o nome do id do jogo (`MatchPackets`):
 | Pacote | Entrega | O que leva |
 |---|---|---|
 | `<jogo>.rooms` | volátil, 10 s | A cada 2 s, de cada servidor do jogo para o `lobby-group` e o grupo do jogo: as salas (código, modo, arena, aberta, jogadores, máximo) e as arenas prontas. |
-| `<jogo>.join_request` | 5 s | De um lobby para um servidor do jogo: reservar uma vaga num modo, arena ou sala. |
+| `<jogo>.join_request` | 5 s | De um lobby para um servidor do jogo: reservar uma vaga num modo, arena ou sala, mais uma para cada acompanhante da party. Versão 2 (os acompanhantes foram adicionados). |
 | `<jogo>.join_reply` | 5 s | Se a vaga foi reservada, o código da sala e se a sala foi criada. |
 
 O BedWars mantém `bedwars.rooms`, `bedwars.join_request` e `bedwars.join_reply`.
@@ -220,4 +229,5 @@ O BedWars mantém `bedwars.rooms`, `bedwars.join_request` e `bedwars.join_reply`
 - `MatchRuntimeTest`: o ciclo inteiro com uma `Stage` falsa (entrada, contagem, início, mortes no lugar e no void, renascimento, kills finais, quebra de blocos, saída, volta, tempo esgotado, o fim e o fechamento).
 - `MatchServiceTest`: chegada, reservas, volta, chat, comandos da staff, partidas vazias e troca de modo.
 - `CosmeticDefaultsTest`, `CosmeticMenuSettingsTest`, `LifetimeTallyTest` e os testes de cada animação de cena, aura e rastro: os cosméticos.
+- `PartyMatchTest`, `PartyCheckTest`, `JoinRoomRequestTest`: vagas da party, times, o aviso de party dividida, o teleporte e os espectadores.
 - `ArenaSchemaTest`, `MatchmakerTest`, `ReservationsTest`, `JoinNoticesTest`, `TitleSweepTest`, `TitleRunsTest`, `SpectatorTargetsTest`, `BukkitStageTest`.

@@ -33,7 +33,7 @@ How players are placed on servers and moved between them. Lives in `core:proxy` 
 | Command | Description | Permission |
 |---|---|---|
 | `/lobby` (`/hub`, `/l`) | Sends the player one level up, always to the least loaded server with room (`ServerDirectory.lobbyFor`): from a match to the lobby of its game (`bedwars` to `bedwars-lobby`, `skywars` to `skywars-lobby`), or to the main lobby when the game has none; from a game lobby to the main lobby (`network.lobby-group`); from a main lobby to another main lobby, or `no-other-lobby` when it is the only one. Available on every Spigot server. | None |
-| `/retornar` | Sends the player back to the match they left, when its server kept `match:return:<player>` in `MuxeCore.store()` (`MatchReturns`); otherwise answers `nothing-to-return`. Available on every Spigot server. | None |
+| `/retornar` (`/reconectar`) | Sends the player back to the match they left, when its server kept `match:return:<player>` in `MuxeCore.store()` (`MatchReturns`); otherwise answers `nothing-to-return`. Available on every Spigot server. | None |
 
 ## Permissions
 
@@ -111,5 +111,5 @@ None. The gate lives in the proxy's memory.
 
 ## Known limitations
 
-- Choosing a server is by player count only; there is no party, queue or region awareness yet.
+- Choosing a server is by player count only; there is no queue or region awareness yet. Parties are handled by the game matchmaking and `/party teleportar` (see [Party](../party/README.md)).
 - With several proxies, the gate lives in each proxy's memory, but login sessions live in Redis, so a cracked player reconnecting through another proxy within the session duration is still let in.

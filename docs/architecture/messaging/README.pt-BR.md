@@ -202,6 +202,9 @@ Pacotes definidos em `core:common` (`br.com.muxe.core.common.network`). Pacotes 
 | `auth.status_response` | `AuthStatusResponse` | quem pediu | padrão, idade máxima 5 s | Resposta à pergunta acima, enviada só pelo proxy em que o jogador está. |
 | `placement.changed` | `PlacementsChangedPacket` | grupo | padrão | NPCs, hologramas ou caixas registradoras do grupo mudaram; recarregue do PostgreSQL. Veja [NPCs e hologramas](../../features/npcs-and-holograms/README.pt-BR.md). |
 | `shop.promotion_changed` | `PromotionChangedPacket` | broadcast | padrão | A promoção da loja mudou; recarregue do PostgreSQL. Veja [Loja](../../features/shop/README.pt-BR.md). |
+| `player.display` | `PlayerDisplayPacket` | proxy | padrão, idade máxima 30 s | O nick de um jogador na cor da tag, para as mensagens que o proxy manda sobre ele. |
+| `network.players` | `OnlinePlayersPacket` | broadcast | volátil, 10 s | Os nomes dos jogadores autenticados, a cada 3 segundos, para o tab. |
+| `party.*` | `PartyActionPacket`, `PartyNoticePacket`, `PartyUpdatedPacket`, `PartyRemovedPacket`, `PartySyncRequest`/`Response`, `PartyGatherRequest`/`Response` | proxy, servidor, broadcast | padrão | Os comandos, mensagens e o estado da party. Veja [Party](../../features/party/README.pt-BR.md#pacotes). |
 
 ## Métricas
 

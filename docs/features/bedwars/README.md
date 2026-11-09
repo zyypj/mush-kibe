@@ -593,6 +593,7 @@ Commands and queries in `br.com.muxe.minigame.bedwars.stats`: `RecordMatchComman
 - [Credits and cosmetics](../credits/README.md): prices, purchases and ownership.
 - [Game engine](../../architecture/game-engine/README.md).
 - [Minigame API](../../architecture/minigame-api/README.md).
+- [Party](../party/README.md): only the party leader picks a mode, a map or "play again"; the party goes to a room with a seat for everyone and stays on one team. When a party has to be split across teams, `AVISO Esta partida não conta estatísticas.` is said and its players are left out of `RecordMatchCommand` and the XP of the match.
 
 ## Acceptance criteria
 

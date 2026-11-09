@@ -106,6 +106,15 @@ A team either respawns or not (`MatchTeam.respawns`). `MatchRules.respawning()` 
 - Leaving while the team does not respawn is a final death credited to the last hitter.
 - Not returning in time eliminates the player.
 
+### Parties
+
+See [Party](../../features/party/README.md) for the player side.
+
+- **Queueing.** `MatchConnector.join` asks `PartyCheck`: a party member who is not the leader gets `party-leader-only`; a leader whose online party does not fit the mode's `maxPlayers` gets `party-too-big`. Otherwise `Matchmaker.plan(..., seats)` only picks rooms with a free seat for the leader and every online companion (`RoomInfo.hasRoom(seats)`), and creates a room when none fits. The request carries the companions; the game server reserves a seat for each one in the same room, and the lobby sends them all there. "Play again" on a match server does the same locally.
+- **Teams.** `MatchEnvironment.parties` (`PartyGroups`, from `MuxeCore.parties()`) gives the parties present when the match starts, and `Match.start` hands them to `TeamAssigner`, which keeps each party on one team while it fits. `Match.splitParties` finds the parties that still ended on more than one team: their players are `Match.unrank`ed (`Match.ranked(id)` is `false`) and the match hears `party-split`. A game leaves unranked players out of its stats.
+- **Teleport.** On a match server, `MatchServer` answers `MuxeCore.parties().onGather`: `MatchService.gather` reserves seats in the leader's room while it has not started and has room, or keeps a spectator seat for 30 seconds once it started. Members already on the server are moved at once; the others arrive through the proxy. A reservation or a spectator seat wins over returning to an old match.
+- **Spectators.** `MatchRuntime.watch` adds a player who is not a participant: they look like a spectator, get the spectator hotbar and the board, receive the match messages and chat with everyone in it, never get an end title and are forgotten when they leave.
+
 ### Rules
 
 `MatchRules` holds what changes from game to game, with defaults:
@@ -188,7 +197,7 @@ Read by `MatchSettings.from(config)` from the game's `config.yml`:
 | `sounds.countdown`, `sounds.match-start`, `sounds.died`, `sounds.eliminated`, `sounds.team-eliminated`, `sounds.match-end`, `sounds.match-end-firework` | | Match sounds. |
 | `end-titles.victory`, `end-titles.defeat` | `VITÓRIA`, `DERROTA` | Word, colours and sound of the end titles. |
 
-Messages, under `messages`: `room-joined`, `room-left`, `countdown`, `countdown-one`, `died-title`, `respawn-subtitle`, `respawn-subtitle-one`, `respawned`, `spectator-subtitle`, `cannot-break`, `reconnected`, `team-eliminated`, `match-started`, `result` (with `{top-<ranking>}` lines), `result-draw`, `result-nobody`, `result-rank-1` to `result-rank-3`, `kill` and `death` (when the game has no death messages of its own), `no-arena`, `left-match`, `spectator-no-target`, `spectator-no-combat`, `global-prefix`, `health-below-name`, `room-requesting`, `room-sending`, `room-created`, `room-unavailable`.
+Messages, under `messages`: `room-joined`, `room-left`, `countdown`, `countdown-one`, `died-title`, `respawn-subtitle`, `respawn-subtitle-one`, `respawned`, `spectator-subtitle`, `cannot-break`, `reconnected`, `team-eliminated`, `match-started`, `result` (with `{top-<ranking>}` lines), `result-draw`, `result-nobody`, `result-rank-1` to `result-rank-3`, `kill` and `death` (when the game has no death messages of its own), `no-arena`, `left-match`, `spectator-no-target`, `spectator-no-combat`, `global-prefix`, `health-below-name`, `room-requesting`, `room-sending`, `room-created`, `room-unavailable`. Muxe-Core gives `party-leader-only`, `party-too-big` and `party-split` to every game.
 
 ## Packets
 
@@ -197,7 +206,7 @@ Each game has its own three packets, named after the game id (`MatchPackets`):
 | Packet | Delivery | What it carries |
 |---|---|---|
 | `<game>.rooms` | volatile, 10 s | Every 2 s, from each game server to `lobby-group` and the game group: the rooms (code, mode, arena, open, players, max) and the ready arenas. |
-| `<game>.join_request` | 5 s | From a lobby to a game server: reserve a seat in a mode, arena or room. |
+| `<game>.join_request` | 5 s | From a lobby to a game server: reserve a seat in a mode, arena or room, plus one for each party companion. Version 2 (the companions were added). |
 | `<game>.join_reply` | 5 s | Whether the seat was reserved, the room code and whether the room was created. |
 
 BedWars keeps `bedwars.rooms`, `bedwars.join_request` and `bedwars.join_reply`.
@@ -220,4 +229,5 @@ BedWars keeps `bedwars.rooms`, `bedwars.join_request` and `bedwars.join_reply`.
 - `MatchRuntimeTest`: the whole lifecycle with a fake `Stage` (joining, countdown, start, deaths in place and in the void, respawns, final kills, breaking blocks, leaving, returning, timeouts, the end and closing).
 - `MatchServiceTest`: arriving, reservations, returning, chat, staff commands, idle matches and switching modes.
 - `CosmeticDefaultsTest`, `CosmeticMenuSettingsTest`, `LifetimeTallyTest` and the tests of every scene animation, aura and trail: the cosmetics.
+- `PartyMatchTest`, `PartyCheckTest`, `JoinRoomRequestTest`: party seats, teams, the split warning, gathering and spectators.
 - `ArenaSchemaTest`, `MatchmakerTest`, `ReservationsTest`, `JoinNoticesTest`, `TitleSweepTest`, `TitleRunsTest`, `SpectatorTargetsTest`, `BukkitStageTest`.

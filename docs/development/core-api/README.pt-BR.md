@@ -28,6 +28,7 @@ O Muxe-Core carrega todas as classes de `br.com.muxe.core` quando o servidor o c
 | `clock()` | O relógio para injetar nos seus serviços. |
 | `messages()` | Mensagens compartilhadas do Muxe-Core. |
 | `permissions()` | Cargos, tags e permissões dos jogadores online (veja [Cargos e permissões](#cargos-e-permissões)). |
+| `parties()` | As parties da rede como este servidor as vê (veja [Parties](#parties)). |
 
 ## Texto
 
@@ -632,6 +633,25 @@ ranks.onChange(changed -> refresh(changed));
 - **Um plugin pode trocar o name tag de um jogador**, o que também troca o prefixo no tab. `MuxeCore.get().nameTags().override(jogador -> Optional.of(tag))` responde um `NameTag(time, prefixo)` para os jogadores que quiser e `Optional.empty()` para os outros, que mantêm a tag do cargo. Chame `nameTags().refresh(jogador)` depois que a resposta mudar, e `clearOverride()` quando o plugin parar. O BedWars usa isso para a letra do time, como `§9§lA§9 `. Os times dos name tags deixam os companheiros se verem meio transparentes quando invisíveis.
 - `ArmorVisibility.hide(quemVê, alvo)` (pacote `br.com.muxe.core.bukkit.nms`) manda para `quemVê` uma armadura vazia do `alvo` sem mexer na armadura de verdade, e `show(quemVê, alvo)` manda a de verdade de volta. O BedWars usa isso para jogadores invisíveis.
 - `MatchReturns` (pacote `br.com.muxe.core.common.match`) guarda, num `ExpiringStore`, o servidor para onde um jogador pode voltar: `remember(jogador, servidor, ttl)`, `serverOf(jogador)` e `forget(jogador)`. O `/retornar` lê isso em todo servidor.
+
+## Parties
+
+Pacote `br.com.muxe.core.bukkit.party`. O Muxe-Core roda a [party](../../features/party/README.pt-BR.md) em todo servidor, menos nos de autenticação: `/party`, `/pc`, `/canal`, o canal de chat da party e a cópia de cada party enviada pelo proxy. Os jogos só leem.
+
+```java
+Parties parties = MuxeCore.get().parties();
+Optional<PartySnapshot> party = parties.of(player.getUniqueId());
+if (!parties.mayQueue(player.getUniqueId())) { ... }
+List<UUID> companions = parties.companions(leader);
+List<List<UUID>> groups = parties.groupsOf(playersInTheRoom);
+parties.onGather((leader, members) -> acceptedMembers);
+```
+
+- `of(id)` dá a party de um jogador (`PartySnapshot`: id, líder, se está aberta e os membros com o estado online); `mayQueue(id)` só é `false` para um membro que não é o líder; `companions(leader)` lista os membros online além do líder.
+- `groupsOf(players)` dá as parties entre esses jogadores, que é o que `PartyGroups` e `TeamAssigner` recebem.
+- `onGather(handler)` responde o `/party teleportar` neste servidor: com o líder e os membros, devolve quem pode vir, na thread principal. O padrão aceita todos; a [API de minigames](../../architecture/minigame-api/README.pt-BR.md#parties) reserva vagas ou vagas de espectador.
+- `NetworkPlayers` guarda os nomes dos jogadores online na rede (`network.players`, a cada 3 segundos, mais os deste servidor); o provedor de sugestões `network-players` usa ele.
+- As regras ficam no `core:common` (pacote `br.com.muxe.core.common.party.domain`): `PartyBook` (as parties do proxy, testado com um `MutableClock`) e `PartyDirectory` (a cópia em cada servidor). `ChatChannels` (pacote `br.com.muxe.core.common.chat`) guarda o canal de chat escolhido em um `ExpiringStore`.
 
 ## Comandos
 

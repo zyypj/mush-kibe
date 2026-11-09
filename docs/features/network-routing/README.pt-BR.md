@@ -33,7 +33,7 @@ Como os jogadores são colocados nos servidores e levados de um para outro. Fica
 | Comando | Descrição | Permissão |
 |---|---|---|
 | `/lobby` (`/hub`, `/l`) | Sobe o jogador um nível, sempre para o servidor com vaga menos cheio (`ServerDirectory.lobbyFor`): de uma partida para o lobby do jogo dela (`bedwars` para `bedwars-lobby`, `skywars` para `skywars-lobby`), ou para o lobby principal quando o jogo não tem lobby; de um lobby de jogo para o lobby principal (`network.lobby-group`); de um lobby principal para outro lobby principal, ou `no-other-lobby` quando ele é o único. Disponível em todos os servidores Spigot. | Nenhuma |
-| `/retornar` | Manda o jogador de volta para a partida que ele deixou, quando o servidor dela guardou `match:return:<jogador>` no `MuxeCore.store()` (`MatchReturns`); senão responde `nothing-to-return`. Disponível em todos os servidores Spigot. | Nenhuma |
+| `/retornar` (`/reconectar`) | Manda o jogador de volta para a partida que ele deixou, quando o servidor dela guardou `match:return:<jogador>` no `MuxeCore.store()` (`MatchReturns`); senão responde `nothing-to-return`. Disponível em todos os servidores Spigot. | Nenhuma |
 
 ## Permissões
 
@@ -111,5 +111,5 @@ Não se aplica. A passagem fica na memória do proxy.
 
 ## Limitações conhecidas
 
-- A escolha do servidor considera só a quantidade de jogadores; ainda não há noção de party, fila ou região.
+- A escolha do servidor considera só a quantidade de jogadores; ainda não há noção de fila ou região. As parties são tratadas pela procura de salas dos jogos e pelo `/party teleportar` (veja [Party](../party/README.pt-BR.md)).
 - Com vários proxies, a passagem fica na memória de cada proxy, mas as sessões de login ficam no Redis, então um jogador pirata que reconecta por outro proxy dentro da duração da sessão ainda entra.

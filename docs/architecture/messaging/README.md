@@ -202,6 +202,9 @@ Packets defined in `core:common` (`br.com.muxe.core.common.network`). Feature pa
 | `auth.status_response` | `AuthStatusResponse` | requester | standard, max age 5 s | Answer to the above, sent only by the proxy the player is on. |
 | `placement.changed` | `PlacementsChangedPacket` | group | standard | NPCs, holograms or cash registers of the group changed; reload them from PostgreSQL. See [NPCs and holograms](../../features/npcs-and-holograms/README.md). |
 | `shop.promotion_changed` | `PromotionChangedPacket` | broadcast | standard | The shop promotion changed; reload it from PostgreSQL. See [Shop](../../features/shop/README.md). |
+| `player.display` | `PlayerDisplayPacket` | proxy | standard, max age 30 s | A player's nick in their tag colour, for messages the proxy sends about them. |
+| `network.players` | `OnlinePlayersPacket` | broadcast | volatile, 10 s | The names of the authenticated players, every 3 seconds, for tab completion. |
+| `party.*` | `PartyActionPacket`, `PartyNoticePacket`, `PartyUpdatedPacket`, `PartyRemovedPacket`, `PartySyncRequest`/`Response`, `PartyGatherRequest`/`Response` | proxy, server, broadcast | standard | The party commands, messages and state. See [Party](../../features/party/README.md#packets). |
 
 ## Metrics
 
