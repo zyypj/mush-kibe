@@ -64,6 +64,10 @@ public final class PartyDirectory {
         return groups;
     }
 
+    public List<PartySnapshot> all() {
+        return List.copyOf(parties.values());
+    }
+
     public int size() {
         return parties.size();
     }

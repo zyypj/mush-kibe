@@ -4,6 +4,9 @@ main: br.com.muxe.core.bukkit.MuxeCorePlugin
 author: Muxe
 description: Base plugin of every Muxe server. Connects to PostgreSQL and Redis and exposes the shared services.
 permissions:
+  muxe.party.open:
+    description: Allows /party abrir, which lets anyone join the party with /party entrar.
+    default: false
   muxe.admin:
     description: Allows /muxe.
     default: op

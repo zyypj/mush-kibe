@@ -3,6 +3,7 @@ package br.com.muxe.core.bukkit.bootstrap;
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
+import br.com.muxe.core.bukkit.party.Parties;
 import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.permission.display.NameTags;
 import br.com.muxe.core.bukkit.scoreboard.SidebarOverrides;
@@ -31,16 +32,24 @@ final class BukkitMuxeCore implements MuxeCore {
     private final MessageCatalog messages;
     private final BuildMode buildMode;
     private final PermissionService permissions;
+    private final Parties parties;
     private final NameTags nameTags = new NameTags();
     private final SidebarOverrides sidebars = new SidebarOverrides();
 
-    BukkitMuxeCore(CoreRuntime runtime, Executor mainThread, NetworkGateway network, MessageCatalog messages, BuildMode buildMode, PermissionService permissions) {
+    BukkitMuxeCore(CoreRuntime runtime, Executor mainThread, NetworkGateway network, MessageCatalog messages, BuildMode buildMode, PermissionService permissions,
+                  Parties parties) {
         this.runtime = runtime;
         this.mainThread = mainThread;
         this.network = network;
         this.messages = messages;
         this.buildMode = buildMode;
         this.permissions = permissions;
+        this.parties = parties;
+    }
+
+    @Override
+    public Parties parties() {
+        return parties;
     }
 
     @Override

@@ -26,6 +26,7 @@ import br.com.muxe.core.bukkit.menu.MenuListener;
 import br.com.muxe.core.bukkit.monitor.BukkitServerLoad;
 import br.com.muxe.core.bukkit.monitor.TickMonitor;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
+import br.com.muxe.core.bukkit.party.PartyClient;
 import br.com.muxe.core.bukkit.nms.JoinTraffic;
 import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
@@ -87,7 +88,8 @@ public final class CoreBukkitBootstrap {
         );
         PermissionSync permissionSync = new PermissionSync(runtime.commands(), runtime.queries(), runtime.packets(), mainThread, plugin.getLogger());
         permissions = PermissionService.start(plugin, permissionSync, settings.server().group(), runtime.clock());
-        MuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages, buildMode, permissions);
+        PartyClient parties = PartyFeatures.client(plugin, runtime, mainThread, messages);
+        MuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages, buildMode, permissions, parties);
         plugin.getServer().getServicesManager().register(MuxeCore.class, core, plugin, ServicePriority.Normal);
 
         plugin.getServer().getScheduler().runTaskTimer(plugin, new TickMonitor(load, runtime.metrics()), 1L, 1L);
@@ -108,6 +110,7 @@ public final class CoreBukkitBootstrap {
         commands.register(new MuxeAdminCommand(core, JoinTraffic.start(plugin, runtime.metrics())), new LobbyCommand(core, lobbyGroup), new BuildCommand(buildMode, messages),
             new ReturnCommand(core, new MatchReturns(core.store())), new CoreConfigCommand(configEditor, new ConfigReplies(messages)));
         ranks = RankFeatures.start(plugin, core, config, commands);
+        PartyFeatures.start(plugin, core, parties, commands);
         features = PlacedFeatures.start(plugin, core, config, commands);
         HotbarFeatures.start(plugin, core, config, features);
         CommandMapRegistrar.commandMap(plugin.getServer())
