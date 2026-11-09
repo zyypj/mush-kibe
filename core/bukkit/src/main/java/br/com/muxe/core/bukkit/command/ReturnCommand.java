@@ -9,7 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.bukkit.entity.Player;
 
-@Command(name = "retornar", description = "Sends you back to the match you left.")
+@Command(name = "retornar", aliases = "reconectar", description = "Sends you back to the match you left.")
 public final class ReturnCommand {
 
     private final MuxeCore core;
