@@ -651,6 +651,22 @@ parties.onGather((leader, members) -> acceptedMembers);
 - `NetworkPlayers` keeps the names of the players online on the network (`network.players`, every 3 seconds, plus this server's own); the `network-players` suggestion provider uses it.
 - The rules live in `core:common` (package `br.com.muxe.core.common.party.domain`): `PartyBook` (the parties of the proxy, tested with a `MutableClock`) and `PartyDirectory` (the copy on each server). `ChatChannels` (package `br.com.muxe.core.common.chat`) keeps the chosen chat channel in an `ExpiringStore`.
 
+## Knockback
+
+Package `br.com.muxe.core.bukkit.combat.knockback`, rules in `br.com.muxe.core.common.combat.knockback`. Each game mode has its own knockback profile; a player without a profile keeps the server's own knockback.
+
+```java
+KnockbackService knockback = MuxeCore.get().knockback();
+KnockbackProfile bedwars = knockback.named("bedwars").orElseThrow();
+knockback.assign(player.getUniqueId(), bedwars);
+knockback.clear(player.getUniqueId());
+```
+
+- **Profiles.** `KnockbackProfile` holds the values of the room menu: `vertical`, `horizontal`, `vertical-boost`, `horizontal-boost`, `vertical-limit`, `vertical-friction`, `horizontal-friction`, `attacker-multiplier`, `restore-velocity`, `simulate-y`, `keep-sprint`, `ignore-sprint`, `use-rotation` and `click-limiter` (`off`, `low`, `normal`, `high`). `KnockbackSetting` reads and writes each one by key, which is what the custom room and the presets use. `KnockbackProfile.VANILLA` is the 1.8 knockback.
+- **Named profiles.** `knockback.profiles.<name>` in Muxe-Core's `config.yml` (every key optional over the vanilla values): `vanilla`, `bedwars`, `skywars` and one `duels-<mode>` for each Duels mode of the reference. `knockback.click-limiter-ticks` gives the ticks of each limiter level (`off` 0, `low` 2, `normal` 4, `high` 6). A game picks profiles in its own `config.yml` (see the [minigame API](../../architecture/minigame-api/README.md#configuration)).
+- **How a hit is pushed.** On a melee hit between two players, `EntityDamageByEntityEvent` (monitor) reads the victim and the attacker straight from the server objects and computes the push into the victim's `KnockbackState`. The server fires `PlayerVelocityEvent` for that same hit right after; the listener puts the computed push in it, so the client gets one velocity packet with the new value. Nothing is allocated per hit: one `KnockbackHit`, one `Motion` and one `Vector` per player are reused.
+- **The rules** (`KnockbackMath`, `KnockbackState`, tested without a server): the previous motion is divided by the frictions, the base push points away from the attacker (or along the attacker's look with `use-rotation`), the base lift is capped by `vertical-limit`, and each knockback level (enchantment, plus sprint unless `ignore-sprint`) adds the boosts along the attacker's look. A victim still recovering from the last hit only takes the boost. Without `restore-velocity` the previous motion is the last push the player received, slowed by the ticks since then; with it, the server's own motion. `simulate-y` predicts the victim's vertical speed from the last push, the ticks since then and the ping. `attacker-multiplier` slows the attacker's own tracked motion after a hit, `keep-sprint` keeps them sprinting, and the click limiter skips a push that comes fewer ticks after the last one than its level allows.
+
 ## Commands
 
 Commands are annotated classes registered with `Commands`; see [Commands](../commands/README.md).

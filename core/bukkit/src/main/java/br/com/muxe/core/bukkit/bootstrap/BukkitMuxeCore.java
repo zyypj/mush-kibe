@@ -2,6 +2,7 @@ package br.com.muxe.core.bukkit.bootstrap;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.buildmode.BuildMode;
+import br.com.muxe.core.bukkit.combat.knockback.KnockbackService;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.party.Parties;
 import br.com.muxe.core.bukkit.permission.PermissionService;
@@ -33,11 +34,12 @@ final class BukkitMuxeCore implements MuxeCore {
     private final BuildMode buildMode;
     private final PermissionService permissions;
     private final Parties parties;
+    private final KnockbackService knockback;
     private final NameTags nameTags = new NameTags();
     private final SidebarOverrides sidebars = new SidebarOverrides();
 
     BukkitMuxeCore(CoreRuntime runtime, Executor mainThread, NetworkGateway network, MessageCatalog messages, BuildMode buildMode, PermissionService permissions,
-                  Parties parties) {
+                  Parties parties, KnockbackService knockback) {
         this.runtime = runtime;
         this.mainThread = mainThread;
         this.network = network;
@@ -45,11 +47,17 @@ final class BukkitMuxeCore implements MuxeCore {
         this.buildMode = buildMode;
         this.permissions = permissions;
         this.parties = parties;
+        this.knockback = knockback;
     }
 
     @Override
     public Parties parties() {
         return parties;
+    }
+
+    @Override
+    public KnockbackService knockback() {
+        return knockback;
     }
 
     @Override

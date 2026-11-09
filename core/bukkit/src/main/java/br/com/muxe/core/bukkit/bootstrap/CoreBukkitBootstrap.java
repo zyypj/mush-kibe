@@ -3,6 +3,9 @@ package br.com.muxe.core.bukkit.bootstrap;
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.buildmode.BuildSettings;
+import br.com.muxe.core.bukkit.combat.knockback.KnockbackListener;
+import br.com.muxe.core.bukkit.combat.knockback.KnockbackProfiles;
+import br.com.muxe.core.bukkit.combat.knockback.KnockbackService;
 import br.com.muxe.core.bukkit.command.BuildCommand;
 import br.com.muxe.core.bukkit.command.LobbyCommand;
 import br.com.muxe.core.bukkit.command.ReturnCommand;
@@ -89,11 +92,13 @@ public final class CoreBukkitBootstrap {
         PermissionSync permissionSync = new PermissionSync(runtime.commands(), runtime.queries(), runtime.packets(), mainThread, plugin.getLogger());
         permissions = PermissionService.start(plugin, permissionSync, settings.server().group(), runtime.clock());
         PartyClient parties = PartyFeatures.client(plugin, runtime, mainThread, messages);
-        MuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages, buildMode, permissions, parties);
+        KnockbackService knockback = new KnockbackService(KnockbackProfiles.from(config.getConfigurationSection("knockback")));
+        MuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages, buildMode, permissions, parties, knockback);
         plugin.getServer().getServicesManager().register(MuxeCore.class, core, plugin, ServicePriority.Normal);
 
         plugin.getServer().getScheduler().runTaskTimer(plugin, new TickMonitor(load, runtime.metrics()), 1L, 1L);
         plugin.getServer().getPluginManager().registerEvents(new MenuListener(), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new KnockbackListener(knockback), plugin);
         plugin.getServer().getScheduler().runTaskTimer(plugin, new MenuAnimator(), 1L, 1L);
         ClearMidday.start(plugin);
         plugin.getServer().getPluginManager().registerEvents(buildMode, plugin);
