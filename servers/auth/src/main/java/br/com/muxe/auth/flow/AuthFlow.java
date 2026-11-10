@@ -69,7 +69,7 @@ public final class AuthFlow {
         whenDone(player, proxyCheck.isAuthenticated(playerId), (authenticated, error) -> {
             if (Boolean.TRUE.equals(authenticated)) {
                 sessions.set(playerId, AuthState.AUTHENTICATED);
-                player.sendMessage(messages.get("already-authenticated"));
+                player.sendMessage(messages.get(player, "already-authenticated"));
             } else {
                 askForCredentialsState(player, challengeAnchor);
             }
@@ -100,8 +100,8 @@ public final class AuthFlow {
                 renderer.untrack(playerId);
                 askCredentials(player, answer.registered(), true);
             }
-            case WRONG -> player.sendMessage(messages.get("challenge-wrong", "remaining", Integer.toString(answer.remainingAttempts())));
-            case FAILED -> player.kickPlayer(messages.get("challenge-failed"));
+            case WRONG -> player.sendMessage(messages.get(player, "challenge-wrong", "remaining", Integer.toString(answer.remainingAttempts())));
+            case FAILED -> player.kickPlayer(messages.get(player, "challenge-failed"));
             case NOT_IN_CHALLENGE -> {
             }
         }
@@ -110,17 +110,17 @@ public final class AuthFlow {
     public void register(Player player, String password, String confirmation) {
         UUID playerId = player.getUniqueId();
         if (!sessions.transition(playerId, AuthState.AWAITING_REGISTER, AuthState.PROCESSING)) {
-            player.sendMessage(messages.get(blockedReason(playerId, "use-login")));
+            player.sendMessage(messages.get(player, blockedReason(playerId, "use-login")));
             return;
         }
-        player.sendMessage(messages.get("processing"));
+        player.sendMessage(messages.get(player, "processing"));
         RegisterCredentialCommand command = new RegisterCredentialCommand(playerId, player.getName(), password, confirmation);
         whenDone(player, core.commands().dispatch(command), (result, error) -> {
             if (error != null) {
                 fail(player, error);
             } else if (result instanceof Result.Failure<Void> failure) {
                 sessions.set(playerId, AuthState.AWAITING_REGISTER);
-                player.sendMessage(messages.get(problemKey(failure.problem().code())));
+                player.sendMessage(messages.get(player, problemKey(failure.problem().code())));
             } else {
                 complete(player, AuthenticationMethod.REGISTER);
             }
@@ -130,14 +130,14 @@ public final class AuthFlow {
     public void login(Player player, String password) {
         UUID playerId = player.getUniqueId();
         if (limiter.isBlocked(playerId)) {
-            player.kickPlayer(messages.get("too-many-attempts"));
+            player.kickPlayer(messages.get(player, "too-many-attempts"));
             return;
         }
         if (!sessions.transition(playerId, AuthState.AWAITING_LOGIN, AuthState.PROCESSING)) {
-            player.sendMessage(messages.get(blockedReason(playerId, "use-register")));
+            player.sendMessage(messages.get(player, blockedReason(playerId, "use-register")));
             return;
         }
-        player.sendMessage(messages.get("processing"));
+        player.sendMessage(messages.get(player, "processing"));
         whenDone(player, core.commands().dispatch(new VerifyCredentialCommand(playerId, password)), (result, error) -> {
             if (error != null) {
                 fail(player, error);
@@ -190,16 +190,16 @@ public final class AuthFlow {
         UUID playerId = player.getUniqueId();
         if (!AuthProblems.WRONG_PASSWORD.equals(code)) {
             sessions.set(playerId, AuthState.AWAITING_LOGIN);
-            player.sendMessage(messages.get(problemKey(code)));
+            player.sendMessage(messages.get(player, problemKey(code)));
             return;
         }
         int remaining = limiter.recordFailure(playerId);
         if (remaining == 0) {
-            player.kickPlayer(messages.get("too-many-attempts"));
+            player.kickPlayer(messages.get(player, "too-many-attempts"));
             return;
         }
         sessions.set(playerId, AuthState.AWAITING_LOGIN);
-        player.sendMessage(messages.get("wrong-password", "remaining", Integer.toString(remaining)));
+        player.sendMessage(messages.get(player, "wrong-password", "remaining", Integer.toString(remaining)));
     }
 
     private void complete(Player player, AuthenticationMethod method) {
@@ -208,14 +208,14 @@ public final class AuthFlow {
         PlayerAuthenticatedPacket packet = new PlayerAuthenticatedPacket(player.getUniqueId(), player.getName(), method);
         core.packets().publish(PacketTarget.proxy(), packet).exceptionally(error -> {
             logger.log(Level.WARNING, "Could not notify the proxy about " + player.getName(), error);
-            core.mainThread().execute(() -> player.kickPlayer(messages.get("service-unavailable")));
+            core.mainThread().execute(() -> player.kickPlayer(messages.get(player, "service-unavailable")));
             return null;
         });
     }
 
     private void fail(Player player, Throwable error) {
         logger.log(Level.WARNING, "Authentication of " + player.getName() + " failed", error);
-        player.kickPlayer(messages.get("service-unavailable"));
+        player.kickPlayer(messages.get(player, "service-unavailable"));
     }
 
     private <T> void whenDone(Player player, CompletableFuture<T> future, BiConsumer<T, Throwable> onMainThread) {

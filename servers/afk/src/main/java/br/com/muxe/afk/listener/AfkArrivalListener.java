@@ -41,8 +41,8 @@ public final class AfkArrivalListener implements Listener {
         player.teleport(spawn.location().orElseGet(this::worldSpawn));
         hideFromEveryone(player);
         returner.arrived(player.getUniqueId());
-        Title.of(messages.get("title"), messages.get("subtitle")).send(player);
-        messages.lines("arrived").forEach(player::sendMessage);
+        Title.of(messages.get(player, "title"), messages.get(player, "subtitle")).send(player);
+        messages.lines(player, "arrived").forEach(player::sendMessage);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

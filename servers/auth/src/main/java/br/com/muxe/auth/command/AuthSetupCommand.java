@@ -47,7 +47,7 @@ public final class AuthSetupCommand {
     @Usage
     public void usage(Player player) {
         if (authenticated(player)) {
-            player.sendMessage(messages.get("setup-usage"));
+            player.sendMessage(messages.get(player, "setup-usage"));
         }
     }
 
@@ -55,7 +55,7 @@ public final class AuthSetupCommand {
     public void spawn(Player player) {
         if (authenticated(player)) {
             locations.spawn().set(player.getLocation());
-            player.sendMessage(messages.get("setup-spawn-set", "location", describe(locations.spawn())));
+            player.sendMessage(messages.get(player, "setup-spawn-set", "location", describe(player, locations.spawn())));
         }
     }
 
@@ -63,7 +63,7 @@ public final class AuthSetupCommand {
     public void code(Player player) {
         if (authenticated(player)) {
             locations.challengeCode().set(player.getEyeLocation());
-            player.sendMessage(messages.get("setup-code-set", "location", describe(locations.challengeCode())));
+            player.sendMessage(messages.get(player, "setup-code-set", "location", describe(player, locations.challengeCode())));
         }
     }
 
@@ -74,7 +74,7 @@ public final class AuthSetupCommand {
         }
         Location viewerEyes = locations.spawnEyes(player.getEyeLocation());
         Location anchor = locations.challengeAnchor(viewerEyes, codeText.height());
-        player.sendMessage(messages.get("setup-preview"));
+        player.sendMessage(messages.get(player, "setup-preview"));
         SpawnedHologram hologram = codeText.show(player, anchor, PREVIEW_CODE);
         plugin.getServer().getScheduler().runTaskLater(plugin, hologram::remove, PREVIEW_TICKS);
     }
@@ -82,7 +82,7 @@ public final class AuthSetupCommand {
     @Subcommand("info")
     public void info(Player player) {
         if (authenticated(player)) {
-            messages.lines("setup-info", "spawn", describe(locations.spawn()), "code", describe(locations.challengeCode())).forEach(player::sendMessage);
+            messages.lines(player, "setup-info", "spawn", describe(player, locations.spawn()), "code", describe(player, locations.challengeCode())).forEach(player::sendMessage);
         }
     }
 
@@ -97,21 +97,21 @@ public final class AuthSetupCommand {
         } else if (target.equals(CODE)) {
             locations.challengeCode().clear();
         } else {
-            player.sendMessage(messages.get("setup-usage"));
+            player.sendMessage(messages.get(player, "setup-usage"));
             return;
         }
-        player.sendMessage(messages.get("setup-cleared", "target", target));
+        player.sendMessage(messages.get(player, "setup-cleared", "target", target));
     }
 
     private boolean authenticated(Player player) {
         if (flow.isAuthenticated(player.getUniqueId())) {
             return true;
         }
-        player.sendMessage(messages.get("setup-not-authenticated"));
+        player.sendMessage(messages.get(player, "setup-not-authenticated"));
         return false;
     }
 
-    private String describe(LocationSlot slot) {
-        return slot.stored().map(StoredLocation::describe).orElseGet(() -> messages.get("setup-default"));
+    private String describe(Player player, LocationSlot slot) {
+        return slot.stored().map(StoredLocation::describe).orElseGet(() -> messages.get(player, "setup-default"));
     }
 }

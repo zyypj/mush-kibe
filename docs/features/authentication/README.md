@@ -131,6 +131,8 @@ The same file also holds `editor.*` ([Permission editor](../permission-editor/RE
 | `password.max-length` | `64` | Maximum password length. |
 | `messages.*` | Portuguese texts | Every text shown to the player, including the title (`title`, `subtitle-login`, `subtitle-register`) and the action bar (`challenge-action-bar`), and the [command messages](../../development/commands/README.md#messages). |
 
+`plugins/Muxe-Auth/lang/en.yml` holds the English `messages.*` at the same paths. Every prompt, title, action bar and kick text is shown in the player's own [language](../language/README.md), which is loaded before login; a new player reads Portuguese.
+
 Required:
 
 - `velocity.toml`: `online-mode = false`. Premium players are switched to online mode individually by the proxy.

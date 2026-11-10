@@ -50,7 +50,7 @@ public final class AuthRestrictionListener implements Listener {
         Player player = event.getPlayer();
         if (!AuthProtection.mayRunCommand(isAuthenticated(player), event.getMessage())) {
             event.setCancelled(true);
-            player.sendMessage(messages.get("blocked-command"));
+            player.sendMessage(messages.get(player, "blocked-command"));
         }
     }
 

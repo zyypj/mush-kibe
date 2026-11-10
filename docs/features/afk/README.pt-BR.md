@@ -71,6 +71,8 @@ Nenhum.
 | `messages.title`, `messages.subtitle` | `&c&lVOCÊ ESTÁ AFK`, `&7Mova-se para voltar ao lobby.` | Título mostrado ao chegar. |
 | `messages.arrived` | As duas linhas de chat acima | Linhas de chat ao chegar, uma lista YAML. |
 
+O `lang/en.yml` do Muxe-AFK tem os `messages.*` em inglês, nos mesmos caminhos. Cada jogador lê o título e as linhas de chat no seu próprio [idioma](../language/README.pt-BR.md).
+
 `config.yml` do Muxe-Core no servidor AFK: `server.group: afk` e `server.kind: AFK`. O tipo `AFK` deixa a hotbar do lobby, a saudação e a loja fora desse servidor.
 
 ## Pacotes

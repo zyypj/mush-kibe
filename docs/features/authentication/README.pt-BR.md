@@ -131,6 +131,8 @@ O mesmo arquivo também tem `editor.*` ([Editor de permissões](../permission-ed
 | `password.max-length` | `64` | Tamanho máximo da senha. |
 | `messages.*` | Textos em português | Todo texto mostrado ao jogador, incluindo o título (`title`, `subtitle-login`, `subtitle-register`) e a action bar (`challenge-action-bar`), e as [mensagens de comandos](../../development/commands/README.pt-BR.md#mensagens). |
 
+O `plugins/Muxe-Auth/lang/en.yml` tem os `messages.*` em inglês, nos mesmos caminhos. Todo pedido, título, action bar e texto de expulsão aparece no [idioma](../language/README.pt-BR.md) do próprio jogador, carregado antes do login; um jogador novo lê em português.
+
 Obrigatório:
 
 - `velocity.toml`: `online-mode = false`. Jogadores premium são colocados em modo online individualmente pelo proxy.

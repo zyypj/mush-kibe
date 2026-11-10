@@ -65,7 +65,7 @@ public final class AuthPlayerListener implements Listener {
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && !flow.isAuthenticated(playerId)) {
-                player.kickPlayer(messages.get("timeout"));
+                player.kickPlayer(messages.get(player, "timeout"));
             }
         }, ticks);
     }

@@ -25,6 +25,7 @@ import br.com.muxe.core.bukkit.buildmode.BuildModeHook;
 import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.config.BukkitConfigSource;
 import br.com.muxe.core.bukkit.hologram.PixelHolograms;
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.location.ConfigLocation;
 import br.com.muxe.core.bukkit.nms.PacketHologramTransport;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
@@ -52,8 +53,8 @@ public final class AuthBootstrap {
         plugin.saveDefaultConfig();
         FileConfiguration config = plugin.getConfig();
         AuthSettings settings = AuthSettings.from(new BukkitConfigSource(config));
-        MessageCatalog messages = MessageCatalog.from(config.getConfigurationSection("messages"));
         MuxeCore core = MuxeCore.get();
+        MessageCatalog messages = MessageCatalog.from(LocalizedConfig.load(plugin), "messages").speaking(core.languages());
 
         MigrationReport migration = core.migrations().migrate(MODULE, plugin.getClass().getClassLoader());
         plugin.getLogger().info("Schema 'auth' at version " + migration.schemaVersion());

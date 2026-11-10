@@ -1,0 +1,6 @@
+messages:
+  title: "&c&lYOU ARE AFK"
+  subtitle: "&7Move to go back to the lobby."
+  arrived:
+    - "&c&lYOU ARE AFK!"
+    - "&7Move to go back to the lobby."

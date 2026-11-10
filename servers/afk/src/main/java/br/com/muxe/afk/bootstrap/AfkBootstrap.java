@@ -9,6 +9,7 @@ import br.com.muxe.afk.route.AfkReturner;
 import br.com.muxe.afk.route.ReturnRoute;
 import br.com.muxe.afk.session.AfkSessions;
 import br.com.muxe.core.bukkit.api.MuxeCore;
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.location.ConfigLocation;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.afk.AfkReturns;
@@ -29,7 +30,7 @@ public final class AfkBootstrap {
         FileConfiguration config = plugin.getConfig();
         MuxeCore core = MuxeCore.get();
         AfkServerSettings settings = AfkServerSettings.from(config);
-        MessageCatalog messages = core.messages().merge(MessageCatalog.from(config.getConfigurationSection("messages")));
+        MessageCatalog messages = core.messages().merge(MessageCatalog.from(LocalizedConfig.load(plugin), "messages"));
 
         AfkSessions sessions = new AfkSessions(core.clock(), settings.arrivalGrace(), settings.retryAfter());
         AfkReturner returner = new AfkReturner(sessions, new AfkReturns(core.store()), new ReturnRoute(core.servers(), settings.fallbackGroup()), core.network(), core.async());
