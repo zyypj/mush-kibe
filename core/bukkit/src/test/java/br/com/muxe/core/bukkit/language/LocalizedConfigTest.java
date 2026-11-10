@@ -26,6 +26,36 @@ class LocalizedConfigTest {
     }
 
     @Test
+    void readingTheTranslationsLeavesTheServerFileAsItWas() throws InvalidConfigurationException {
+        YamlConfiguration bundled = new YamlConfiguration();
+        bundled.loadFromString("""
+            title: "Jogo"
+            room:
+              games:
+                bedwars:
+                  material: BED
+                  name: "&aBed Wars"
+            """);
+        YamlConfiguration server = new YamlConfiguration();
+        server.set("title", "Meu jogo");
+        server.setDefaults(bundled);
+        YamlConfiguration english = new YamlConfiguration();
+        english.loadFromString("""
+            room:
+              games:
+                bedwars:
+                  name: "&aBed Wars!"
+            """);
+
+        LocalizedConfig config = LocalizedConfig.of(server, Map.of(Language.ENGLISH, english));
+
+        assertThat(server.getKeys(true)).containsExactly("title");
+        assertThat(config.in(Language.ENGLISH).getString("room.games.bedwars.material", "")).isEqualTo("BED");
+        assertThat(config.in(Language.ENGLISH).getString("room.games.bedwars.name", "")).isEqualTo("&aBed Wars!");
+        assertThat(config.in(Language.ENGLISH).getString("title", "")).isEqualTo("Meu jogo");
+    }
+
+    @Test
     void eachLanguageMapsToItsOwnSettings() throws InvalidConfigurationException {
         Map<Language, String> titles = Map.of(
             Language.PORTUGUESE, config().map(root -> root.getString("menu.title", "")).in(Language.PORTUGUESE),

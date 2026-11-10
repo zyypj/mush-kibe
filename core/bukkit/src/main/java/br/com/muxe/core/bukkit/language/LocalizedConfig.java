@@ -149,8 +149,6 @@ public final class LocalizedConfig {
 
     private static ConfigurationSection overlay(Configuration standard, ConfigurationSection translation) {
         MemoryConfiguration root = new MemoryConfiguration();
-        root.setDefaults(standard);
-        root.options().copyDefaults(true);
         copyLeaves(standard, root);
         if (translation != null) {
             Set<String> keys = new LinkedHashSet<>(translation.getKeys(true));
@@ -161,7 +159,7 @@ public final class LocalizedConfig {
             for (String key : keys) {
                 Object value = translation.get(key);
                 if (value != null && !(value instanceof ConfigurationSection)) {
-                    root.set(key, laid(standard.get(key), value));
+                    root.set(key, laid(peek(standard, key), value));
                 }
             }
         }
@@ -192,11 +190,32 @@ public final class LocalizedConfig {
             keys.addAll(defaults.getKeys(true));
         }
         for (String key : keys) {
-            Object value = from.get(key);
+            Object value = peek(from, key);
             if (value != null && !(value instanceof ConfigurationSection)) {
                 to.set(key, value);
             }
         }
+    }
+
+    static Object peek(ConfigurationSection section, String path) {
+        Object own = walk(section, path);
+        if (own != null) {
+            return own;
+        }
+        ConfigurationSection defaults = section.getDefaultSection();
+        return defaults == null ? null : walk(defaults, path);
+    }
+
+    private static Object walk(ConfigurationSection section, String path) {
+        String[] parts = path.split("\\.");
+        ConfigurationSection current = section;
+        for (int index = 0; index < parts.length - 1; index++) {
+            if (!(current.getValues(false).get(parts[index]) instanceof ConfigurationSection next)) {
+                return null;
+            }
+            current = next;
+        }
+        return current.getValues(false).get(parts[parts.length - 1]);
     }
 
     private static ConfigurationSection translation(JavaPlugin plugin, Language language) {
