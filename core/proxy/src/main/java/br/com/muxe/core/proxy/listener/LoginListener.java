@@ -1,12 +1,14 @@
 package br.com.muxe.core.proxy.listener;
 
 import br.com.muxe.core.common.account.application.command.RecordLoginCommand;
+import br.com.muxe.core.common.account.application.command.RecordedLogin;
 import br.com.muxe.core.common.account.domain.AccountProblems;
 import br.com.muxe.core.common.cqrs.command.CommandBus;
 import br.com.muxe.core.common.metrics.MetricRegistry;
 import br.com.muxe.core.common.metrics.Tags;
 import br.com.muxe.core.common.result.Result;
 import br.com.muxe.core.proxy.auth.AuthenticationGate;
+import br.com.muxe.core.proxy.language.ProxyLanguages;
 import br.com.muxe.core.proxy.session.LoginSessions;
 import br.com.muxe.core.proxy.text.ProxyMessages;
 import com.velocitypowered.api.event.EventTask;
@@ -25,14 +27,24 @@ public final class LoginListener {
     private final CommandBus commands;
     private final AuthenticationGate gate;
     private final LoginSessions sessions;
+    private final ProxyLanguages languages;
     private final ProxyMessages messages;
     private final MetricRegistry metrics;
     private final Logger logger;
 
-    public LoginListener(CommandBus commands, AuthenticationGate gate, LoginSessions sessions, ProxyMessages messages, MetricRegistry metrics, Logger logger) {
+    public LoginListener(
+        CommandBus commands,
+        AuthenticationGate gate,
+        LoginSessions sessions,
+        ProxyLanguages languages,
+        ProxyMessages messages,
+        MetricRegistry metrics,
+        Logger logger
+    ) {
         this.commands = commands;
         this.gate = gate;
         this.sessions = sessions;
+        this.languages = languages;
         this.messages = messages;
         this.metrics = metrics;
         this.logger = logger;
@@ -45,10 +57,12 @@ public final class LoginListener {
         }
         Player player = event.getPlayer();
         RecordLoginCommand command = new RecordLoginCommand(player.getUniqueId(), player.getUsername(), player.isOnlineMode());
-        CompletableFuture<Void> recording = commands.dispatch(command)
+        CompletableFuture<Result<RecordedLogin>> recorded = commands.dispatch(command);
+        CompletableFuture<Void> recording = languages.load(player.getUniqueId())
+            .thenCompose(language -> recorded)
             .thenAccept(result -> {
                 if (result instanceof Result.Failure<?> failure) {
-                    event.setResult(ResultedEvent.ComponentResult.denied(messageFor(failure.problem().code(), player.getUsername())));
+                    event.setResult(ResultedEvent.ComponentResult.denied(messageFor(failure.problem().code(), player)));
                     return;
                 }
                 result.orElseThrow().nameReclaimedFrom().ifPresent(previous -> reportReclaimedName(player, previous));
@@ -56,7 +70,7 @@ public final class LoginListener {
             })
             .exceptionally(error -> {
                 logger.log(Level.WARNING, "Could not record login of " + player.getUsername(), error);
-                event.setResult(ResultedEvent.ComponentResult.denied(messages.get("service-unavailable")));
+                event.setResult(ResultedEvent.ComponentResult.denied(messages.get(player, "service-unavailable")));
                 return null;
             });
         return EventTask.resumeWhenComplete(recording);
@@ -90,11 +104,11 @@ public final class LoginListener {
         }
     }
 
-    private Component messageFor(String code, String username) {
+    private Component messageFor(String code, Player player) {
         return switch (code) {
-            case AccountProblems.NAME_CASE_CONFLICT -> messages.get("name-case-conflict", "username", username);
-            case AccountProblems.INVALID_USERNAME -> messages.get("invalid-username", "username", username);
-            default -> messages.get("service-unavailable");
+            case AccountProblems.NAME_CASE_CONFLICT -> messages.get(player, "name-case-conflict", "username", player.getUsername());
+            case AccountProblems.INVALID_USERNAME -> messages.get(player, "invalid-username", "username", player.getUsername());
+            default -> messages.get(player, "service-unavailable");
         };
     }
 }

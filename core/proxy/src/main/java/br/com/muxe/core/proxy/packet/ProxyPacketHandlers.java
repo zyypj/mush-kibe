@@ -72,7 +72,7 @@ public final class ProxyPacketHandlers {
         gate.authenticate(packet.playerId());
         rememberSession(player.get());
         if (!router.connect(player.get(), DestinationType.GROUP, routing.lobbyGroup())) {
-            player.get().sendMessage(messages.get("no-lobby-server"));
+            player.get().sendMessage(messages.get(player.get(), "no-lobby-server"));
         }
     }
 
@@ -91,11 +91,11 @@ public final class ProxyPacketHandlers {
             return;
         }
         if (!gate.isAuthenticated(packet.playerId())) {
-            player.get().sendMessage(messages.get("must-authenticate"));
+            player.get().sendMessage(messages.get(player.get(), "must-authenticate"));
             return;
         }
         if (!router.connect(player.get(), packet.type(), packet.destination())) {
-            player.get().sendMessage(messages.get("no-server", "destination", packet.destination()));
+            player.get().sendMessage(messages.get(player.get(), "no-server", "destination", packet.destination()));
         }
     }
 

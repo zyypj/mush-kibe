@@ -29,7 +29,10 @@ import br.com.muxe.core.proxy.geoip.GeoIpService;
 import br.com.muxe.core.proxy.geoip.application.LocationRecorder;
 import br.com.muxe.core.proxy.geoip.download.GeoDatabaseFiles;
 import br.com.muxe.core.proxy.geoip.download.MaxMindDownloads;
+import br.com.muxe.core.proxy.language.LocalizedConfig;
+import br.com.muxe.core.proxy.language.ProxyLanguages;
 import br.com.muxe.core.proxy.listener.ConnectionListener;
+import br.com.muxe.core.proxy.listener.LanguageListener;
 import br.com.muxe.core.proxy.listener.LocationListener;
 import br.com.muxe.core.proxy.listener.LoginListener;
 import br.com.muxe.core.proxy.listener.NetworkGateListener;
@@ -82,9 +85,13 @@ public final class ProxyBootstrap {
         }
         RoutingSettings routing = RoutingSettings.from(config);
         AuthenticationSettings authentication = AuthenticationSettings.from(config);
-        ProxyMessages messages = new ProxyMessages(config);
+        LocalizedConfig texts = ProxyConfigFile.loadTexts(dataDirectory, config);
 
         runtime = CoreRuntime.start(settings, new PlatformHooks(logger, MainThreadGuard.none(), new ProxyServerLoad(proxy)));
+
+        ProxyLanguages languages = new ProxyLanguages(runtime.queries(), logger);
+        languages.register(runtime.packets());
+        ProxyMessages messages = new ProxyMessages(texts, languages);
 
         AuthenticationGate gate = new AuthenticationGate();
         AccessPolicy access = new AccessPolicy(gate, runtime.directory(), routing.authGroup());
@@ -96,11 +103,14 @@ public final class ProxyBootstrap {
         new ProxyPacketHandlers(proxy, gate, access, router, routing, sessions, messages, logger).register(runtime.packets());
         new AuthStatusResponder(gate, playerId -> proxy.getPlayer(playerId).isPresent()).register(runtime.packets());
         proxy.getEventManager().register(plugin, new PreLoginListener(resolver, runtime.executors().io(), messages, runtime.metrics(), logger));
-        proxy.getEventManager().register(plugin, new NetworkGateListener(new NetworkGate(runtime.directory(), routing), messages));
-        proxy.getEventManager().register(plugin, new LoginListener(runtime.commands(), gate, sessions, messages, runtime.metrics(), logger));
+        proxy.getEventManager().register(plugin, new NetworkGateListener(new NetworkGate(runtime.directory(), routing), languages, messages));
+        proxy.getEventManager().register(plugin, new LoginListener(runtime.commands(), gate, sessions, languages, messages, runtime.metrics(), logger));
+        proxy.getEventManager().register(plugin, new LanguageListener(languages));
         proxy.getEventManager().register(plugin, new ConnectionListener(gate, access, router, routing, messages));
         proxy.getEventManager().register(plugin, new MotdListener(MotdSettings.from(config)));
-        proxy.getEventManager().register(plugin, new TabListListener(TabListSettings.from(config)));
+        TabListListener tabList = new TabListListener(texts.map(TabListSettings::from), languages);
+        proxy.getEventManager().register(plugin, tabList);
+        languages.onChange(playerId -> proxy.getPlayer(playerId).ifPresent(tabList::show));
         startParties(PartySettings.from(config), gate, router);
         startGeoIp(GeoIpSettings.from(config, SecretResolver.system()));
         startEditor(EditorSettings.from(config));

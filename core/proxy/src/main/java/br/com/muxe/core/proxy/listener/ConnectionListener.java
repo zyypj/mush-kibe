@@ -52,7 +52,7 @@ public final class ConnectionListener {
                     waitingForLobby.add(player.getUniqueId());
                 }
             }
-            case InitialRoute.Refuse<RegisteredServer> refuse -> player.disconnect(messages.get(refuse.messageKey()));
+            case InitialRoute.Refuse<RegisteredServer> refuse -> player.disconnect(messages.get(player, refuse.messageKey()));
         }
     }
 
@@ -60,7 +60,7 @@ public final class ConnectionListener {
     public void onServerPostConnect(ServerPostConnectEvent event) {
         Player player = event.getPlayer();
         if (waitingForLobby.remove(player.getUniqueId())) {
-            player.sendMessage(messages.get("no-lobby-server"));
+            player.sendMessage(messages.get(player, "no-lobby-server"));
         }
     }
 
@@ -70,7 +70,7 @@ public final class ConnectionListener {
         String target = event.getOriginalServer().getServerInfo().getName();
         if (!access.mayConnect(player.getUniqueId(), target)) {
             event.setResult(ServerPreConnectEvent.ServerResult.denied());
-            player.sendMessage(messages.get("must-authenticate"));
+            player.sendMessage(messages.get(player, "must-authenticate"));
         }
     }
 
@@ -87,8 +87,8 @@ public final class ConnectionListener {
             group -> router.pickExcept(group, kickedFrom));
         switch (fallback) {
             case Fallback.Redirect<RegisteredServer> redirect -> event.setResult(KickedFromServerEvent.RedirectPlayer.create(redirect.server(),
-                closing ? messages.get("server-moved") : reason.orElse(messages.get("server-moved"))));
-            case Fallback.Disconnect<RegisteredServer> disconnect -> event.setResult(KickedFromServerEvent.DisconnectPlayer.create(messages.get(disconnect.messageKey())));
+                closing ? messages.get(player, "server-moved") : reason.orElse(messages.get(player, "server-moved"))));
+            case Fallback.Disconnect<RegisteredServer> disconnect -> event.setResult(KickedFromServerEvent.DisconnectPlayer.create(messages.get(player, disconnect.messageKey())));
             case Fallback.Keep<RegisteredServer> ignored -> {
             }
         }
