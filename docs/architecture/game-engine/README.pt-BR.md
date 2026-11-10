@@ -41,6 +41,13 @@ A `StartCountdown` segue as mesmas regras em todos os jogos e modos:
 
 `LevelUps` parabeniza o jogador que chega a um nível novo, em todos os minigames. O jogo cria a classe com a mensagem dele (com `{level}`) e o emblema de cada nível, e chama `announce(jogador, nível)` sempre que mostra o nível. O primeiro nível visto de um jogador só fica guardado; um nível maior manda a mensagem com o emblema do nível novo, uma vez só mesmo quando pula vários níveis. `forget(jogador)` esquece o jogador quando ele sai.
 
+## Idiomas
+
+- O `TeamColor` tem um nome em português e outro em inglês. O `label()` é um `Text`, e o `displayName(Language)` monta o nome no idioma pedido. As letras dos times não mudam.
+- O `GameModeLoader.modes(texts)` lê os modos a partir do `LocalizedConfig` do jogo. O `ModeNames.from(texts)` dá o nome de cada modo em cada idioma; o conector e o item de jogar de novo usam esses nomes.
+- O `LevelUps(messages.text("level-up"), badges, languages)` parabeniza cada jogador no idioma dele.
+- O setup de arenas (`minigame-setup.yml`, `/arena`) é só da staff e continua em português.
+
 ## Setup de arenas
 
 Cada jogo descreve o que uma arena precisa num `SetupSchema`, e a engine dá a todos os jogos o mesmo comando `/arena`, os mesmos hologramas e a mesma checklist.

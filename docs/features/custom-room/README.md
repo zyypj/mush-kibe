@@ -51,6 +51,15 @@ A private room an Ultra+ party leader creates for their party, with every rule o
 
 **Party.** A player who joins the leader's party (invited or through `/party abrir`) is pulled into the room; one who leaves the party is sent to the lobby. The room closes (`A sala foi fechada.`, everyone to the lobby) when the leader leaves the room or the server, or stops leading the party.
 
+### Languages
+
+Every menu, option, value and room message follows the reader's [language](../language/README.md).
+
+- The fixed texts of the room menus live in `custom-room.texts` in Muxe-Core's `config.yml` and `lang/en.yml`.
+- The schema a game ships to the lobbies may carry a `lang.en` section, at the same paths as the schema. `SchemaReader` lays it over the Portuguese for English readers: page titles, option names, descriptions, value labels and currency names.
+- The knockback page reads its texts from `custom-room.knockback` in the game's config.
+- Team names typed by the leader are shown as typed.
+
 ## Commands
 
 | Command | Description | Permission |

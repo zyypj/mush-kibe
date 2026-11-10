@@ -92,7 +92,13 @@ Quem chega num servidor de BedWars volta para a partida que deixou, se ainda pud
 - **Baús:** um baú dentro do raio da ilha (17 blocos) do spawn de um time é do time mais próximo. Só esse time abre enquanto está na partida; depois que o time é eliminado, qualquer um abre (`Este baú é do Time ...`). Baús longe das ilhas são de todos. Espectadores não abrem baú.
 - **Bater para guardar:** os baús das ilhas e os baús do fim mostram `&eBata para` / `&eguardar!` (`messages.chest-hologram`) para quem pode usar: todo baú do fim para todo jogador vivo, o baú de uma ilha para o time dela (ou para todos depois que esse time sai). Bater num deles com um item guarda a pilha toda (o que couber) e diz `Você guardou: <item> (<n>x) em seu baú.`; o baú do fim guarda no `Baú do Fim` do próprio jogador. Um baú que o jogador não pode abrir diz `Este baú é do Time ...` e o item fica com ele. Picaretas, machados, tesoura e a espada de madeira não podem ser guardados (`Você não pode guardar este item.`, `messages.chest-kept`) nem dropados, e a única espada do inventário também não pode ser guardada (`Você não pode guardar só um deste item.`, `messages.chest-last-one`). As mesmas regras valem ao mover itens para um baú da ilha ou para o `Baú do Fim` clicando, com shift, com as teclas numéricas ou arrastando. A preferência `Guardar itens clicando no baú` desliga os hologramas ou a função inteira.
 - **Temporizador da TNT:** uma TNT acesa mostra os segundos que faltam acima dela, atualizados a cada tick (`2,95s`, duas casas com vírgula), verde-escuro, verde, amarelo e vermelho conforme o pavio queima (a partir de 90%, 60% e 30% restantes; `tnt-timer.*`), para quem está a até 24 blocos e deixou `Mostrar temporizador da TNT` ligado.
-- **Nomes dos itens:** todo item que a partida entrega tem o nome em português (`Barra de Ferro`, `Bola de Fogo`, `Estilingue`, `Espada de Madeira`...), de `item-names` ou, para itens da loja, o nome da loja.
+- **Nomes dos itens:** todo item que a partida entrega tem o nome no idioma do jogador (`Barra de Ferro` / `Iron Ingot`, `Estilingue` / `Slingshot`...), de `item-names` ou, para itens da loja, o nome da loja.
+- **Idioma:** tudo o que o BedWars mostra segue o [idioma](../language/README.pt-BR.md) do jogador:
+  - os anúncios da partida (camas, abates, melhorias de gerador, eventos);
+  - o placar, a loja, as melhorias e as armadilhas;
+  - os hologramas, os NPCs, os menus e os tops do lobby;
+  - os cosméticos, as missões, a action bar do estilingue e o temporizador da TNT, incluindo o separador decimal.
+  Os textos em inglês ficam em `lang/en.yml`. Só o setup de arenas e o `/bedwarsconfig` continuam em português.
 - **Baú do fim:** todo baú do fim abre o `Baú do Fim` do próprio jogador, o mesmo em qualquer baú do fim do mapa, mantido entre as mortes. Quando o jogador é eliminado, os itens dele caem no primeiro gerador de ferro da ilha do time (ou no spawn, se não houver).
 - **Desconexão:** quem sai com a cama de pé pode voltar em até 3 minutos e renasce 5 segundos depois (`reconectou`). O `/l` leva o jogador para o lobby de BedWars e avisa antes `Você desconectou de uma partida...`. O `/retornar`, em qualquer servidor, manda o jogador de volta para essa partida: o servidor da partida guarda `match:return:<jogador>` no `MuxeCore.store()` enquanto o jogador pode voltar e apaga quando ele volta, perde a cama, o tempo acaba ou a sala fecha.
 - **Invisibilidade:** a poção de invisibilidade não mostra partículas. Enquanto dura, inimigos e espectadores não veem a armadura do jogador (a armadura de verdade continua nele, então os golpes são reduzidos como sempre), nem o nome, só as pegadas que ele deixa no chão a cada 0,8 bloco andado. Os companheiros de time veem o jogador meio transparente, com a armadura. Sair sem cama elimina o jogador, dando a kill ao último golpe ou a quem quebrou a cama.
@@ -484,10 +490,14 @@ O Percevejo agora pode ser comprado: arremessada, a bola de neve faz surgir uma 
 
 ## Configuração
 
-`plugins/Muxe-BedWars/config.yml`:
+`plugins/Muxe-BedWars/config.yml`, com os textos em inglês nos mesmos caminhos em `plugins/Muxe-BedWars/lang/en.yml`:
 
 | Chave | Padrão | Descrição |
 |---|---|---|
+| `custom-room.knockback` | os textos da página de knockback | `title`, `entries.<key>.name` e `.description`, e `values."off"`, `low`, `normal`, `high` da página de knockback da sala custom. Substitui `custom-room.knockback-title`. Use `"off"` entre aspas: sem aspas, o YAML lê como `false`. |
+| `messages.slingshot-label`, `messages.slingshot-item` | `ESTILINGUE:`, `Estilingue` | Rótulo da action bar e nome do item do estilingue. |
+| `messages.decimal-separator`, `tnt-timer.decimal-separator` | `,` | Separador decimal dos tempos do estilingue e da TNT; o inglês usa `.`. |
+| `upgrades.free`, `shop.permanent-suffix` | `&aGrátis`, ` (Permanente)` | Rótulo de preço das melhorias grátis e sufixo dos itens permanentes da loja. |
 | `modes.<id>.display-name` | `Solo`, `Duplas`, `1v1`... | Nome mostrado aos jogadores. |
 | `modes.<id>.min-players` | veja a tabela acima | Jogadores necessários para iniciar a contagem. |
 | `modes.<id>.max-players` | veja a tabela acima | Jogadores por partida. |

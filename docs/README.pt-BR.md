@@ -51,6 +51,7 @@ Tudo sobre a Muxe está documentado aqui, em inglês e português. As regras de 
 - [Conta](features/account/README.pt-BR.md): `/account`, `/accountmenu` e os cargos na cabeça do perfil.
 - [Sala custom](features/custom-room/README.pt-BR.md): salas privadas de líderes de party Ultra+ com todas as regras do jogo abertas, predefinições e knockback por modo.
 - [Party](features/party/README.pt-BR.md): parties em toda a rede, `/party`, `/pc`, `/canal`, procura de salas só pelo líder, teleporte e regras de time.
+- [Idioma](features/language/README.pt-BR.md): o idioma de cada jogador (português ou inglês), o `/idioma` e como cada texto segue quem lê.
 
 ## Documentando uma nova feature
 

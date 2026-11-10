@@ -81,6 +81,8 @@ Regras:
 
 - Os textos para jogadores ficam em `messages`, no `config.yml` do plugin, nunca no código Java.
 - As mensagens são em português, com códigos de cor `&`, e os placeholders são escritos como `{name}`.
+- Todo texto legível do `config.yml` também tem a versão em inglês no mesmo caminho, no `lang/en.yml` do plugin. Isso vale para mensagens, nomes de itens, lore, títulos e linhas de placar. Lá só entram textos, nunca materiais, slots, números ou sons. Veja [Idioma](../../features/language/README.pt-BR.md).
+- Um texto sempre sai no idioma do jogador que vai ler. Passe o leitor ao `MessageCatalog` e nunca envie a mesma String já montada para vários jogadores.
 - As chaves são em `kebab-case` e agrupadas por feature quando ajuda (`admin.servers-line`).
 - Uma mensagem mostrada em várias linhas de uma vez é uma lista YAML em uma única chave, nunca uma chave por linha. Uma linha em branco é um item vazio (`""`).
 - Quando uma mensagem é copiada de um print de referência, mantenha as cores, a ordem e as linhas em branco.

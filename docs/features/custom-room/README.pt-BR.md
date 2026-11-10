@@ -51,6 +51,15 @@ Uma sala privada que um líder de party Ultra+ cria para a sua party, com todas 
 
 **Party.** Quem entra na party do líder (convidado ou pelo `/party abrir`) é puxado para a sala; quem sai da party vai para o lobby. A sala fecha (`A sala foi fechada.`, todos para o lobby) quando o líder sai da sala ou do servidor, ou deixa de liderar a party.
 
+### Idiomas
+
+Todos os menus, opções, valores e mensagens da sala seguem o [idioma](../language/README.pt-BR.md) de quem lê.
+
+- Os textos fixos dos menus da sala ficam em `custom-room.texts`, no `config.yml` e no `lang/en.yml` do Muxe-Core.
+- O esquema que um jogo manda aos lobbies pode trazer uma seção `lang.en`, nos mesmos caminhos do esquema. O `SchemaReader` coloca essa seção por cima do português para quem lê em inglês: títulos das páginas, nomes das opções, descrições, rótulos dos valores e nomes das moedas.
+- A página de knockback lê os textos de `custom-room.knockback`, no config do jogo.
+- Os nomes de time digitados pelo líder aparecem como foram digitados.
+
 ## Comandos
 
 | Comando | Descrição | Permissão |

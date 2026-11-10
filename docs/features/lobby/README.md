@@ -28,6 +28,7 @@ The same plugin runs on every lobby, the main ones and each game's (such as `bed
 ### Boss bar and scoreboard
 
 - The boss bar shows `MUXE` in `&e&l` and switches to `&6&l` every half second (`bossbar.frames`, `bossbar.interval`).
+- The scoreboard, the default tag, the boss bar frames and the command replies follow the player's [language](../language/README.md), and are redrawn as soon as the player uses `/idioma`. The English texts are in the lobby's `lang/en.yml`, at the same paths as `config.yml`. `/lobbyconfig` edits only the Portuguese `config.yml`; after an edit the scoreboard is rebuilt for every language, and the English title and lines keep coming from `lang/en.yml`.
 - The scoreboard, titled `&b&lMUXE`, shows:
 
 ```text

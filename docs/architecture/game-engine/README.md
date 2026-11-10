@@ -41,6 +41,13 @@ The engine gives the low-level pieces every game needs (modes, the start countdo
 
 `LevelUps` congratulates a player who reaches a new level, in every minigame. The game creates it with its message (with `{level}`) and the badge of each level, and calls `announce(player, level)` whenever it shows the level. The first level seen for a player is only remembered; a higher one sends the message with the badge of the new level, once even when several levels are skipped. `forget(player)` drops the player when they leave.
 
+## Languages
+
+- `TeamColor` has a Portuguese and an English name. `label()` is a `Text` and `displayName(Language)` renders it. The team letters do not change.
+- `GameModeLoader.modes(texts)` reads the modes from the game's `LocalizedConfig`. `ModeNames.from(texts)` gives each mode's display name per language, used by the connector and the play-again item.
+- `LevelUps(messages.text("level-up"), badges, languages)` congratulates each player in their own language.
+- The arena setup (`minigame-setup.yml`, `/arena`) is staff-only and stays in Portuguese.
+
 ## Arena setup
 
 Each game describes what an arena needs in a `SetupSchema`, and the engine gives every game the same `/arena` command, holograms and checklist.

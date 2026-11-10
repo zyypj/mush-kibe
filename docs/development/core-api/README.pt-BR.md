@@ -124,10 +124,12 @@ Os textos são `messages.config.*` no `config.yml` do Muxe-Core, que todo plugin
 ### Catálogo de mensagens
 
 ```java
-MessageCatalog messages = MessageCatalog.from(getConfig().getConfigurationSection("messages"));
-player.sendMessage(messages.get("wrong-password", "remaining", "3"));
-messages.lines("challenge").forEach(player::sendMessage);
+MessageCatalog messages = MuxeCore.get().messages().merge(MessageCatalog.from(LocalizedConfig.load(this), "messages"));
+player.sendMessage(messages.get(player, "wrong-password", "remaining", "3"));
+messages.lines(player, "challenge").forEach(player::sendMessage);
 ```
+
+Passe como primeiro argumento o jogador que vai ler o texto (`CommandSender`, `UUID` ou `Language`), para a mensagem sair no idioma dele. O `get(key)` sem leitor sai em português e serve para o console e os logs.
 
 Os placeholders são escritos como `{name}` na configuração. `merge` combina catálogos (as mensagens do próprio plugin têm prioridade). Chaves que faltam no arquivo do servidor vêm dos padrões do jar, então uma mensagem adicionada numa versão nova funciona num servidor cujo `config.yml` foi criado por uma versão antiga.
 
@@ -140,6 +142,28 @@ messages:
     - "&eDigite o &bcódigo &eem frente &ano chat&e!"
     - ""
     - "&7&o(É necessário ativar os hologramas para visualizar corretamente)"
+```
+
+### Idiomas
+
+Todo jogador tem um idioma: português (o padrão) ou inglês. Veja [Idioma](../../features/language/README.pt-BR.md).
+
+- `MuxeCore.get().languages()` (`PlayerLanguages`) cuida do idioma de cada jogador. O `of(player)` diz qual é, o `change(player, language)` troca, e o `onChange(player -> ...)` é chamado na thread principal depois de uma troca. Use esse callback para remontar o que o jogador já está vendo.
+- `LocalizedConfig.load(plugin)` lê o `config.yml` e o `lang/en.yml` do plugin.
+  - `in(language)` é a raiz da configuração de um idioma. O inglês fica por cima do português, chave por chave.
+  - `map(root -> Settings.from(...))` monta um `Localized<Settings>`, um por idioma. Leia com `settings.in(languages.of(player))`.
+  - `MuxeCore.get().texts()` é o do próprio core.
+- Um texto enviado a muitos jogadores nunca é montado uma vez só. Monte por leitor, ou passe um `Text` (`messages.text(key, ...)`) e chame `text.in(language)` para cada um.
+- Um valor que também é traduzido, como o nome de um time ou de um modo, vai como placeholder `Text`: `messages.get(player, "team-eliminated", "team", Text.of("Vermelho", "Red"))`.
+- `LocalizedConfig.bundled(MeuPlugin.class, "config.yml").untranslated(Language.ENGLISH, "")` lista os textos legíveis em português que não têm versão em inglês. Todo plugin tem um teste que garante que essa lista está vazia.
+
+```java
+LocalizedConfig texts = LocalizedConfig.load(this);
+Localized<ShopSettings> shop = texts.map(root -> ShopSettings.from(root.getConfigurationSection("shop")));
+Text announcement = messages.text("bed-destroyed", "team", team.name());
+for (Player player : players) {
+    player.sendMessage(announcement.in(messages.language(player)));
+}
 ```
 
 ### Linhas de chat centralizadas e clicáveis

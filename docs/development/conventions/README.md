@@ -81,6 +81,8 @@ Rules:
 
 - Player-facing text lives under `messages` in the plugin's `config.yml`, never in Java code.
 - Messages are in Portuguese, with `&` color codes, and placeholders written as `{name}`.
+- Every readable text of `config.yml` (messages, item names, lore, titles, scoreboard lines) also has its English version at the same path in the plugin's `lang/en.yml`. Only texts go there, never materials, slots, numbers or sounds. See [Language](../../features/language/README.md).
+- A text is always rendered in the language of the player who reads it: pass the reader to `MessageCatalog`, and never send one rendered String to many players.
 - Keys are `kebab-case` and grouped by feature when it helps (`admin.servers-line`).
 - A message shown as several lines at once is one YAML list under one key, never one key per line. A blank line is an empty item (`""`).
 - When a message is copied from a reference screenshot, keep its colors, its order and its blank lines.

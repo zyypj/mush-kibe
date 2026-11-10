@@ -92,7 +92,13 @@ A player who reaches a BedWars server goes back to the match they left if they s
 - **Chests:** a chest within the island radius (17 blocks) of a team spawn belongs to the closest team. Only that team opens it while the team is in the match; once the team is eliminated anyone can (`Este baú é do Time ...`). Chests away from the islands are open to everyone. Spectators open no chest.
 - **Hit to store:** the island chests and the ender chests show `&eBata para` / `&eguardar!` (`messages.chest-hologram`) to whoever may use them: every ender chest to every player alive, an island chest to its team (or to everyone once that team is out). Hitting one of them with an item stores the whole stack (what fits) and says `Você guardou: <item> (<n>x) em seu baú.`; an ender chest stores in the player's own `Baú do Fim`. A chest the player cannot open says `Este baú é do Time ...` and keeps the item. Pickaxes, axes, shears and the wooden sword cannot be stored (`Você não pode guardar este item.`, `messages.chest-kept`) nor dropped, and the only sword in the inventory cannot be stored either (`Você não pode guardar só um deste item.`, `messages.chest-last-one`). The same rules apply when moving items into an island chest or the `Baú do Fim` by clicking, shift-clicking, using the number keys or dragging. The `Guardar itens clicando no baú` preference turns the holograms or the whole feature off.
 - **TNT timer:** a lit TNT shows the seconds left above it, updated every tick (`2,95s`, two decimals with a comma), dark green, green, yellow and red as the fuse burns (from 90%, 60% and 30% left; `tnt-timer.*`), to players within 24 blocks who kept `Mostrar temporizador da TNT` on.
-- **Item names:** every item the match hands out has its Portuguese name (`Barra de Ferro`, `Bola de Fogo`, `Estilingue`, `Espada de Madeira`...), from `item-names` or, for shop items, the shop name.
+- **Item names:** every item the match hands out has its name in the player's language (`Barra de Ferro` / `Iron Ingot`, `Estilingue` / `Slingshot`...), from `item-names` or, for shop items, the shop name.
+- **Language:** everything BedWars shows follows the player's [language](../language/README.md):
+  - match broadcasts (beds, kills, generator upgrades, events);
+  - the scoreboard, the shop, upgrades and traps;
+  - holograms, NPCs, the lobby menus and tops;
+  - cosmetics, missions, the slingshot action bar and the TNT timer, including its decimal separator.
+  The English texts are in `lang/en.yml`. Only the arena setup and `/bedwarsconfig` stay in Portuguese.
 - **Ender chest:** every ender chest opens the player's own `Baú do Fim`, the same one from any ender chest of the map, kept between deaths. When the player is eliminated, its items drop on the team's first island iron generator (or the spawn when there is none).
 - **Disconnecting:** a player who leaves with the bed alive can come back within 3 minutes and respawns 5 seconds later (`reconectou`). `/l` takes the player to the BedWars lobby and warns `Você desconectou de uma partida...` first. `/retornar`, on any server, sends the player back to that match: the match server keeps `match:return:<player>` in `MuxeCore.store()` while the player can return and deletes it when they come back, lose the bed, run out of time or the room closes.
 - **Invisibility:** the invisibility potion shows no particles. While it lasts, enemies and spectators see no armour on the player (the real armour stays on, so hits are reduced as usual), no name and only the footsteps the player leaves on the ground, every 0.8 blocks walked. Teammates see the player half transparent, with the armour. Leaving without a bed eliminates the player, crediting the last hit or the bed breaker.
@@ -484,10 +490,14 @@ The Percevejo can be bought now: thrown, its snowball spawns a silverfish of the
 
 ## Configuration
 
-`plugins/Muxe-BedWars/config.yml`:
+`plugins/Muxe-BedWars/config.yml`, with the English texts at the same paths in `plugins/Muxe-BedWars/lang/en.yml`:
 
 | Key | Default | Description |
 |---|---|---|
+| `custom-room.knockback` | the knockback page texts | `title`, `entries.<key>.name` and `.description`, and `values."off"`, `low`, `normal`, `high` of the custom room knockback page. It replaces `custom-room.knockback-title`. Quote `"off"`: unquoted, YAML reads it as `false`. |
+| `messages.slingshot-label`, `messages.slingshot-item` | `ESTILINGUE:`, `Estilingue` | Slingshot action bar label and item name. |
+| `messages.decimal-separator`, `tnt-timer.decimal-separator` | `,` | Decimal separator of the slingshot and TNT timers; English uses `.`. |
+| `upgrades.free`, `shop.permanent-suffix` | `&aGrátis`, ` (Permanente)` | Price label of free upgrades and the suffix of permanent shop items. |
 | `modes.<id>.display-name` | `Solo`, `Duplas`, `1v1`... | Name shown to players. |
 | `modes.<id>.min-players` | see the table above | Players needed to start the countdown. |
 | `modes.<id>.max-players` | see the table above | Players per match. |

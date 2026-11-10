@@ -213,6 +213,34 @@ Read by `MatchSettings.from(config)` from the game's `config.yml`:
 
 Messages, under `messages`: `room-joined`, `room-left`, `countdown`, `countdown-one`, `died-title`, `respawn-subtitle`, `respawn-subtitle-one`, `respawned`, `spectator-subtitle`, `cannot-break`, `reconnected`, `team-eliminated`, `match-started`, `result` (with `{top-<ranking>}` lines), `result-draw`, `result-nobody`, `result-rank-1` to `result-rank-3`, `kill` and `death` (when the game has no death messages of its own), `no-arena`, `left-match`, `spectator-no-target`, `spectator-no-combat`, `global-prefix`, `health-below-name`, `room-requesting`, `room-sending`, `room-created`, `room-unavailable`. Muxe-Core gives `party-leader-only`, `party-too-big` and `party-split` to every game.
 
+## Languages
+
+Everything the runtime shows goes out in the language of the player who reads it. See [Language](../../features/language/README.md).
+
+- **Where the language comes from:**
+  - `Stage.language(UUID)` gives the reader's language. `BukkitStage` reads `MuxeCore.languages()`, and `FakeStage` has a `languages` map that defaults to Portuguese.
+  - `MatchServer` calls `MatchRuntime.refreshLanguage(id)` when a player switches: the hotbar is given again and the boards are redrawn.
+- **Settings:**
+  - `MatchEnvironment` holds `Localized<MatchSettings>`, built with `texts.map(MatchSettings::from)` from the game's `LocalizedConfig`.
+  - `settings(Language)` and `runtime.settings(UUID)` give the reader's settings.
+  - `modeName(GameMode)` and `runtime.modeName()` give the mode name as a `Text`.
+- **Broadcasts:**
+  - `runtime.broadcast(Text)`, `announce(key, placeholders...)` and `announceLines(key, ...)` render once per reader.
+  - `runtime.message(UUID, key, ...)` sends one message in the reader's language.
+  - `broadcast(String)` is only for text that is already plain.
+  - Team names come from `match.teamText(color)`, a custom room name or `TeamColor.label()`. Event names are the `Text` label of `Timeline.Entry`.
+- **Hooks a game overrides:**
+  - `deathText(death, victim, killer)` and `skipEventText()` return a `Text`.
+  - `placeholders(viewer, language)` gives the board values in the reader's language.
+- **Cosmetics:**
+  - `cosmetics.yml` has its English in `lang/cosmetics-en.yml`. This is not `lang/en.yml` because the api is shaded into each game's jar, where that path belongs to the game.
+  - `KillAnnouncer` takes `Localized<MessageSets>` and returns `killText`, `deathText` and `bedText` as a `Text`. Each line is rendered in the killer's chosen set and the reader's language.
+- **Knockback page of a custom room:**
+  - `KnockbackPage.write(pages, profile, texts, 30, "options")` reads its title, entries and values from `custom-room.knockback` in the game's config.
+  - `KnockbackPage.translate(...)` writes the English under the schema's `lang.en` section.
+  - Without the section, the Portuguese defaults are used.
+- **What stays Portuguese:** the arena setup, which only staff sees.
+
 ## Packets
 
 Each game has its own three packets, named after the game id (`MatchPackets`):

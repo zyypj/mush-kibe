@@ -28,6 +28,10 @@ O mesmo plugin roda em todo lobby, nos principais e nos de cada jogo (como `bedw
 ### Boss bar e scoreboard
 
 - A boss bar mostra `MUXE` em `&e&l` e troca para `&6&l` a cada meio segundo (`bossbar.frames`, `bossbar.interval`).
+- A scoreboard, a tag padrão, os quadros da boss bar e as respostas dos comandos seguem o [idioma](../language/README.pt-BR.md) do jogador.
+  - Eles são redesenhados assim que o jogador usa o `/idioma`.
+  - Os textos em inglês ficam no `lang/en.yml` do lobby, nos mesmos caminhos do `config.yml`.
+  - O `/lobbyconfig` edita só o `config.yml` em português. Depois de uma edição, a scoreboard é remontada para todos os idiomas, e o título e as linhas em inglês continuam vindo do `lang/en.yml`.
 - A scoreboard, com o título `&b&lMUXE`, mostra:
 
 ```text

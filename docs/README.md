@@ -51,6 +51,7 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 - [Account](features/account/README.md): `/account`, `/accountmenu` and the ranks on the profile head.
 - [Custom room](features/custom-room/README.md): private rooms of Ultra+ party leaders with every game rule open to change, presets and per-mode knockback.
 - [Party](features/party/README.md): network-wide parties, `/party`, `/pc`, `/canal`, leader-only queueing, teleport and team rules.
+- [Language](features/language/README.md): each player's language (Portuguese or English), `/idioma`, and how every text follows the reader.
 
 ## Documenting a new feature
 

@@ -42,6 +42,7 @@ Leia antes de alterar código, nesta ordem:
 - Nunca acesse o Redis diretamente a partir de uma feature. Use o `PacketBus` para mensagens e o `MuxeCore.store()` para valores de curta duração.
 - Utilitários reutilizáveis ficam no core, não em uma feature. Antes de escrever algo genérico (títulos, action bars, efeitos, itens, menus), confira a [API do core](docs/development/core-api/README.pt-BR.md); se faltar, adicione-o ao `core:bukkit` ou ao `core:common`, teste-o e documente-o lá.
 - Os textos para jogadores ficam no `config.yml` de cada plugin, em `messages`, em português, com códigos de cor `&`. Uma mensagem de várias linhas é uma lista YAML, com `""` para as linhas em branco, enviada com `MessageCatalog.lines`.
+- Todo texto legível de um `config.yml` tem a versão em inglês no mesmo caminho, no `lang/en.yml` do plugin. Todo texto sai no idioma de quem lê: passe o jogador ao `MessageCatalog` e nunca envie a mesma String já montada para vários jogadores. Veja [Idioma](docs/features/language/README.pt-BR.md).
 - O YAML usa o estilo de bloco expandido: nada de mapas nem listas inline.
 
 ## Testes

@@ -213,6 +213,34 @@ Lida por `MatchSettings.from(config)` do `config.yml` do jogo:
 
 Mensagens, em `messages`: `room-joined`, `room-left`, `countdown`, `countdown-one`, `died-title`, `respawn-subtitle`, `respawn-subtitle-one`, `respawned`, `spectator-subtitle`, `cannot-break`, `reconnected`, `team-eliminated`, `match-started`, `result` (com linhas `{top-<ranking>}`), `result-draw`, `result-nobody`, `result-rank-1` a `result-rank-3`, `kill` e `death` (quando o jogo não tem mensagens de morte próprias), `no-arena`, `left-match`, `spectator-no-target`, `spectator-no-combat`, `global-prefix`, `health-below-name`, `room-requesting`, `room-sending`, `room-created`, `room-unavailable`. O Muxe-Core dá `party-leader-only`, `party-too-big` e `party-split` a todos os jogos.
 
+## Idiomas
+
+Tudo o que o runtime mostra sai no idioma do jogador que vai ler. Veja [Idioma](../../features/language/README.pt-BR.md).
+
+- **De onde vem o idioma:**
+  - `Stage.language(UUID)` dá o idioma de quem lê. O `BukkitStage` lê o `MuxeCore.languages()`, e o `FakeStage` tem um mapa `languages` que começa em português.
+  - O `MatchServer` chama o `MatchRuntime.refreshLanguage(id)` quando um jogador troca de idioma: a hotbar é dada de novo e os placares são redesenhados.
+- **Configurações:**
+  - O `MatchEnvironment` guarda um `Localized<MatchSettings>`, montado com `texts.map(MatchSettings::from)` a partir do `LocalizedConfig` do jogo.
+  - O `settings(Language)` e o `runtime.settings(UUID)` dão as configurações de quem lê.
+  - O `modeName(GameMode)` e o `runtime.modeName()` dão o nome do modo como `Text`.
+- **Anúncios:**
+  - O `runtime.broadcast(Text)`, o `announce(key, placeholders...)` e o `announceLines(key, ...)` montam o texto uma vez para cada leitor.
+  - O `runtime.message(UUID, key, ...)` manda uma mensagem no idioma de quem lê.
+  - O `broadcast(String)` serve só para texto que já está pronto.
+  - Os nomes dos times vêm de `match.teamText(color)`: o nome da sala custom ou o `TeamColor.label()`. Os nomes dos eventos são o rótulo `Text` do `Timeline.Entry`.
+- **Ganchos que o jogo sobrescreve:**
+  - O `deathText(death, victim, killer)` e o `skipEventText()` devolvem um `Text`.
+  - O `placeholders(viewer, language)` dá os valores do placar no idioma de quem lê.
+- **Cosméticos:**
+  - O inglês do `cosmetics.yml` fica em `lang/cosmetics-en.yml`. Não fica em `lang/en.yml` porque a api é embutida no jar de cada jogo, e nesse jar esse caminho é do jogo.
+  - O `KillAnnouncer` recebe um `Localized<MessageSets>` e devolve `killText`, `deathText` e `bedText` como `Text`. Cada linha é montada no conjunto escolhido por quem matou e no idioma de quem lê.
+- **Página de knockback da sala custom:**
+  - O `KnockbackPage.write(pages, profile, texts, 30, "options")` lê o título, os itens e os valores de `custom-room.knockback`, no config do jogo.
+  - O `KnockbackPage.translate(...)` escreve o inglês na seção `lang.en` do esquema.
+  - Sem essa seção, os padrões em português são usados.
+- **O que continua em português:** o setup de arenas, que só a staff vê.
+
 ## Pacotes
 
 Cada jogo tem seus três pacotes, com o nome do id do jogo (`MatchPackets`):
