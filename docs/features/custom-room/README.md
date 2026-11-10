@@ -29,7 +29,7 @@ A private room an Ultra+ party leader creates for their party, with every rule o
 | `Times` | `Quantidade de times` (2 to the teams of the mode) and each `Time #N`: left click enables or disables it, right click renames it (anvil), Q restores the name. A renamed team shows `Nome original` and its new name and first letter on the scoreboard. |
 | `Geradores` | Forge speed, diamond and emerald generators on or off, their speed (0.25x steps) and how many items they drop. |
 | `Itens da loja (n/m)` | Every shop item, each tier on its own. `Editando <item>...`: status, price (left: value in an anvil, right: currency iron → gold → emerald → diamond) and limit (right: none → per team → per player → in the inventory; left: amount). `Tudo grátis` makes everything free. |
-| `Melhorias (1/1)` | Every team upgrade. `Editando <upgrade>...`: status and the price and currency of each level. `Tudo grátis`. |
+| `Melhorias (1/1)` | Every team upgrade, plus `Proteção da Cama` (off by default, only in custom rooms). `Editando <upgrade>...`: status and the price and currency of each level. `Tudo grátis`. Long level lines wrap at the last comma that fits in 40 characters, as in the reference (`Nível 2: Madeira, Lã, Pedra do Fim,` / `Grátis`). |
 | `Eventos` | Diamante II, Esmeralda II, Diamante III, Esmeralda III, Sem Camas, Deathmatch and Fim do Jogo: the time after the previous event (left +30s, right -30s, shift ±1min) and Q to turn it off (not the game end). |
 | `Itens` | `Tipo da Bola de fogo` (`Padrão` or `Fireball Fight`: 1.5x more lift and half the damage) and `Recarga do Estilingue`. |
 | `Alterar knockback` | The fourteen knockback values of the mode's [knockback profile](../../development/core-api/README.md#knockback), applied at once to everyone in the room. |
@@ -45,6 +45,8 @@ A private room an Ultra+ party leader creates for their party, with every rule o
 - `Sua sala` (`/menu` or the item, leader only): the mode (switching restarts a waiting room), `Mapas`, `Opções`, `Iniciar sala` (10-second countdown, the leader may start alone), `Pausar contador`, `Reiniciar sala`, `Fechar sala` and `Predefinições`. During the match: `Pular evento` (runs the next event at once), `Reiniciar sala` and `Fechar sala`.
 - A custom match counts nothing: no stats, XP, missions or winstreak.
 - When the match ends, the room goes back to waiting with the same code and options (`A sala foi reiniciada.`).
+- **Proteção da Cama** builds a pyramid around the team's bed (or dragon egg) when bought: level I puts wood next to the bed, team wool around it and team-coloured glass outside; level II uses end stone instead of the glass; level III adds an outer glass layer over the end stone. Each layer is one block further (counting along the axes) from the bed, from the bed's height up. Only air and blocks of the previous level are replaced, and every block can be broken like a placed one.
+- **Items only for custom rooms**: Obsidian works (off by default). Troca Congelante, Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil, Baú do Fim and Ressurreição are listed with the reference's text, price and currency, start off and answer "em breve" when bought; they are kept in `pendencias.txt`.
 
 **Party.** A player who joins the leader's party (invited or through `/party abrir`) is pulled into the room; one who leaves the party is sent to the lobby. The room closes (`A sala foi fechada.`, everyone to the lobby) when the leader leaves the room or the server, or stops leading the party.
 
@@ -78,7 +80,7 @@ Muxe-Core `config.yml`, `custom-room`:
 
 Messages (Muxe-Core `messages`): `custom-room-creating`, `custom-room-sending`, `custom-room-unavailable`, `custom-room-not-leader`, `custom-room-invalid-value`, `custom-room-only-leader`, `custom-room-not-in-room`, `custom-room-closed`, `custom-room-restarted`, `custom-room-paused`, `custom-room-team-full`, `custom-room-team-chosen`, `custom-room-spectator-chosen`, `custom-room-event-skipped`, `custom-room-mode-changed`, `custom-room-preset-*`.
 
-BedWars `config.yml`, `custom-room`: the fixed pages (`Opções`, `Times`, `Geradores`, `Eventos`, `Itens`, `Outros`), the titles of the generated pages and the diamond currency. The shop pages come from `shop`, the upgrades from `upgrades`, the event times from `forges`/`events` and the knockback page from the mode's profile. BedWars adds the message `purchase-limit`.
+BedWars `config.yml`: `shop.categories.<id>.custom-items` and `upgrades.custom-list` hold the items and upgrades that only custom rooms list, and `enabled: false` on an item or upgrade makes it start off. `custom-room`: the fixed pages (`Opções`, `Times`, `Geradores`, `Eventos`, `Itens`, `Outros`), the titles of the generated pages and the diamond currency. The shop pages come from `shop`, the upgrades from `upgrades`, the event times from `forges`/`events` and the knockback page from the mode's profile. BedWars adds the message `purchase-limit`.
 
 ## Packets
 
@@ -126,5 +128,5 @@ None.
 
 - Only BedWars modes can be created; the other games and modes of the menus appear and do nothing.
 - `Carregar mapa externo` does nothing.
-- Shop items the BedWars shop does not have (the reference's page 3 extras) and the `Proteção da Cama` upgrade are not listed.
+- Troca Congelante, Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil, Baú do Fim, Ressurreição, Torre Compacta, Ovo das Pontes and Rastreador answer "em breve". The reference's default limits of these items are not set.
 - The click limiter of the knockback skips pushes that come too soon after the last one; its tick counts are a guess (`knockback.click-limiter-ticks`).
