@@ -2,7 +2,7 @@
 
 # Custom room
 
-A private room an Ultra+ party leader creates for their party, with every rule of the game open to change: teams, generators, shop, upgrades, events, items, knockback and others. The room never starts by itself; the leader starts it, restarts it and closes it.
+A private room an Ultra+ party leader creates for their party, with every rule of the game open to change: teams, generators, shop, upgrades, events, items, knockback and others. A 30-second countdown starts once a second player is in the room; the leader can pause it, start the match at once, restart the room and close it.
 
 ## User stories
 
@@ -42,9 +42,10 @@ A private room an Ultra+ party leader creates for their party, with every rule o
 - The room code shows on the scoreboard as `<code> (C)`. It never appears to matchmaking and only takes players with a seat reserved for it.
 - Waiting hotbar: `Selecionar time` (slot 4), the game menu (slot 5), `Menu da sala (/menu)` (slot 8, leader only) and `Voltar ao Lobby` (slot 9).
 - `Selecionar time`: each enabled team with `Jogadores: n/size`, and `Espectador`. Players keep their choice until the start; those who chose nobody are spread over the emptiest teams; spectators watch the match.
-- `Sua sala` (`/menu` or the item, leader only): the mode (switching restarts a waiting room), `Mapas`, `Opções`, `Iniciar sala` (10-second countdown, the leader may start alone), `Pausar contador`, `Reiniciar sala`, `Fechar sala` and `Predefinições`. During the match: `Pular evento` (runs the next event at once), `Reiniciar sala` and `Fechar sala`.
+- `Sua sala` (`/menu` or the item, leader only): the mode (switching restarts a waiting room), `Mapas`, `Opções`, `Iniciar sala` (starts the match at once, the leader may start alone), `Pausar contador` (stops the countdown until `Iniciar sala`; players who arrive afterwards do not start it again), `Reiniciar sala`, `Fechar sala` and `Predefinições`. During the match: `Pular evento` (runs the next event at once), `Reiniciar sala` and `Fechar sala`.
 - A custom match counts nothing: no stats, XP, missions or winstreak.
-- When the match ends, the room goes back to waiting with the same code and options (`A sala foi reiniciada.`).
+- The countdown starts at 30 seconds when the second player arrives and stops if the room drops back to one player.
+- When the match ends, the room goes back to waiting with the same code and options (`A sala foi reiniciada.`), and the countdown starts again.
 - **Proteção da Cama** builds a pyramid around the team's bed (or dragon egg) when bought: level I puts wood next to the bed, team wool around it and team-coloured glass outside; level II uses end stone instead of the glass; level III adds an outer glass layer over the end stone. Each layer is one block further (counting along the axes) from the bed, from the bed's height up. Only air and blocks of the previous level are replaced, and every block can be broken like a placed one. When it is on, it sits in slot 19 of `Melhorias do Time`, which grows from 3 to 4 rows.
 - **Items only for custom rooms**: Obsidian works (off by default). Troca Congelante, Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil, Baú do Fim and Ressurreição are listed with the reference's text, price and currency, start off and answer "em breve" when bought; they are kept in `pendencias.txt`.
 
@@ -109,7 +110,7 @@ None.
 
 - [ ] An Ultra+ player clicks `Sala customizada`, picks Bed Wars Solo and `Criar sala`; the chat says `Criando sala...` then `Enviando para <code>...` and they arrive in a waiting room with `<code> (C)` on the scoreboard.
 - [ ] A player without Ultra+ gets the Ultra+ shop.
-- [ ] Two players in the room do not start a countdown; the leader's `Iniciar sala` does.
+- [ ] A second player in the room starts a 30-second countdown; `Pausar contador` stops it and `Iniciar sala` starts the match at once.
 - [ ] A party member invited after the room was created is sent into it.
 - [ ] The leader leaving closes the room and sends everyone to the lobby.
 - [ ] Changing `Vertical` to 0.8 in `Alterar knockback` changes the knockback of everyone in the room.

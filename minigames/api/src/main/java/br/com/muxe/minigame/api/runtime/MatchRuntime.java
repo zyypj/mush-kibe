@@ -403,6 +403,14 @@ public final class MatchRuntime<S extends MatchState> {
         return change.isPresent();
     }
 
+    public boolean startNow() {
+        if (match.forceStart(1).isEmpty()) {
+            return false;
+        }
+        start();
+        return true;
+    }
+
     public boolean forceEnd() {
         if (!match.canForceEnd()) {
             return false;

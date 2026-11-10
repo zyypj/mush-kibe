@@ -103,32 +103,47 @@ class CustomRoomsTest {
     }
 
     @Test
-    void aCreatedRoomIsPrivateLabelledAndNeverStartsByItself() {
+    void aCreatedRoomIsPrivateLabelledAndCountsThirtySecondsOnceTheSecondPlayerArrives() {
         String code = create();
 
         assertThat(service.summaries()).singleElement().satisfies(summary -> assertThat(summary.open()).isFalse());
         arrive(leader);
+        assertThat(runtime(code).match().phase()).isEqualTo(MatchPhase.WAITING);
         arrive(friend);
 
         Match match = runtime(code).match();
         assertThat(match.label()).isEqualTo(code + " (C)");
-        assertThat(match.phase()).isEqualTo(MatchPhase.WAITING);
+        assertThat(match.phase()).isEqualTo(MatchPhase.STARTING);
+        assertThat(match.countdown().remaining()).hasValue(30);
         assertThat(service.of(friend)).contains(runtime(code));
         assertThat(stage.items.get(leader)).extracting(HotbarItem::name).contains("time", "menu");
         assertThat(stage.items.get(friend)).extracting(HotbarItem::name).contains("time").doesNotContain("menu");
     }
 
     @Test
-    void onlyTheLeaderStartsAndPausesTheCountdown() {
+    void onlyTheLeaderPausesTheCountdownAndStartsTheMatchAtOnce() {
         String code = create();
         arrive(leader);
         arrive(friend);
 
+        assertThat(rooms.pause(friend)).isFalse();
+        assertThat(rooms.pause(leader)).isTrue();
+        seconds(31);
+        assertThat(runtime(code).match().phase()).isEqualTo(MatchPhase.WAITING);
         assertThat(rooms.start(friend)).isFalse();
         assertThat(rooms.start(leader)).isTrue();
-        assertThat(runtime(code).match().phase()).isEqualTo(MatchPhase.STARTING);
-        assertThat(rooms.pause(leader)).isTrue();
-        assertThat(runtime(code).match().phase()).isEqualTo(MatchPhase.WAITING);
+        assertThat(runtime(code).match().phase()).isEqualTo(MatchPhase.PLAYING);
+    }
+
+    @Test
+    void theCountdownStartsTheMatchWhenItEnds() {
+        String code = create();
+        arrive(leader);
+        arrive(friend);
+
+        seconds(30);
+
+        assertThat(runtime(code).match().phase()).isEqualTo(MatchPhase.PLAYING);
     }
 
     @Test
@@ -137,7 +152,6 @@ class CustomRoomsTest {
         arrive(leader);
 
         rooms.start(leader);
-        seconds(10);
 
         assertThat(runtime(code).match().phase()).isEqualTo(MatchPhase.PLAYING);
     }
@@ -180,7 +194,7 @@ class CustomRoomsTest {
     }
 
     @Test
-    void theRoomGoesBackToWaitingAfterTheMatchEnds() {
+    void theRoomGoesBackToItsCountdownAfterTheMatchEnds() {
         String code = create();
         arrive(leader);
         arrive(friend);
@@ -191,7 +205,8 @@ class CustomRoomsTest {
         seconds(RuntimeFixtures.settings().timings().restartSeconds() + 1);
 
         MatchRuntime<RecordingState> restarted = runtime(code);
-        assertThat(restarted.match().phase()).isEqualTo(MatchPhase.WAITING);
+        assertThat(restarted.match().phase()).isEqualTo(MatchPhase.STARTING);
+        assertThat(restarted.match().countdown().remaining().orElseThrow()).isBetween(29, 30);
         assertThat(restarted.match().joinOrder()).containsExactly(leader, friend);
         assertThat(port.lobby).isEmpty();
     }

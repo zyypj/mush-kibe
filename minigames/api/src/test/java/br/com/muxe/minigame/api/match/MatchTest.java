@@ -44,6 +44,25 @@ class MatchTest {
     }
 
     @Test
+    void aManualRoomCountsThirtySecondsFromTheSecondPlayerUntilItIsPaused() {
+        Match match = match(SOLO, EIGHT, true);
+        match.manual(true);
+
+        assertThat(match.join(UUID.randomUUID(), "leader")).isEqualTo(Change.NONE);
+        UUID friend = UUID.randomUUID();
+        assertThat(match.join(friend, "friend")).isEqualTo(Change.STARTED);
+        assertThat(match.countdown().remaining()).hasValue(30);
+        assertThat(match.leaveBeforeStart(friend)).isEqualTo(Change.CANCELLED);
+        assertThat(match.phase()).isEqualTo(MatchPhase.WAITING);
+        join(match, "friend");
+        assertThat(match.pause()).isTrue();
+
+        assertThat(match.join(UUID.randomUUID(), "late")).isEqualTo(Change.NONE);
+        assertThat(match.phase()).isEqualTo(MatchPhase.WAITING);
+        assertThat(match.countdown().isRunning()).isFalse();
+    }
+
+    @Test
     void aFullMatchStopsAcceptingPlayers() {
         Match match = match(ONE_V_ONE, RED_BLUE, true);
         join(match, "red");

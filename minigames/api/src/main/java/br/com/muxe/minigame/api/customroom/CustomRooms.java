@@ -14,7 +14,6 @@ import br.com.muxe.minigame.api.runtime.MatchService;
 import br.com.muxe.minigame.api.runtime.MatchService.RoomShape;
 import br.com.muxe.minigame.api.runtime.MatchState;
 import br.com.muxe.minigame.api.settings.HotbarItem;
-import br.com.muxe.minigame.engine.match.StartCountdown;
 import br.com.muxe.minigame.engine.mode.GameMode;
 import br.com.muxe.minigame.engine.team.TeamColor;
 import java.util.ArrayList;
@@ -80,7 +79,7 @@ public final class CustomRooms<S extends MatchState> {
     }
 
     public boolean start(UUID player) {
-        return leading(player).flatMap(this::runtime).map(runtime -> runtime.forceStart(StartCountdown.WHEN_FULL)).orElse(false);
+        return leading(player).flatMap(this::runtime).map(MatchRuntime::startNow).orElse(false);
     }
 
     public boolean pause(UUID player) {

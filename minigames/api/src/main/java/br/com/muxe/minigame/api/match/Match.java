@@ -26,6 +26,8 @@ import java.util.random.RandomGenerator;
 
 public final class Match {
 
+    public static final int MANUAL_PLAYERS = 2;
+
     private final String code;
     private GameMode mode;
     private final MatchArena arena;
@@ -42,6 +44,7 @@ public final class Match {
     private String label;
     private boolean manual;
     private boolean forced;
+    private boolean held;
     private int startingTeams;
     private int elapsed;
     private int idleSeconds;
@@ -74,6 +77,7 @@ public final class Match {
         forced = false;
         teams.clear();
         colors.forEach(color -> teams.put(color, new MatchTeam(color, respawns)));
+        updateCountdown();
         return true;
     }
 
@@ -114,6 +118,7 @@ public final class Match {
         countdown.cancel();
         phase = MatchPhase.WAITING;
         forced = false;
+        held = true;
         return true;
     }
 
@@ -439,8 +444,11 @@ public final class Match {
     }
 
     private Change updateCountdown() {
-        if (forced || manual) {
+        if (forced) {
             return Change.NONE;
+        }
+        if (manual) {
+            return manualCountdown();
         }
         Change change = countdown.players(players.size());
         if (change == Change.STARTED) {
@@ -449,6 +457,21 @@ public final class Match {
             phase = MatchPhase.WAITING;
         }
         return change;
+    }
+
+    private Change manualCountdown() {
+        boolean enough = players.size() >= MANUAL_PLAYERS;
+        if (held || enough == countdown.isRunning()) {
+            return Change.NONE;
+        }
+        if (enough) {
+            countdown.force(StartCountdown.AT_MINIMUM);
+            phase = MatchPhase.STARTING;
+            return Change.STARTED;
+        }
+        countdown.cancel();
+        phase = MatchPhase.WAITING;
+        return Change.CANCELLED;
     }
 
     static long key(int x, int y, int z) {

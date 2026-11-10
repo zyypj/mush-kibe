@@ -2,7 +2,7 @@
 
 # Sala custom
 
-Uma sala privada que um líder de party Ultra+ cria para a sua party, com todas as regras do jogo abertas para mudar: times, geradores, loja, melhorias, eventos, itens, knockback e outros. A sala nunca começa sozinha; o líder inicia, reinicia e fecha.
+Uma sala privada que um líder de party Ultra+ cria para a sua party, com todas as regras do jogo abertas para mudar: times, geradores, loja, melhorias, eventos, itens, knockback e outros. Uma contagem de 30 segundos começa quando um segundo jogador está na sala; o líder pode pausar, iniciar a partida na hora, reiniciar a sala e fechar.
 
 ## Histórias de usuário
 
@@ -42,9 +42,10 @@ Uma sala privada que um líder de party Ultra+ cria para a sua party, com todas 
 - O código aparece no placar como `<código> (C)`. A sala nunca aparece no matchmaking e só recebe jogadores com lugar reservado para ela.
 - Hotbar da espera: `Selecionar time` (slot 4), o menu do jogo (slot 5), `Menu da sala (/menu)` (slot 8, só o líder) e `Voltar ao Lobby` (slot 9).
 - `Selecionar time`: cada time ativo com `Jogadores: n/tamanho`, e `Espectador`. A escolha vale até o início; quem não escolheu vai para os times mais vazios; espectadores assistem a partida.
-- `Sua sala` (`/menu` ou o item, só o líder): o modo (trocar reinicia uma sala em espera), `Mapas`, `Opções`, `Iniciar sala` (contagem de 10 segundos, o líder pode iniciar sozinho), `Pausar contador`, `Reiniciar sala`, `Fechar sala` e `Predefinições`. Durante a partida: `Pular evento` (roda o próximo evento na hora), `Reiniciar sala` e `Fechar sala`.
+- `Sua sala` (`/menu` ou o item, só o líder): o modo (trocar reinicia uma sala em espera), `Mapas`, `Opções`, `Iniciar sala` (inicia a partida na hora, o líder pode iniciar sozinho), `Pausar contador` (para a contagem até o `Iniciar sala`; quem chega depois não a recomeça), `Reiniciar sala`, `Fechar sala` e `Predefinições`. Durante a partida: `Pular evento` (roda o próximo evento na hora), `Reiniciar sala` e `Fechar sala`.
 - Uma partida custom não conta nada: nem estatísticas, XP, missões ou winstreak.
-- Quando a partida acaba, a sala volta para a espera com o mesmo código e as mesmas opções (`A sala foi reiniciada.`).
+- A contagem começa em 30 segundos quando chega o segundo jogador e para se a sala voltar a ter um só.
+- Quando a partida acaba, a sala volta para a espera com o mesmo código e as mesmas opções (`A sala foi reiniciada.`), e a contagem recomeça.
 - **Proteção da Cama** monta uma pirâmide em volta da cama do time (ou do ovo do dragão) quando comprada: o nível I põe madeira encostada na cama, lã do time em volta e vidro da cor do time por fora; o nível II usa pedra do fim no lugar do vidro; o nível III acrescenta uma camada de vidro por fora da pedra do fim. Cada camada fica um bloco mais longe da cama (contando pelos eixos), da altura da cama para cima. Só ar e blocos do nível anterior são trocados, e todo bloco pode ser quebrado como um bloco colocado. Quando ativada, ela fica no slot 19 de `Melhorias do Time`, que passa de 3 para 4 linhas.
 - **Itens só da sala custom**: a Obsidian funciona (desligada por padrão). Troca Congelante, Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil, Baú do Fim e Ressurreição aparecem com o texto, o preço e a moeda da referência, começam desligados e respondem "em breve" na compra; estão anotados no `pendencias.txt`.
 
@@ -109,7 +110,7 @@ Nenhuma.
 
 - [ ] Um jogador Ultra+ clica em `Sala customizada`, escolhe Bed Wars Solo e `Criar sala`; o chat diz `Criando sala...` e depois `Enviando para <código>...` e ele chega numa sala de espera com `<código> (C)` no placar.
 - [ ] Um jogador sem Ultra+ recebe a loja do Ultra+.
-- [ ] Dois jogadores na sala não iniciam contagem; o `Iniciar sala` do líder inicia.
+- [ ] Um segundo jogador na sala inicia uma contagem de 30 segundos; `Pausar contador` para e `Iniciar sala` inicia a partida na hora.
 - [ ] Um membro convidado para a party depois da sala criada é mandado para ela.
 - [ ] O líder saindo fecha a sala e manda todos para o lobby.
 - [ ] Mudar `Vertical` para 0.8 em `Alterar knockback` muda o knockback de todos da sala.
