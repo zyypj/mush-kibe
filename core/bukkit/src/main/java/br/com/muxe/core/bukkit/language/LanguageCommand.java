@@ -4,6 +4,7 @@ import br.com.muxe.core.bukkit.command.framework.annotation.Arg;
 import br.com.muxe.core.bukkit.command.framework.annotation.Command;
 import br.com.muxe.core.bukkit.command.framework.annotation.Default;
 import br.com.muxe.core.bukkit.command.framework.annotation.Suggest;
+import br.com.muxe.core.bukkit.language.menu.LanguageMenu;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.language.domain.Language;
 import java.util.Locale;
@@ -16,22 +17,31 @@ public final class LanguageCommand {
 
     private final PlayerLanguages languages;
     private final MessageCatalog messages;
+    private final LanguageMenu menu;
     private final Executor mainThread;
 
-    public LanguageCommand(PlayerLanguages languages, MessageCatalog messages, Executor mainThread) {
+    public LanguageCommand(PlayerLanguages languages, MessageCatalog messages, LanguageMenu menu, Executor mainThread) {
         this.languages = languages;
         this.messages = messages;
+        this.menu = menu;
         this.mainThread = mainThread;
     }
 
     @Default
     public void change(Player player, @Arg("idioma") @Suggest({"português", "inglês", "portuguese", "english"}) Optional<String> choice) {
+        if (choice.isEmpty()) {
+            menu.build(languages.of(player), this::pick).open(player);
+            return;
+        }
         Optional<Language> wanted = choice.flatMap(Language::named);
         if (wanted.isEmpty()) {
             player.sendMessage(messages.get(player, "language-usage", "language", name(languages.of(player))));
             return;
         }
-        Language language = wanted.get();
+        pick(player, wanted.get());
+    }
+
+    private void pick(Player player, Language language) {
         if (languages.of(player) == language) {
             player.sendMessage(messages.get(player, "language-already", "language", name(language)));
             return;

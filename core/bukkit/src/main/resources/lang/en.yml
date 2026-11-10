@@ -707,6 +707,26 @@ shop:
         name: "&a..."
       dim:
         name: "&a..."
+language-menu:
+  title: "Select language"
+  languages:
+    pt-br:
+      item:
+        name: "&aPortuguês"
+        lore:
+          - "&7Alterar seu idioma para"
+          - "&7Português."
+          - ""
+          - "&eClique para alterar seu idioma!"
+    en:
+      item:
+        name: "&aEnglish"
+        lore:
+          - "&7Change your language"
+          - "&7to English."
+          - ""
+          - "&eClick to change your language!"
+
 custom-room:
   selector:
     title: "Select mode"

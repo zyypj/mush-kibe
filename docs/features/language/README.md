@@ -12,7 +12,11 @@ Each player reads the network in their own language: Portuguese (the default) or
 
 ## How it works
 
-- Every new player starts in Portuguese. `/idioma <português|inglês>` (also `/language`, `/lang`, `/linguagem`) switches the language. The command accepts names and tags with or without accents: `português`, `portugues`, `portuguese`, `pt`, `pt-BR`, `inglês`, `ingles`, `english`, `en`. Without an argument it shows the usage and the current language.
+- Every new player starts in Portuguese. `/idioma <português|inglês>` (also `/language`, `/lang`, `/linguagem`) switches the language. The command accepts names and tags with or without accents: `português`, `portugues`, `portuguese`, `pt`, `pt-BR`, `inglês`, `ingles`, `english`, `en`. Without an argument it opens the language menu:
+  - The menu has 3 rows, with one book per language: `Português` in slot 10 and `English` in slot 11.
+  - Each book is written in its own language, so a player who picked the wrong one can still find theirs. Only the title follows the reader: `Selecionar idioma` or `Select language`.
+  - The current language glows. Clicking a book closes the menu and switches to that language; clicking the current one answers `language-already`.
+  - An unknown language typed after the command shows the usage and the current language.
 - The choice is saved in `core.player_languages`. Each Bukkit server loads it before login, together with the permissions, and keeps it in memory while the player is online, so rendering a message never touches the database. The proxy loads it at login and is told about changes with `language.changed`.
 - After a switch, what the player already sees is refreshed in the new language: hotbar items, the sidebar and the other per-viewer texts. An open menu is closed.
 - A text that has no English translation falls back to Portuguese, key by key, so a missing translation never shows an empty or broken line.
@@ -29,7 +33,7 @@ Each player reads the network in their own language: Portuguese (the default) or
 
 | Command | Description | Permission |
 |---|---|---|
-| `/idioma [língua]` | Changes the language of the player. Aliases `/language`, `/lang`, `/linguagem`. | None. |
+| `/idioma [língua]` | Changes the language of the player; without an argument it opens the language menu. Aliases `/language`, `/lang`, `/linguagem`. | None. |
 
 ## Permissions
 
@@ -44,6 +48,8 @@ None.
 | `messages.language-already` | `&cVocê já está usando o idioma &f{language}&c.` | The player picked the language they already use. |
 | `messages.language-failed` | `&cNão foi possível alterar o idioma agora...` | The choice could not be saved. |
 | `messages.language-name-pt-br`, `messages.language-name-en` | `Português`, `Inglês` | Names of the languages shown in the messages above. |
+| `language-menu.title`, `language-menu.rows` | `Selecionar idioma`, `3` | Title and height of the language menu. |
+| `language-menu.languages.<tag>.slot`, `.item` | `pt-br` in slot 10, `en` in slot 11, both books | Slot and [item](../../development/core-api/README.md#items) of each language. The tag is `pt-br` or `en`; a slot outside the menu or an unknown tag fails on startup. |
 | `lang/en.yml` | the English texts | English counterpart of every readable text of the plugin's `config.yml`, at the same paths. |
 
 ## Packets
@@ -83,6 +89,8 @@ None. The command and query handlers are measured by the CQRS metrics like every
 - [ ] A match announcement reaches each player in their own language.
 - [ ] A text missing from `lang/en.yml` shows in Portuguese.
 - [ ] `/idioma` with an unknown language shows the usage.
+- [x] `/idioma` opens the menu with the current language glowing; the title follows the reader and each book keeps its own language.
+- [ ] Clicking a book in the menu switches the language (checked in game).
 
 ## Failures and recovery
 

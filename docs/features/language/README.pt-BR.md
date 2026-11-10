@@ -14,7 +14,11 @@ Cada jogador lê a rede no seu próprio idioma: português (o padrão) ou inglê
 
 - Todo jogador novo começa em português. O `/idioma <português|inglês>` troca o idioma; o comando também responde como `/language`, `/lang` e `/linguagem`.
   - Ele aceita nomes e siglas com ou sem acento: `português`, `portugues`, `portuguese`, `pt`, `pt-BR`, `inglês`, `ingles`, `english`, `en`.
-  - Sem argumento, mostra o uso e o idioma atual.
+  - Sem argumento, abre o menu de idiomas:
+    - O menu tem 3 linhas e um livro por idioma: `Português` no slot 10 e `English` no slot 11.
+    - Cada livro é escrito no próprio idioma, para que quem escolheu o idioma errado ainda encontre o seu. Só o título segue quem lê: `Selecionar idioma` ou `Select language`.
+    - O idioma atual brilha. Clicar num livro fecha o menu e troca para aquele idioma; clicar no atual responde `language-already`.
+  - Com um idioma desconhecido depois do comando, mostra o uso e o idioma atual.
 - A escolha fica salva em `core.player_languages`.
   - Cada servidor Bukkit carrega o idioma antes do login, junto com as permissões, e o mantém na memória enquanto o jogador está online. Assim, mostrar uma mensagem nunca consulta o banco.
   - O proxy carrega o idioma no login e é avisado das trocas com o pacote `language.changed`.
@@ -35,7 +39,7 @@ Cada jogador lê a rede no seu próprio idioma: português (o padrão) ou inglê
 
 | Comando | Descrição | Permissão |
 |---|---|---|
-| `/idioma [idioma]` | Troca o idioma do jogador. Também responde como `/language`, `/lang` e `/linguagem`. | Nenhuma. |
+| `/idioma [idioma]` | Troca o idioma do jogador; sem argumento, abre o menu de idiomas. Também responde como `/language`, `/lang` e `/linguagem`. | Nenhuma. |
 
 ## Permissões
 
@@ -50,6 +54,8 @@ Nenhuma.
 | `messages.language-already` | `&cVocê já está usando o idioma &f{language}&c.` | O jogador escolheu o idioma que já usa. |
 | `messages.language-failed` | `&cNão foi possível alterar o idioma agora...` | A escolha não pôde ser salva. |
 | `messages.language-name-pt-br`, `messages.language-name-en` | `Português`, `Inglês` | Nomes dos idiomas mostrados nas mensagens acima. |
+| `language-menu.title`, `language-menu.rows` | `Selecionar idioma`, `3` | Título e altura do menu de idiomas. |
+| `language-menu.languages.<sigla>.slot`, `.item` | `pt-br` no slot 10, `en` no slot 11, os dois livros | Slot e [item](../../development/core-api/README.pt-BR.md#itens) de cada idioma. A sigla é `pt-br` ou `en`; um slot fora do menu ou uma sigla desconhecida falha na inicialização. |
 | `lang/en.yml` | os textos em inglês | Versão em inglês de cada texto legível do `config.yml` do plugin, nos mesmos caminhos. |
 
 ## Pacotes
@@ -89,6 +95,8 @@ Nenhuma. Os handlers do comando e da consulta são medidos pelas métricas de CQ
 - [ ] Um anúncio da partida chega a cada jogador no idioma dele.
 - [ ] Um texto que falta no `lang/en.yml` aparece em português.
 - [ ] O `/idioma` com um idioma desconhecido mostra o uso.
+- [x] O `/idioma` abre o menu com o idioma atual brilhando; o título segue quem lê e cada livro fica no próprio idioma.
+- [ ] Clicar num livro do menu troca o idioma (conferido no jogo).
 
 ## Falhas e recuperação
 

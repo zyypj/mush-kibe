@@ -27,6 +27,8 @@ import br.com.muxe.core.bukkit.greeting.JoinGreeting;
 import br.com.muxe.core.bukkit.greeting.LeftoverTitleCleaner;
 import br.com.muxe.core.bukkit.language.LanguageCommand;
 import br.com.muxe.core.bukkit.language.LocalizedConfig;
+import br.com.muxe.core.bukkit.language.menu.LanguageMenu;
+import br.com.muxe.core.bukkit.language.menu.LanguageMenuSettings;
 import br.com.muxe.core.bukkit.language.PlayerLanguages;
 import br.com.muxe.core.bukkit.menu.MenuAnimator;
 import br.com.muxe.core.bukkit.menu.MenuHolder;
@@ -123,7 +125,7 @@ public final class CoreBukkitBootstrap {
         ConfigPathSuggestions.register(commands, configEditor);
         commands.register(new MuxeAdminCommand(core, JoinTraffic.start(plugin, runtime.metrics())), new LobbyCommand(core, lobbyGroup), new BuildCommand(buildMode, messages),
             new ReturnCommand(core, new MatchReturns(core.store())), new CoreConfigCommand(configEditor, new ConfigReplies(messages)),
-            new LanguageCommand(languages, messages, mainThread));
+            new LanguageCommand(languages, messages, new LanguageMenu(texts.map(section -> LanguageMenuSettings.from(section.getConfigurationSection("language-menu")))), mainThread));
         ranks = RankFeatures.start(plugin, core, config, commands);
         PartyFeatures.start(plugin, core, parties, commands);
         features = PlacedFeatures.start(plugin, core, config, commands);

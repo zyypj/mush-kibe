@@ -1219,6 +1219,31 @@ shop:
           bob-period: 40
           phase: 180
 
+language-menu:
+  title: "Selecionar idioma"
+  rows: 3
+  languages:
+    pt-br:
+      slot: 10
+      item:
+        material: BOOK
+        name: "&aPortuguês"
+        lore:
+          - "&7Alterar seu idioma para"
+          - "&7Português."
+          - ""
+          - "&eClique para alterar seu idioma!"
+    en:
+      slot: 11
+      item:
+        material: BOOK
+        name: "&aEnglish"
+        lore:
+          - "&7Change your language"
+          - "&7to English."
+          - ""
+          - "&eClick to change your language!"
+
 custom-room:
   selector:
     title: "Selecionar modo"
