@@ -9,6 +9,7 @@ import br.com.muxe.core.common.language.domain.Language;
 import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.api.match.Participant;
 import br.com.muxe.minigame.api.runtime.MatchRuntime;
+import br.com.muxe.minigame.api.settings.HotbarItem;
 import br.com.muxe.minigame.bedwars.cosmetic.wood.WoodChoice;
 import br.com.muxe.minigame.bedwars.cosmetic.wood.WoodTypes;
 import br.com.muxe.minigame.bedwars.game.Slingshot;
@@ -48,6 +49,7 @@ public final class ShopService {
 
     public static final Set<String> BUYABLE_SPECIALS = Set.of(Bedbugs.ITEM_ID, Slingshot.ITEM_ID);
 
+    public static final int ROOM_MENU_SLOT = 45;
     public static final List<Integer> ITEM_SLOTS = List.of(19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43);
 
     private static final int PANE_FIRST = 9;
@@ -110,6 +112,10 @@ public final class ShopService {
         }
         for (int column = 0; column < 9; column++) {
             menu.button(PANE_FIRST + column, ItemBuilder.of(Material.STAINED_GLASS_PANE, column == openColumn ? PANE_GREEN : PANE_GRAY).name(" "));
+        }
+        if (quickBuy) {
+            runtime.control().menuItem(player.getUniqueId()).ifPresent(item -> menu.button(ROOM_MENU_SLOT, roomMenuIcon(item),
+                context -> runtime.control().openMenu(context.player().getUniqueId())));
         }
         QuickBuy layout = quickBuys.of(player.getUniqueId());
         List<Optional<String>> ids = quickBuy ? positions(layout) : listed(shop, categoryId, runtime.state().rules().custom()).stream().map(Optional::of).toList();
@@ -181,6 +187,11 @@ public final class ShopService {
             });
         }
         menu.build().open(player);
+    }
+
+    static ItemBuilder roomMenuIcon(HotbarItem item) {
+        Material material = Material.matchMaterial(item.material());
+        return ItemBuilder.of(material == null ? Material.BREWING_STAND_ITEM : material).name(item.name());
     }
 
     static List<String> listed(ShopCatalog shop, String categoryId, boolean custom) {

@@ -79,6 +79,7 @@ class CustomRoomsTest {
     private final UUID leader = UUID.nameUUIDFromBytes("leader".getBytes());
     private final UUID friend = UUID.nameUUIDFromBytes("friend".getBytes());
     private final UUID other = UUID.nameUUIDFromBytes("other".getBytes());
+    private final List<UUID> menusOpened = new ArrayList<>();
     private final RoomSchema schema = SchemaReader.parse("teste", SCHEMA);
     private MatchService<TestArena, RecordingState> service;
     private CustomRooms<RecordingState> rooms;
@@ -92,13 +93,26 @@ class CustomRoomsTest {
             TeamPreferences.NONE, PartyGroups.NONE, mode -> Optional.of(BASE));
         service = new MatchService<>(new TestGame(rules), List.of(SOLO), catalog, new TestCells(), match -> stage, environment, (id, text) -> {
         }, Logger.getAnonymousLogger());
-        rooms = new CustomRooms<>(service, port, (room, player, standard) -> {
-            List<HotbarItem> items = new ArrayList<>(standard);
-            items.add(new HotbarItem(3, "NAME_TAG", "time"));
-            if (room.isLeader(player)) {
-                items.add(new HotbarItem(7, "BREWING_STAND_ITEM", "menu"));
+        rooms = new CustomRooms<>(service, port, new CustomRooms.RoomItems() {
+            @Override
+            public List<HotbarItem> waiting(CustomRoom room, UUID player, List<HotbarItem> standard) {
+                List<HotbarItem> items = new ArrayList<>(standard);
+                items.add(new HotbarItem(3, "NAME_TAG", "time"));
+                if (room.isLeader(player)) {
+                    items.add(new HotbarItem(7, "BREWING_STAND_ITEM", "menu"));
+                }
+                return items;
             }
-            return items;
+
+            @Override
+            public Optional<HotbarItem> menu(UUID player) {
+                return Optional.of(new HotbarItem(7, "BREWING_STAND_ITEM", "menu"));
+            }
+
+            @Override
+            public void openMenu(UUID player) {
+                menusOpened.add(player);
+            }
         }, " (C)");
     }
 
@@ -144,6 +158,21 @@ class CustomRoomsTest {
         seconds(30);
 
         assertThat(runtime(code).match().phase()).isEqualTo(MatchPhase.PLAYING);
+    }
+
+    @Test
+    void duringTheMatchOnlyTheLeaderHasTheRoomMenu() {
+        String code = create();
+        arrive(leader);
+        arrive(friend);
+        rooms.start(leader);
+        MatchRuntime<RecordingState> runtime = runtime(code);
+
+        assertThat(runtime.control().menuItem(leader)).hasValueSatisfying(item -> assertThat(item.name()).isEqualTo("menu"));
+        assertThat(runtime.control().menuItem(friend)).isEmpty();
+        runtime.control().openMenu(friend);
+        runtime.control().openMenu(leader);
+        assertThat(menusOpened).containsExactly(leader);
     }
 
     @Test

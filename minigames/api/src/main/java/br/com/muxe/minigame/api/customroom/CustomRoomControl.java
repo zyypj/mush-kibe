@@ -72,4 +72,16 @@ public final class CustomRoomControl implements RoomControl {
     public void restart() {
         restart.accept(room.code());
     }
+
+    @Override
+    public Optional<HotbarItem> menuItem(UUID player) {
+        return room.isLeader(player) ? items.menu(player) : Optional.empty();
+    }
+
+    @Override
+    public void openMenu(UUID player) {
+        if (room.isLeader(player)) {
+            items.openMenu(player);
+        }
+    }
 }

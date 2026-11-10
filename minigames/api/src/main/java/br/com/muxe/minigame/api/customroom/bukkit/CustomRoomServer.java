@@ -14,6 +14,7 @@ import br.com.muxe.core.common.network.customroom.CustomRoomCatalogPacket;
 import br.com.muxe.core.common.party.domain.PartySnapshot;
 import br.com.muxe.minigame.api.customroom.CustomRoom;
 import br.com.muxe.minigame.api.customroom.CustomRooms;
+import br.com.muxe.minigame.api.customroom.CustomRooms.RoomItems;
 import br.com.muxe.minigame.api.customroom.RoomPort;
 import br.com.muxe.minigame.api.runtime.MatchService;
 import br.com.muxe.minigame.api.runtime.MatchState;
@@ -108,7 +109,22 @@ public final class CustomRoomServer<S extends MatchState> implements Listener {
                 Optional.ofNullable(Bukkit.getPlayer(player)).ifPresent(online -> online.sendMessage(text));
             }
         };
-        this.rooms = new CustomRooms<>(matches, port, this::waitingItems, settings.codeSuffix());
+        this.rooms = new CustomRooms<>(matches, port, new RoomItems() {
+            @Override
+            public List<HotbarItem> waiting(CustomRoom room, UUID player, List<HotbarItem> standard) {
+                return waitingItems(room, player, standard);
+            }
+
+            @Override
+            public Optional<HotbarItem> menu(UUID player) {
+                return Optional.of(HotbarItem.from(kit.settings(core.languages().of(player)).section("hotbar.room-menu")));
+            }
+
+            @Override
+            public void openMenu(UUID player) {
+                Optional.ofNullable(Bukkit.getPlayer(player)).ifPresent(roomMenu::open);
+            }
+        }, settings.codeSuffix());
         this.teamMenu = new TeamMenu<>(kit::settings, core.languages(), rooms, core.messages());
         this.roomMenu = new RoomMenu<>(kit, core.languages(), rooms, matches, this::schema);
     }

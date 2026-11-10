@@ -48,4 +48,11 @@ public interface RoomControl {
 
     default void restart() {
     }
+
+    default Optional<HotbarItem> menuItem(UUID player) {
+        return Optional.empty();
+    }
+
+    default void openMenu(UUID player) {
+    }
 }

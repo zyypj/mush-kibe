@@ -282,5 +282,12 @@ public final class CustomRooms<S extends MatchState> {
     public interface RoomItems {
 
         List<HotbarItem> waiting(CustomRoom room, UUID player, List<HotbarItem> standard);
+
+        default Optional<HotbarItem> menu(UUID player) {
+            return Optional.empty();
+        }
+
+        default void openMenu(UUID player) {
+        }
     }
 }
