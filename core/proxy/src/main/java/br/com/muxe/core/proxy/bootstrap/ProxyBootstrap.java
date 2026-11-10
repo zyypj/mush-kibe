@@ -95,7 +95,7 @@ public final class ProxyBootstrap {
 
         AuthenticationGate gate = new AuthenticationGate();
         AccessPolicy access = new AccessPolicy(gate, runtime.directory(), routing.authGroup());
-        ServerRouter router = new ServerRouter(proxy, runtime.directory());
+        ServerRouter router = new ServerRouter(proxy, runtime.directory(), messages);
         LoginSessions sessions = new LoginSessions(runtime.store(), authentication.sessionDuration());
         LoginModeResolver resolver = new LoginModeResolver(runtime.queries(), premiumLookup(authentication), authentication.premiumAutoLogin());
         runtime.metrics().gauge("muxe_proxy_authenticated_players", gate::size);

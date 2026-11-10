@@ -22,7 +22,7 @@ How players are placed on servers and moved between them. Lives in `core:proxy` 
   - A player still logging in moves to another auth server only when theirs is closing; with no other auth server they get `server-restarting`. A kick on purpose by an auth server that is still up (a wrong password, the login time running out) works as before.
   - A server counts as closing when it already left the server list (its core announced the shutdown), when the kick has no reason, or when the reason is the Bukkit shutdown message (`Server closed`).
 - **Entering a game:** the game selector, game NPCs and `/jogar` send the player to the game's lobby group (`<game>-lobby`, such as `bedwars-lobby`) when one of its servers is alive, and to the game group itself otherwise.
-- **Moving later:** any server can publish `player.connect` to send a player to a server id or to the least loaded server of a group. The proxy ignores it for unauthenticated players, and tells the player `no-server` when there is no destination.
+- **Moving later:** any server can publish `player.connect` to send a player to a server id or to the least loaded server of a group. The proxy ignores it for unauthenticated players, and tells the player `no-server` when there is no destination. When the move does not happen, the proxy answers in the player's language with its own messages instead of the Velocity ones (which follow the game client's language): `already-connected`, `already-connecting` or `connect-failed`. A party member pulled to the server they are already on is not told anything.
 - **Least loaded:** among alive servers of the group with room, the one with fewest players; ties are broken by id.
 - **Disconnect:** the gate forgets the player.
 - **Server list:** the proxy answers every ping with the `motd.lines` (a bar in the rainbow colors with `&b&lMUXE` in the middle, then `&a&lVENHA JOGAR`) and shows `motd.max-players` (3000) as the maximum. Each line is padded with spaces so it sits in the middle of the server list (`TextWidth.center`, 271 pixels). The online count stays the real one, and the icon is Velocity's `server-icon.png`.
@@ -53,7 +53,7 @@ Proxy `config.yml`:
 | `messages.no-auth-server` | Six-line screen: could not connect, reason, retry hint, a blank line, where to follow the news and the team's Discord | Shown when the login is refused because no auth server is alive. A YAML list, one item per line. |
 | `messages.server-restarting` | Five-line screen: disconnected, reason (server restarting), retry hint, a blank line and the Discord for more information | Shown when the player's server goes down and there is no other lobby, or no server at all. A YAML list, one item per line. |
 | `messages.server-moved` | `&eO servidor em que você estava está reiniciando. Você foi levado para outro servidor.` | Chat message after being moved because the server went down. |
-| `messages.no-lobby-server`, `no-server`, `must-authenticate` | Portuguese texts | Messages shown by the proxy. |
+| `messages.no-lobby-server`, `no-server`, `must-authenticate`, `already-connected`, `already-connecting`, `connect-failed` | Portuguese texts | Messages shown by the proxy. |
 | `authentication.*` | see [Authentication](../authentication/README.md#configuration) | Premium detection and login sessions. |
 
 Muxe-Core `config.yml`:

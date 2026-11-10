@@ -1,6 +1,5 @@
 package br.com.muxe.core.proxy.party;
 
-import br.com.muxe.core.common.network.player.DestinationType;
 import br.com.muxe.core.common.party.domain.PartyPlayer;
 import br.com.muxe.core.proxy.auth.AuthenticationGate;
 import br.com.muxe.core.proxy.routing.ServerRouter;
@@ -37,7 +36,7 @@ public final class VelocityPartyNetwork implements PartyNetwork {
 
     @Override
     public void connect(UUID player, String serverId) {
-        proxy.getPlayer(player).ifPresent(found -> router.connect(found, DestinationType.SERVER, serverId));
+        proxy.getPlayer(player).ifPresent(found -> router.join(found, serverId));
     }
 
     @Override
