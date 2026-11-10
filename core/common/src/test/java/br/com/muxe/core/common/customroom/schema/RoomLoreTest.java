@@ -119,6 +119,15 @@ class RoomLoreTest {
     }
 
     @Test
+    void aDisabledUpgradeShowsABarrierAndAnEnabledOneItsOwnIcon() {
+        RoomOptions disabled = new RoomOptions(Map.of("upgrades.reforco.enabled", "false"));
+
+        assertThat(lore.entry(SchemaFixtures.ARMOR, disabled).icon().material()).isEqualTo("BARRIER");
+        assertThat(lore.entry(SchemaFixtures.ARMOR, disabled).lore()).contains("&7Status: &cDesativado");
+        assertThat(lore.entry(SchemaFixtures.ARMOR, RoomOptions.EMPTY).icon().material()).isEqualTo("IRON_CHESTPLATE");
+    }
+
+    @Test
     void everythingFreeMarksThePricesAndTurnsTheButtonGreen() {
         RoomOptions free = new RoomOptions(Map.of("upgrades.free", "true", "shop.free", "true"));
 

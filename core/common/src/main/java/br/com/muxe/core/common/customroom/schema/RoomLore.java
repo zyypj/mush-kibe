@@ -30,6 +30,7 @@ public final class RoomLore {
     public static final int UPGRADE_BACK_SLOT = 22;
     public static final Icon TEAM_ICON = Icon.of("BANNER");
     public static final Icon TEAM_OFF_ICON = Icon.of("BARRIER");
+    public static final Icon DISABLED_ICON = Icon.of("BARRIER");
     public static final Icon STATUS_ON_ICON = Icon.of("INK_SACK", 10);
     public static final Icon STATUS_OFF_ICON = Icon.of("INK_SACK", 8);
     public static final Icon LIMIT_ICON = Icon.of("IRON_DOOR");
@@ -225,7 +226,8 @@ public final class RoomLore {
         }
         lore.add(texts.get("blank"));
         lore.add(texts.get("click-change"));
-        return new Shown(entry.icon().withGlow(editor.upgradeChanged(entry, options)), "&a" + entry.name(), lore);
+        Icon icon = enabled ? entry.icon() : DISABLED_ICON;
+        return new Shown(icon.withGlow(editor.upgradeChanged(entry, options)), "&a" + entry.name(), lore);
     }
 
     private Shown freeAll(FreeAll entry, RoomOptions options) {

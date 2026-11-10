@@ -53,7 +53,6 @@ public final class ShopService {
     private static final int PANE_RED = 14;
     private static final int ADDING_SLOT = 4;
     private static final int SHOP_ROWS = 6;
-    private static final int UPGRADE_ROWS = 3;
 
     private final ShopCatalog shop;
     private final UpgradeCatalog upgrades;
@@ -204,14 +203,13 @@ public final class ShopService {
             return;
         }
         RoomTeam team = runtime.state().room().team(found.get().team());
-        Menu.Builder menu = Menu.builder(upgrades.title()).rows(UPGRADE_ROWS);
         CustomShop custom = runtime.state().shop(shop.currencies());
+        List<Entry> shown = new ArrayList<>();
         for (Entry base : runtime.state().rules().custom() ? upgrades.withCustom() : upgrades.entries()) {
-            Optional<Entry> priced = custom.upgrade(base);
-            if (priced.isEmpty()) {
-                continue;
-            }
-            Entry entry = priced.get();
+            custom.upgrade(base).ifPresent(shown::add);
+        }
+        Menu.Builder menu = Menu.builder(upgrades.title()).rows(UpgradeCatalog.rows(shown));
+        for (Entry entry : shown) {
             int level = team.level(entry.upgrade());
             Material currency = entry.currency(level);
             int diamonds = runtime.state().resources(player, currency == Material.DIAMOND).count(currency);

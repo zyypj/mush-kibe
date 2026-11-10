@@ -17,6 +17,12 @@ class UpgradeCatalogTest {
     }
 
     @Test
+    void theMenuKeepsThreeRowsAndGrowsOneWhenAnUpgradeSitsInTheThirdRow() {
+        assertThat(UpgradeCatalog.rows(catalog.entries())).isEqualTo(3);
+        assertThat(UpgradeCatalog.rows(catalog.withCustom())).isEqualTo(4);
+    }
+
+    @Test
     void theDefaultMenuShowsEveryTierMissingAndTheNextNumeral() {
         Entry armor = entry("reforco");
 

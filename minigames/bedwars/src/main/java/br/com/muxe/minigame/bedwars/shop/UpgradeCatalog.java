@@ -3,6 +3,7 @@ package br.com.muxe.minigame.bedwars.shop;
 import br.com.muxe.minigame.bedwars.room.RoomTeam.Upgrade;
 import br.com.muxe.minigame.bedwars.settings.BedWarsSettings;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -21,6 +22,11 @@ public record UpgradeCatalog(String title, Texts texts, List<Entry> entries, Lis
         List<Entry> all = new ArrayList<>(entries);
         all.addAll(customEntries);
         return List.copyOf(all);
+    }
+
+    public static int rows(Collection<Entry> shown) {
+        int last = shown.stream().mapToInt(Entry::slot).max().orElse(0);
+        return Math.clamp(last / 9 + 2, MIN_ROWS, MAX_ROWS);
     }
 
     public static UpgradeCatalog from(ConfigurationSection section) {
@@ -65,6 +71,8 @@ public record UpgradeCatalog(String title, Texts texts, List<Entry> entries, Lis
     }
 
     public static final int LINE_WIDTH = 40;
+    public static final int MIN_ROWS = 3;
+    public static final int MAX_ROWS = 6;
 
     public record Tier(String label, String extra, int price) {
 
