@@ -112,8 +112,7 @@ public final class ShopService {
             menu.button(PANE_FIRST + column, ItemBuilder.of(Material.STAINED_GLASS_PANE, column == openColumn ? PANE_GREEN : PANE_GRAY).name(" "));
         }
         QuickBuy layout = quickBuys.of(player.getUniqueId());
-        List<String> listed = runtime.state().rules().custom() ? category.withCustom() : category.items();
-        List<Optional<String>> ids = quickBuy ? positions(layout) : listed.stream().map(Optional::of).toList();
+        List<Optional<String>> ids = quickBuy ? positions(layout) : listed(shop, categoryId, runtime.state().rules().custom()).stream().map(Optional::of).toList();
         for (int index = 0; index < ids.size() && index < ITEM_SLOTS.size(); index++) {
             Optional<ShopItem> entry = ids.get(index).map(shop.items()::get);
             if (entry.isEmpty()) {
@@ -182,6 +181,14 @@ public final class ShopService {
             });
         }
         menu.build().open(player);
+    }
+
+    static List<String> listed(ShopCatalog shop, String categoryId, boolean custom) {
+        Category category = shop.categories().get(categoryId);
+        if (category == null) {
+            return List.of();
+        }
+        return custom ? category.withCustom() : category.items();
     }
 
     static List<String> addingLore(ShopItem item, QuickBuyTexts texts) {
