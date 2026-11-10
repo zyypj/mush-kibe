@@ -35,7 +35,7 @@ Nada é cobrado nem entregue ainda: nenhum pedido é criado, então **Meus pedid
 ### Caixas registradoras
 
 - Uma caixa registradora é feita de 8 cabeças em suportes de armadura pequenos e invisíveis (`shop.register.parts`), dois corantes roxos que giram e sobem e descem em volta do vendedor, e as linhas da promoção em cima. Ela só existe em pacotes, como os [suportes de exibição](../../development/core-api/README.pt-BR.md#suportes-de-exibição).
-- O `/loja caixa criar <id>` cria uma caixa onde você está, com o vendedor no mesmo lugar. Um grupo de servidores pode ter quantas caixas precisar; todo servidor do grupo mostra todas elas.
+- O `/loja caixa criar <id>` cria uma caixa onde você está, com o vendedor no mesmo lugar. A caixa fica virada para onde você olha, em passos de 90°: as cabeças ficam um bloco à sua frente, viradas de volta para o vendedor. O `/loja caixa mover <id>` também usa a direção nova. Um grupo de servidores pode ter quantas caixas precisar; todo servidor do grupo mostra todas elas.
 - O vendedor é um NPC com a skin de `shop.register.seller-skin`. O `/loja vendedor <id>` o move para onde você está, para que ele fique separado da caixa, e o `/loja vendedor <id> remover` deixa a caixa sem vendedor.
 - Clicar na caixa (em qualquer cabeça, corante ou linha) ou no vendedor abre a página do produto em promoção. Se esse produto não existir mais ou não tiver página, a loja abre no lugar. Os cliques usam o anti-spam do Muxe-Core (`spam.*`).
 - As caixas ficam salvas no PostgreSQL por grupo de servidores e são sincronizadas como os NPCs e os hologramas (veja [NPCs e hologramas](../npcs-and-holograms/README.pt-BR.md#como-funciona)). Uma caixa também pode ser trazida pelo `plugins/Muxe-Core/import.yml`.
@@ -91,7 +91,7 @@ Os ids usam letras minúsculas, números, `-` e `_`, com até 32 caracteres. Os 
 | `shop.register.labels.gaps` | `0.40625`, `0.28125`, `0.28125`, `0.375` | Espaço entre cada linha e a de baixo, contado de baixo para cima. |
 | `shop.register.labels.spacing` | `0.28125` | Espaço das linhas além dos `gaps`. |
 | `shop.register.seller-skin` | Uma skin fixa | `value` e `signature` do vendedor NPC. |
-| `shop.register.parts` | 8 cabeças e 2 corantes | Suportes de exibição: `x`, `y`, `z` (deslocamento), `yaw`, `small`, `arms`, `helmet`, `hand`, `head-pose`, `right-arm-pose`, `motion` (`spin` em graus por tick, `bob-height`, `bob-period` em ticks, `phase`). |
+| `shop.register.parts` | 8 cabeças e 2 corantes | Suportes de exibição: `x`, `y`, `z` (deslocamento), `yaw`, `small`, `arms`, `helmet`, `hand`, `head-pose`, `right-arm-pose`, `motion` (`spin` em graus por tick, `bob-height`, `bob-period` em ticks, `phase`). Os deslocamentos descrevem uma caixa colocada olhando para o norte (yaw 180); eles são girados para a direção de cada caixa. |
 | `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam compartilhado pelos cliques nas caixas, nos vendedores, nos NPCs e na hotbar. |
 | `messages.shop-*`, `messages.placement-failed`, `messages.spam-cooldown` | Textos em português | Mensagens da loja, das caixas e da promoção. |
 

@@ -76,7 +76,7 @@ public final class ShopRegisters {
             plugin.getLogger().warning("Register '" + register.id() + "' is in world '" + register.position().world() + "', which is not loaded");
             return;
         }
-        displays.put(new Display(register.id(), anchor.get(), settings.parts(), settings.labels(lines)));
+        displays.put(new Display(register.id(), anchor.get(), settings.parts(register.position().yaw()), settings.labels(lines)));
         Optional<Location> seller = register.seller().flatMap(position -> Positions.resolve(position, plugin.getServer()::getWorld));
         if (seller.isPresent()) {
             sellers.put(new Npc(sellerId(register.id()), seller.get(), settings.sellerSkin()));

@@ -35,7 +35,7 @@ Nothing is charged or delivered yet: no order is created, so **Meus pedidos** al
 ### Cash registers
 
 - A cash register is made of 8 heads on small invisible armor stands (`shop.register.parts`), two purple dyes that spin and bob around the seller, and the promotion lines above it. It only exists in packets, like the [display stands](../../development/core-api/README.md#display-stands).
-- `/loja caixa criar <id>` creates a register where you stand, with its seller on the same spot. A server group can have as many registers as needed; every server of the group shows all of them.
+- `/loja caixa criar <id>` creates a register where you stand, with its seller on the same spot. The register faces where you look, in steps of 90°: its heads sit one block in front of you and turn back toward the seller. `/loja caixa mover <id>` takes your new facing too. A server group can have as many registers as needed; every server of the group shows all of them.
 - The seller is an NPC with the skin of `shop.register.seller-skin`. `/loja vendedor <id>` moves it to where you stand, so it can stand apart from the register, and `/loja vendedor <id> remover` leaves the register without a seller.
 - Clicking the register (any head, dye or line) or its seller opens the page of the promoted product. If that product no longer exists or has no page, the shop opens instead. Clicks share the anti-spam of Muxe-Core (`spam.*`).
 - Registers are saved in PostgreSQL per server group and synced like NPCs and holograms (see [NPCs and holograms](../npcs-and-holograms/README.md#how-it-works)). A register can also be brought in through `plugins/Muxe-Core/import.yml`.
@@ -91,7 +91,7 @@ Ids use lowercase letters, digits, `-` and `_`, up to 32 characters. Line number
 | `shop.register.labels.gaps` | `0.40625`, `0.28125`, `0.28125`, `0.375` | Space between each line and the one below it, counted from the bottom. |
 | `shop.register.labels.spacing` | `0.28125` | Space for lines beyond the gaps. |
 | `shop.register.seller-skin` | A fixed skin | `value` and `signature` of the seller NPC. |
-| `shop.register.parts` | 8 heads and 2 dyes | Display stands: `x`, `y`, `z` (offset), `yaw`, `small`, `arms`, `helmet`, `hand`, `head-pose`, `right-arm-pose`, `motion` (`spin` degrees per tick, `bob-height`, `bob-period` ticks, `phase`). |
+| `shop.register.parts` | 8 heads and 2 dyes | Display stands: `x`, `y`, `z` (offset), `yaw`, `small`, `arms`, `helmet`, `hand`, `head-pose`, `right-arm-pose`, `motion` (`spin` degrees per tick, `bob-height`, `bob-period` ticks, `phase`). Offsets describe a register placed facing north (yaw 180); they are turned to each register's facing. |
 | `spam.max-clicks`, `spam.window`, `spam.cooldown` | `3`, `1s`, `3s` | Anti-spam shared by register, seller, NPC and hotbar clicks. |
 | `messages.shop-*`, `messages.placement-failed`, `messages.spam-cooldown` | Portuguese texts | Shop, register and promotion messages. |
 

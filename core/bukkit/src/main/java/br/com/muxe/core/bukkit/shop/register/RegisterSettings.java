@@ -44,6 +44,13 @@ public record RegisterSettings(double labelBottom, List<Double> labelGaps, doubl
         );
     }
 
+    public static final float BUILT_FACING = 180f;
+
+    public List<DisplayStand> parts(float facing) {
+        int turns = Math.round((BUILT_FACING - facing) / 90f);
+        return parts.stream().map(part -> part.turned(turns)).toList();
+    }
+
     public List<DisplayLabel> labels(List<String> lines) {
         return LabelStack.upward(lines, labelBottom, labelGaps, labelSpacing);
     }

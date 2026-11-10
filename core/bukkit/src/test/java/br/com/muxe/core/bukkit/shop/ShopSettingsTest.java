@@ -114,6 +114,24 @@ class ShopSettingsTest {
     }
 
     @Test
+    void theRegisterIsBuiltFacingNorth() {
+        assertThat(register.parts(RegisterSettings.BUILT_FACING)).isEqualTo(register.parts());
+        assertThat(register.parts(-175f)).isEqualTo(register.parts());
+    }
+
+    @Test
+    void theRegisterTurnsTowardsWhereItWasPlacedFacing() {
+        List<DisplayStand> west = register.parts(90f).stream().filter(part -> part.helmet().isPresent()).toList();
+        List<DisplayStand> east = register.parts(-90f).stream().filter(part -> part.helmet().isPresent()).toList();
+
+        assertThat(west).allSatisfy(head -> assertThat(head.x()).isBetween(-1.1875, -0.8125));
+        assertThat(west).allSatisfy(head -> assertThat(head.yaw()).isEqualTo(-90f));
+        assertThat(west).filteredOn(head -> head.headPose().x() == -45).allSatisfy(head -> assertThat(head.x()).isEqualTo(-0.875));
+        assertThat(east).allSatisfy(head -> assertThat(head.x()).isBetween(0.8125, 1.1875));
+        assertThat(register.parts(90f)).filteredOn(part -> part.hand().isPresent()).allSatisfy(dye -> assertThat(dye.x()).isZero());
+    }
+
+    @Test
     void theDefaultHologramMatchesTheReferenceHeights() {
         List<DisplayLabel> labels = register.labels(ShopFixtures.SETTINGS.defaultPromotion().lines());
 

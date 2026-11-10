@@ -88,6 +88,23 @@ class DisplayTest {
         assertThat(display.labelPixels(text -> text.startsWith("&e") ? "" : text)).hasSize(1);
     }
 
+    @Test
+    void aStandTurnsAroundTheAnchorInQuarterTurns() {
+        DisplayStand north = stand(0.25, 0.5, -1.0, 0f, StandMotion.NONE);
+
+        DisplayStand west = north.turned(1);
+        DisplayStand south = north.turned(2);
+
+        assertThat(west.x()).isEqualTo(-1.0);
+        assertThat(west.z()).isEqualTo(-0.25);
+        assertThat(west.y()).isEqualTo(0.5);
+        assertThat(west.yaw()).isEqualTo(-90f);
+        assertThat(south.x()).isEqualTo(-0.25);
+        assertThat(south.z()).isEqualTo(1.0);
+        assertThat(north.turned(4)).isEqualTo(north);
+        assertThat(north.turned(-1)).isEqualTo(north.turned(3));
+    }
+
     private static DisplayStand stand(double x, double y, double z, float yaw, StandMotion motion) {
         return new DisplayStand(x, y, z, yaw, true, false, Optional.empty(), Optional.empty(), StandPose.ZERO, StandPose.ZERO, motion);
     }

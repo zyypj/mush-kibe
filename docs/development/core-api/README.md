@@ -503,6 +503,7 @@ displays.put(new Display("shop", anchor, List.of(
 - `labelText((viewer, text) -> ...)` changes the label text for each viewer before it is sent, so one display can show something different to each player, such as the personal record of the [parkour](../../features/parkour/README.md). `refresh(player)` sends the labels again to that player after what they should see changed. `Display.labelPixels(UnaryOperator<String>)` applies the same change to the lines of one display.
 - `LabelStack` turns a list of lines into labels. `LabelStack.downward(lines, top, spacing)` keeps the first line at `top` and puts each next one `spacing` lower, as placed holograms do. `LabelStack.upward(lines, bottom, gaps, spacing)` keeps the last line at `bottom` and goes up using `gaps` from the bottom, then `spacing`, as the shop cash registers do. Blank lines keep their space.
 - Clicking any stand or label, with either button, runs the click handler once on the main thread. A right click on an armor stand only sends `INTERACT_AT`, so that is the action that counts. Offsets are in world axes: moving the anchor moves the whole display without turning it.
+- `stand.turned(quarterTurns)` gives the same stand turned around the anchor by 90° steps (one turn takes north to west), with its yaw turned too. The shop cash registers use it to face where they were placed.
 
 ## Placements
 

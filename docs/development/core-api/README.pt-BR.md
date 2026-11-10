@@ -508,6 +508,7 @@ displays.put(new Display("shop", anchor, List.of(
 - O `labelText((viewer, text) -> ...)` muda o texto dos rótulos para cada jogador antes de enviá-lo, então uma mesma exibição pode mostrar algo diferente para cada um, como o recorde pessoal do [parkour](../../features/parkour/README.pt-BR.md). O `refresh(player)` reenvia os rótulos para aquele jogador depois que o que ele deve ver mudou. O `Display.labelPixels(UnaryOperator<String>)` aplica a mesma mudança às linhas de uma exibição.
 - O `LabelStack` transforma uma lista de linhas em rótulos. O `LabelStack.downward(lines, top, spacing)` mantém a primeira linha em `top` e põe cada linha seguinte `spacing` mais baixo, como fazem os hologramas colocados. O `LabelStack.upward(lines, bottom, gaps, spacing)` mantém a última linha em `bottom` e sobe usando os `gaps` de baixo para cima, e depois o `spacing`, como fazem as caixas registradoras da loja. Linhas em branco mantêm o espaço.
 - Clicar em qualquer suporte ou rótulo, com qualquer botão, roda o tratamento de clique uma vez na main thread. O botão direito num suporte de armadura só envia `INTERACT_AT`, então é essa a ação que conta. Os deslocamentos usam os eixos do mundo: mover a âncora move a exibição inteira sem girá-la.
+- O `stand.turned(quarterTurns)` dá o mesmo suporte girado em volta da âncora em passos de 90° (um passo leva o norte para o oeste), com o yaw girado junto. As caixas registradoras da loja usam isso para ficar viradas para onde foram colocadas.
 
 ## Posicionamentos
 
