@@ -1,5 +1,6 @@
 package br.com.muxe.minigame.api.settings;
 
+import br.com.muxe.core.bukkit.config.DefaultedSections;
 import br.com.muxe.minigame.engine.match.CountdownTitles;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -27,7 +28,7 @@ public record MatchSettings(
             SpectatorHotbar.from(config.getConfigurationSection("hotbar.spectator")),
             Teleporter.from(config.getConfigurationSection("hotbar.teleporter")),
             MatchSounds.from(config.getConfigurationSection("sounds")),
-            KnockbackChoice.from(config.getConfigurationSection("knockback"))
+            KnockbackChoice.from(DefaultedSections.of(config, "knockback"))
         );
     }
 }

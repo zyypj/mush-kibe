@@ -18,6 +18,7 @@ import br.com.muxe.core.bukkit.command.framework.registry.CommandMapRegistrar;
 import br.com.muxe.core.bukkit.command.framework.registry.PermissionMessages;
 import br.com.muxe.core.bukkit.command.framework.registry.UnknownCommands;
 import br.com.muxe.core.bukkit.config.BukkitConfigSource;
+import br.com.muxe.core.bukkit.config.DefaultedSections;
 import br.com.muxe.core.bukkit.config.edit.ConfigEditor;
 import br.com.muxe.core.bukkit.config.edit.ConfigReloads;
 import br.com.muxe.core.bukkit.config.edit.PluginConfigStore;
@@ -92,7 +93,7 @@ public final class CoreBukkitBootstrap {
         PermissionSync permissionSync = new PermissionSync(runtime.commands(), runtime.queries(), runtime.packets(), mainThread, plugin.getLogger());
         permissions = PermissionService.start(plugin, permissionSync, settings.server().group(), runtime.clock());
         PartyClient parties = PartyFeatures.client(plugin, runtime, mainThread, messages);
-        KnockbackService knockback = new KnockbackService(KnockbackProfiles.from(config.getConfigurationSection("knockback")));
+        KnockbackService knockback = new KnockbackService(KnockbackProfiles.from(DefaultedSections.of(config, "knockback")));
         BukkitMuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages, buildMode, permissions, parties, knockback);
         plugin.getServer().getServicesManager().register(MuxeCore.class, core, plugin, ServicePriority.Normal);
 

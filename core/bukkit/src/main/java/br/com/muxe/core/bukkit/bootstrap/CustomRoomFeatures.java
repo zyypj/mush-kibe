@@ -2,6 +2,7 @@ package br.com.muxe.core.bukkit.bootstrap;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.command.framework.Commands;
+import br.com.muxe.core.bukkit.config.DefaultedSections;
 import br.com.muxe.core.bukkit.customroom.CatalogDirectory;
 import br.com.muxe.core.bukkit.customroom.CustomRoomKit;
 import br.com.muxe.core.bukkit.customroom.CustomRoomSettings;
@@ -28,7 +29,7 @@ final class CustomRoomFeatures {
     }
 
     static CustomRoomKit kit(JavaPlugin plugin, MuxeCore core, FileConfiguration config) {
-        CustomRoomSettings settings = CustomRoomSettings.from(config.getConfigurationSection("custom-room"));
+        CustomRoomSettings settings = CustomRoomSettings.from(DefaultedSections.of(config, "custom-room"));
         AnvilEdits anvils = AnvilEdits.start(plugin);
         OptionMenus options = new OptionMenus(anvils, player -> player.sendMessage(core.messages().get("custom-room-invalid-value")));
         return new CustomRoomKit(settings, new CatalogDirectory(core.clock(), plugin.getLogger()), anvils, new ModeSelector(settings), new MapSelector(settings),

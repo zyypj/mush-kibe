@@ -1,5 +1,6 @@
 package br.com.muxe.core.bukkit.customroom;
 
+import br.com.muxe.core.bukkit.config.DefaultedSections;
 import br.com.muxe.core.bukkit.item.ItemBuilder;
 import br.com.muxe.core.common.customroom.schema.RoomTexts;
 import java.util.HashMap;
@@ -20,21 +21,18 @@ public record CustomRoomSettings(ConfigurationSection root, RoomTexts texts) {
     public static CustomRoomSettings from(ConfigurationSection section) {
         ConfigurationSection root = section == null ? new MemoryConfiguration() : section;
         Map<String, String> texts = new HashMap<>();
-        ConfigurationSection textSection = root.getConfigurationSection("texts");
-        if (textSection != null) {
-            textSection.getKeys(false).forEach(key -> texts.put(key, textSection.getString(key)));
-        }
+        ConfigurationSection textSection = DefaultedSections.of(root, "texts");
+        textSection.getKeys(false).forEach(key -> texts.put(key, textSection.getString(key)));
         return new CustomRoomSettings(root, new RoomTexts(texts));
     }
 
     public ConfigurationSection section(String path) {
-        ConfigurationSection section = root.getConfigurationSection(path);
-        return section == null ? new MemoryConfiguration() : section;
+        return DefaultedSections.of(root, path);
     }
 
     public ItemBuilder item(String path) {
-        ConfigurationSection section = root.getConfigurationSection(path);
-        return section == null || !section.contains("material") ? ItemBuilder.of(Material.STONE) : ItemBuilder.from(section);
+        ConfigurationSection section = DefaultedSections.of(root, path);
+        return !section.contains("material") ? ItemBuilder.of(Material.STONE) : ItemBuilder.from(section);
     }
 
     public int slot(String path) {

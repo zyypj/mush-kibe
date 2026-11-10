@@ -4,6 +4,7 @@ import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.command.config.ConfigPathSuggestions;
 import br.com.muxe.core.bukkit.command.config.ConfigReplies;
 import br.com.muxe.core.bukkit.command.framework.Commands;
+import br.com.muxe.core.bukkit.config.DefaultedSections;
 import br.com.muxe.core.bukkit.config.PluginConfig;
 import br.com.muxe.core.bukkit.config.edit.ConfigEditor;
 import br.com.muxe.core.bukkit.config.edit.ConfigReloads;
@@ -179,7 +180,7 @@ public final class BedWarsBootstrap {
         UpgradeCatalog upgradeCatalog = UpgradeCatalog.from(Objects.requireNonNull(config.getConfigurationSection("upgrades"), "Missing configuration section upgrades"));
         MatchSettings matchSettings = MatchSettings.from(config);
         KnockbackProfile knockback = matchSettings.knockback().profile(matchSettings.defaultMode(), core.knockback().profiles()).orElse(KnockbackProfile.VANILLA);
-        String roomSchema = BedWarsRoomSchema.build(Objects.requireNonNull(config.getConfigurationSection("custom-room"), "Missing configuration section custom-room"),
+        String roomSchema = BedWarsRoomSchema.build(DefaultedSections.of(config, "custom-room"),
             shopCatalog, upgradeCatalog, settings.timeline(), knockback);
         server.customRooms(() -> roomSchema);
         ShopService shop = new ShopService(
