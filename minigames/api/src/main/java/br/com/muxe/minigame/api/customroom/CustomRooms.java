@@ -1,10 +1,10 @@
 package br.com.muxe.minigame.api.customroom;
 
-import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
 import br.com.muxe.core.common.combat.knockback.KnockbackSetting;
 import br.com.muxe.core.common.customroom.domain.RoomOptions;
 import br.com.muxe.core.common.customroom.schema.RoomSchema;
+import br.com.muxe.core.common.language.domain.Text;
 import br.com.muxe.core.common.party.domain.PartySnapshot;
 import br.com.muxe.minigame.api.customroom.CustomRoom.Choice;
 import br.com.muxe.minigame.api.match.Match;
@@ -30,15 +30,13 @@ public final class CustomRooms<S extends MatchState> {
 
     private final MatchService<?, S> matches;
     private final RoomPort port;
-    private final MessageCatalog messages;
     private final RoomItems items;
     private final String codeSuffix;
     private final Map<String, CustomRoom> rooms = new LinkedHashMap<>();
 
-    public CustomRooms(MatchService<?, S> matches, RoomPort port, MessageCatalog messages, RoomItems items, String codeSuffix) {
+    public CustomRooms(MatchService<?, S> matches, RoomPort port, RoomItems items, String codeSuffix) {
         this.matches = matches;
         this.port = port;
-        this.messages = messages;
         this.items = items;
         this.codeSuffix = codeSuffix;
     }
@@ -86,16 +84,16 @@ public final class CustomRooms<S extends MatchState> {
         return leading(player).flatMap(this::runtime).map(runtime -> {
             boolean paused = runtime.pauseCountdown();
             if (paused) {
-                runtime.broadcast(messages.get("custom-room-paused"));
+                runtime.announce("custom-room-paused");
             }
             return paused;
         }).orElse(false);
     }
 
-    public Optional<String> skipEvent(UUID player) {
+    public Optional<Text> skipEvent(UUID player) {
         return leading(player).flatMap(this::runtime).filter(runtime -> runtime.match().phase() == MatchPhase.PLAYING)
-            .flatMap(runtime -> runtime.state().skipEvent().map(name -> {
-                runtime.broadcast(messages.get("custom-room-event-skipped", "event", name));
+            .flatMap(runtime -> runtime.state().skipEventText().map(name -> {
+                runtime.announce("custom-room-event-skipped", "event", name);
                 runtime.refreshBoards();
                 return name;
             }));
@@ -141,7 +139,7 @@ public final class CustomRooms<S extends MatchState> {
     public void changeMode(CustomRoom room, GameMode mode) {
         room.mode(mode);
         runtime(room).filter(runtime -> runtime.match().phase().beforeStart()).ifPresent(runtime -> restart(room.code()));
-        runtime(room).ifPresent(runtime -> runtime.broadcast(messages.get("custom-room-mode-changed", "mode", mode.displayName())));
+        runtime(room).ifPresent(runtime -> runtime.announce("custom-room-mode-changed", "mode", runtime.environment().modeName(mode)));
     }
 
     public void restart(String code) {
@@ -167,7 +165,7 @@ public final class CustomRooms<S extends MatchState> {
         for (UUID player : present) {
             port.onlineName(player).ifPresent(name -> matches.place(player, name, opened.get()));
         }
-        opened.get().broadcast(messages.get("custom-room-restarted"));
+        opened.get().announce("custom-room-restarted");
     }
 
     public void close(String code) {
@@ -178,7 +176,7 @@ public final class CustomRooms<S extends MatchState> {
         room.closeIn(CLOSE_DELAY);
         matches.room(code).ifPresent(runtime -> {
             List<UUID> everyone = runtime.online();
-            everyone.forEach(player -> port.message(player, messages.get("custom-room-closed")));
+            everyone.forEach(player -> port.message(player, runtime.message(player, "custom-room-closed")));
             everyone.forEach(port::toLobby);
         });
     }

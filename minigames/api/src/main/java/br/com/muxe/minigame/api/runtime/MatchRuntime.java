@@ -5,6 +5,9 @@ import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.bukkit.text.Title;
 import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
+import br.com.muxe.core.common.language.domain.Text;
 import br.com.muxe.minigame.api.match.Match;
 import br.com.muxe.minigame.api.match.MatchPhase;
 import br.com.muxe.minigame.api.match.Participant.State;
@@ -13,6 +16,7 @@ import br.com.muxe.minigame.api.match.Ranking;
 import br.com.muxe.minigame.api.runtime.Death.Cause;
 import br.com.muxe.minigame.api.runtime.Stage.Look;
 import br.com.muxe.minigame.api.settings.MatchSettings;
+import br.com.muxe.minigame.api.timeline.Timeline.Upcoming;
 import br.com.muxe.minigame.api.view.MatchBoard;
 import br.com.muxe.minigame.engine.match.StartCountdown.Change;
 import br.com.muxe.minigame.engine.match.StartCountdown.Second;
@@ -21,6 +25,7 @@ import br.com.muxe.minigame.engine.team.TeamColor;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -46,12 +51,13 @@ public final class MatchRuntime<S extends MatchState> {
     private final MatchEnvironment environment;
     private final MatchSettings settings;
     private final MessageCatalog messages;
-    private final MatchBoard board;
+    private final Localized<MatchBoard> board;
     private final Consumer<MatchRuntime<S>> onClose;
     private final Set<TeamColor> announcedEliminations = new HashSet<>();
     private final Set<UUID> returnable = new HashSet<>();
     private final Set<UUID> boards = new HashSet<>();
     private final Set<UUID> watchers = new LinkedHashSet<>();
+    private final Set<UUID> winners = new HashSet<>();
     private final S state;
     private Optional<KnockbackProfile> knockback;
     private RoomControl control = RoomControl.STANDARD;
@@ -64,7 +70,7 @@ public final class MatchRuntime<S extends MatchState> {
         this.environment = environment;
         this.settings = environment.settings();
         this.messages = environment.messages();
-        this.board = new MatchBoard(settings.board());
+        this.board = environment.localized().map(texts -> new MatchBoard(texts.board()));
         this.onClose = onClose;
         this.knockback = environment.knockback().forMode(match.mode().id());
         this.state = opener.apply(this);
@@ -90,6 +96,22 @@ public final class MatchRuntime<S extends MatchState> {
         return messages;
     }
 
+    public Language language(UUID id) {
+        return stage.language(id);
+    }
+
+    public MatchSettings settings(UUID id) {
+        return environment.settings(stage.language(id));
+    }
+
+    public String message(UUID id, String key, Object... placeholders) {
+        return messages.get(stage.language(id), key, placeholders);
+    }
+
+    public Text modeName() {
+        return environment.modeName(match.mode());
+    }
+
     public RoomControl control() {
         return control;
     }
@@ -100,7 +122,7 @@ public final class MatchRuntime<S extends MatchState> {
 
     public void giveWaitingItems(UUID id) {
         if (match.phase().beforeStart() && match.player(id).isPresent()) {
-            stage.waitingItems(id, control.waitingItems(id, settings.waitingHotbar().items()));
+            stage.waitingItems(id, control.waitingItems(id, settings(id).waitingHotbar().items()));
         }
     }
 
@@ -150,7 +172,7 @@ public final class MatchRuntime<S extends MatchState> {
         watchers.add(id);
         stage.prepare(id, Look.SPECTATOR);
         stage.teleport(id, match.arena().spectator());
-        stage.spectatorItems(id, settings.spectatorHotbar().spectatorItems());
+        stage.spectatorItems(id, settings(id).spectatorHotbar().spectatorItems());
         stage.showBoard(id);
         boards.add(id);
         refreshVisibility();
@@ -167,6 +189,39 @@ public final class MatchRuntime<S extends MatchState> {
 
     public void broadcast(String message) {
         online().forEach(id -> stage.message(id, message));
+    }
+
+    public void broadcast(Text message) {
+        for (UUID id : online()) {
+            String rendered = message.in(stage.language(id));
+            if (!rendered.isBlank()) {
+                stage.message(id, rendered);
+            }
+        }
+    }
+
+    public void announce(String key, Object... placeholders) {
+        broadcast(messages.text(key, placeholders));
+    }
+
+    public void announceLines(String key, Object... placeholders) {
+        for (UUID id : online()) {
+            messages.lines(stage.language(id), key, placeholders).forEach(line -> stage.message(id, line));
+        }
+    }
+
+    public void refreshLanguage(UUID id) {
+        if (!online().contains(id)) {
+            return;
+        }
+        if (match.phase().beforeStart()) {
+            giveWaitingItems(id);
+        } else if (winners.contains(id)) {
+            stage.spectatorItems(id, settings(id).spectatorHotbar().winnerItems());
+        } else if (isSpectator(id) || match.phase() == MatchPhase.ENDING) {
+            stage.spectatorItems(id, settings(id).spectatorHotbar().spectatorItems());
+        }
+        refreshBoards();
     }
 
     public String coloredName(Participant player) {
@@ -191,13 +246,13 @@ public final class MatchRuntime<S extends MatchState> {
         Change change = match.join(id, name);
         stage.prepare(id, Look.PLAYER);
         stage.knockback(id, knockback);
-        String joined = messages.get("room-joined", "player", stage.rankColored(id, name),
+        Text joined = messages.text("room-joined", "player", stage.rankColored(id, name),
             "players", String.valueOf(match.players().size()), "max", String.valueOf(match.mode().maxPlayers()));
         Set<UUID> audience = new LinkedHashSet<>(online());
         audience.add(id);
-        audience.forEach(viewer -> stage.message(viewer, joined));
+        audience.forEach(viewer -> stage.message(viewer, joined.in(stage.language(viewer))));
         stage.teleport(id, match.arena().waitingSpawn());
-        stage.waitingItems(id, control.waitingItems(id, settings.waitingHotbar().items()));
+        stage.waitingItems(id, control.waitingItems(id, settings(id).waitingHotbar().items()));
         stage.showBoard(id);
         boards.add(id);
         state.arrived(id);
@@ -237,7 +292,7 @@ public final class MatchRuntime<S extends MatchState> {
                     });
                     Death death = new Death(quitter, killer, true, Cause.QUIT);
                     state.died(death);
-                    announce(death);
+                    announceDeath(death);
                     checkEliminations();
                 }
                 refreshBoards();
@@ -260,7 +315,7 @@ public final class MatchRuntime<S extends MatchState> {
         boards.add(id);
         state.arrived(id);
         stage.refreshNameTag(id);
-        broadcast(messages.get("reconnected", "player", coloredName(player)));
+        announce("reconnected", "player", coloredName(player));
         refreshBoards();
     }
 
@@ -274,7 +329,7 @@ public final class MatchRuntime<S extends MatchState> {
                 if (second.finished()) {
                     start();
                 } else {
-                    settings.countdownTitles().at(second.remaining()).ifPresent(text -> countdownTitle(text, second.remaining()));
+                    countdownTitle(second.remaining());
                     refreshBoards();
                 }
             }
@@ -322,7 +377,7 @@ public final class MatchRuntime<S extends MatchState> {
         Instant now = environment.clock().instant();
         Optional<Participant> killer = match.killer(dead, now, finalKill);
         Death death = new Death(dead, killer, finalKill, voidDeath ? Cause.VOID : Cause.DAMAGE);
-        announce(death);
+        announceDeath(death);
         if (finalKill && !voidDeath && killer.isPresent()) {
             Optional<Player> killerPlayer = stage.player(killer.get().id());
             Optional<Player> victimPlayer = stage.player(id);
@@ -346,7 +401,8 @@ public final class MatchRuntime<S extends MatchState> {
             stage.sound(id, settings.sounds().died());
             respawnCountdown(dead, settings.timings().respawnSeconds());
         } else {
-            stage.title(id, Title.of(messages.get("died-title"), messages.get("spectator-subtitle")));
+            Language language = stage.language(id);
+            stage.title(id, Title.of(messages.get(language, "died-title"), messages.get(language, "spectator-subtitle")));
             stage.sound(id, settings.sounds().eliminated());
             checkEliminations();
         }
@@ -371,7 +427,7 @@ public final class MatchRuntime<S extends MatchState> {
         state.standingsChanged();
         for (TeamColor color : match.teams().keySet()) {
             if (match.status(color).isEliminated() && announcedEliminations.add(color)) {
-                broadcast(messages.get("team-eliminated", "team-color", Colors.translate(color.color()), "team", match.teamName(color)));
+                announce("team-eliminated", "team-color", Colors.translate(color.color()), "team", match.teamText(color));
                 online().forEach(id -> stage.sound(id, settings.sounds().teamEliminated()));
             }
         }
@@ -384,7 +440,7 @@ public final class MatchRuntime<S extends MatchState> {
         if (!environment.rules().breakOnlyPlaced() || match.wasPlaced(x, y, z)) {
             return true;
         }
-        stage.message(id, messages.get("cannot-break"));
+        stage.message(id, message(id, "cannot-break"));
         return false;
     }
 
@@ -427,24 +483,28 @@ public final class MatchRuntime<S extends MatchState> {
             stage.sound(id, settings.sounds().matchEnd());
             stage.sound(id, settings.sounds().matchEndFirework());
             if (isSpectator(id)) {
-                stage.spectatorItems(id, settings.spectatorHotbar().spectatorItems());
+                stage.spectatorItems(id, settings(id).spectatorHotbar().spectatorItems());
             }
         }
         winner.ifPresent(team -> celebrate(team, audience));
-        List<String> lines = result(winner);
-        online().forEach(id -> stage.centered(id, lines));
+        Map<Language, List<String>> lines = new EnumMap<>(Language.class);
+        online().forEach(id -> stage.centered(id, lines.computeIfAbsent(stage.language(id), language -> result(winner, language))));
         state.ended(winner);
         refreshBoards();
     }
 
     public void refreshBoards() {
-        String title = Colors.translate(board.title());
+        Optional<Upcoming> upcoming = state.upcoming();
         for (UUID id : online()) {
             if (!boards.contains(id)) {
                 continue;
             }
-            List<String> lines = board.lines(match, id, state.upcoming(), state.placeholders(match.player(id))).stream().map(Colors::translate).toList();
-            stage.board(id, title, lines);
+            Language language = stage.language(id);
+            MatchBoard shown = board.in(language);
+            String mode = environment.settings(language).modeName(match.mode());
+            List<String> lines = shown.lines(match, id, language, mode, upcoming, state.placeholders(match.player(id), language)).stream()
+                .map(Colors::translate).toList();
+            stage.board(id, Colors.translate(shown.title()), lines);
         }
     }
 
@@ -489,8 +549,8 @@ public final class MatchRuntime<S extends MatchState> {
     private void leaveBeforeStart(Participant player) {
         Change change = match.leaveBeforeStart(player.id());
         forget(player.id());
-        broadcast(messages.get("room-left", "player", stage.rankColored(player.id(), player.name()),
-            "players", String.valueOf(match.players().size()), "max", String.valueOf(match.mode().maxPlayers())));
+        announce("room-left", "player", stage.rankColored(player.id(), player.name()),
+            "players", String.valueOf(match.players().size()), "max", String.valueOf(match.mode().maxPlayers()));
         countdownChanged(change);
         refreshBoards();
     }
@@ -524,9 +584,9 @@ public final class MatchRuntime<S extends MatchState> {
         watching.forEach(this::watch);
         state.started();
         refreshBoards();
-        messages.lines("match-started").forEach(this::broadcast);
+        announceLines("match-started");
         if (!split.isEmpty()) {
-            messages.lines("party-split").forEach(this::broadcast);
+            announceLines("party-split");
         }
         online().forEach(id -> stage.sound(id, settings.sounds().matchStart()));
     }
@@ -545,7 +605,7 @@ public final class MatchRuntime<S extends MatchState> {
                 if (left <= 0) {
                     match.respawned(player, now.plusSeconds(settings.timings().respawnProtectionSeconds()));
                     spawn(player);
-                    String respawned = messages.get("respawned");
+                    String respawned = message(player.id(), "respawned");
                     stage.message(player.id(), respawned);
                     stage.title(player.id(), Title.builder().subtitle(respawned).timings(0, 20, 10).build());
                 } else {
@@ -555,7 +615,7 @@ public final class MatchRuntime<S extends MatchState> {
                 match.eliminate(player);
                 Death death = new Death(player, Optional.empty(), true, Cause.TIMEOUT);
                 state.died(death);
-                announce(death);
+                announceDeath(death);
                 checkEliminations();
             }
         }
@@ -574,20 +634,18 @@ public final class MatchRuntime<S extends MatchState> {
     private void ghost(UUID id, boolean items) {
         stage.prepare(id, Look.SPECTATOR);
         if (items) {
-            stage.spectatorItems(id, settings.spectatorHotbar().spectatorItems());
+            stage.spectatorItems(id, settings(id).spectatorHotbar().spectatorItems());
         }
         refreshVisibility();
     }
 
-    private void announce(Death death) {
+    private void announceDeath(Death death) {
         String victim = coloredName(death.victim());
         Optional<String> killer = death.killer().map(this::coloredName);
-        String text = state.deathMessage(death, victim, killer).orElseGet(() -> killer
-            .map(name -> messages.get("kill", "killer", name, "victim", victim))
-            .orElseGet(() -> messages.get("death", "victim", victim)));
-        if (!text.isBlank()) {
-            broadcast(text);
-        }
+        Text text = state.deathText(death, victim, killer).orElseGet(() -> killer
+            .map(name -> messages.text("kill", "killer", name, "victim", victim))
+            .orElseGet(() -> messages.text("death", "victim", victim)));
+        broadcast(text);
     }
 
     private void celebrate(TeamColor team, List<UUID> audience) {
@@ -597,7 +655,8 @@ public final class MatchRuntime<S extends MatchState> {
             }
             boolean won = match.player(id).map(Participant::team).filter(team::equals).isPresent();
             if (won && !isSpectator(id)) {
-                stage.spectatorItems(id, settings.spectatorHotbar().winnerItems());
+                winners.add(id);
+                stage.spectatorItems(id, settings(id).spectatorHotbar().winnerItems());
             }
             stage.endTitle(id, won);
         }
@@ -608,17 +667,17 @@ public final class MatchRuntime<S extends MatchState> {
             .ifPresent(celebrant -> environment.events().victory(celebrant, viewers, area()));
     }
 
-    private List<String> result(Optional<TeamColor> winner) {
+    private List<String> result(Optional<TeamColor> winner, Language language) {
         String time = clock(match.elapsed());
         if (winner.isEmpty()) {
-            return messages.lines("result-draw", "time", time);
+            return messages.lines(language, "result-draw", "time", time);
         }
         List<String> lines = new ArrayList<>();
-        for (String line : messages.lines("result", "team-color", Colors.translate(winner.get().color()), "team", match.teamName(winner.get()), "time", time)) {
+        for (String line : messages.lines(language, "result", "team-color", Colors.translate(winner.get().color()), "team", match.teamText(winner.get()), "time", time)) {
             int start = line.indexOf("{top-");
             int finish = start < 0 ? -1 : line.indexOf('}', start);
             if (finish > start) {
-                lines.addAll(rank(line.substring(start + "{top-".length(), finish)));
+                lines.addAll(rank(line.substring(start + "{top-".length(), finish), language));
             } else {
                 lines.add(line);
             }
@@ -626,42 +685,46 @@ public final class MatchRuntime<S extends MatchState> {
         return lines;
     }
 
-    private List<String> rank(String ranking) {
+    private List<String> rank(String ranking, Language language) {
         Map<UUID, Integer> scores = new HashMap<>();
         match.players().forEach(player -> scores.put(player.id(), state.score(ranking, player)));
         List<Ranking.Entry> top = Ranking.top(scores, match.joinOrder());
         if (top.isEmpty()) {
-            return messages.lines("result-nobody");
+            return messages.lines(language, "result-nobody");
         }
         List<String> lines = new ArrayList<>();
         for (int index = 0; index < top.size(); index++) {
             Ranking.Entry entry = top.get(index);
             String name = match.player(entry.player()).map(Participant::name).orElse("?");
-            lines.addAll(messages.lines("result-rank-" + (index + 1), "player", stage.rankColored(entry.player(), name), "score", String.valueOf(entry.score())));
+            lines.addAll(messages.lines(language, "result-rank-" + (index + 1), "player", stage.rankColored(entry.player(), name), "score", String.valueOf(entry.score())));
         }
         return lines;
     }
 
     private void countdownChanged(Change change) {
         if (change == Change.STARTED || change == Change.SHORTENED) {
-            match.countdown().remaining().ifPresent(remaining -> settings.countdownTitles().at(remaining).ifPresent(text -> countdownTitle(text, remaining)));
+            match.countdown().remaining().ifPresent(this::countdownTitle);
         }
     }
 
-    private void countdownTitle(String text, int remaining) {
-        Title title = Title.builder().title(Colors.translate(text)).subtitle("").timings(0, 20, 20).build();
-        String message = remaining == 1 ? messages.get("countdown-one") : messages.get("countdown", "seconds", String.valueOf(remaining));
-        online().forEach(id -> {
-            stage.message(id, message);
-            stage.title(id, title);
+    private void countdownTitle(int remaining) {
+        for (UUID id : online()) {
+            Language language = stage.language(id);
+            Optional<String> text = environment.settings(language).countdownTitles().at(remaining);
+            if (text.isEmpty()) {
+                continue;
+            }
+            stage.message(id, remaining == 1 ? messages.get(language, "countdown-one") : messages.get(language, "countdown", "seconds", String.valueOf(remaining)));
+            stage.title(id, Title.builder().title(Colors.translate(text.get())).subtitle("").timings(0, 20, 20).build());
             stage.sound(id, settings.sounds().countdown());
-        });
+        }
     }
 
     private void respawnCountdown(Participant player, int left) {
-        String text = left == 1 ? messages.get("respawn-subtitle-one") : messages.get("respawn-subtitle", "seconds", String.valueOf(left));
+        Language language = stage.language(player.id());
+        String text = left == 1 ? messages.get(language, "respawn-subtitle-one") : messages.get(language, "respawn-subtitle", "seconds", String.valueOf(left));
         stage.message(player.id(), text);
-        stage.title(player.id(), Title.builder().title(messages.get("died-title")).subtitle(text).timings(0, 25, 0).build());
+        stage.title(player.id(), Title.builder().title(messages.get(language, "died-title")).subtitle(text).timings(0, 25, 0).build());
     }
 
     private Point floor(Participant player) {

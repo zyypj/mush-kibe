@@ -8,6 +8,9 @@ import br.com.muxe.core.bukkit.menu.MenuButton;
 import br.com.muxe.core.bukkit.menu.MenuClick;
 import br.com.muxe.core.bukkit.menu.Page;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.cosmetic.application.command.BuyCosmeticCommand;
 import br.com.muxe.core.common.cosmetic.application.command.BuyCosmeticHandler;
 import br.com.muxe.core.common.cosmetic.application.command.SelectCosmeticCommand;
@@ -37,8 +40,9 @@ public final class CosmeticMenus {
 
     static final int RANDOM_FRAME_TICKS = 10;
 
-    private final CosmeticMenuSettings settings;
-    private final Map<String, CosmeticCategory> categories = new LinkedHashMap<>();
+    private final Localized<CosmeticMenuSettings> settings;
+    private final Localized<Map<String, CosmeticCategory>> categories;
+    private final LanguageLookup languages;
     private final CommandBus commands;
     private final Executor mainThread;
     private final MessageCatalog messages;
@@ -50,8 +54,14 @@ public final class CosmeticMenus {
 
     public CosmeticMenus(CosmeticMenuSettings settings, List<CosmeticCategory> categories, CommandBus commands, Executor mainThread, MessageCatalog messages, Logger logger,
                          Function<Player, String> viewerNames) {
+        this(Localized.same(settings), Localized.same(categories), LanguageLookup.DEFAULT, commands, mainThread, messages, logger, viewerNames);
+    }
+
+    public CosmeticMenus(Localized<CosmeticMenuSettings> settings, Localized<List<CosmeticCategory>> categories, LanguageLookup languages, CommandBus commands,
+                         Executor mainThread, MessageCatalog messages, Logger logger, Function<Player, String> viewerNames) {
         this.settings = settings;
-        categories.forEach(category -> this.categories.put(category.key(), category));
+        this.categories = categories.map(CosmeticMenus::byKey);
+        this.languages = languages;
         this.commands = commands;
         this.mainThread = mainThread;
         this.messages = messages;
@@ -69,6 +79,9 @@ public final class CosmeticMenus {
 
     public void openCategories(Player player, Optional<Consumer<Player>> back) {
         back.ifPresentOrElse(opener -> backs.put(player.getUniqueId(), opener), () -> backs.remove(player.getUniqueId()));
+        Language language = language(player);
+        CosmeticMenuSettings settings = this.settings.in(language);
+        Map<String, CosmeticCategory> categories = this.categories.in(language);
         withWallets(player, wallets -> {
             Menu.Builder menu = Menu.builder(settings.categoriesTitle()).rows(settings.categoriesRows());
             for (CosmeticCategory category : categories.values()) {
@@ -77,14 +90,14 @@ public final class CosmeticMenus {
             }
             settings.teamColor().ifPresent(button -> menu.button(button.slot(), button.item(),
                 context -> teamColor.accept(context.player(), viewer -> openCategories(viewer, back))));
-            settings.soon().forEach((slot, item) -> menu.button(slot, item, context -> context.player().sendMessage(messages.get("coming-soon"))));
+            settings.soon().forEach((slot, item) -> menu.button(slot, item, context -> context.player().sendMessage(messages.get(language, "coming-soon"))));
             back.ifPresent(opener -> menu.button(settings.categoriesBack().slot(), settings.categoriesBack().item(), context -> opener.accept(context.player())));
             menu.build().open(player);
         });
     }
 
     public void openList(Player player, String key, int page) {
-        CosmeticCategory category = categories.get(key);
+        CosmeticCategory category = categories.in(language(player)).get(key);
         if (category == null) {
             return;
         }
@@ -128,7 +141,7 @@ public final class CosmeticMenus {
             menu.button(list.next().slot(), list.next().item().replacing("page", Integer.toString(number + 1)), context -> openList(context.player(), key, number + 1));
         }
         menu.button(list.selected().slot(), icons.selected(wallet));
-        menu.button(list.shop().slot(), list.shop().item(), context -> context.player().sendMessage(messages.get("coming-soon")));
+        menu.button(list.shop().slot(), list.shop().item(), context -> context.player().sendMessage(messages.get(context.player(), "coming-soon")));
         return menu.build();
     }
 
@@ -144,7 +157,7 @@ public final class CosmeticMenus {
                 return;
             }
             if (!cosmetic.animated()) {
-                player.sendMessage(messages.get("cosmetic-no-preview"));
+                player.sendMessage(messages.get(language(player), "cosmetic-no-preview"));
                 return;
             }
             int page = currentPage(player, category, cosmetic.id());
@@ -156,7 +169,7 @@ public final class CosmeticMenus {
         switch (state) {
             case OWNED -> choose(context, category, cosmetic.id(), cosmetic.name());
             case BUY -> buy(context, category, cosmetic);
-            case UNAVAILABLE -> player.sendMessage(messages.get("cosmetic-unavailable"));
+            case UNAVAILABLE -> player.sendMessage(messages.get(language(player), "cosmetic-unavailable"));
             case SELECTED -> {
             }
         }
@@ -174,7 +187,7 @@ public final class CosmeticMenus {
                 return;
             }
             category.profiles().of(player.getUniqueId()).ifPresent(wallet -> category.profiles().update(player.getUniqueId(), wallet.selecting(id)));
-            player.sendMessage(messages.get("cosmetic-selected", "name", name));
+            player.sendMessage(messages.get(language(player), "cosmetic-selected", "name", name));
             openList(player, category.key(), page);
         }, mainThread);
     }
@@ -193,13 +206,13 @@ public final class CosmeticMenus {
             }
             if (result instanceof Result.Failure<Long> failure) {
                 String messageKey = BuyCosmeticHandler.ALREADY_OWNED.equals(failure.problem().code()) ? "cosmetic-already-owned" : "cosmetic-not-enough";
-                player.sendMessage(messages.get(messageKey));
+                player.sendMessage(messages.get(language(player), messageKey));
                 return;
             }
             long balance = result.orElseThrow();
-            categories.values().forEach(other -> other.profiles().of(player.getUniqueId())
-                .ifPresent(wallet -> other.profiles().update(player.getUniqueId(), other == category ? wallet.buying(cosmetic.id(), balance) : wallet.withCredits(balance))));
-            player.sendMessage(messages.get("cosmetic-bought", "name", cosmetic.name(), "price", CreditFormat.format(price)));
+            categories.standard().values().forEach(other -> other.profiles().of(player.getUniqueId())
+                .ifPresent(wallet -> other.profiles().update(player.getUniqueId(), other.key().equals(category.key()) ? wallet.buying(cosmetic.id(), balance) : wallet.withCredits(balance))));
+            player.sendMessage(messages.get(language(player), "cosmetic-bought", "name", cosmetic.name(), "price", CreditFormat.format(price)));
             openList(player, category.key(), page);
         }, mainThread);
     }
@@ -231,7 +244,7 @@ public final class CosmeticMenus {
     private void withWallets(Player player, Consumer<Map<String, CosmeticWallet>> action) {
         CosmeticAccess access = CosmeticAccess.of(player::hasPermission);
         Map<String, CompletableFuture<CosmeticWallet>> loading = new LinkedHashMap<>();
-        categories.forEach((key, category) -> loading.put(key, category.profiles().load(player.getUniqueId(), access)));
+        categories.standard().forEach((key, category) -> loading.put(key, category.profiles().load(player.getUniqueId(), access)));
         CompletableFuture.allOf(loading.values().toArray(CompletableFuture[]::new)).whenCompleteAsync((ignored, error) -> {
             if (!player.isOnline()) {
                 return;
@@ -250,7 +263,17 @@ public final class CosmeticMenus {
         if (error != null) {
             logger.log(Level.WARNING, "A cosmetic action of " + player.getName() + " failed", error);
         }
-        player.sendMessage(messages.get("cosmetic-failed"));
+        player.sendMessage(messages.get(language(player), "cosmetic-failed"));
+    }
+
+    private Language language(Player player) {
+        return languages.of(player.getUniqueId());
+    }
+
+    private static Map<String, CosmeticCategory> byKey(List<CosmeticCategory> categories) {
+        Map<String, CosmeticCategory> byKey = new LinkedHashMap<>();
+        categories.forEach(category -> byKey.put(category.key(), category));
+        return byKey;
     }
 
     @FunctionalInterface

@@ -2,14 +2,21 @@ package br.com.muxe.minigame.api.customroom;
 
 import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
 import br.com.muxe.core.common.combat.knockback.KnockbackSetting;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 
 public final class KnockbackPage {
 
     public static final String ID = "knockback";
+    public static final String TITLE = "title";
+    public static final String ENTRIES = "entries";
+    public static final String VALUES = "values";
+    public static final String DEFAULT_TITLE = "Alterar knockback";
 
-    private static final List<Entry> ENTRIES = List.of(
+    private static final List<Entry> ENTRIES_SHOWN = List.of(
         new Entry(KnockbackSetting.VERTICAL, 10, "FEATHER", "Vertical", List.of("&7Valor base do impulso", "&7vertical.")),
         new Entry(KnockbackSetting.HORIZONTAL, 11, "ARROW", "Horizontal", List.of("&7Valor base do impulso", "&7horizontal.")),
         new Entry(KnockbackSetting.VERTICAL_BOOST, 12, "FIREWORK", "Vertical (Boost)", List.of("&7Valor de boost do impulso", "&7vertical.")),
@@ -26,23 +33,28 @@ public final class KnockbackPage {
         new Entry(KnockbackSetting.CLICK_LIMITER, 25, "STONE_BUTTON", "Limitador de cliques", List.of("&7Controla a força do", "&7limitador de cliques", "&7de knockback."))
     );
 
+    private static final Map<String, String> CHOICES = choices();
+
     private KnockbackPage() {
     }
 
     public static void write(ConfigurationSection pages, KnockbackProfile profile, String title, int backSlot, String backTo) {
+        MemoryConfiguration texts = new MemoryConfiguration();
+        texts.set(TITLE, title);
+        write(pages, profile, texts, backSlot, backTo);
+    }
+
+    public static void write(ConfigurationSection pages, KnockbackProfile profile, ConfigurationSection texts, int backSlot, String backTo) {
         ConfigurationSection page = pages.createSection(ID);
-        page.set("title", title);
         page.set("rows", 4);
         page.set("back-slot", backSlot);
         page.set("back-to", backTo);
-        ConfigurationSection entries = page.createSection("entries");
-        for (Entry entry : ENTRIES) {
+        ConfigurationSection entries = page.createSection(ENTRIES);
+        for (Entry entry : ENTRIES_SHOWN) {
             ConfigurationSection section = entries.createSection(entry.setting().key());
             section.set("slot", entry.slot());
             section.set("key", "knockback." + entry.setting().key());
             section.set("material", entry.material());
-            section.set("name", entry.name());
-            section.set("description", entry.description());
             String value = entry.setting().read(profile);
             switch (entry.setting().kind()) {
                 case DECIMAL -> {
@@ -58,14 +70,34 @@ public final class KnockbackPage {
                 case CHOICE -> {
                     section.set("type", "choice");
                     section.set("default", value);
-                    ConfigurationSection values = section.createSection("values");
-                    values.set("off.label", "Desativado");
-                    values.set("low.label", "Baixo");
-                    values.set("normal.label", "Normal");
-                    values.set("high.label", "Alto");
                 }
             }
         }
+        translate(pages, texts);
+    }
+
+    public static void translate(ConfigurationSection pages, ConfigurationSection texts) {
+        ConfigurationSection page = pages.isConfigurationSection(ID) ? pages.getConfigurationSection(ID) : pages.createSection(ID);
+        page.set(TITLE, texts.getString(TITLE, DEFAULT_TITLE));
+        for (Entry entry : ENTRIES_SHOWN) {
+            String key = entry.setting().key();
+            String path = ENTRIES + "." + key;
+            page.set(path + ".name", texts.getString(path + ".name", entry.name()));
+            List<String> description = texts.getStringList(path + ".description");
+            page.set(path + ".description", description.isEmpty() ? entry.description() : description);
+            if (entry.setting().kind() == KnockbackSetting.Kind.CHOICE) {
+                CHOICES.forEach((choice, label) -> page.set(path + "." + VALUES + "." + choice + ".label", texts.getString(VALUES + "." + choice, label)));
+            }
+        }
+    }
+
+    private static Map<String, String> choices() {
+        Map<String, String> choices = new LinkedHashMap<>();
+        choices.put("off", "Desativado");
+        choices.put("low", "Baixo");
+        choices.put("normal", "Normal");
+        choices.put("high", "Alto");
+        return choices;
     }
 
     private record Entry(KnockbackSetting setting, int slot, String material, String name, List<String> description) {

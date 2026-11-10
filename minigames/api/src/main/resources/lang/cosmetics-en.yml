@@ -1,0 +1,328 @@
+final-kill:
+  cosmetics:
+    presenteado:
+      name: "Gifted"
+      tag: "&cChristmas 2025"
+    presentes:
+      name: "Gift Shower"
+      tag: "&cChristmas 2024"
+      description:
+        - "&7Make it rain gifts!"
+    passarinhos:
+      name: "Birds"
+      tag: "&dCarnival 2024"
+    brain-freeze:
+      name: "Brain Freeze"
+      tag: "&cChristmas 2023"
+      description:
+        - "&7Freeze your enemies'"
+        - "&7heads solid!"
+    fogos-de-artificio:
+      name: "Fireworks"
+      description:
+        - "&7Sets off fireworks"
+    raio:
+      name: "Lightning"
+      description:
+        - "&7Summon the power of Thor"
+    colheita-de-aboboras:
+      name: "Pumpkin Harvest"
+      tag: "&6Halloween 2026"
+    apavorante:
+      name: "Frightful"
+      tag: "&6Halloween 2026"
+    deserto:
+      name: "Desert"
+      description:
+        - "&7Watch your step..."
+    tinta:
+      name: "Paint"
+      description:
+        - "&7Time to paint!"
+    garota-magica:
+      name: "Magical Girl"
+      description:
+        - "&7In the name of the stars,"
+        - "&7your enemies will be"
+        - "&7punished!"
+    anoitecer:
+      name: "Dusk"
+      description:
+        - "&7Shhh... the owl has already"
+        - "&7chosen its next"
+        - "&7prey."
+    encantado:
+      name: "Enchanted"
+      description:
+        - "&7Where a warrior fell,"
+        - "&7mushrooms now sprout..."
+        - "&7the forest wastes"
+        - "&7nothing."
+    incendiar:
+      name: "Ignite"
+      tag: "&aAnniversary 2026"
+    afogar:
+      name: "Drown"
+      tag: "&aAnniversary 2026"
+    six-seven:
+      name: "Six Seven"
+    toque-de-midas:
+      name: "Midas Touch"
+      tag: "&6Tournament award"
+    fantasmas:
+      name: "Ghosts"
+      tag: "&6Halloween 2025"
+    colmeia:
+      name: "Beehive"
+    moedas:
+      name: "Coins"
+    biscoitos-e-leite:
+      name: "Cookies and Milk"
+    esqueleto-amaldicoado:
+      name: "Cursed Skeleton"
+    festa-disco:
+      name: "Disco Party"
+    dragoes-chineses:
+      name: "Chinese Dragons"
+    portal-do-fim:
+      name: "End Portal"
+    jardim-florido:
+      name: "Flower Garden"
+    quebrado:
+      name: "Shattered"
+    explosao-de-melancia:
+      name: "Melon Explosion"
+    pinguins-na-neve:
+      name: "Snow Penguins"
+    explosao-de-abobora:
+      name: "Pumpkin Explosion"
+    arco-iris:
+      name: "Rainbow"
+    redstone:
+      name: "Redstone"
+    lula-explosiva:
+      name: "Exploding Squid"
+    galatico:
+      name: "Galactic"
+    explosao-de-tnt:
+      name: "TNT Explosion"
+    cacador-de-recompensas:
+      name: "Bounty Hunter"
+    passe-de-magica:
+      name: "Magic Trick"
+    decolando:
+      name: "Take Off"
+    vanilla:
+      name: "Vanilla"
+    embrulhado:
+      name: "Wrapped"
+      tag: "&aAnniversary 2025"
+    esqueletico:
+      name: "Skeletal"
+      description:
+        - "&7Turn your enemies"
+        - "&7into dust!"
+    decapitado:
+      name: "Decapitated"
+      tag: "&6Tournament award"
+      description:
+        - "&7Send your enemies' heads"
+        - "&7to the beyond!"
+    eletrizante:
+      name: "Electrified"
+      tag: "&6Monthly award"
+      description:
+        - "&7Leave your enemies"
+        - "&7shocked!"
+
+victory-effect:
+  cosmetics:
+    feliz-natal:
+      name: "Merry Christmas"
+      tag: "&cChristmas 2025"
+    altas-aventuras:
+      name: "Up and Away"
+      tag: "&aAnniversary 2025"
+    colheita-de-aboboras:
+      name: "Pumpkin Harvest"
+      tag: "&6Halloween 2026"
+    apavorante:
+      name: "Frightful"
+      tag: "&6Halloween 2026"
+    deserto:
+      name: "Desert"
+      description:
+        - "&7Could it be a mirage?"
+    tinta:
+      name: "Paint"
+      description:
+        - "&7Weather forecast: paint"
+        - "&7showers!"
+    como-treinar-seu-porco:
+      name: "How to train your... pig?"
+      description:
+        - "&7It doesn't breathe fire..."
+        - "&7but it flies. Sort of."
+    contagem-de-flash:
+      name: "Paparazzi"
+      description:
+        - "&7Smile! The paparazzi"
+        - "&7never miss a champion..."
+    apocalipse-zumbi:
+      name: "Zombie Apocalypse"
+      description:
+        - "&7The defeated still"
+        - "&7have a score to settle"
+        - "&7with you..."
+    aventureiro:
+      name: "Adventurer"
+      description:
+        - "&7Map? Compass? Who needs them..."
+        - "&7just hook on and go!"
+    necromante:
+      name: "Necromancer"
+      description:
+        - "&7Rise, fallen ones..."
+        - "&7your master commands it!"
+    garota-magica:
+      name: "Magical Girl"
+      description:
+        - "&7Light the rocket and streak"
+        - "&7across the sky on your"
+        - "&7rainbow star!"
+    anoitecer:
+      name: "Dusk"
+      description:
+        - "&7The night is yours! Glide"
+        - "&7with the owl while"
+        - "&7the flock celebrates above."
+    encantado:
+      name: "Enchanted"
+      description:
+        - "&7The gnomes came to celebrate..."
+        - "&7and brought the whole"
+        - "&7forest along!"
+    tsunami:
+      name: "Tsunami"
+      tag: "&aAnniversary 2026"
+    inferno:
+      name: "Inferno"
+      tag: "&aAnniversary 2026"
+    festival-dourado:
+      name: "Golden Festival"
+      tag: "&6Tournament award"
+    bruxa:
+      name: "Witch"
+      tag: "&6Halloween 2025"
+    wither:
+      name: "Wither"
+      tag: "&6Monthly award"
+      description:
+        - "&7Ride a Wither!"
+    dragao:
+      name: "Dragon"
+      tag: "&6Tournament award"
+      description:
+        - "&7Ride a dragon!"
+    o-end:
+      name: "The End"
+    congelado:
+      name: "Frozen"
+
+aura:
+  cosmetics:
+    liga-mestre:
+      name: "Master League"
+      tag: "&6Tournament award"
+    liga-diamante:
+      name: "Diamond League"
+      tag: "&6Tournament award"
+
+projectile-trail:
+  cosmetics:
+    espiral-da-fortuna:
+      name: "Fortune Spiral"
+      tag: "&6Tournament award"
+    critico:
+      name: "Critical"
+    chamas:
+      name: "Flames"
+    ultra:
+      name: "Ultra"
+      tag: "&7Exclusive to &d&lULTRA"
+    natalino:
+      name: "Festive"
+      tag: "&cChristmas 2025"
+    ossos:
+      name: "Bones"
+      tag: "&6Halloween 2025"
+    espectro-verde:
+      name: "Green Specter"
+    coracoes:
+      name: "Hearts"
+    magia:
+      name: "Magic"
+    sorte-azul:
+      name: "Blue Luck"
+    faisca-cosmica:
+      name: "Cosmic Spark"
+    lava:
+      name: "Lava"
+    chroma:
+      name: "Chroma"
+      tag: "&6Monthly award"
+    fumaca:
+      name: "Smoke"
+    vapor:
+      name: "Steam"
+    agua:
+      name: "Water"
+    aldeao-furioso:
+      name: "Angry Villager"
+    fogos-de-artificio:
+      name: "Fireworks"
+    notas-musicais:
+      name: "Music Notes"
+      tag: "&6Tournament award"
+    sangrento:
+      name: "Bloody"
+    critico-encantado:
+      name: "Enchanted Critical"
+    mega-loucura:
+      name: "Mega Madness"
+    arco-iris:
+      name: "Rainbow"
+
+kill-message:
+  cosmetics:
+    padrao:
+      name: "Default"
+    estatistico:
+      name: "Statistical"
+      tag: "&6Tournament award"
+
+kill-messages:
+  bed-prefix: "&f&lBED DESTRUCTION &f» "
+  preview:
+    title: "&7Preview:"
+    victim: "&cJohn"
+    team: "Red"
+  sets:
+    padrao:
+      messages:
+        kill: "{victim} &7was killed by {killer}&7."
+        final-kill: "{victim} &7was killed by {killer}&7. &b&lFINAL KILL!"
+        void-kill: "{victim} &7was knocked into the void by {killer}&7."
+        void-final-kill: "{victim} &7was knocked into the void by {killer}&7. &b&lFINAL KILL!"
+        death: "{victim} &7died&7."
+        final-death: "{victim} &7died&7. &b&lFINAL KILL!"
+        void-death: "{victim} &7fell into the void&7."
+        void-final-death: "{victim} &7fell into the void&7. &b&lFINAL KILL!"
+        bed: "{team-color}{team} Bed &7was destroyed {br}by {player}&7."
+    estatistico:
+      messages:
+        kill: "{victim} &7was {killer}&7's &b#{count}&7 kill."
+        final-kill: "{victim} &7was {killer}&7's &b#{count}&7 {br}final kill."
+        death: "{victim} &7has now died &b{count}&7 times."
+        final-death: "{victim} &7suffered their &b#{count}&7 final death."
+        bed: "{team-color}{team} Bed &7was the &b#{count}&7 {br}bed destroyed by {player}&7."

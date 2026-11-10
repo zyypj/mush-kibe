@@ -1,6 +1,7 @@
 package br.com.muxe.minigame.api.runtime;
 
 import br.com.muxe.core.bukkit.permission.display.NameTag;
+import br.com.muxe.core.common.language.domain.Text;
 import br.com.muxe.minigame.api.match.ChatView;
 import br.com.muxe.minigame.api.match.Match;
 import br.com.muxe.minigame.api.match.MatchArena;
@@ -91,6 +92,10 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
 
     public String modeName(String id) {
         return mode(id).map(GameMode::displayName).orElse(id);
+    }
+
+    public Text modeText(String id) {
+        return mode(id).map(environment::modeName).orElse(Text.plain(id));
     }
 
     public void arrive(UUID id, String name) {
@@ -381,7 +386,7 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
         MatchRuntime<S> runtime = code.filter(hidden::contains).map(rooms::get).filter(found -> found.match().acceptsPlayers())
             .or(() -> pick(mode, arena, code)).or(() -> create(mode, arena)).or(() -> pick(mode, Optional.empty(), Optional.empty())).orElse(null);
         if (runtime == null) {
-            tell.accept(id, environment.messages().get("no-arena", "mode", modeName(mode)));
+            tell.accept(id, environment.messages().get(id, "no-arena", "mode", modeText(mode)));
             return;
         }
         byPlayer.put(id, runtime.match().code());

@@ -92,7 +92,7 @@ class CustomRoomsTest {
             TeamPreferences.NONE, PartyGroups.NONE, mode -> Optional.of(BASE));
         service = new MatchService<>(new TestGame(rules), List.of(SOLO), catalog, new TestCells(), match -> stage, environment, (id, text) -> {
         }, Logger.getAnonymousLogger());
-        rooms = new CustomRooms<>(service, port, RuntimeFixtures.MESSAGES, (room, player, standard) -> {
+        rooms = new CustomRooms<>(service, port, (room, player, standard) -> {
             List<HotbarItem> items = new ArrayList<>(standard);
             items.add(new HotbarItem(3, "NAME_TAG", "time"));
             if (room.isLeader(player)) {

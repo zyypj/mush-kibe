@@ -1,11 +1,16 @@
 package br.com.muxe.minigame.api.cosmetic.catalog;
 
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,6 +20,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public final class CosmeticDefaults {
 
     public static final String RESOURCE = "/cosmetics.yml";
+    public static final String TRANSLATIONS = "/lang/cosmetics-";
     public static final String KILL_MESSAGES = "kill-messages";
     public static final String LIST = "cosmetics";
     public static final String HIDDEN = "hidden";
@@ -26,9 +32,40 @@ public final class CosmeticDefaults {
     }
 
     public static CosmeticDefaults load() {
-        try (InputStream stream = Objects.requireNonNull(CosmeticDefaults.class.getResourceAsStream(RESOURCE), "Missing " + RESOURCE);
-             Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-            return new CosmeticDefaults(YamlConfiguration.loadConfiguration(reader));
+        return new CosmeticDefaults(Objects.requireNonNull(read(RESOURCE), "Missing " + RESOURCE));
+    }
+
+    public static CosmeticDefaults load(Language language) {
+        return new CosmeticDefaults(texts().in(language));
+    }
+
+    public static Localized<CosmeticDefaults> localized() {
+        return texts().map(CosmeticDefaults::new);
+    }
+
+    public static LocalizedConfig texts() {
+        YamlConfiguration standard = Objects.requireNonNull(read(RESOURCE), "Missing " + RESOURCE);
+        Map<Language, ConfigurationSection> translations = new EnumMap<>(Language.class);
+        for (Language language : Language.values()) {
+            YamlConfiguration translation = language == Language.DEFAULT ? null : read(translation(language));
+            if (translation != null) {
+                translations.put(language, translation);
+            }
+        }
+        return LocalizedConfig.of(standard, translations);
+    }
+
+    public static String translation(Language language) {
+        return TRANSLATIONS + language.tag() + ".yml";
+    }
+
+    private static YamlConfiguration read(String resource) {
+        InputStream found = CosmeticDefaults.class.getResourceAsStream(resource);
+        if (found == null) {
+            return null;
+        }
+        try (InputStream stream = found; Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            return YamlConfiguration.loadConfiguration(reader);
         } catch (IOException exception) {
             throw new UncheckedIOException(exception);
         }

@@ -107,7 +107,7 @@ public final class MatchListener<S extends MatchState> implements Listener {
         UUID id = event.getPlayer().getUniqueId();
         matches.of(id)
             .filter(runtime -> runtime.match().leavingWhileReturnable(id))
-            .ifPresent(runtime -> event.getPlayer().sendMessage(runtime.messages().get("left-match", "mode", runtime.match().mode().displayName())));
+            .ifPresent(runtime -> event.getPlayer().sendMessage(runtime.message(id, "left-match", "mode", runtime.modeName())));
     }
 
     @EventHandler(ignoreCancelled = false)

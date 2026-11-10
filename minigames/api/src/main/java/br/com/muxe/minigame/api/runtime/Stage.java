@@ -3,6 +3,7 @@ package br.com.muxe.minigame.api.runtime;
 import br.com.muxe.core.bukkit.effect.SoundCue;
 import br.com.muxe.core.bukkit.text.Title;
 import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
+import br.com.muxe.core.common.language.domain.Language;
 import br.com.muxe.minigame.api.settings.HotbarItem;
 import br.com.muxe.minigame.engine.setup.Point;
 import java.time.Duration;
@@ -26,6 +27,8 @@ public interface Stage {
     List<UUID> present(Collection<UUID> ids);
 
     String rankColored(UUID id, String name);
+
+    Language language(UUID id);
 
     void message(UUID id, String text);
 

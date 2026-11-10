@@ -3,6 +3,7 @@ package br.com.muxe.minigame.api.bootstrap;
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.match.MatchReturns;
 import br.com.muxe.minigame.api.bukkit.BukkitStage;
 import br.com.muxe.minigame.api.bukkit.MatchTicker;
@@ -28,6 +29,7 @@ import br.com.muxe.minigame.engine.arena.ArenaSavedPacket;
 import br.com.muxe.minigame.engine.arena.ArenaStore;
 import br.com.muxe.minigame.engine.match.HealthDisplay;
 import br.com.muxe.minigame.engine.mode.GameMode;
+import br.com.muxe.minigame.engine.mode.ModeNames;
 import br.com.muxe.minigame.engine.world.server.MatchWorld;
 import br.com.muxe.minigame.engine.world.server.MuxeWorlds;
 import java.io.IOException;
@@ -54,9 +56,11 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
     private final MatchService<A, S> service;
     private final RoomPublisher publisher;
     private final MatchTicker ticker;
+    private final ModeNames modeNames;
 
     private MatchServer(JavaPlugin plugin, MuxeCore core, MessageCatalog messages, Commands commands, MatchPackets packets, MatchWorld world,
-                        MatchService<A, S> service, RoomPublisher publisher, MatchTicker ticker) {
+                        MatchService<A, S> service, RoomPublisher publisher, MatchTicker ticker, ModeNames modeNames) {
+        this.modeNames = modeNames;
         this.plugin = plugin;
         this.core = core;
         this.messages = messages;
@@ -71,7 +75,8 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
     static <A extends MatchArena, S extends MatchState> MatchServer<A, S> start(JavaPlugin plugin, MuxeCore core, List<GameMode> modes, MessageCatalog messages,
                                                                                Commands commands, MatchPackets packets, ArenaStore arenas, MuxeWorlds worlds,
                                                                                EndTitles endTitles, MinigameEngine engine, Minigame<A, S> minigame,
-                                                                               MatchSettings settings, MatchEvents events) {
+                                                                               Localized<MatchSettings> localized, MatchEvents events, ModeNames modeNames) {
+        MatchSettings settings = localized.standard();
         String game = minigame.id();
         MatchWorld world = new MatchWorld(plugin, worlds, game);
         ArenaCatalog catalog = new ArenaCatalog(arenas, world::fits, plugin.getLogger());
@@ -90,13 +95,14 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
         });
         HealthDisplay health = new HealthDisplay(messages.get("health-below-name"));
         MatchReturns returns = new MatchReturns(core.store());
-        MatchEnvironment environment = new MatchEnvironment(settings, minigame.rules(), messages, core.clock(), ThreadLocalRandom.current(), events,
+        MatchEnvironment environment = new MatchEnvironment(localized, minigame.rules(), messages, core.clock(), ThreadLocalRandom.current(), events,
             minigame.teamPreferences(), core.parties()::groupsOf, mode -> settings.knockback().profile(mode, core.knockback().profiles()));
         world.start();
         MatchService<A, S> service = new MatchService<>(minigame, modes, catalog, new MatchWorldCells(world),
             match -> new BukkitStage(core, world.world(), match.cell(), health, endTitles, returns, plugin.getLogger()),
             environment, (id, text) -> Optional.ofNullable(Bukkit.getPlayer(id)).ifPresent(player -> player.sendMessage(text)), plugin.getLogger());
         core.nameTags().override(service::nameTag);
+        core.languages().onChange(player -> service.of(player.getUniqueId()).ifPresent(runtime -> runtime.refreshLanguage(player.getUniqueId())));
         core.parties().onGather((leader, members) -> {
             List<UUID> accepted = service.gather(leader, members);
             accepted.forEach(member -> Optional.ofNullable(Bukkit.getPlayer(member)).ifPresent(player -> arriveAgain(service, player)));
@@ -106,7 +112,7 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
         engine.track(service::activeMatches, () -> catalog.all().size());
         RoomPublisher publisher = new RoomPublisher(plugin, core, service, packets, List.of(settings.lobbyGroup(), game));
         publisher.start();
-        return new MatchServer<>(plugin, core, messages, commands, packets, world, service, publisher, ticker);
+        return new MatchServer<>(plugin, core, messages, commands, packets, world, service, publisher, ticker, modeNames);
     }
 
     public MatchService<A, S> service() {
@@ -117,8 +123,16 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
         return publisher;
     }
 
-    public MatchConnector playAgainConnector(Function<String, String> modeNames) {
-        MatchConnector connector = new MatchConnector(core, packets, messages, modeNames, service::mode,
+    public MatchConnector playAgainConnector() {
+        return playAgain(modeNames);
+    }
+
+    public MatchConnector playAgainConnector(Function<String, String> names) {
+        return playAgain(ModeNames.plain(names));
+    }
+
+    private MatchConnector playAgain(ModeNames names) {
+        MatchConnector connector = new MatchConnector(core, packets, messages, names, service::mode,
             (player, request) -> service.reserve(player.getUniqueId(), request.companions(), request.mode(), request.wantedArena(), request.wantedRoom())
                 .map(reserved -> {
                     moveToReserved(player);

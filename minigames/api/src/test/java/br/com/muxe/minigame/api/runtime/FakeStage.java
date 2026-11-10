@@ -3,6 +3,7 @@ package br.com.muxe.minigame.api.runtime;
 import br.com.muxe.core.bukkit.effect.SoundCue;
 import br.com.muxe.core.bukkit.text.Title;
 import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
+import br.com.muxe.core.common.language.domain.Language;
 import br.com.muxe.minigame.api.settings.HotbarItem;
 import br.com.muxe.minigame.engine.setup.Point;
 import java.time.Duration;
@@ -40,6 +41,8 @@ public final class FakeStage implements Stage {
     public final Map<UUID, Point> raised = new HashMap<>();
     public final Map<UUID, List<SoundCue>> sounds = new HashMap<>();
     public final Map<UUID, KnockbackProfile> knockbacks = new HashMap<>();
+    public final Map<UUID, Language> languages = new HashMap<>();
+    public final Map<UUID, String> boardTitles = new HashMap<>();
 
     @Override
     public World world() {
@@ -64,6 +67,11 @@ public final class FakeStage implements Stage {
     @Override
     public String rankColored(UUID id, String name) {
         return name;
+    }
+
+    @Override
+    public Language language(UUID id) {
+        return languages.getOrDefault(id, Language.PORTUGUESE);
     }
 
     @Override
@@ -130,6 +138,7 @@ public final class FakeStage implements Stage {
     @Override
     public void board(UUID id, String title, List<String> lines) {
         boards.put(id, List.copyOf(lines));
+        boardTitles.put(id, title);
     }
 
     @Override

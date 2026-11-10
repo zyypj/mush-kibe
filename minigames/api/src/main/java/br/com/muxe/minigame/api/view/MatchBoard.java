@@ -1,5 +1,6 @@
 package br.com.muxe.minigame.api.view;
 
+import br.com.muxe.core.common.language.domain.Language;
 import br.com.muxe.minigame.api.match.Match;
 import br.com.muxe.minigame.api.match.Participant;
 import br.com.muxe.minigame.api.match.TeamStatus;
@@ -27,14 +28,23 @@ public final class MatchBoard {
     }
 
     public List<String> lines(Match match, UUID viewer, Optional<Upcoming> upcoming, Map<String, String> extra) {
-        return switch (match.phase()) {
-            case WAITING -> fill(settings.waiting(), match, viewer, upcoming, extra);
-            case STARTING -> fill(settings.starting(), match, viewer, upcoming, extra);
-            case PLAYING, ENDING -> fill(match.teams().size() >= EIGHT_TEAMS ? settings.playingEightTeams() : settings.playing(), match, viewer, upcoming, extra);
+        return lines(match, viewer, Language.DEFAULT, match.mode().displayName(), upcoming, extra);
+    }
+
+    public List<String> lines(Match match, UUID viewer, Language language, String modeName, Optional<Upcoming> upcoming, Map<String, String> extra) {
+        List<String> template = switch (match.phase()) {
+            case WAITING -> settings.waiting();
+            case STARTING -> settings.starting();
+            case PLAYING, ENDING -> match.teams().size() >= EIGHT_TEAMS ? settings.playingEightTeams() : settings.playing();
         };
+        return fill(template, match, viewer, language, modeName, upcoming, extra);
     }
 
     public String teamLine(Match match, TeamColor color, Optional<TeamColor> viewerTeam) {
+        return teamLine(match, color, viewerTeam, Language.DEFAULT);
+    }
+
+    public String teamLine(Match match, TeamColor color, Optional<TeamColor> viewerTeam, Language language) {
         TeamStatus status = match.status(color);
         String mark = switch (status.kind()) {
             case RESPAWNS -> settings.online();
@@ -45,23 +55,24 @@ public final class MatchBoard {
         return settings.team()
             .replace("{color}", color.color())
             .replace("{letter}", String.valueOf(match.teamLetter(color)))
-            .replace("{name}", match.teamName(color))
+            .replace("{name}", match.teamText(color).in(language))
             .replace("{status}", mark)
             .replace("{you}", viewerTeam.filter(color::equals).isPresent() ? settings.you() : "");
     }
 
-    private List<String> fill(List<String> template, Match match, UUID viewer, Optional<Upcoming> upcoming, Map<String, String> extra) {
+    private List<String> fill(List<String> template, Match match, UUID viewer, Language language, String modeName, Optional<Upcoming> upcoming,
+                              Map<String, String> extra) {
         Optional<Participant> player = match.player(viewer);
         Optional<TeamColor> team = player.map(Participant::team);
         List<String> lines = new ArrayList<>();
         for (String line : template) {
             if (line.equals("{teams}")) {
-                match.teams().keySet().forEach(color -> lines.add(teamLine(match, color, team)));
+                match.teams().keySet().forEach(color -> lines.add(teamLine(match, color, team, language)));
                 continue;
             }
             if (line.equals("{event}")) {
                 lines.add(upcoming
-                    .map(next -> settings.event().replace("{event}", next.name()).replace("{time}", next.clock()))
+                    .map(next -> settings.event().replace("{event}", next.label().in(language)).replace("{time}", next.clock()))
                     .orElse(settings.noEvent()));
                 continue;
             }
@@ -71,7 +82,7 @@ public final class MatchBoard {
                 .replace("{players}", String.valueOf(match.players().size()))
                 .replace("{max}", String.valueOf(match.mode().maxPlayers()))
                 .replace("{seconds}", String.valueOf(match.countdown().remaining().orElse(0)))
-                .replace("{mode}", match.mode().displayName())
+                .replace("{mode}", modeName)
                 .replace("{winstreak}", "0")
                 .replace("{kills}", String.valueOf(player.map(Participant::kills).orElse(0)))
                 .replace("{final-kills}", String.valueOf(player.map(Participant::finalKills).orElse(0)));

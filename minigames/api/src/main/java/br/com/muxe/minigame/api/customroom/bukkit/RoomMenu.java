@@ -12,6 +12,9 @@ import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.common.customroom.domain.RoomOptions;
 import br.com.muxe.core.common.customroom.domain.RoomPreset;
 import br.com.muxe.core.common.customroom.schema.RoomLore;
+import br.com.muxe.core.common.customroom.schema.RoomSchema;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
 import br.com.muxe.core.common.network.customroom.CustomRoomCatalogPacket.Arena;
 import br.com.muxe.minigame.api.customroom.CustomRoom;
 import br.com.muxe.minigame.api.customroom.CustomRooms;
@@ -22,6 +25,7 @@ import br.com.muxe.minigame.api.runtime.MatchState;
 import br.com.muxe.minigame.engine.mode.GameMode;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -29,13 +33,17 @@ import org.bukkit.entity.Player;
 final class RoomMenu<S extends MatchState> {
 
     private final CustomRoomKit kit;
+    private final LanguageLookup languages;
     private final CustomRooms<S> rooms;
     private final MatchService<?, S> matches;
+    private final Function<Language, Optional<RoomSchema>> schemas;
 
-    RoomMenu(CustomRoomKit kit, CustomRooms<S> rooms, MatchService<?, S> matches) {
+    RoomMenu(CustomRoomKit kit, LanguageLookup languages, CustomRooms<S> rooms, MatchService<?, S> matches, Function<Language, Optional<RoomSchema>> schemas) {
         this.kit = kit;
+        this.languages = languages;
         this.rooms = rooms;
         this.matches = matches;
+        this.schemas = schemas;
     }
 
     void open(Player player) {
@@ -48,11 +56,14 @@ final class RoomMenu<S extends MatchState> {
         if (runtime.isEmpty()) {
             return;
         }
-        CustomRoomSettings settings = kit.settings();
+        Language language = languages.of(player.getUniqueId());
+        CustomRoomSettings settings = kit.settings(language);
         ConfigurationSection section = settings.section("room-menu");
         String title = section.getString("room-title", "Sua sala");
         Menu.Builder menu = Menu.builder(Colors.translate(title)).rows(section.getInt("rows", 5));
-        ItemBuilder modeIcon = kit.modes().icon(room.game(), room.baseMode().id()).orElse(ItemBuilder.of(Material.PAPER).name(Colors.translate("&a" + room.baseMode().displayName())));
+        String modeName = runtime.get().environment().modeName(room.baseMode()).in(language);
+        ItemBuilder modeIcon = kit.modes().icon(language, room.game(), room.baseMode().id())
+            .orElse(ItemBuilder.of(Material.PAPER).name(Colors.translate("&a" + modeName)));
         menu.button(settings.slot("room-menu.game"), modeIcon.lore(section.getStringList("game.lore").stream().map(Colors::translate).toList()),
             context -> kit.modes().open(context.player(), modeChoice(room, title)));
         List<Arena> arenas = matches.arenas().stream().filter(arena -> arena.mode().equals(room.baseMode().id()))
@@ -62,7 +73,7 @@ final class RoomMenu<S extends MatchState> {
         menu.button(settings.slot("room-menu.maps"), maps, context -> kit.maps().open(context.player(),
             new MapSelector.Selection(arenas, room.maps(), changed -> rooms.changeMaps(room, changed), this::open, title), 1));
         menu.button(settings.slot("room-menu.options"), settings.item("room-menu.options"),
-            context -> kit.options().open(context.player(), target(room, title), room.schema().root()));
+            context -> kit.options().open(context.player(), target(room, title, language), room.schema().root()));
         MatchPhase phase = runtime.get().match().phase();
         if (phase.beforeStart()) {
             menu.button(settings.slot("room-menu.start"), settings.item("room-menu.start"), context -> {
@@ -77,14 +88,15 @@ final class RoomMenu<S extends MatchState> {
             menu.button(settings.slot("room-menu.close"), settings.item("room-menu.close"), context -> close(context.player(), room));
         } else {
             runtime.get().state().upcoming().ifPresent(next -> menu.button(settings.slot("room-menu.skip-event"),
-                settings.item("room-menu.skip-event").replacing("event", next.name()), context -> {
+                settings.item("room-menu.skip-event").replacing("event", next.label().in(language)), context -> {
                     rooms.skipEvent(context.player().getUniqueId());
                     open(context.player());
                 }));
             menu.button(section.getInt("restart.playing-slot", 30), settings.item("room-menu.restart"), context -> restart(context.player(), room));
             menu.button(section.getInt("close.playing-slot", 32), settings.item("room-menu.close"), context -> close(context.player(), room));
         }
-        menu.button(settings.slot("room-menu.presets"), settings.item("room-menu.presets"), context -> kit.presets().open(context.player(), presets(room, title)));
+        menu.button(settings.slot("room-menu.presets"), settings.item("room-menu.presets"),
+            context -> kit.presets().open(context.player(), presets(room, title, runtime.get(), language)));
         menu.build().open(player);
     }
 
@@ -107,8 +119,9 @@ final class RoomMenu<S extends MatchState> {
         }, this::open, title);
     }
 
-    private OptionsTarget target(CustomRoom room, String title) {
-        RoomLore lore = new RoomLore(room.editor(), kit.settings().texts());
+    private OptionsTarget target(CustomRoom room, String title, Language language) {
+        RoomSchema shown = schemas.apply(language).filter(schema -> schema.game().equals(room.game())).orElse(room.schema());
+        RoomLore lore = new RoomLore(room.editor(shown), kit.settings(language).texts());
         return new OptionsTarget() {
             @Override
             public RoomLore lore() {
@@ -137,8 +150,8 @@ final class RoomMenu<S extends MatchState> {
         };
     }
 
-    private PresetMenu.Target presets(CustomRoom room, String title) {
-        return new PresetMenu.Target(room.game(), mode -> matches.mode(mode).map(GameMode::displayName).orElse(mode),
+    private PresetMenu.Target presets(CustomRoom room, String title, MatchRuntime<S> runtime, Language language) {
+        return new PresetMenu.Target(room.game(), mode -> matches.mode(mode).map(found -> runtime.environment().modeName(found).in(language)).orElse(mode),
             () -> new PresetMenu.Snapshot(room.baseMode().id(), room.maps(), room.options()),
             preset -> load(room, preset), this::open, title);
     }

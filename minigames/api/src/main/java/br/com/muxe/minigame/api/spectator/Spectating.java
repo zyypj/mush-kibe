@@ -20,7 +20,7 @@ public final class Spectating {
         List<Player> targets = runtime.onlinePlayers().stream()
             .filter(other -> !other.equals(viewer) && !runtime.isSpectator(other.getUniqueId()))
             .toList();
-        TeleporterMenu.open(viewer, runtime.environment().settings().teleporter(), targets,
+        TeleporterMenu.open(viewer, runtime.settings(viewer.getUniqueId()).teleporter(), targets,
             target -> runtime.match().player(target.getUniqueId()).map(runtime::coloredName).orElse(target.getName()));
     }
 
@@ -32,7 +32,7 @@ public final class Spectating {
             : SpectatorTargets.random(alive, viewer.getUniqueId(), ThreadLocalRandom.current());
         target.flatMap(runtime::player).filter(Player::isOnline).ifPresentOrElse(
             found -> viewer.teleport(found.getLocation()),
-            () -> viewer.sendMessage(runtime.messages().get(inCombat ? "spectator-no-combat" : "spectator-no-target")));
+            () -> viewer.sendMessage(runtime.message(viewer.getUniqueId(), inCombat ? "spectator-no-combat" : "spectator-no-target")));
     }
 
     public static Optional<Participant> alive(MatchRuntime<?> runtime, UUID id) {

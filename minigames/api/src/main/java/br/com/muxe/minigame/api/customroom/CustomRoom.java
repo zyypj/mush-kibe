@@ -96,6 +96,10 @@ public final class CustomRoom {
         return new ModeContext(mode.id(), mode.teamSize(), mode.maxPlayers(), mode.teams());
     }
 
+    public RoomEditor editor(RoomSchema shown) {
+        return new RoomEditor(shown, context());
+    }
+
     public RoomEditor editor() {
         return new RoomEditor(schema, context());
     }

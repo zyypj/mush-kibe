@@ -8,6 +8,7 @@ import br.com.muxe.core.bukkit.text.ChatLines;
 import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.bukkit.text.Title;
 import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
+import br.com.muxe.core.common.language.domain.Language;
 import br.com.muxe.core.common.match.MatchReturns;
 import br.com.muxe.minigame.api.runtime.Stage;
 import br.com.muxe.minigame.api.settings.HotbarItem;
@@ -96,6 +97,11 @@ public final class BukkitStage implements Stage {
     @Override
     public String rankColored(UUID id, String name) {
         return Colors.translate(core.permissions().display(id).color()) + name;
+    }
+
+    @Override
+    public Language language(UUID id) {
+        return core.languages().of(id);
     }
 
     @Override

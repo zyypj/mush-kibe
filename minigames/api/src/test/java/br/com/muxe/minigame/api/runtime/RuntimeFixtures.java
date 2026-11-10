@@ -1,6 +1,10 @@
 package br.com.muxe.minigame.api.runtime;
 
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.testing.MutableClock;
 import br.com.muxe.minigame.api.settings.MatchSettings;
 import br.com.muxe.minigame.engine.team.PartyGroups;
@@ -80,7 +84,7 @@ public final class RuntimeFixtures {
           - "Pontos: {points}"
         """;
 
-    public static final MessageCatalog MESSAGES = MessageCatalog.of(Map.ofEntries(
+    public static final Map<String, Object> PORTUGUESE_MESSAGES = Map.ofEntries(
         Map.entry("room-joined", "{player} entrou ({players}/{max})"),
         Map.entry("room-left", "{player} saiu ({players}/{max})"),
         Map.entry("died-title", "MORREU"),
@@ -104,19 +108,84 @@ public final class RuntimeFixtures {
         Map.entry("death", "{victim} morreu"),
         Map.entry("no-arena", "sem arena para {mode}"),
         Map.entry("party-split", "AVISO Esta partida não conta estatísticas.")
-    ));
+    );
+
+    public static final MessageCatalog MESSAGES = MessageCatalog.of(PORTUGUESE_MESSAGES);
+
+    public static final String ENGLISH_CONFIG = """
+        countdown:
+          titles:
+            '10': "&610 seconds"
+        hotbar:
+          waiting:
+            menu:
+              name: "&aMenu"
+            leave:
+              name: "&cLeave"
+        scoreboard:
+          title: "&b&lGAME"
+          waiting:
+          - "{code}"
+          - "Players: {players}/{max}"
+          starting:
+          - "Starts in: {seconds}s"
+          playing:
+          - "{event}"
+          - "{teams}"
+          - "Kills: {kills}"
+          - "Points: {points}"
+          team-you: " &7YOU"
+        """;
+
+    public static final Map<String, Object> ENGLISH_MESSAGES = Map.ofEntries(
+        Map.entry("room-joined", "{player} joined ({players}/{max})"),
+        Map.entry("room-left", "{player} left ({players}/{max})"),
+        Map.entry("died-title", "YOU DIED"),
+        Map.entry("respawn-subtitle", "respawning in {seconds} seconds"),
+        Map.entry("respawn-subtitle-one", "respawning in 1 second"),
+        Map.entry("respawned", "respawned"),
+        Map.entry("countdown", "starts in {seconds} seconds"),
+        Map.entry("countdown-one", "starts in 1 second"),
+        Map.entry("cannot-break", "cannot break"),
+        Map.entry("spectator-subtitle", "spectator"),
+        Map.entry("reconnected", "{player} is back"),
+        Map.entry("team-eliminated", "{team} eliminated"),
+        Map.entry("match-started", "Started!"),
+        Map.entry("result", List.of("Winner: {team}", "{top-final-kills}")),
+        Map.entry("result-draw", "Draw at {time}"),
+        Map.entry("result-nobody", "nobody"),
+        Map.entry("result-rank-1", "1st {player} {score}"),
+        Map.entry("kill", "{victim} was killed by {killer}"),
+        Map.entry("death", "{victim} died")
+    );
 
     private RuntimeFixtures() {
     }
 
     public static MatchSettings settings() {
+        return MatchSettings.from(yaml(CONFIG));
+    }
+
+    public static Localized<MatchSettings> localizedSettings() {
+        return LocalizedConfig.of(yaml(CONFIG), Map.of(Language.ENGLISH, yaml(ENGLISH_CONFIG))).map(MatchSettings::from);
+    }
+
+    public static MessageCatalog localizedMessages() {
+        return MessageCatalog.of(Map.of(Language.PORTUGUESE, PORTUGUESE_MESSAGES, Language.ENGLISH, ENGLISH_MESSAGES), LanguageLookup.DEFAULT);
+    }
+
+    public static MatchEnvironment localizedEnvironment(MutableClock clock, MatchRules rules) {
+        return new MatchEnvironment(localizedSettings(), rules, localizedMessages(), clock, new Random(3), MatchEvents.NONE, TeamPreferences.NONE);
+    }
+
+    private static YamlConfiguration yaml(String text) {
         YamlConfiguration yaml = new YamlConfiguration();
         try {
-            yaml.loadFromString(CONFIG);
+            yaml.loadFromString(text);
         } catch (InvalidConfigurationException exception) {
             throw new IllegalStateException(exception);
         }
-        return MatchSettings.from(yaml);
+        return yaml;
     }
 
     public static MatchEnvironment environment(MutableClock clock, MatchRules rules) {

@@ -22,11 +22,11 @@ public final class RoomMenuCommand {
     @Default
     public void open(Player player) {
         if (rooms.of(player.getUniqueId()).isEmpty()) {
-            player.sendMessage(messages.get("custom-room-not-in-room"));
+            player.sendMessage(messages.get(player, "custom-room-not-in-room"));
             return;
         }
         if (rooms.leading(player.getUniqueId()).isEmpty()) {
-            player.sendMessage(messages.get("custom-room-only-leader"));
+            player.sendMessage(messages.get(player, "custom-room-only-leader"));
             return;
         }
         menu.open(player);

@@ -1,5 +1,6 @@
 package br.com.muxe.minigame.api.match;
 
+import br.com.muxe.core.common.language.domain.Text;
 import br.com.muxe.minigame.api.combat.KillCredit;
 import br.com.muxe.minigame.api.match.Participant.State;
 import br.com.muxe.minigame.engine.match.StartCountdown.Change;
@@ -99,6 +100,11 @@ public final class Match {
 
     public String teamName(TeamColor color) {
         return teamNames.getOrDefault(color, color.displayName());
+    }
+
+    public Text teamText(TeamColor color) {
+        String custom = teamNames.get(color);
+        return custom == null ? color.label() : Text.plain(custom);
     }
 
     public char teamLetter(TeamColor color) {

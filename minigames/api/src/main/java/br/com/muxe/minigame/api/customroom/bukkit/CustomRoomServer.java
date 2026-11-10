@@ -6,6 +6,7 @@ import br.com.muxe.core.bukkit.customroom.CustomRoomKit;
 import br.com.muxe.core.bukkit.customroom.CustomRoomSettings;
 import br.com.muxe.core.bukkit.customroom.schema.SchemaReader;
 import br.com.muxe.core.common.customroom.schema.RoomSchema;
+import br.com.muxe.core.common.language.domain.Language;
 import br.com.muxe.core.common.messaging.channel.PacketTarget;
 import br.com.muxe.core.common.network.customroom.CreateCustomRoomReply;
 import br.com.muxe.core.common.network.customroom.CreateCustomRoomRequest;
@@ -18,7 +19,9 @@ import br.com.muxe.minigame.api.runtime.MatchService;
 import br.com.muxe.minigame.api.runtime.MatchState;
 import br.com.muxe.minigame.api.settings.HotbarItem;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -46,6 +49,7 @@ public final class CustomRoomServer<S extends MatchState> implements Listener {
     private final String game;
     private final MatchService<?, S> matches;
     private final Supplier<String> schemaText;
+    private final CustomRoomKit kit;
     private final CustomRoomSettings settings;
     private final HotbarItem teamItem;
     private final HotbarItem menuItem;
@@ -53,6 +57,7 @@ public final class CustomRoomServer<S extends MatchState> implements Listener {
     private final List<String> catalogGroups;
     private final TeamMenu<S> teamMenu;
     private final RoomMenu<S> roomMenu;
+    private final Map<Language, RoomSchema> translated = new EnumMap<>(Language.class);
     private String parsedText = "";
     private RoomSchema schema;
 
@@ -64,6 +69,7 @@ public final class CustomRoomServer<S extends MatchState> implements Listener {
         this.matches = matches;
         this.schemaText = schemaText;
         CustomRoomKit kit = core.customRooms();
+        this.kit = kit;
         this.settings = kit.settings();
         this.teamItem = HotbarItem.from(settings.section("hotbar.team"));
         this.menuItem = HotbarItem.from(settings.section("hotbar.room-menu"));
@@ -102,9 +108,9 @@ public final class CustomRoomServer<S extends MatchState> implements Listener {
                 Optional.ofNullable(Bukkit.getPlayer(player)).ifPresent(online -> online.sendMessage(text));
             }
         };
-        this.rooms = new CustomRooms<>(matches, port, core.messages(), this::waitingItems, settings.codeSuffix());
-        this.teamMenu = new TeamMenu<>(settings, rooms, core.messages());
-        this.roomMenu = new RoomMenu<>(kit, rooms, matches);
+        this.rooms = new CustomRooms<>(matches, port, this::waitingItems, settings.codeSuffix());
+        this.teamMenu = new TeamMenu<>(kit::settings, core.languages(), rooms, core.messages());
+        this.roomMenu = new RoomMenu<>(kit, core.languages(), rooms, matches, this::schema);
     }
 
     public static List<String> catalogGroups(String networkLobby, String gameLobby) {
@@ -163,12 +169,28 @@ public final class CustomRoomServer<S extends MatchState> implements Listener {
     }
 
     private List<HotbarItem> waitingItems(CustomRoom room, UUID player, List<HotbarItem> standard) {
+        CustomRoomSettings shown = kit.settings(core.languages().of(player));
         List<HotbarItem> items = new ArrayList<>(standard);
-        items.add(teamItem);
+        items.add(HotbarItem.from(shown.section("hotbar.team")));
         if (room.isLeader(player)) {
-            items.add(menuItem);
+            items.add(HotbarItem.from(shown.section("hotbar.room-menu")));
         }
         return items;
+    }
+
+    private Optional<RoomSchema> schema(Language language) {
+        Optional<RoomSchema> standard = schema();
+        if (standard.isEmpty() || language == Language.DEFAULT) {
+            return standard;
+        }
+        return Optional.of(translated.computeIfAbsent(language, wanted -> {
+            try {
+                return SchemaReader.parse(game, parsedText, wanted);
+            } catch (RuntimeException exception) {
+                plugin.getLogger().log(Level.WARNING, "The " + wanted.tag() + " custom room schema of " + game + " is invalid", exception);
+                return standard.get();
+            }
+        }));
     }
 
     private Optional<RoomSchema> schema() {
@@ -176,6 +198,7 @@ public final class CustomRoomServer<S extends MatchState> implements Listener {
         if (schema == null || !text.equals(parsedText)) {
             try {
                 schema = SchemaReader.parse(game, text);
+                translated.clear();
                 parsedText = text;
             } catch (RuntimeException exception) {
                 plugin.getLogger().log(Level.WARNING, "The custom room schema of " + game + " is invalid", exception);

@@ -17,6 +17,9 @@ import br.com.muxe.core.bukkit.scoreboard.Sidebar;
 import br.com.muxe.core.bukkit.text.ActionBar;
 import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.bukkit.text.Title;
 import br.com.muxe.minigame.api.cosmetic.SceneCosmetics;
 import br.com.muxe.minigame.api.cosmetic.animation.SceneAnimations;
@@ -87,6 +90,8 @@ public final class ScenePreview implements PreviewGate, Listener {
     private final Predicate<Player> busyElsewhere;
     private final AnimationPlayer animator;
     private final MessageCatalog messages;
+    private final Localized<ScenePreviewSettings> translated;
+    private final LanguageLookup languages;
     private final Map<UUID, Session> sessions = new HashMap<>();
     private Stage stage;
     private boolean listening;
@@ -94,20 +99,23 @@ public final class ScenePreview implements PreviewGate, Listener {
     private final Map<String, String> targetNames = new HashMap<>();
 
     public ScenePreview(Plugin plugin, BuildMode buildMode, Supplier<ScenePreviewSettings> settings, SceneAnimations animations, Consumer<Player> onScene,
-                        Consumer<Player> onLeave, Optional<SoundCue> countdownSound, Predicate<Player> busyElsewhere, MessageCatalog messages) {
-        this(plugin, buildMode, settings, Optional.of(animations), Optional.empty(), onScene, onLeave, countdownSound, busyElsewhere, messages);
+                        Consumer<Player> onLeave, Optional<SoundCue> countdownSound, Predicate<Player> busyElsewhere, MessageCatalog messages,
+                        Localized<ScenePreviewSettings> translated, LanguageLookup languages) {
+        this(plugin, buildMode, settings, Optional.of(animations), Optional.empty(), onScene, onLeave, countdownSound, busyElsewhere, messages, translated, languages);
     }
 
     public ScenePreview(Plugin plugin, BuildMode buildMode, Supplier<ScenePreviewSettings> settings, KitPlay kitPlay, Predicate<Player> busyElsewhere,
-                        MessageCatalog messages) {
+                        MessageCatalog messages, Localized<ScenePreviewSettings> translated, LanguageLookup languages) {
         this(plugin, buildMode, settings, Optional.empty(), Optional.of(kitPlay), player -> {
         }, player -> {
-        }, Optional.empty(), busyElsewhere, messages);
+        }, Optional.empty(), busyElsewhere, messages, translated, languages);
     }
 
     private ScenePreview(Plugin plugin, BuildMode buildMode, Supplier<ScenePreviewSettings> settings, Optional<SceneAnimations> animations, Optional<KitPlay> kitPlay,
                          Consumer<Player> onScene, Consumer<Player> onLeave, Optional<SoundCue> countdownSound, Predicate<Player> busyElsewhere,
-                         MessageCatalog messages) {
+                         MessageCatalog messages, Localized<ScenePreviewSettings> translated, LanguageLookup languages) {
+        this.translated = translated;
+        this.languages = languages;
         this.plugin = plugin;
         this.buildMode = buildMode;
         this.settings = settings;
@@ -176,20 +184,21 @@ public final class ScenePreview implements PreviewGate, Listener {
         Optional<SceneAnimation> animation = animations.flatMap(found -> found.find(cosmetic.id()));
         boolean covered = kitPlay.map(play -> play.covers(cosmetic)).orElse(animation.isPresent());
         if (active == null || !covered) {
-            viewer.sendMessage(messages.get(active == null ? "preview-only-lobby" : "cosmetic-no-preview"));
+            viewer.sendMessage(messages.get(languages.of(viewer.getUniqueId()), active == null ? "preview-only-lobby" : "cosmetic-no-preview"));
             return;
         }
         if (previewing(viewer) || busyElsewhere.test(viewer)) {
-            viewer.sendMessage(messages.get("preview-busy"));
+            viewer.sendMessage(messages.get(languages.of(viewer.getUniqueId()), "preview-busy"));
             return;
         }
         ScenePreviewSettings config = active.settings();
+        ScenePreviewSettings shown = shown(viewer, config);
         World world = active.world();
         Session session = new Session(viewer, back, cosmetic, animation, active);
         sessions.put(viewer.getUniqueId(), session);
         viewer.getInventory().clear();
         viewer.getInventory().setArmorContents(new ItemStack[4]);
-        viewer.getInventory().setItem(config.back().slot(), backItem(config));
+        viewer.getInventory().setItem(config.back().slot(), backItem(shown));
         buildMode.releaseGameMode(viewer);
         viewer.setGameMode(GameMode.ADVENTURE);
         viewer.setAllowFlight(false);
@@ -202,19 +211,19 @@ public final class ScenePreview implements PreviewGate, Listener {
             }
         }
         Sidebar sidebar = Sidebar.create(viewer);
-        sidebar.title(config.title());
-        sidebar.lines(config.lines(cosmetic.name()));
+        sidebar.title(shown.title());
+        sidebar.lines(shown.lines(cosmetic.name()));
         session.timeout = plugin.getServer().getScheduler().runTaskLater(plugin, () -> finish(viewer, true), config.timeout().toSeconds() * TICKS_PER_SECOND);
         if (config.kit().isPresent()) {
             giveKit(session, config.kit().get());
             return;
         }
         if (config.target().isPresent() && targets != null) {
-            placeTarget(session, config.target().get());
+            placeTarget(session, shown.target().orElse(config.target().get()));
             return;
         }
-        for (int index = 0; index < config.countdown().size(); index++) {
-            String text = Colors.translate(config.countdown().get(index));
+        for (int index = 0; index < shown.countdown().size(); index++) {
+            String text = Colors.translate(shown.countdown().get(index));
             session.tasks.add(plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                 Title.builder().title(text).subtitle(SUBTITLE).timings(0, COUNTDOWN_STAY, 0).build().send(viewer);
                 countdownSound.ifPresent(cue -> cue.play(viewer));
@@ -222,6 +231,11 @@ public final class ScenePreview implements PreviewGate, Listener {
         }
         session.tasks.add(plugin.getServer().getScheduler().runTaskLater(plugin, () -> play(session, SceneCosmetics.onGround(world, viewer.getLocation()),
             SceneCosmetics.facing(viewer.getLocation()), Optional.empty(), List.of(viewer.getUniqueId())), Math.max(1, config.sceneStart())));
+    }
+
+    private ScenePreviewSettings shown(Player viewer, ScenePreviewSettings live) {
+        Language language = languages.of(viewer.getUniqueId());
+        return language == Language.DEFAULT ? live : translated.in(language);
     }
 
     private void placeTarget(Session session, ScenePreviewSettings.Target target) {

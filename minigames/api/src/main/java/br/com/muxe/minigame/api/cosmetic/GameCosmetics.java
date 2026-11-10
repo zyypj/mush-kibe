@@ -9,6 +9,9 @@ import br.com.muxe.core.bukkit.effect.SoundCue;
 import br.com.muxe.core.bukkit.nms.PlayerSkins;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.config.live.LiveValue;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.api.cosmetic.animation.SceneAnimations;
 import br.com.muxe.minigame.api.cosmetic.aura.AuraCosmetics;
 import br.com.muxe.minigame.api.cosmetic.aura.Auras;
@@ -54,15 +57,15 @@ public final class GameCosmetics implements MatchEvents {
     private final Optional<SceneCosmetics> finalKills;
     private final Optional<AuraCosmetics> auras;
     private final Optional<TrailCosmetics> trails;
-    private final Optional<MessageSets> messageSets;
+    private final Optional<Localized<MessageSets>> messageSets;
     private final Optional<KillMessages> killMessages;
-    private final Optional<MessageDescriptions> messageDescriptions;
+    private final Optional<Localized<MessageDescriptions>> messageDescriptions;
     private final List<ScenePreview> previews;
     private final List<Runnable> stops;
 
     private GameCosmetics(Map<CosmeticKind, Kind> kinds, Optional<SceneCosmetics> victories, Optional<SceneCosmetics> finalKills, Optional<AuraCosmetics> auras,
-                          Optional<TrailCosmetics> trails, Optional<MessageSets> messageSets, Optional<KillMessages> killMessages,
-                          Optional<MessageDescriptions> messageDescriptions, List<ScenePreview> previews, List<Runnable> stops) {
+                          Optional<TrailCosmetics> trails, Optional<Localized<MessageSets>> messageSets, Optional<KillMessages> killMessages,
+                          Optional<Localized<MessageDescriptions>> messageDescriptions, List<ScenePreview> previews, List<Runnable> stops) {
         this.kinds = Map.copyOf(kinds);
         this.victories = victories;
         this.finalKills = finalKills;
@@ -76,14 +79,15 @@ public final class GameCosmetics implements MatchEvents {
     }
 
     public static GameCosmetics start(Setup setup) {
-        CosmeticDefaults defaults = CosmeticDefaults.load();
-        ConfigurationSection gameCosmetics = setup.config().getConfigurationSection("cosmetics");
+        Localized<CosmeticDefaults> defaults = CosmeticDefaults.localized();
+        Localized<Optional<ConfigurationSection>> gameCosmetics = Localized.of(language ->
+            Optional.ofNullable(setup.texts().in(language).getConfigurationSection("cosmetics")));
         AnimationPlayer animator = new AnimationPlayer(setup.plugin());
         Map<CosmeticKind, Kind> kinds = new EnumMap<>(CosmeticKind.class);
         List<ScenePreview> previews = new ArrayList<>();
         List<Runnable> stops = new ArrayList<>();
         Predicate<Player> busy = player -> setup.busyElsewhere().test(player) || previews.stream().anyMatch(scene -> scene.previewing(player));
-        PreviewGate onlyLobby = (player, cosmetic, back) -> player.sendMessage(setup.messages().get("preview-only-lobby"));
+        PreviewGate onlyLobby = (player, cosmetic, back) -> player.sendMessage(setup.messages().get(setup.languages().of(player.getUniqueId()), "preview-only-lobby"));
         PreviewGate withoutPreview = (player, cosmetic, back) -> {
         };
 
@@ -128,17 +132,18 @@ public final class GameCosmetics implements MatchEvents {
             kinds.put(CosmeticKind.PROJECTILE_TRAIL, kind.with(gate));
             trails = Optional.of(new TrailCosmetics(kind.catalog(), kind.profiles()::of, ProjectileTrails::find));
         }
-        Optional<MessageSets> messageSets = Optional.empty();
+        Optional<Localized<MessageSets>> messageSets = Optional.empty();
         Optional<KillMessages> killMessages = Optional.empty();
-        Optional<MessageDescriptions> descriptions = Optional.empty();
+        Optional<Localized<MessageDescriptions>> descriptions = Optional.empty();
         if (setup.kinds().contains(CosmeticKind.KILL_MESSAGE)) {
-            ConfigurationSection section = defaults.killMessages(setup.config().getConfigurationSection(CosmeticDefaults.KILL_MESSAGES));
-            MessageSets sets = MessageSets.from(section);
-            Kind kind = kind(setup, defaults, gameCosmetics, CosmeticKind.KILL_MESSAGE, id -> sets.find(id).isPresent());
+            Localized<ConfigurationSection> sections = Localized.of(language ->
+                defaults.in(language).killMessages(setup.texts().in(language).getConfigurationSection(CosmeticDefaults.KILL_MESSAGES)));
+            Localized<MessageSets> sets = sections.map(MessageSets::from);
+            Kind kind = kind(setup, defaults, gameCosmetics, CosmeticKind.KILL_MESSAGE, id -> sets.standard().find(id).isPresent());
             kinds.put(CosmeticKind.KILL_MESSAGE, kind.with(withoutPreview));
             messageSets = Optional.of(sets);
-            killMessages = Optional.of(new KillMessages(sets, kind.catalog(), kind.profiles()::of));
-            descriptions = Optional.of(new MessageDescriptions(sets, MessagePreview.from(section(section, "preview"))));
+            killMessages = Optional.of(new KillMessages(sets.standard(), kind.catalog(), kind.profiles()::of));
+            descriptions = Optional.of(Localized.of(language -> new MessageDescriptions(sets.in(language), MessagePreview.from(section(sections.in(language), "preview")))));
         }
         return new GameCosmetics(kinds, victories, finalKills, auras, trails, messageSets, killMessages, descriptions, previews, stops);
     }
@@ -152,18 +157,34 @@ public final class GameCosmetics implements MatchEvents {
     }
 
     public Optional<CosmeticCategory> category(CosmeticKind kind, CosmeticMenuSettings menus) {
+        return category(kind, menus, Language.DEFAULT);
+    }
+
+    public Optional<CosmeticCategory> category(CosmeticKind kind, CosmeticMenuSettings menus, Language language) {
         Kind found = kinds.get(kind);
         if (found == null || !menus.categories().containsKey(kind.key())) {
             return Optional.empty();
         }
+        CosmeticCatalog catalog = found.catalogs().in(language);
         if (kind == CosmeticKind.KILL_MESSAGE && messageDescriptions.isPresent()) {
-            return Optional.of(CosmeticCategory.of(menus.category(kind.key()), found.catalog(), found.profiles(), found.gate(), messageDescriptions.get()));
+            return Optional.of(CosmeticCategory.of(menus.category(kind.key()), catalog, found.profiles(), found.gate(), messageDescriptions.get().in(language)));
         }
-        return Optional.of(CosmeticCategory.of(menus.category(kind.key()), found.catalog(), found.profiles(), found.gate()));
+        return Optional.of(CosmeticCategory.of(menus.category(kind.key()), catalog, found.profiles(), found.gate()));
+    }
+
+    public Optional<Localized<CosmeticCategory>> category(CosmeticKind kind, Localized<CosmeticMenuSettings> menus) {
+        if (category(kind, menus.standard()).isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(Localized.of(language -> category(kind, menus.in(language), language).orElseThrow()));
     }
 
     public Optional<CosmeticCatalog> catalog(CosmeticKind kind) {
         return Optional.ofNullable(kinds.get(kind)).map(Kind::catalog);
+    }
+
+    public Optional<Localized<CosmeticCatalog>> catalogs(CosmeticKind kind) {
+        return Optional.ofNullable(kinds.get(kind)).map(Kind::catalogs);
     }
 
     public Optional<AuraCosmetics> auras() {
@@ -175,6 +196,10 @@ public final class GameCosmetics implements MatchEvents {
     }
 
     public Optional<MessageSets> messageSets() {
+        return messageSets.map(Localized::standard);
+    }
+
+    public Optional<Localized<MessageSets>> localizedMessageSets() {
         return messageSets;
     }
 
@@ -206,9 +231,10 @@ public final class GameCosmetics implements MatchEvents {
         stops.forEach(Runnable::run);
     }
 
-    private static Kind kind(Setup setup, CosmeticDefaults defaults, ConfigurationSection gameCosmetics, CosmeticKind kind, Predicate<String> animated) {
-        CosmeticCatalog catalog = defaults.catalog(setup.game(), kind, gameCosmetics, animated);
-        return new Kind(catalog, profiles(setup.plugin(), setup.core(), catalog), (player, cosmetic, back) -> {
+    private static Kind kind(Setup setup, Localized<CosmeticDefaults> defaults, Localized<Optional<ConfigurationSection>> gameCosmetics, CosmeticKind kind,
+                             Predicate<String> animated) {
+        Localized<CosmeticCatalog> catalogs = Localized.of(language -> defaults.in(language).catalog(setup.game(), kind, gameCosmetics.in(language).orElse(null), animated));
+        return new Kind(catalogs, profiles(setup.plugin(), setup.core(), catalogs.standard()), (player, cosmetic, back) -> {
         });
     }
 
@@ -216,14 +242,15 @@ public final class GameCosmetics implements MatchEvents {
                                              Optional<SoundCue> countdownSound, Predicate<Player> busy, List<ScenePreview> previews) {
         String name = kind.previewSection().orElseThrow();
         LiveValue<ScenePreviewSettings> settings = new LiveValue<>(ScenePreviewSettings.from(section(setup.config(), name)));
-        ScenePreview scene = new ScenePreview(setup.plugin(), setup.core().buildMode(), settings, animations, onScene, onLeave, countdownSound, busy, setup.messages());
+        ScenePreview scene = new ScenePreview(setup.plugin(), setup.core().buildMode(), settings, animations, onScene, onLeave, countdownSound, busy, setup.messages(),
+            translated(setup, name), setup.languages());
         return started(setup, name, settings, scene, previews);
     }
 
     private static ScenePreview kitPreview(Setup setup, CosmeticKind kind, KitPlay play, Predicate<Player> busy, List<ScenePreview> previews) {
         String name = kind.previewSection().orElseThrow();
         LiveValue<ScenePreviewSettings> settings = new LiveValue<>(ScenePreviewSettings.from(section(setup.config(), name)));
-        ScenePreview scene = new ScenePreview(setup.plugin(), setup.core().buildMode(), settings, play, busy, setup.messages());
+        ScenePreview scene = new ScenePreview(setup.plugin(), setup.core().buildMode(), settings, play, busy, setup.messages(), translated(setup, name), setup.languages());
         return started(setup, name, settings, scene, previews);
     }
 
@@ -239,18 +266,32 @@ public final class GameCosmetics implements MatchEvents {
         return scene;
     }
 
+    private static Localized<ScenePreviewSettings> translated(Setup setup, String name) {
+        return setup.texts().map(root -> ScenePreviewSettings.from(section(root, name)));
+    }
+
     private static ConfigurationSection section(ConfigurationSection parent, String path) {
         return Objects.requireNonNull(parent.getConfigurationSection(path), "Missing configuration section " + path);
     }
 
     public record Setup(JavaPlugin plugin, MuxeCore core, String game, Set<CosmeticKind> kinds, ConfigurationSection config, MessageCatalog messages,
-                        boolean lobby, EndTitles titles, ConfigReloads reloads, Optional<SoundCue> countdown, Predicate<Player> busyElsewhere) {
+                        boolean lobby, EndTitles titles, ConfigReloads reloads, Optional<SoundCue> countdown, Predicate<Player> busyElsewhere,
+                        Localized<ConfigurationSection> texts, LanguageLookup languages) {
+
+        public Setup(JavaPlugin plugin, MuxeCore core, String game, Set<CosmeticKind> kinds, ConfigurationSection config, MessageCatalog messages,
+                     boolean lobby, EndTitles titles, ConfigReloads reloads, Optional<SoundCue> countdown, Predicate<Player> busyElsewhere) {
+            this(plugin, core, game, kinds, config, messages, lobby, titles, reloads, countdown, busyElsewhere, Localized.same(config), core.languages());
+        }
     }
 
-    private record Kind(CosmeticCatalog catalog, CosmeticProfiles profiles, PreviewGate gate) {
+    private record Kind(Localized<CosmeticCatalog> catalogs, CosmeticProfiles profiles, PreviewGate gate) {
+
+        CosmeticCatalog catalog() {
+            return catalogs.standard();
+        }
 
         Kind with(PreviewGate previews) {
-            return new Kind(catalog, profiles, previews);
+            return new Kind(catalogs, profiles, previews);
         }
     }
 }
