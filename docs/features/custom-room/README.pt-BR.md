@@ -26,7 +26,7 @@ Uma sala privada que um líder de party Ultra+ cria para a sua party, com todas 
 | Menu | O que muda |
 |---|---|
 | `Opções` | `Tamanho do time` (até os jogadores do modo: 8 no Solo, 16 em Duplas...) e os links abaixo. |
-| `Times` | `Quantidade de times` (de 2 até os times do modo) e cada `Time #N`: botão esquerdo ativa ou desativa, direito renomeia (bigorna), Q restaura o nome. Um time renomeado mostra `Nome original` e aparece com o novo nome e a primeira letra dele no placar. |
+| `Times` | `Quantidade de times` (de 2 até os times do modo) e cada `Time #N`: botão esquerdo ativa ou desativa, direito renomeia (bigorna), Q restaura o nome. Um time renomeado mostra `Nome original` e aparece com o novo nome e a primeira letra dele no placar, e essa letra também vira o prefixo dos jogadores do time na etiqueta, no tab e no chat. |
 | `Geradores` | Velocidade da forja, geradores de diamante e esmeralda ligados ou não, a velocidade deles (passos de 0,25x) e quantos itens soltam. |
 | `Itens da loja (n/m)` | Todo item da loja, cada nível separado. `Editando <item>...`: status, preço (esquerdo: valor na bigorna, direito: moeda ferro → ouro → esmeralda → diamante) e limite (direito: nenhum → por time → por jogador → no inventário; esquerdo: quantidade). `Tudo grátis` deixa tudo grátis. |
 | `Melhorias (1/1)` | Toda melhoria do time, mais a `Proteção da Cama` (desligada por padrão, só na sala custom). `Editando <melhoria>...`: status e o preço e a moeda de cada nível. `Tudo grátis`. Linhas de nível compridas quebram na última vírgula que cabe em 40 caracteres, como na referência (`Nível 2: Madeira, Lã, Pedra do Fim,` / `Grátis`). |

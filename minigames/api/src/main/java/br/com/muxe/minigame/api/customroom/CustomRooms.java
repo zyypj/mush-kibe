@@ -128,6 +128,7 @@ public final class CustomRooms<S extends MatchState> {
                 }
             }
             match.teamNames(room.teamNames(arenaTeams));
+            runtime.online().forEach(runtime.stage()::refreshNameTag);
             knockback(runtime, room);
             runtime.state().optionsChanged();
             runtime.refreshBoards();

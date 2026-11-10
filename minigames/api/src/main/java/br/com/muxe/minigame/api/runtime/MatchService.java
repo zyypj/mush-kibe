@@ -263,9 +263,9 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
     public Optional<NameTag> nameTag(UUID id) {
         return of(id)
             .filter(runtime -> runtime.match().phase().showsTeams())
-            .flatMap(runtime -> runtime.match().player(id))
-            .map(Participant::team)
-            .map(team -> NameTagStyle.of(minigame.rules().nameTagPrefix(), team));
+            .flatMap(runtime -> runtime.match().player(id)
+                .map(Participant::team)
+                .map(team -> NameTagStyle.of(minigame.rules().nameTagPrefix(), team, runtime.match().teamLetter(team))));
     }
 
     @Override

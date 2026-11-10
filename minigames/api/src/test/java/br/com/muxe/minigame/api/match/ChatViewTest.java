@@ -37,6 +37,21 @@ class ChatViewTest {
     }
 
     @Test
+    void aRenamedTeamShowsTheFirstLetterOfItsNewName() {
+        Match match = match(ONE_V_ONE, RED_BLUE, true);
+        UUID red = UUID.randomUUID();
+        UUID blue = UUID.randomUUID();
+        match.join(red, "tadeu");
+        match.join(blue, "x572");
+        match.teamNames(Map.of(TestArena.RED_BLUE.getFirst(), "Tesão"));
+        match.start(List.of(List.of(red), List.of(blue)), NOW);
+
+        String prefix = ChatView.of(match, Set.of(red, blue)).get(match.members(TestArena.RED_BLUE.getFirst()).getFirst().id()).prefix();
+
+        assertThat(prefix).isEqualTo("&c[T] ");
+    }
+
+    @Test
     void inTeamModesChatGoesToTheTeamAndGlobalChatToEveryone() {
         Match match = match(DOUBLES, RED_BLUE, true);
         UUID first = UUID.randomUUID();

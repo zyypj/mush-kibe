@@ -26,7 +26,7 @@ A private room an Ultra+ party leader creates for their party, with every rule o
 | Menu | What it changes |
 |---|---|
 | `Opções` | `Tamanho do time` (up to the players of the mode: 8 in Solo, 16 in Duplas...) and the links below. |
-| `Times` | `Quantidade de times` (2 to the teams of the mode) and each `Time #N`: left click enables or disables it, right click renames it (anvil), Q restores the name. A renamed team shows `Nome original` and its new name and first letter on the scoreboard. |
+| `Times` | `Quantidade de times` (2 to the teams of the mode) and each `Time #N`: left click enables or disables it, right click renames it (anvil), Q restores the name. A renamed team shows `Nome original` and its new name and first letter on the scoreboard, and the first letter is also the prefix of its players in the name tag, the tab list and the chat. |
 | `Geradores` | Forge speed, diamond and emerald generators on or off, their speed (0.25x steps) and how many items they drop. |
 | `Itens da loja (n/m)` | Every shop item, each tier on its own. `Editando <item>...`: status, price (left: value in an anvil, right: currency iron → gold → emerald → diamond) and limit (right: none → per team → per player → in the inventory; left: amount). `Tudo grátis` makes everything free. |
 | `Melhorias (1/1)` | Every team upgrade, plus `Proteção da Cama` (off by default, only in custom rooms). `Editando <upgrade>...`: status and the price and currency of each level. `Tudo grátis`. Long level lines wrap at the last comma that fits in 40 characters, as in the reference (`Nível 2: Madeira, Lã, Pedra do Fim,` / `Grátis`). |
