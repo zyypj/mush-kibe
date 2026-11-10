@@ -10,8 +10,11 @@ import br.com.muxe.core.bukkit.config.edit.ConfigEditor;
 import br.com.muxe.core.bukkit.config.edit.PluginConfigStore;
 import br.com.muxe.core.bukkit.credit.CreditBalances;
 import br.com.muxe.core.bukkit.credit.CreditBalancesListener;
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
+import br.com.muxe.core.bukkit.language.PlayerLanguages;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.config.live.LiveValue;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.persistence.migration.MigrationReport;
 import br.com.muxe.lobby.afk.AfkSettings;
 import br.com.muxe.lobby.afk.AfkWatch;
@@ -28,6 +31,7 @@ import br.com.muxe.lobby.listener.LobbyProtectionListener;
 import br.com.muxe.lobby.listener.StaticWorld;
 import br.com.muxe.lobby.listener.VoidRule;
 import br.com.muxe.lobby.profile.RankInfoSource;
+import br.com.muxe.lobby.scoreboard.LobbyBoard;
 import br.com.muxe.lobby.scoreboard.LobbyScoreboard;
 import br.com.muxe.lobby.scoreboard.ScoreboardTemplate;
 import br.com.muxe.lobby.spawn.ArrivalService;
@@ -57,8 +61,11 @@ public final class LobbyBootstrap {
         plugin.saveDefaultConfig();
         FileConfiguration config = plugin.getConfig();
         MuxeCore core = MuxeCore.get();
-        LobbySettings settings = LobbySettings.from(config);
-        MessageCatalog messages = core.messages().merge(MessageCatalog.from(config.getConfigurationSection("messages")));
+        PlayerLanguages languages = core.languages();
+        LocalizedConfig texts = LocalizedConfig.load(plugin);
+        Localized<LobbySettings> localized = texts.map(LobbySettings::from);
+        LobbySettings settings = localized.standard();
+        MessageCatalog messages = core.messages().merge(MessageCatalog.from(texts, "messages"));
 
         MigrationReport migration = core.migrations().migrate(MODULE, plugin.getClass().getClassLoader());
         plugin.getLogger().info("Schema 'lobby' at version " + migration.schemaVersion());
@@ -69,11 +76,16 @@ public final class LobbyBootstrap {
         BuildMode build = core.buildMode();
         build.addHook(new FlightBuildHook());
         CreditBalances credits = CreditBalancesListener.start(plugin, core, CREDIT_REFRESH);
-        LiveValue<ScoreboardTemplate> scoreboardTemplate = new LiveValue<>(settings.scoreboard());
-        ConfigEditor configEditor = new ConfigEditor(new PluginConfigStore(plugin, core.async()), LobbyReloads.create(scoreboardTemplate, spawn::reload));
-        LobbyScoreboard scoreboard = new LobbyScoreboard(core, scoreboardTemplate,
-            new RankInfoSource(player -> core.permissions().display(player).tag(), credits::of, settings.defaultInfo()));
-        LobbyBossBar bossBar = new LobbyBossBar(BossBars.start(plugin), settings.bossBar());
+        LiveValue<Localized<ScoreboardTemplate>> scoreboardTemplates = new LiveValue<>(localized.map(LobbySettings::scoreboard));
+        ConfigEditor configEditor = new ConfigEditor(new PluginConfigStore(plugin, core.async()),
+            LobbyReloads.create(scoreboardTemplates, edited -> LocalizedConfig.load(plugin), spawn::reload));
+        RankInfoSource info = new RankInfoSource(player -> core.permissions().display(player).tag(), credits::of, localized.map(LobbySettings::defaultInfo), languages);
+        LobbyScoreboard scoreboard = new LobbyScoreboard(core, new LobbyBoard(scoreboardTemplates, languages, info));
+        LobbyBossBar bossBar = new LobbyBossBar(BossBars.start(plugin), localized.map(LobbySettings::bossBar), languages);
+        languages.onChange(player -> {
+            scoreboard.refresh(player);
+            bossBar.show(player);
+        });
 
         PluginManager plugins = plugin.getServer().getPluginManager();
         plugins.registerEvents(new LobbyJoinListener(arrival, scoreboard, bossBar), plugin);

@@ -8,6 +8,7 @@ import br.com.muxe.core.bukkit.command.framework.completion.SuggestionRegistry;
 import br.com.muxe.core.bukkit.command.framework.registry.CommandRegistrar;
 import br.com.muxe.core.bukkit.command.framework.registry.RegisteredCommand;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Language;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,6 +93,20 @@ class LobbyCommandsTest {
         assertThat(state).containsEntry("allowFlight", false).containsEntry("flying", false);
         assertThat(received).containsExactly("fly on", "fly off");
         assertThat(registered.get("fly").definition().aliases()).containsExactly("voar");
+    }
+
+    @Test
+    void repliesAreSentInTheReadersLanguage() {
+        MessageCatalog messages = MessageCatalog.of(Map.of(
+            Language.PORTUGUESE, Map.of("play-usage", "uso {games}", "fly-enabled", "voo ligado"),
+            Language.ENGLISH, Map.of("play-usage", "usage {games}", "fly-enabled", "fly on")
+        ), player -> Language.ENGLISH);
+        Player player = flyer(new HashMap<>(Map.of("allowFlight", false, "flying", false)), true);
+
+        new PlayCommand(null, messages, List.of("skywars")).usage(player);
+        new FlyCommand(messages).toggle(player);
+
+        assertThat(received).containsExactly("usage skywars", "fly on");
     }
 
     @Test

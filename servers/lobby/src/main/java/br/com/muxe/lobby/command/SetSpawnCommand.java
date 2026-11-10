@@ -24,6 +24,6 @@ public final class SetSpawnCommand {
     @Default
     public void set(Player player) {
         spawn.set(player.getLocation());
-        player.sendMessage(messages.get("spawn-set"));
+        player.sendMessage(messages.get(player, "spawn-set"));
     }
 }

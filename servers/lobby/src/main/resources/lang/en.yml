@@ -1,0 +1,25 @@
+bossbar:
+  frames:
+    - "&e&lMUXE"
+    - "&6&lMUXE"
+
+scoreboard:
+  title: "&b&lMUXE"
+  default-tag: "&7Member"
+  lines:
+    - ""
+    - "&fTag: {tag}"
+    - "&fCredits: &d{credits}"
+    - ""
+    - "&fLobby: &a#{lobby}"
+    - "&fPlayers: &b{players}"
+    - ""
+    - "&amuxe.com.br"
+
+messages:
+  play-usage: "&eUsage: /play <mode>. Modes: &f{games}"
+  play-unknown: "&cUnknown mode. Modes: &f{games}"
+  play-failed: "&cCould not join right now. Try again."
+  spawn-set: "&aLobby spawn set."
+  fly-enabled: "&eYou turned &bfly mode &eon!"
+  fly-disabled: "&cYou turned fly mode off!"

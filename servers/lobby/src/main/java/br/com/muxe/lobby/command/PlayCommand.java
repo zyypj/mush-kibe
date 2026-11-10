@@ -31,19 +31,19 @@ public final class PlayCommand {
     public void play(Player player, @Arg("modo") @Suggest(provider = GAMES) String typedGame) {
         String game = typedGame.toLowerCase(Locale.ROOT);
         if (!games.contains(game)) {
-            player.sendMessage(messages.get("play-unknown", "games", String.join(", ", games)));
+            player.sendMessage(messages.get(player, "play-unknown", "games", String.join(", ", games)));
             return;
         }
         String group = core.servers().entryGroup(game).orElse(game);
         core.network().connectToGroup(player.getUniqueId(), group).exceptionally(error -> {
-            core.mainThread().execute(() -> player.sendMessage(messages.get("play-failed")));
+            core.mainThread().execute(() -> player.sendMessage(messages.get(player, "play-failed")));
             return null;
         });
     }
 
     @Usage
     public void usage(Player player) {
-        player.sendMessage(messages.get("play-usage", "games", String.join(", ", games)));
+        player.sendMessage(messages.get(player, "play-usage", "games", String.join(", ", games)));
     }
 
     @Suggestions(GAMES)

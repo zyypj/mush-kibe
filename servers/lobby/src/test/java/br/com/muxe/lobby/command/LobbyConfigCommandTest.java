@@ -12,8 +12,10 @@ import br.com.muxe.core.bukkit.command.framework.registry.CommandRegistrar;
 import br.com.muxe.core.bukkit.command.framework.registry.RegisteredCommand;
 import br.com.muxe.core.bukkit.config.edit.ConfigEditor;
 import br.com.muxe.core.bukkit.config.edit.ConfigStore;
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.config.live.LiveValue;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.lobby.config.LobbyReloads;
 import br.com.muxe.lobby.scoreboard.ScoreboardTemplate;
 import java.io.InputStreamReader;
@@ -29,6 +31,7 @@ import java.util.logging.Logger;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -51,12 +54,12 @@ class LobbyConfigCommandTest {
     private final List<String> received = new ArrayList<>();
     private final List<String> events = new ArrayList<>();
     private FileConfiguration config;
-    private LiveValue<ScoreboardTemplate> scoreboard;
+    private LiveValue<Localized<ScoreboardTemplate>> scoreboard;
 
     @BeforeEach
     void register() {
         config = defaultConfig();
-        scoreboard = new LiveValue<>(ScoreboardTemplate.from(config));
+        scoreboard = new LiveValue<>(Localized.same(ScoreboardTemplate.from(config)));
         ConfigStore store = new ConfigStore() {
             @Override
             public FileConfiguration config() {
@@ -73,7 +76,7 @@ class LobbyConfigCommandTest {
                 events.add("reloaded");
             }
         };
-        ConfigEditor editor = new ConfigEditor(store, LobbyReloads.create(scoreboard, () -> events.add("spawn")));
+        ConfigEditor editor = new ConfigEditor(store, LobbyReloads.create(scoreboard, edited -> LocalizedConfig.standardOnly((Configuration) edited), () -> events.add("spawn")));
         CommandRegistrar registrar = new CommandRegistrar() {
             @Override
             public void register(RegisteredCommand command) {
@@ -101,12 +104,12 @@ class LobbyConfigCommandTest {
 
     @Test
     void changingTheScoreboardTitleSwapsTheLiveTemplateWithoutTouchingItsLines() {
-        List<String> lines = scoreboard.get().lines();
+        List<String> lines = scoreboard.get().standard().lines();
 
         registered.get("lobbyconfig").run(sender(Player.class, true), "lobbyconfig", new String[] {"definir", "scoreboard.title", "&aNovo", "titulo"});
 
-        assertThat(scoreboard.get().title()).isEqualTo("&aNovo titulo");
-        assertThat(scoreboard.get().lines()).isEqualTo(lines);
+        assertThat(scoreboard.get().standard().title()).isEqualTo("&aNovo titulo");
+        assertThat(scoreboard.get().standard().lines()).isEqualTo(lines);
         assertThat(received).containsExactly("set scoreboard.title &aNovo titulo", "live scoreboard.title");
     }
 
@@ -114,7 +117,7 @@ class LobbyConfigCommandTest {
     void changingAScoreboardLineIsAppliedLive() {
         registered.get("lobbyconfig").run(sender(Player.class, true), "lobbyconfig", new String[] {"adicionar", "scoreboard.lines", "&7Novo"});
 
-        assertThat(scoreboard.get().lines()).endsWith("&7Novo");
+        assertThat(scoreboard.get().standard().lines()).endsWith("&7Novo");
     }
 
     @Test

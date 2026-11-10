@@ -24,6 +24,6 @@ public final class FlyCommand {
             player.setFlying(false);
         }
         player.setAllowFlight(enabled);
-        player.sendMessage(messages.get(enabled ? "fly-enabled" : "fly-disabled"));
+        player.sendMessage(messages.get(player, enabled ? "fly-enabled" : "fly-disabled"));
     }
 }
