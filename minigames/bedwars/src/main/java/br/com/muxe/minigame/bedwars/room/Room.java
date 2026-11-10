@@ -2,6 +2,7 @@ package br.com.muxe.minigame.bedwars.room;
 
 import br.com.muxe.core.bukkit.cosmetic.animation.Area;
 import br.com.muxe.minigame.api.match.Match;
+import br.com.muxe.minigame.api.match.MatchTeam;
 import br.com.muxe.minigame.api.match.Participant;
 import br.com.muxe.minigame.bedwars.arena.BedWarsArena.TeamBase;
 import br.com.muxe.minigame.bedwars.arena.BedWarsArena;
@@ -60,11 +61,16 @@ public final class Room {
     }
 
     public boolean bedAlive(TeamColor color) {
-        return match.team(color).respawns();
+        MatchTeam team = match.team(color);
+        return team != null && team.respawns();
     }
 
     public List<TeamColor> islands() {
-        return List.copyOf(teams.keySet());
+        return teams.keySet().stream().filter(match.teams()::containsKey).toList();
+    }
+
+    public List<TeamColor> emptyIslands() {
+        return teams.keySet().stream().filter(color -> match.team(color) == null || match.team(color).members().isEmpty()).toList();
     }
 
     public void died(Participant participant) {

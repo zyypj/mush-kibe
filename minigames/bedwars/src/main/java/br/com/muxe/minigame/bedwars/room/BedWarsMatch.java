@@ -191,11 +191,7 @@ public final class BedWarsMatch implements MatchState {
             missions = new MissionTracker(core, GAME, services.missions(), "room " + match.code(), services.plugin().getLogger());
             missions.begin(match.players().stream().map(Participant::id).toList());
         }
-        for (TeamColor color : room.islands()) {
-            if (match.team(color).members().isEmpty()) {
-                removeBed(color);
-            }
-        }
+        room.emptyIslands().forEach(this::removeBed);
         BedWarsArena arena = room.arena();
         for (TeamColor color : room.islands()) {
             TeamBase base = arena.teams().get(color);

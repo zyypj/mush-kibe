@@ -29,6 +29,17 @@ class RoomTest {
     private final MatchBoard board = new MatchBoard(RoomFixtures.MATCH_SETTINGS.board());
 
     @Test
+    void aRoomWithFewerTeamsThanTheMapOnlyPlaysTheTeamsOfTheMatch() {
+        Room room = RoomFixtures.room("2v7few", RoomFixtures.SOLO, RoomFixtures.arena("solo", "Slip", EIGHT));
+        room.match().reshape(RoomFixtures.SOLO, RED_BLUE);
+        room.match().join(UUID.nameUUIDFromBytes("red".getBytes()), "red");
+
+        assertThat(room.islands()).containsExactlyElementsOf(RED_BLUE);
+        assertThat(room.bedAlive(TeamColor.VERDE)).isFalse();
+        assertThat(room.emptyIslands()).containsExactlyInAnyOrderElementsOf(EIGHT);
+    }
+
+    @Test
     void theMapAreaCoversEveryIslandWithAMarginButNotTheWaitingLobby() {
         Room room = RoomFixtures.room("2v7are", RoomFixtures.ONE_V_ONE, RoomFixtures.arena("1v1", "Slip", RED_BLUE));
         double offset = room.match().cell().offsetBlockX();
