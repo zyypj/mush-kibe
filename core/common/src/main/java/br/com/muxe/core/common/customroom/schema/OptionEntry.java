@@ -69,7 +69,7 @@ public sealed interface OptionEntry {
     record Team(int slot, int index) implements OptionEntry {
     }
 
-    record ShopItem(int slot, String key, Icon icon, String name, List<String> description, int price, String currency) implements OptionEntry {
+    record ShopItem(int slot, String key, Icon icon, String name, List<String> description, int price, String currency, boolean enabled) implements OptionEntry {
 
         public ShopItem {
             Objects.requireNonNull(key, "key");

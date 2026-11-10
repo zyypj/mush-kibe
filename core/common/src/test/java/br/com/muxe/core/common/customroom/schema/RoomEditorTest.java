@@ -116,6 +116,16 @@ class RoomEditorTest {
     }
 
     @Test
+    void anItemOffByDefaultIsTurnedOnAndBackOff() {
+        RoomOptions on = changed(editor.shopClick(SchemaFixtures.FROZEN_SWAP, ShopField.STATUS, Click.LEFT, RoomOptions.EMPTY));
+        RoomOptions off = changed(editor.shopClick(SchemaFixtures.FROZEN_SWAP, ShopField.STATUS, Click.LEFT, on));
+
+        assertThat(editor.shop(SchemaFixtures.FROZEN_SWAP, RoomOptions.EMPTY).enabled()).isFalse();
+        assertThat(editor.shop(SchemaFixtures.FROZEN_SWAP, on).enabled()).isTrue();
+        assertThat(off.values()).isEmpty();
+    }
+
+    @Test
     void upgradeLevelsChangePriceAndCurrency() {
         RoomOptions emerald = changed(editor.upgradeClick(SchemaFixtures.ARMOR, 2, Click.RIGHT, RoomOptions.EMPTY));
         Outcome ask = editor.upgradeClick(SchemaFixtures.ARMOR, 1, Click.LEFT, RoomOptions.EMPTY);

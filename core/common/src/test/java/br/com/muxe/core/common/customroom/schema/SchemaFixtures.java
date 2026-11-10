@@ -37,8 +37,9 @@ final class SchemaFixtures {
     static final Timer DIAMOND_TWO = new Timer(10, Icon.of("DIAMOND"), "Diamante II", "events.diamond-2", 360, true);
     static final Timer GAME_END = new Timer(16, Icon.of("WATCH"), "Fim do Jogo", "events.game-end", 300, false);
     static final Team FIRST_TEAM = new Team(11, 1);
-    static final ShopItem WOOL = new ShopItem(10, "la", Icon.of("WOOL").withAmount(16), "Lã", List.of("&7Ótimo para fazer pontes."), 4, "iron");
-    static final ShopItem STONE_SWORD = new ShopItem(19, "espada-pedra", Icon.of("STONE_SWORD"), "Espada de Pedra", List.of(), 10, "iron");
+    static final ShopItem WOOL = new ShopItem(10, "la", Icon.of("WOOL").withAmount(16), "Lã", List.of("&7Ótimo para fazer pontes."), 4, "iron", true);
+    static final ShopItem STONE_SWORD = new ShopItem(19, "espada-pedra", Icon.of("STONE_SWORD"), "Espada de Pedra", List.of(), 10, "iron", true);
+    static final ShopItem FROZEN_SWAP = new ShopItem(20, "troca-congelante", Icon.of("BARRIER"), "Troca Congelante", List.of(), 2, "emerald", false);
     static final Upgrade ARMOR = new Upgrade(11, "reforco", Icon.of("IRON_CHESTPLATE"), "Reforço na Armadura",
         List.of("&7O seu time ganha Proteção em todas", "&7as peças armaduras."),
         List.of(new Level("Proteção I", 2, "diamond"), new Level("Proteção II", 4, "diamond"), new Level("Proteção III", 8, "diamond"),

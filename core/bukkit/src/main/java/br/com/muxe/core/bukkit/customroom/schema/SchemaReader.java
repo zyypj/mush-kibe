@@ -91,7 +91,8 @@ public final class SchemaReader {
             case "choice" -> new OptionEntry.Choice(slot, name, description, key, values(section), section.getString("default", ""));
             case "timer" -> new OptionEntry.Timer(slot, icon(section), name, key, section.getInt("default", 0), section.getBoolean("toggleable", true));
             case "team" -> new OptionEntry.Team(slot, section.getInt("index", 1));
-            case "shop-item" -> new OptionEntry.ShopItem(slot, key, icon(section), name, description, section.getInt("price", 0), section.getString("currency", "iron"));
+            case "shop-item" -> new OptionEntry.ShopItem(slot, key, icon(section), name, description, section.getInt("price", 0), section.getString("currency", "iron"),
+                section.getBoolean("enabled", true));
             case "upgrade" -> new OptionEntry.Upgrade(slot, key, icon(section), name, description, levels(section), section.getBoolean("enabled", true));
             case "free" -> new OptionEntry.FreeAll(slot, section.getString("scope", key), section.getString("text", ""));
             default -> throw new IllegalArgumentException("Unknown custom room entry type " + type + " in " + section.getCurrentPath());

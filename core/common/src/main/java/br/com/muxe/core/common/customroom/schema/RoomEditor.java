@@ -96,7 +96,7 @@ public final class RoomEditor {
 
     public ShopState shop(ShopItem entry, RoomOptions options) {
         String prefix = "shop." + entry.key() + ".";
-        boolean enabled = options.flag(prefix + "enabled", true);
+        boolean enabled = options.flag(prefix + "enabled", entry.enabled());
         int price = Math.max(0, options.integer(prefix + "price", entry.price()));
         String currency = options.get(prefix + "currency").filter(id -> schema.currency(id).isPresent()).orElse(entry.currency());
         LimitType limitType = LimitType.parse(options.get(prefix + "limit-type", LimitType.NONE.key()));
@@ -147,7 +147,7 @@ public final class RoomEditor {
         String prefix = "shop." + entry.key() + ".";
         ShopState state = shop(entry, options);
         return switch (field) {
-            case STATUS -> changed(set(options, prefix + "enabled", String.valueOf(!state.enabled()), "true"));
+            case STATUS -> changed(set(options, prefix + "enabled", String.valueOf(!state.enabled()), String.valueOf(entry.enabled())));
             case PRICE -> click.isRight()
                 ? changed(set(options, prefix + "currency", schema.nextCurrency(state.currency()), entry.currency()))
                 : new Outcome.Ask(new Prompt(prefix + "price", PromptKind.INTEGER, String.valueOf(state.price()), entry.name(), 0, MAX_PRICE));
