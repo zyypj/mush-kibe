@@ -3,6 +3,7 @@ package br.com.muxe.core.bukkit.language;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import br.com.muxe.core.common.language.domain.Language;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -31,6 +32,39 @@ class LocalizedConfigTest {
             Language.ENGLISH, config().map(root -> root.getString("menu.title", "")).in(Language.ENGLISH));
 
         assertThat(titles).containsEntry(Language.PORTUGUESE, "Selecionar jogo").containsEntry(Language.ENGLISH, "Select game");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void aListOfItemsIsTranslatedItemByItemKeepingWhatTheEnglishLeavesOut() throws InvalidConfigurationException {
+        YamlConfiguration portuguese = new YamlConfiguration();
+        portuguese.loadFromString("""
+            tiers:
+              - name: "Picareta de Madeira"
+                material: WOOD_PICKAXE
+                price: 10
+              - name: "Picareta de Ferro"
+                material: IRON_PICKAXE
+                price: 20
+            tabs:
+              - name: "Compra Rápida"
+                slot: 0
+            """);
+        YamlConfiguration english = new YamlConfiguration();
+        english.loadFromString("""
+            tiers:
+              - name: "Wooden Pickaxe"
+              - name: "Iron Pickaxe"
+            """);
+        LocalizedConfig config = LocalizedConfig.of(portuguese, Map.of(Language.ENGLISH, english));
+
+        List<Map<?, ?>> tiers = config.in(Language.ENGLISH).getMapList("tiers");
+
+        assertThat(tiers).hasSize(2);
+        assertThat((Map<Object, Object>) tiers.get(0)).containsEntry("name", "Wooden Pickaxe").containsEntry("material", "WOOD_PICKAXE").containsEntry("price", 10);
+        assertThat((Map<Object, Object>) tiers.get(1)).containsEntry("name", "Iron Pickaxe").containsEntry("price", 20);
+        assertThat((Map<Object, Object>) config.in(Language.PORTUGUESE).getMapList("tiers").get(0)).containsEntry("name", "Picareta de Madeira");
+        assertThat(config.untranslated(Language.ENGLISH, "")).containsExactly("tabs");
     }
 
     private static LocalizedConfig config() throws InvalidConfigurationException {

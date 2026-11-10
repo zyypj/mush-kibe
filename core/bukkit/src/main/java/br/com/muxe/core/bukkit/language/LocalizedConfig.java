@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -118,7 +120,10 @@ public final class LocalizedConfig {
             return readable(text);
         }
         if (value instanceof List<?> lines) {
-            return lines.stream().anyMatch(line -> line instanceof String text && readable(text));
+            return lines.stream().anyMatch(LocalizedConfig::readable);
+        }
+        if (value instanceof Map<?, ?> map) {
+            return map.values().stream().anyMatch(LocalizedConfig::readable);
         }
         return false;
     }
@@ -148,9 +153,36 @@ public final class LocalizedConfig {
         root.options().copyDefaults(true);
         copyLeaves(standard, root);
         if (translation != null) {
-            copyLeaves(translation, root);
+            Set<String> keys = new LinkedHashSet<>(translation.getKeys(true));
+            ConfigurationSection defaults = translation.getDefaultSection();
+            if (defaults != null) {
+                keys.addAll(defaults.getKeys(true));
+            }
+            for (String key : keys) {
+                Object value = translation.get(key);
+                if (value != null && !(value instanceof ConfigurationSection)) {
+                    root.set(key, laid(standard.get(key), value));
+                }
+            }
         }
         return root;
+    }
+
+    static Object laid(Object standard, Object translated) {
+        if (standard instanceof Map<?, ?> base && translated instanceof Map<?, ?> over) {
+            Map<Object, Object> merged = new LinkedHashMap<>(base);
+            over.forEach((key, value) -> merged.put(key, laid(base.get(key), value)));
+            return merged;
+        }
+        if (standard instanceof List<?> base && translated instanceof List<?> over && base.size() == over.size()
+            && over.stream().anyMatch(item -> item instanceof Map<?, ?>)) {
+            List<Object> merged = new ArrayList<>(base.size());
+            for (int index = 0; index < base.size(); index++) {
+                merged.add(laid(base.get(index), over.get(index)));
+            }
+            return merged;
+        }
+        return translated;
     }
 
     private static void copyLeaves(ConfigurationSection from, ConfigurationSection to) {
