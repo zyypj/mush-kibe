@@ -355,6 +355,7 @@ menu.open(player);
 - `MenuButton.animated(frames, period, click)` is a button whose icon cycles through `frames`, one every `period` ticks, while the menu is open (the core's `MenuAnimator` ticks every open menu); with a single frame it is a plain button.
 - Every click inside a menu is cancelled: players never take or drop items from it.
 - Titles are translated and cut to the 32 characters 1.8 allows.
+- Opening a menu with the same title and rows as the menu the player has open redraws the open one in place (`Menu.sameLayout`), so a menu that reopens itself after a click does not close and does not send the cursor back to the middle. The new menu's buttons and `onClose` take over.
 
 ### Paginated menus
 

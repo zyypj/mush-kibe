@@ -26,6 +26,15 @@ class MenuTest {
     }
 
     @Test
+    void aMenuWithTheSameTitleAndRowsIsRedrawnInPlace() {
+        Menu shown = Menu.builder("Opções").rows(4).button(10, star).build();
+
+        assertThat(Menu.builder("Opções").rows(4).button(11, glass).build().sameLayout(shown)).isTrue();
+        assertThat(Menu.builder("Opções").rows(3).build().sameLayout(shown)).isFalse();
+        assertThat(Menu.builder("Times").rows(4).build().sameLayout(shown)).isFalse();
+    }
+
+    @Test
     void theBorderSurroundsTheMenuWithoutCoveringButtons() {
         Menu menu = Menu.builder("Borda").rows(3).border(glass).button(0, star).build();
 

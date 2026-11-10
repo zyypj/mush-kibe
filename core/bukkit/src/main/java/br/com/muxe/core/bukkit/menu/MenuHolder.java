@@ -11,7 +11,7 @@ import org.bukkit.inventory.InventoryHolder;
 
 public final class MenuHolder implements InventoryHolder {
 
-    private final Menu menu;
+    private Menu menu;
     private final Map<Integer, MenuButton> buttons;
     private final Inventory inventory;
     private int age;
@@ -37,6 +37,21 @@ public final class MenuHolder implements InventoryHolder {
         }
         buttons.put(slot, button);
         inventory.setItem(slot, button.icon().build());
+    }
+
+    void replace(Menu next) {
+        menu = next;
+        for (int slot = 0; slot < next.size(); slot++) {
+            MenuButton button = next.buttons().get(slot);
+            if (button == null) {
+                if (buttons.remove(slot) != null) {
+                    inventory.setItem(slot, null);
+                }
+            } else {
+                buttons.put(slot, button);
+                inventory.setItem(slot, button.icon().build());
+            }
+        }
     }
 
     public void clear(int slot) {

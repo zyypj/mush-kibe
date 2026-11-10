@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryView;
 
 public final class Menu {
 
@@ -55,9 +56,18 @@ public final class Menu {
     }
 
     public MenuHolder open(Player player) {
+        InventoryView view = player.getOpenInventory();
+        if (view != null && view.getTopInventory() != null && view.getTopInventory().getHolder() instanceof MenuHolder current && sameLayout(current.menu())) {
+            current.replace(this);
+            return current;
+        }
         MenuHolder holder = new MenuHolder(this);
         player.openInventory(holder.getInventory());
         return holder;
+    }
+
+    public boolean sameLayout(Menu other) {
+        return title.equals(other.title) && rows == other.rows;
     }
 
     public static final class Builder {

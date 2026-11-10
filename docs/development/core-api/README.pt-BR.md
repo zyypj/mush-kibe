@@ -356,6 +356,7 @@ menu.open(player);
 - `MenuButton.animated(quadros, período, clique)` é um botão cujo ícone passa por `quadros`, um a cada `período` ticks, enquanto o menu está aberto (o `MenuAnimator` do core faz todo menu aberto andar); com um quadro só ele é um botão comum.
 - Todo clique dentro de um menu é cancelado: os jogadores nunca pegam nem largam itens dele.
 - Os títulos são traduzidos e cortados nos 32 caracteres que a 1.8 permite.
+- Abrir um menu com o mesmo título e as mesmas linhas do menu que o jogador já tem aberto redesenha o aberto no lugar (`Menu.sameLayout`), então um menu que se reabre depois de um clique não fecha nem manda o cursor de volta para o meio. Os botões e o `onClose` do menu novo passam a valer.
 
 ### Menus paginados
 
