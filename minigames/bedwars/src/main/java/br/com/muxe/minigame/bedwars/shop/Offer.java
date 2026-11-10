@@ -72,7 +72,7 @@ public record Offer(ShopItem item, State state, Tier tier, int level) {
         return lore;
     }
 
-    public String boughtName() {
-        return tier.name().replace(" (Permanente)", "");
+    public String boughtName(Texts texts) {
+        return texts.permanentSuffix().isEmpty() ? tier.name() : tier.name().replace(texts.permanentSuffix(), "");
     }
 }

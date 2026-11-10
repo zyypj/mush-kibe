@@ -10,6 +10,8 @@ import br.com.muxe.core.bukkit.nms.PacketHologramTransport;
 import br.com.muxe.core.bukkit.npc.Npc;
 import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Localized;
+import br.com.muxe.core.common.language.domain.Text;
 import br.com.muxe.minigame.api.cosmetic.message.KillAnnouncer;
 import br.com.muxe.minigame.api.cosmetic.message.LifetimeTally;
 import br.com.muxe.minigame.api.match.Match;
@@ -39,7 +41,6 @@ import br.com.muxe.minigame.bedwars.mission.MissionRules;
 import br.com.muxe.minigame.bedwars.settings.BedWarsSettings;
 import br.com.muxe.minigame.bedwars.settings.MatchSounds;
 import br.com.muxe.minigame.bedwars.shop.ResourcePool;
-import br.com.muxe.minigame.bedwars.shop.ShopCatalog;
 import br.com.muxe.minigame.bedwars.stats.application.command.RecordMatchCommand;
 import br.com.muxe.minigame.bedwars.stats.application.query.FindPlayerStatsQuery;
 import br.com.muxe.minigame.bedwars.stats.domain.MatchOutcome;
@@ -129,7 +130,7 @@ public final class BedWarsMatch implements MatchState {
         this.messages = services.messages();
         this.match = runtime.match();
         this.room = new Room(match, arena);
-        this.forges = new RoomForges(services.plugin(), settings, services.displays());
+        this.forges = new RoomForges(services.plugin(), services.localized(), services.languages(), services.displays());
         this.timeline = settings.timeline();
         this.announcer = new KillAnnouncer(services.messageSets(), id -> services.killMessages().of(id, match.code(), ThreadLocalRandom.current()), tally);
     }
@@ -150,9 +151,9 @@ public final class BedWarsMatch implements MatchState {
         return rules;
     }
 
-    public CustomShop shop(Map<String, ShopCatalog.Currency> currencies) {
+    public CustomShop shop() {
         if (customShop == null) {
-            customShop = new CustomShop(rules, currencies);
+            customShop = new CustomShop(rules);
         }
         return customShop;
     }
@@ -198,16 +199,17 @@ public final class BedWarsMatch implements MatchState {
             base.iron().forEach(point -> forges.island(color, runtime.location(point), Material.IRON_INGOT, settings.forges().iron(match.mode().teamSize()),
                 layout(point, base.spawn())));
             base.gold().forEach(point -> forges.island(color, runtime.location(point), Material.GOLD_INGOT, settings.forges().gold()));
-            spawnNpc(color, "loja", base.shop(), match.mode().teamSize() > 1 ? settings.holograms().shopTeam() : settings.holograms().shop());
-            spawnNpc(color, "melhorias", base.upgrades(), match.mode().teamSize() > 1 ? settings.holograms().upgradesTeam() : settings.holograms().upgrades());
+            boolean teams = match.mode().teamSize() > 1;
+            spawnNpc(color, "loja", base.shop(), services.localized().map(texts -> teams ? texts.holograms().shopTeam() : texts.holograms().shop()));
+            spawnNpc(color, "melhorias", base.upgrades(), services.localized().map(texts -> teams ? texts.holograms().upgradesTeam() : texts.holograms().upgrades()));
         }
         arena.diamonds().forEach(point -> forges.shared(runtime.location(point), Material.DIAMOND));
         arena.emeralds().forEach(point -> forges.shared(runtime.location(point), Material.EMERALD));
         for (int index = 0; index < arena.extraShops().size(); index++) {
-            spawnNpc(null, "loja-extra-" + index, arena.extraShops().get(index), settings.holograms().shop());
+            spawnNpc(null, "loja-extra-" + index, arena.extraShops().get(index), services.localized().map(texts -> texts.holograms().shop()));
         }
         for (int index = 0; index < arena.extraUpgrades().size(); index++) {
-            spawnNpc(null, "melhorias-extra-" + index, arena.extraUpgrades().get(index), settings.holograms().upgrades());
+            spawnNpc(null, "melhorias-extra-" + index, arena.extraUpgrades().get(index), services.localized().map(texts -> texts.holograms().upgrades()));
         }
         arena.extraIron().forEach(point -> forges.island(null, runtime.location(point), Material.IRON_INGOT, settings.forges().iron(1)));
         arena.extraGold().forEach(point -> forges.island(null, runtime.location(point), Material.GOLD_INGOT, settings.forges().gold()));
@@ -224,7 +226,7 @@ public final class BedWarsMatch implements MatchState {
     @Override
     public void spawned(Participant participant) {
         runtime.player(participant.id()).ifPresent(player -> {
-            Kits.spawnKit(player, room.player(participant.id()), room.team(participant.team()), settings.items());
+            Kits.spawnKit(player, room.player(participant.id()), room.team(participant.team()), services.settings(participant.id()).items());
             if (rules.creative()) {
                 player.setGameMode(GameMode.CREATIVE);
             }
@@ -275,7 +277,7 @@ public final class BedWarsMatch implements MatchState {
             credited.addXp(xp);
             runtime.player(credited.id()).ifPresent(killer -> {
                 giveLoot(killer, loot);
-                killer.sendMessage(messages.get("xp", "xp", String.valueOf(xp)));
+                killer.sendMessage(messages.get(killer, "xp", "xp", String.valueOf(xp)));
                 MatchSounds.play(death.finalKill() ? settings.sounds().finalKill() : settings.sounds().kill(), killer);
             });
         });
@@ -283,12 +285,12 @@ public final class BedWarsMatch implements MatchState {
     }
 
     @Override
-    public Optional<String> deathMessage(Death death, String victimName, Optional<String> killerName) {
+    public Optional<Text> deathText(Death death, String victimName, Optional<String> killerName) {
         Participant victim = death.victim();
         if (death.killer().isPresent() && killerName.isPresent()) {
-            return Optional.of(announcer.kill(death.killer().get().id(), killerName.get(), victim.id(), victimName, death.finalKill(), death.byVoid()));
+            return Optional.of(announcer.killText(death.killer().get().id(), killerName.get(), victim.id(), victimName, death.finalKill(), death.byVoid()));
         }
-        return Optional.of(announcer.death(victim.id(), victimName, death.finalKill(), death.byVoid()));
+        return Optional.of(announcer.deathText(victim.id(), victimName, death.finalKill(), death.byVoid()));
     }
 
     @Override
@@ -331,7 +333,7 @@ public final class BedWarsMatch implements MatchState {
     }
 
     @Override
-    public Optional<String> skipEvent() {
+    public Optional<Text> skipEventText() {
         int now = match.elapsed() + skipped;
         Optional<Timeline.Entry<BedWarsEvent>> next = timeline.entries().stream().filter(entry -> entry.at() > now).findFirst();
         if (next.isEmpty()) {
@@ -344,7 +346,7 @@ public final class BedWarsMatch implements MatchState {
                 break;
             }
         }
-        return Optional.of(next.get().name());
+        return Optional.of(next.get().label());
     }
 
     @Override
@@ -365,6 +367,10 @@ public final class BedWarsMatch implements MatchState {
         return LevelChat.badge(services.levelBadges(), chatLevel(player), services.preferences().of(player).showLevel());
     }
 
+    public void languageChanged(UUID player) {
+        hideChestLabels(player);
+    }
+
     public boolean breakBed(Player breaker, Block block) {
         Optional<TeamColor> owner = bedOwner(block);
         if (owner.isEmpty()) {
@@ -372,7 +378,7 @@ public final class BedWarsMatch implements MatchState {
         }
         Participant player = match.player(breaker.getUniqueId()).orElse(null);
         if (player == null || owner.get() == player.team()) {
-            breaker.sendMessage(messages.get("own-bed"));
+            breaker.sendMessage(messages.get(breaker, "own-bed"));
             return true;
         }
         if (!room.bedAlive(owner.get())) {
@@ -392,13 +398,13 @@ public final class BedWarsMatch implements MatchState {
         MatchSounds.play(settings.sounds().bedDestroyed(), breaker);
         match.members(owner.get()).forEach(member -> Optional.ofNullable(Bukkit.getPlayer(member.id()))
             .ifPresent(victim -> MatchSounds.play(settings.sounds().bedLost(), victim)));
-        runtime.broadcast(announcer.bed(player.id(), runtime.coloredName(player), Colors.translate(owner.get().color()), match.teamName(owner.get())));
-        breaker.sendMessage(messages.get("xp", "xp", String.valueOf(settings.xp().bedDestroyed())));
+        runtime.broadcast(announcer.bedText(player.id(), runtime.coloredName(player), Colors.translate(owner.get().color()), match.teamText(owner.get())));
+        breaker.sendMessage(messages.get(breaker, "xp", "xp", String.valueOf(settings.xp().bedDestroyed())));
         player.addXp(settings.xp().bedDestroyed());
         for (Participant gone : lost) {
             match.credit(player, true);
             player.addXp(settings.xp().finalKill());
-            runtime.broadcast(announcer.kill(player.id(), runtime.coloredName(player), gone.id(), runtime.coloredName(gone), true, false));
+            runtime.broadcast(announcer.killText(player.id(), runtime.coloredName(player), gone.id(), runtime.coloredName(gone), true, false));
         }
         runtime.checkEliminations();
         runtime.refreshBoards();
@@ -573,7 +579,7 @@ public final class BedWarsMatch implements MatchState {
 
     public Inventory enderChest(Player player) {
         return enderChests.computeIfAbsent(player.getUniqueId(),
-            id -> Bukkit.createInventory(null, InventoryType.ENDER_CHEST, messages.get("ender-chest-title")));
+            id -> Bukkit.createInventory(null, InventoryType.ENDER_CHEST, messages.get(player, "ender-chest-title")));
     }
 
     public Optional<TeamColor> chestOwner(Location chest) {
@@ -594,7 +600,7 @@ public final class BedWarsMatch implements MatchState {
             return true;
         }
         Optional<TeamColor> owner = chestOwner(chest);
-        player.sendMessage(messages.get("chest-locked", "team-color", Colors.translate(owner.get().color()), "team", match.teamName(owner.get())));
+        player.sendMessage(messages.get(player, "chest-locked", "team-color", Colors.translate(owner.get().color()), "team", match.teamText(owner.get())));
         return false;
     }
 
@@ -629,25 +635,30 @@ public final class BedWarsMatch implements MatchState {
         switch (event.kind()) {
             case DIAMOND_TIER -> {
                 forges.tier(Material.DIAMOND, event.tier());
-                runtime.broadcast(messages.get("generator-upgrade", "type", messages.get("generator-diamond"), "tier", BedWarsSettings.roman(event.tier())));
+                runtime.broadcast(generatorUpgrade(messages, Material.DIAMOND, event.tier()));
             }
             case EMERALD_TIER -> {
                 forges.tier(Material.EMERALD, event.tier());
-                runtime.broadcast(messages.get("generator-upgrade", "type", messages.get("generator-emerald"), "tier", BedWarsSettings.roman(event.tier())));
+                runtime.broadcast(generatorUpgrade(messages, Material.EMERALD, event.tier()));
             }
             case BEDS_DESTROYED -> {
                 for (TeamColor color : room.islands()) {
                     if (room.bedAlive(color)) {
-                        room.breakBed(color, null).forEach(lost -> runtime.broadcast(announcer.death(lost.id(), runtime.coloredName(lost), true, false)));
+                        room.breakBed(color, null).forEach(lost -> runtime.broadcast(announcer.deathText(lost.id(), runtime.coloredName(lost), true, false)));
                         removeBed(color);
                     }
                 }
-                runtime.broadcast(messages.get("beds-destroyed-event"));
+                runtime.announce("beds-destroyed-event");
                 runtime.checkEliminations();
             }
-            case DRAGONS -> runtime.broadcast(messages.get("dragons-event"));
+            case DRAGONS -> runtime.announce("dragons-event");
             case GAME_END -> runtime.end(match.winner());
         }
+    }
+
+    static Text generatorUpgrade(MessageCatalog messages, Material generator, int tier) {
+        String type = generator == Material.DIAMOND ? "generator-diamond" : "generator-emerald";
+        return messages.text("generator-upgrade", "type", messages.text(type), "tier", BedWarsSettings.roman(tier));
     }
 
     private void islandEffects() {
@@ -696,7 +707,7 @@ public final class BedWarsMatch implements MatchState {
         for (Participant member : match.members(team.color())) {
             Player player = Bukkit.getPlayer(member.id());
             if (player != null) {
-                player.sendMessage(messages.get("trap-triggered"));
+                player.sendMessage(messages.get(player, "trap-triggered"));
             }
         }
     }
@@ -782,7 +793,7 @@ public final class BedWarsMatch implements MatchState {
             });
             for (Block chest : wanted) {
                 shown.computeIfAbsent(chest, block -> PacketHologramTransport.instance().spawn(viewer,
-                    TextHolograms.standard(CHEST_LABEL_GAP).layout(center(block).add(0, CHEST_LABEL_TOP, 0), messages.lines("chest-hologram"))));
+                    TextHolograms.standard(CHEST_LABEL_GAP).layout(center(block).add(0, CHEST_LABEL_TOP, 0), messages.lines(viewer, "chest-hologram"))));
             }
         }
     }
@@ -829,10 +840,10 @@ public final class BedWarsMatch implements MatchState {
         return runtime.location(point).add(0, ForgeHeights.DROP_ABOVE_POINT, 0);
     }
 
-    private void spawnNpc(TeamColor team, String kind, Point point, List<String> lines) {
+    private void spawnNpc(TeamColor team, String kind, Point point, Localized<List<String>> lines) {
         String id = match.code() + "-" + (team == null ? "neutro" : team.id()) + "-" + kind;
         String color = team == null ? "&f" : team.color();
-        services.npcLines().put(id, lines.stream().map(line -> line.replace("{color}", color)).toList());
+        services.npcLines().put(id, lines.map(texts -> texts.stream().map(line -> line.replace("{color}", color)).toList()));
         services.npcs().put(new Npc(id, runtime.location(point), Optional.empty()));
         npcs.add(id);
     }
@@ -904,10 +915,10 @@ public final class BedWarsMatch implements MatchState {
 
     private void giveLoot(Player killer, Map<Material, Integer> loot) {
         loot.forEach((material, amount) -> {
-            Map<Integer, ItemStack> left = killer.getInventory().addItem(settings.items().named(new ItemStack(material, amount)));
+            Map<Integer, ItemStack> left = killer.getInventory().addItem(services.settings(killer.getUniqueId()).items().named(new ItemStack(material, amount)));
             left.values().forEach(item -> killer.getWorld().dropItem(killer.getLocation(), item));
             String type = LOOT.get(material);
-            killer.sendMessage(messages.get("loot-" + type + (amount == 1 ? "-one" : "-many"), "amount", String.valueOf(amount)));
+            killer.sendMessage(messages.get(killer, "loot-" + type + (amount == 1 ? "-one" : "-many"), "amount", String.valueOf(amount)));
         });
     }
 

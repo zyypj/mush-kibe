@@ -7,6 +7,9 @@ import br.com.muxe.core.bukkit.display.StandPose;
 import br.com.muxe.core.bukkit.hologram.SpawnedHologram;
 import br.com.muxe.core.bukkit.hologram.TextHolograms;
 import br.com.muxe.core.bukkit.item.ItemBuilder;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.bedwars.custom.CustomRules;
 import br.com.muxe.minigame.bedwars.game.ForgeHeights;
 import br.com.muxe.minigame.bedwars.game.ForgeLayout;
@@ -44,6 +47,8 @@ final class RoomForges {
 
     private final Plugin plugin;
     private final BedWarsSettings settings;
+    private final Localized<BedWarsSettings> localized;
+    private final LanguageLookup languages;
     private final DisplayService displays;
     private final TextHolograms holograms = TextHolograms.standard(ForgeHeights.HOLOGRAM_SPACING);
     private final List<Forge> forges = new ArrayList<>();
@@ -52,9 +57,11 @@ final class RoomForges {
     private int diamondTier = 1;
     private int emeraldTier = 1;
 
-    RoomForges(Plugin plugin, BedWarsSettings settings, DisplayService displays) {
+    RoomForges(Plugin plugin, Localized<BedWarsSettings> localized, LanguageLookup languages, DisplayService displays) {
         this.plugin = plugin;
-        this.settings = settings;
+        this.settings = localized.standard();
+        this.localized = localized;
+        this.languages = languages;
         this.displays = displays;
     }
 
@@ -176,7 +183,7 @@ final class RoomForges {
                 if (forge.kind() != Kind.SHARED) {
                     continue;
                 }
-                List<String> lines = lines(forge);
+                List<String> lines = lines(forge, languages.of(viewer.getUniqueId()));
                 SpawnedHologram current = mine.get(forge);
                 if (current == null || !lines.equals(forge.lastLines(viewer.getUniqueId()))) {
                     if (current != null) {
@@ -214,8 +221,9 @@ final class RoomForges {
         return emeraldTier;
     }
 
-    private List<String> lines(Forge forge) {
-        List<String> template = forge.material() == Material.DIAMOND ? settings.holograms().diamond() : settings.holograms().emerald();
+    List<String> lines(Forge forge, Language language) {
+        BedWarsSettings.Holograms texts = localized.in(language).holograms();
+        List<String> template = forge.material() == Material.DIAMOND ? texts.diamond() : texts.emerald();
         int tier = forge.material() == Material.DIAMOND ? diamondTier : emeraldTier;
         return template.stream()
             .map(line -> line.replace("{tier}", BedWarsSettings.roman(tier)).replace("{seconds}", String.valueOf(forge.timer().secondsLeft())))

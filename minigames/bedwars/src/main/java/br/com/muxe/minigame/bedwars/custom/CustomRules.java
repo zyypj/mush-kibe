@@ -124,7 +124,7 @@ public record CustomRules(RoomOptions options, boolean custom) {
             previousBase = entry.at();
             previous += interval;
             if (options.flag("events." + key + ".enabled", true) || entry.event().kind() == BedWarsEvent.Kind.GAME_END) {
-                changed.add(new Entry<>(entry.event(), previous, entry.name()));
+                changed.add(new Entry<>(entry.event(), previous, entry.label()));
             }
         }
         return new Timeline<>(changed);

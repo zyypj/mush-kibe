@@ -4,6 +4,8 @@ import br.com.muxe.core.bukkit.hologram.HologramPixel;
 import br.com.muxe.core.bukkit.hologram.SpawnedHologram;
 import br.com.muxe.core.bukkit.nms.PacketHologramTransport;
 import br.com.muxe.core.bukkit.text.Colors;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.bedwars.preferences.PlayerPreferences;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,17 +22,21 @@ public final class TntTimers {
     private static final double MOVED_SQUARED = 0.0025;
 
     private final TntTimerSettings settings;
+    private final Localized<TntTimerSettings> localized;
+    private final LanguageLookup languages;
     private final PlayerPreferences preferences;
     private final Map<UUID, Timer> timers = new HashMap<>();
 
-    private TntTimers(TntTimerSettings settings, PlayerPreferences preferences) {
-        this.settings = settings;
+    private TntTimers(Localized<TntTimerSettings> localized, LanguageLookup languages, PlayerPreferences preferences) {
+        this.settings = localized.standard();
+        this.localized = localized;
+        this.languages = languages;
         this.preferences = preferences;
     }
 
-    public static TntTimers start(Plugin plugin, TntTimerSettings settings, PlayerPreferences preferences) {
-        TntTimers started = new TntTimers(settings, preferences);
-        plugin.getServer().getScheduler().runTaskTimer(plugin, started::update, settings.updateTicks(), settings.updateTicks());
+    public static TntTimers start(Plugin plugin, Localized<TntTimerSettings> settings, LanguageLookup languages, PlayerPreferences preferences) {
+        TntTimers started = new TntTimers(settings, languages, preferences);
+        plugin.getServer().getScheduler().runTaskTimer(plugin, started::update, started.settings.updateTicks(), started.settings.updateTicks());
         return started;
     }
 
@@ -64,7 +70,6 @@ public final class TntTimers {
 
         private void update() {
             Location at = tnt.getLocation().add(0, settings.height(), 0);
-            String text = Colors.translate(settings.text(tnt.getFuseTicks(), fuseTicks));
             double range = settings.viewDistance() * settings.viewDistance();
             Map<UUID, Player> wanted = new HashMap<>();
             for (Player player : tnt.getWorld().getPlayers()) {
@@ -80,6 +85,7 @@ public final class TntTimers {
                 return true;
             });
             wanted.forEach((id, player) -> {
+                String text = Colors.translate(localized.in(languages.of(id)).text(tnt.getFuseTicks(), fuseTicks));
                 Shown shown = viewers.get(id);
                 boolean renamed = shown != null && shown.at().distanceSquared(at) <= MOVED_SQUARED
                     && (shown.text().equals(text) || shown.hologram().rename(List.of(text)));

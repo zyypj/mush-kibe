@@ -12,10 +12,13 @@ import br.com.muxe.core.bukkit.config.edit.PluginConfigStore;
 import br.com.muxe.core.bukkit.display.DisplayService;
 import br.com.muxe.core.bukkit.mission.config.MissionConfig;
 import br.com.muxe.core.bukkit.mission.menu.MissionMenus;
+import br.com.muxe.core.bukkit.npc.NpcLabelLayout;
 import br.com.muxe.core.bukkit.npc.NpcService;
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.prompt.AnvilPrompts;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.mission.MissionModule;
 import br.com.muxe.core.common.mission.domain.Mission;
 import br.com.muxe.minigame.api.arena.ArenaSchema;
@@ -82,8 +85,8 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -109,14 +112,15 @@ public final class BedWarsBootstrap {
 
     public MinigameEngine enable() {
         FileConfiguration config = PluginConfig.load(plugin);
+        LocalizedConfig texts = LocalizedConfig.load(plugin);
         MuxeCore core = MuxeCore.get();
-        MessageCatalog messages = SetupMessages.withOverrides(core.messages().merge(MessageCatalog.from(config.getConfigurationSection("messages"))));
-        ConfigurationSection modeSection = Objects.requireNonNull(config.getConfigurationSection("modes"), "Missing configuration section modes");
-        List<GameMode> modes = GameModeLoader.load(modeSection);
+        MessageCatalog messages = SetupMessages.withOverrides(core.messages().merge(MessageCatalog.from(texts, "messages")));
+        ConfigurationSection modeSection = section(config, "modes");
+        List<GameMode> modes = GameModeLoader.modes(texts);
         ArenaSchema schema = BedWarsSchema.from(modes, modeSection);
-        BedWarsSettings settings = BedWarsSettings.from(config);
+        Localized<BedWarsSettings> settings = BedWarsSettings.from(texts);
         Commands commands = Commands.of(plugin, messages);
-        minigame = new MinigameBootstrap(plugin, core, GAME, modes, messages, commands, config);
+        minigame = new MinigameBootstrap(plugin, core, GAME, modes, messages, commands, texts);
         boolean lobby = minigame.isLobby();
         plugin.getLogger().info("Schema '" + GAME + "' at version " + core.migrations().migrate(GAME, plugin.getClass().getClassLoader()).schemaVersion());
         StatsModule.register(core.commands(), core.queries(), core.transactions(), core.clock(), STATS_ZONE);
@@ -124,72 +128,73 @@ public final class BedWarsBootstrap {
         HotbarModule.register(core.commands(), core.queries(), core.transactions(), core.clock());
         PreferencesModule.register(core.commands(), core.queries(), core.transactions(), core.clock());
         TeamColorModule.register(core.commands(), core.queries(), core.transactions(), core.clock());
-        MissionConfig missions = MissionConfig.from(config.getConfigurationSection("missions"), BedWarsGoal::find);
+        Localized<MissionConfig> missions = texts.map(root -> MissionConfig.from(root.getConfigurationSection("missions"), BedWarsGoal::find));
         BedWarsStatsRepository missionXp = new PostgresBedWarsStatsRepository();
-        core.missions().register(GAME, missions.catalog(),
+        core.missions().register(GAME, missions.standard().catalog(),
             (playerId, completed, at) -> missionXp.addXp(playerId, completed.stream().mapToLong(Mission::xp).sum(), at, STATS_ZONE));
-        MissionMenus missionMenus = new MissionMenus(GAME, missions, core.queries(), core.mainThread(), core.clock(), MissionModule.ZONE, plugin.getLogger());
+        MissionMenus missionMenus = new MissionMenus(GAME, missions, core.languages(), core.queries(), core.mainThread(), core.clock(), MissionModule.ZONE,
+            plugin.getLogger());
         EndTitles titles = minigame.endTitles();
         ConfigReloads reloads = new ConfigReloads();
         ConfigEditor configEditor = new ConfigEditor(new PluginConfigStore(plugin, core.async()), reloads);
         ConfigPathSuggestions.register(commands, configEditor);
         commands.register(new BedWarsConfigCommand(configEditor, new ConfigReplies(messages)));
-        cosmetics = CosmeticFeatures.start(plugin, core, config, messages, commands, lobby, titles, reloads);
+        cosmetics = CosmeticFeatures.start(plugin, core, texts, messages, commands, lobby, titles, reloads);
         cosmetics.onMissions(missionMenus);
-        ShopCatalog shopCatalog = ShopCatalog.from(Objects.requireNonNull(config.getConfigurationSection("shop"), "Missing configuration section shop"));
+        Localized<ShopCatalog> shops = texts.map(root -> ShopCatalog.from(section(root, "shop")));
+        ShopCatalog shopCatalog = shops.standard();
         QuickBuys quickBuys = new QuickBuys(core, plugin.getLogger(), QuickBuy.of(shopCatalog.quickBuy()), shopCatalog.items()::containsKey);
         plugin.getServer().getPluginManager().registerEvents(quickBuys, plugin);
         plugin.getServer().getOnlinePlayers().forEach(player -> quickBuys.load(player.getUniqueId()));
-        cosmetics.onQuickBuy(new QuickBuyEditor(shopCatalog, QuickBuyEditor.Settings.from(Objects.requireNonNull(config.getConfigurationSection("shop.quick-buy-editor"), "Missing configuration section shop.quick-buy-editor")), quickBuys,
+        cosmetics.onQuickBuy(new QuickBuyEditor(shops, texts.map(root -> QuickBuyEditor.Settings.from(section(root, "shop.quick-buy-editor"))), quickBuys,
             messages, AnvilPrompts.start(plugin), core.mainThread(), plugin.getLogger()));
-        HotbarChoices hotbarChoices = new HotbarChoices(shopCatalog);
+        Localized<HotbarChoices> choices = shops.map(HotbarChoices::new);
+        HotbarChoices hotbarChoices = choices.standard();
         Hotbars hotbars = new Hotbars(core, plugin.getLogger(), hotbarChoices::exists);
         plugin.getServer().getPluginManager().registerEvents(hotbars, plugin);
         plugin.getServer().getOnlinePlayers().forEach(player -> hotbars.load(player.getUniqueId()));
-        HotbarMenuSettings hotbarMenus = HotbarMenuSettings.from(
-            Objects.requireNonNull(config.getConfigurationSection("shop.hotbar-menus"), "Missing configuration section shop.hotbar-menus"));
-        HotbarEditor hotbarEditor = new HotbarEditor(hotbarMenus, hotbarChoices, new HotbarIcons(shopCatalog, hotbarChoices, hotbarMenus.adding()), hotbars, messages);
+        Localized<HotbarMenuSettings> hotbarMenus = texts.map(root -> HotbarMenuSettings.from(section(root, "shop.hotbar-menus")));
+        Localized<HotbarIcons> hotbarIcons = Localized.of(language -> new HotbarIcons(shops.in(language), choices.in(language), hotbarMenus.in(language).adding()));
+        HotbarEditor hotbarEditor = new HotbarEditor(hotbarMenus, choices, hotbarIcons, core.languages(), hotbars, messages);
         cosmetics.onHotbar(hotbarEditor);
         PlayerPreferences preferences = new PlayerPreferences(core, plugin.getLogger());
         plugin.getServer().getPluginManager().registerEvents(preferences, plugin);
         plugin.getServer().getOnlinePlayers().forEach(player -> preferences.load(player.getUniqueId()));
-        cosmetics.onPreferences(new PreferencesMenu(PreferencesMenu.Settings.from(
-            Objects.requireNonNull(config.getConfigurationSection("preferences"), "Missing configuration section preferences")), preferences));
+        cosmetics.onPreferences(new PreferencesMenu(texts.map(root -> PreferencesMenu.Settings.from(section(root, "preferences"))), core.languages(), preferences));
         FavouriteColors teamColors = new FavouriteColors(core, plugin.getLogger());
         plugin.getServer().getPluginManager().registerEvents(teamColors, plugin);
         plugin.getServer().getOnlinePlayers().forEach(player -> teamColors.load(player.getUniqueId()));
-        cosmetics.onTeamColor(new FavouriteColorMenu(FavouriteColorMenuSettings.from(
-            Objects.requireNonNull(config.getConfigurationSection("favourite-color"), "Missing configuration section favourite-color")), teamColors, messages));
-        Function<String, String> modeNames = schema::modeName;
+        cosmetics.onTeamColor(new FavouriteColorMenu(texts.map(root -> FavouriteColorMenuSettings.from(section(root, "favourite-color"))), teamColors, messages));
         if (lobby) {
-            lobbyFeatures = LobbyFeatures.start(plugin, core, config, messages, schema, missionMenus, preferences, minigame.connector(modeNames));
+            lobbyFeatures = LobbyFeatures.start(plugin, core, texts, messages, schema, minigame.modeNames(), missionMenus, preferences, minigame.connector());
             minigame.setup(schema);
             plugin.getLogger().info("BedWars ready in lobby mode");
             return minigame.engine();
         }
 
-        Map<String, List<String>> npcLines = new ConcurrentHashMap<>();
-        npcs = NpcService.start(plugin, npc -> npcLines.getOrDefault(npc.id(), List.of()));
+        Map<String, Localized<List<String>>> npcLines = new ConcurrentHashMap<>();
+        npcs = NpcService.startForViewers(plugin, NpcLabelLayout.STANDARD,
+            (viewer, npc) -> Optional.ofNullable(npcLines.get(npc.id())).map(lines -> lines.in(core.languages().of(viewer))).orElse(List.of()));
         displays = DisplayService.start(plugin);
         LevelBadges badges = LevelBadges.from(config.getConfigurationSection("levels"));
-        BedWarsServices services = new BedWarsServices(plugin, core, settings, messages, npcs, npcLines, displays, missions,
+        BedWarsServices services = new BedWarsServices(plugin, core, settings, core.languages(), messages, npcs, npcLines, displays, missions,
             MissionRules.from(config.getConfigurationSection("missions")), preferences, cosmetics.messageSets(), cosmetics.killMessages(), cosmetics.bedBreaks(),
-            new LevelUps(messages.get("level-up"), badges::of), badges);
-        MatchServer<BedWarsArena, BedWarsMatch> server = minigame.matches(new BedWarsGame(services, teamColors::preferred), MatchSettings.from(config), cosmetics);
+            new LevelUps(messages.text("level-up"), badges::of, core.languages()), badges);
+        MatchServer<BedWarsArena, BedWarsMatch> server = minigame.matches(new BedWarsGame(services, teamColors::preferred), cosmetics);
         MatchService<BedWarsArena, BedWarsMatch> rooms = server.service();
-        UpgradeCatalog upgradeCatalog = UpgradeCatalog.from(Objects.requireNonNull(config.getConfigurationSection("upgrades"), "Missing configuration section upgrades"));
+        Localized<UpgradeCatalog> upgrades = texts.map(root -> UpgradeCatalog.from(section(root, "upgrades")));
         MatchSettings matchSettings = MatchSettings.from(config);
         KnockbackProfile knockback = matchSettings.knockback().profile(matchSettings.defaultMode(), core.knockback().profiles()).orElse(KnockbackProfile.VANILLA);
-        String roomSchema = BedWarsRoomSchema.build(DefaultedSections.of(config, "custom-room"),
-            shopCatalog, upgradeCatalog, settings.timeline(), knockback);
+        String roomSchema = BedWarsRoomSchema.build(Localized.of(language -> new BedWarsRoomSchema.Texts(DefaultedSections.of(texts.in(language), "custom-room"),
+            shops.in(language), upgrades.in(language))), settings.standard().timeline(), knockback);
         server.customRooms(() -> roomSchema);
         ShopService shop = new ShopService(
-            shopCatalog,
-            upgradeCatalog,
+            shops,
+            upgrades,
             messages,
-            settings.sounds(),
+            settings.standard().sounds(),
             quickBuys,
-            settings.items(),
+            settings.map(BedWarsSettings::items),
             new HotbarDelivery(hotbars, hotbarChoices),
             hotbarEditor,
             cosmetics.woods()
@@ -200,16 +205,16 @@ public final class BedWarsBootstrap {
             }
             shop.open(player, runtime, npc.id().contains("-melhorias"));
         }));
-        LobbyMenus playAgain = PlayAgain.menus(plugin, core, config, messages, schema, server.playAgainConnector(modeNames));
+        LobbyMenus playAgain = PlayAgain.menus(plugin, core, texts, messages, schema, minigame.modeNames(), server.playAgainConnector());
         bedbugs = new Bedbugs(plugin, rooms, core.clock());
         bedbugs.start();
-        TntTimers tntTimers = TntTimers.start(plugin, TntTimerSettings.from(
-            Objects.requireNonNull(config.getConfigurationSection("tnt-timer"), "Missing configuration section tnt-timer")), preferences);
+        TntTimers tntTimers = TntTimers.start(plugin, texts.map(root -> TntTimerSettings.from(section(root, "tnt-timer"))), core.languages(), preferences);
         Activity activity = new Activity();
         Slingshot slingshot = new Slingshot();
         BedWarsHandlers handlers = new BedWarsHandlers(plugin, core, settings, messages, bedbugs, preferences, tntTimers, activity, slingshot,
             cosmetics::openMenu, playAgain::openMode);
         server.listen(handlers);
+        core.languages().onChange(player -> rooms.of(player.getUniqueId()).ifPresent(runtime -> runtime.state().languageChanged(player.getUniqueId())));
         plugin.getServer().getPluginManager().registerEvents(new ChestListener(rooms, handlers), plugin);
         plugin.getServer().getPluginManager().registerEvents(new ActivityListener(activity, slingshot, core.clock()), plugin);
         InvisiblePlayers.start(plugin, rooms);
@@ -219,6 +224,10 @@ public final class BedWarsBootstrap {
 
         plugin.getLogger().info("BedWars ready with modes " + minigame.engine().modes().keySet());
         return minigame.engine();
+    }
+
+    private static ConfigurationSection section(ConfigurationSection parent, String path) {
+        return Objects.requireNonNull(parent.getConfigurationSection(path), "Missing configuration section " + path);
     }
 
     public void disable() {

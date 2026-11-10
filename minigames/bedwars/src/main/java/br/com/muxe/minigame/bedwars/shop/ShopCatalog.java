@@ -50,14 +50,14 @@ public record ShopCatalog(
         }
         ConfigurationSection editor = section(shop, "hotbar-editor");
         ShopCatalog catalog = new ShopCatalog(
-            shop.getString("quick-buy-title", "Compra Rápida"),
-            shop.getString("category-title", "Loja: {category}"),
+            shop.getString("quick-buy-title", ""),
+            shop.getString("category-title", "{category}"),
             currencies,
             new Texts(
                 shop.getString("price"), shop.getString("level"), shop.getStringList("quick-buy-add"), shop.getStringList("quick-buy-remove"),
                 shop.getString("cannot-afford"), shop.getString("can-afford"), shop.getString("maxed"), shop.getString("owned"),
                 shop.getString("open-category"), shop.getString("name-affordable", "&a"), shop.getString("name-unaffordable", "&c"),
-                shop.getStringList("tracker-locked")
+                shop.getStringList("tracker-locked"), shop.getString("permanent-suffix", "")
             ),
             tabs,
             shop.getStringList("quick-buy"),
@@ -65,7 +65,7 @@ public record ShopCatalog(
             items,
             new Editor(editor.getInt("slot", 53), material(editor.getString("material")), editor.getString("name"), editor.getStringList("lore")),
             new QuickBuyTexts(
-                shop.getString("quick-buy-adding-title", "Adicionando à Compra Rápida..."), shop.getString("quick-buy-adding"),
+                shop.getString("quick-buy-adding-title", ""), shop.getString("quick-buy-adding"),
                 shop.getStringList("quick-buy-replace"), shop.getString("quick-buy-empty-name"), shop.getStringList("quick-buy-empty-add"),
                 shop.getStringList("quick-buy-empty")
             )
@@ -199,7 +199,8 @@ public record ShopCatalog(
     }
 
     public record Texts(String price, String level, List<String> quickBuyAdd, List<String> quickBuyRemove, String cannotAfford, String canAfford,
-                        String maxed, String owned, String openCategory, String nameAffordable, String nameUnaffordable, List<String> trackerLocked) {
+                        String maxed, String owned, String openCategory, String nameAffordable, String nameUnaffordable, List<String> trackerLocked,
+                        String permanentSuffix) {
     }
 
     public record Editor(int slot, Material material, String name, List<String> lore) {

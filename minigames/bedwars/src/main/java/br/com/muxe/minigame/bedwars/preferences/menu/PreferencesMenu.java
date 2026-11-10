@@ -2,6 +2,8 @@ package br.com.muxe.minigame.bedwars.preferences.menu;
 
 import br.com.muxe.core.bukkit.item.ItemBuilder;
 import br.com.muxe.core.bukkit.menu.Menu;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.api.cosmetic.menu.MenuSlot;
 import br.com.muxe.minigame.bedwars.preferences.PlayerPreferences;
 import br.com.muxe.minigame.bedwars.preferences.domain.Preferences.ChestDeposit;
@@ -21,20 +23,23 @@ import org.bukkit.entity.Player;
 
 public final class PreferencesMenu {
 
-    private final Settings settings;
+    private final Localized<Settings> settings;
+    private final LanguageLookup languages;
     private final PlayerPreferences preferences;
 
-    public PreferencesMenu(Settings settings, PlayerPreferences preferences) {
+    public PreferencesMenu(Localized<Settings> settings, LanguageLookup languages, PlayerPreferences preferences) {
         this.settings = settings;
+        this.languages = languages;
         this.preferences = preferences;
     }
 
     public void open(Player player, Consumer<Player> back) {
         UUID id = player.getUniqueId();
+        Settings settings = this.settings.in(languages.of(id));
         Preferences current = preferences.of(id);
         Menu.Builder menu = Menu.builder(settings.title()).rows(settings.rows());
-        toggle(menu, settings.showLevel(), current.showLevel(), player, back, Preferences::toggleShowLevel);
-        toggle(menu, settings.tntTimer(), current.tntTimer(), player, back, Preferences::toggleTntTimer);
+        toggle(menu, settings, settings.showLevel(), current.showLevel(), back, Preferences::toggleShowLevel);
+        toggle(menu, settings, settings.tntTimer(), current.tntTimer(), back, Preferences::toggleTntTimer);
         Option chest = settings.chestDeposit();
         List<String> chestLore = chestLore(chest.description(), current.chestDeposit(), settings);
         ItemBuilder dye = ItemBuilder.of(Material.INK_SACK, settings.depositOptions().get(current.chestDeposit()).data());
@@ -45,7 +50,7 @@ public final class PreferencesMenu {
         menu.build().open(player);
     }
 
-    private void toggle(Menu.Builder menu, Option option, boolean on, Player player, Consumer<Player> back, UnaryOperator<Preferences> change) {
+    private void toggle(Menu.Builder menu, Settings settings, Option option, boolean on, Consumer<Player> back, UnaryOperator<Preferences> change) {
         List<String> lore = toggleLore(option.description(), on, settings);
         ItemBuilder status = on ? settings.on() : settings.off();
         menu.button(option.slot(), ItemBuilder.of(option.material()).name(option.name()).lore(lore), context -> change(context.player(), back, change));
@@ -112,7 +117,7 @@ public final class PreferencesMenu {
                 depositOptions.put(deposit, new DepositOption(option.getString("name"), option.getInt("data")));
             }
             return new Settings(
-                section.getString("title", "Preferências do Bed Wars"),
+                section.getString("title", ""),
                 section.getInt("rows", 4),
                 section.getString("value-on"),
                 section.getString("value-off"),

@@ -5,6 +5,8 @@ import br.com.muxe.core.bukkit.menu.ClickContext;
 import br.com.muxe.core.bukkit.menu.Menu;
 import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.api.match.Participant;
 import br.com.muxe.minigame.api.runtime.MatchRuntime;
 import br.com.muxe.minigame.bedwars.cosmetic.wood.WoodChoice;
@@ -31,6 +33,7 @@ import br.com.muxe.minigame.bedwars.shop.ShopCatalog.Tier;
 import br.com.muxe.minigame.bedwars.shop.UpgradeCatalog.Entry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -54,21 +57,21 @@ public final class ShopService {
     private static final int ADDING_SLOT = 4;
     private static final int SHOP_ROWS = 6;
 
-    private final ShopCatalog shop;
-    private final UpgradeCatalog upgrades;
+    private final Localized<ShopCatalog> shops;
+    private final Localized<UpgradeCatalog> upgradeCatalogs;
     private final MessageCatalog messages;
     private final MatchSounds sounds;
     private final QuickBuys quickBuys;
-    private final ItemNames names;
+    private final Localized<ItemNames> itemNames;
     private final HotbarDelivery hotbarDelivery;
     private final HotbarEditor hotbarEditor;
     private final WoodTypes woods;
 
-    public ShopService(ShopCatalog shop, UpgradeCatalog upgrades, MessageCatalog messages, MatchSounds sounds, QuickBuys quickBuys, ItemNames names,
-                       HotbarDelivery hotbarDelivery, HotbarEditor hotbarEditor, WoodTypes woods) {
-        this.names = names;
-        this.shop = shop;
-        this.upgrades = upgrades;
+    public ShopService(Localized<ShopCatalog> shops, Localized<UpgradeCatalog> upgradeCatalogs, MessageCatalog messages, MatchSounds sounds, QuickBuys quickBuys,
+                       Localized<ItemNames> itemNames, HotbarDelivery hotbarDelivery, HotbarEditor hotbarEditor, WoodTypes woods) {
+        this.itemNames = itemNames;
+        this.shops = shops;
+        this.upgradeCatalogs = upgradeCatalogs;
         this.messages = messages;
         this.sounds = sounds;
         this.quickBuys = quickBuys;
@@ -91,6 +94,7 @@ public final class ShopService {
             return;
         }
         Participant roomPlayer = found.get();
+        ShopCatalog shop = shop(player);
         boolean quickBuy = categoryId.equals(ShopCatalog.QUICK_BUY);
         Category category = shop.categories().get(categoryId);
         String title = quickBuy ? shop.quickBuyTitle() : shop.categoryTitle().replace("{category}", category.name());
@@ -118,7 +122,7 @@ public final class ShopService {
                 continue;
             }
             ShopItem item = entry.get();
-            Optional<ItemBuilder> shown = icon(player, runtime, roomPlayer, item, layout);
+            Optional<ItemBuilder> shown = icon(player, runtime, roomPlayer, item, layout, shop);
             if (shown.isEmpty()) {
                 if (quickBuy) {
                     QuickBuyTexts texts = shop.quickBuyTexts();
@@ -158,16 +162,18 @@ public final class ShopService {
             return;
         }
         Participant roomPlayer = found.get();
+        ShopCatalog shop = shop(player);
         QuickBuyTexts texts = shop.quickBuyTexts();
         QuickBuy layout = quickBuys.of(player.getUniqueId());
         Menu.Builder menu = Menu.builder(texts.addingTitle()).rows(SHOP_ROWS);
-        icon(player, runtime, roomPlayer, adding, layout).ifPresent(shown -> menu.button(ADDING_SLOT, shown.lore(addingLore(adding, texts))));
+        ShopItem shownAdding = shop.items().getOrDefault(adding.id(), adding);
+        icon(player, runtime, roomPlayer, shownAdding, layout, shop).ifPresent(shown -> menu.button(ADDING_SLOT, shown.lore(addingLore(shownAdding, texts))));
         List<Optional<String>> positions = positions(layout);
         for (int position = 0; position < positions.size(); position++) {
             int chosen = position;
             Optional<ShopItem> current = positions.get(position).map(shop.items()::get);
             ItemBuilder icon = current
-                .flatMap(item -> icon(player, runtime, roomPlayer, item, layout))
+                .flatMap(item -> icon(player, runtime, roomPlayer, item, layout, shop))
                 .map(shown -> shown.lore(texts.replace()))
                 .orElseGet(() -> ItemBuilder.of(Material.STAINED_GLASS_PANE, PANE_RED).name(texts.emptyName()).lore(texts.emptyAdd()));
             menu.button(ITEM_SLOTS.get(position), icon, context -> {
@@ -203,10 +209,13 @@ public final class ShopService {
             return;
         }
         RoomTeam team = runtime.state().room().team(found.get().team());
-        CustomShop custom = runtime.state().shop(shop.currencies());
+        CustomShop custom = runtime.state().shop();
+        Language language = messages.language(player);
+        UpgradeCatalog upgrades = upgradeCatalogs.in(language);
+        Map<String, ShopCatalog.Currency> currencies = shops.in(language).currencies();
         List<Entry> shown = new ArrayList<>();
         for (Entry base : runtime.state().rules().custom() ? upgrades.withCustom() : upgrades.entries()) {
-            custom.upgrade(base).ifPresent(shown::add);
+            custom.upgrade(base, currencies, upgrades.texts()).ifPresent(shown::add);
         }
         Menu.Builder menu = Menu.builder(upgrades.title()).rows(UpgradeCatalog.rows(shown));
         for (Entry entry : shown) {
@@ -217,14 +226,14 @@ public final class ShopService {
                 .name(entry.name(upgrades.texts(), level, diamonds))
                 .lore(entry.lore(upgrades.texts(), level, diamonds));
             menu.button(entry.slot(), icon, context -> {
-                upgrade(context, runtime, team, entry);
+                upgrade(context, runtime, team, entry, upgrades.texts());
                 openUpgrades(context.player(), runtime);
             });
         }
         menu.build().open(player);
     }
 
-    private void upgrade(ClickContext context, MatchRuntime<BedWarsMatch> runtime, RoomTeam team, Entry entry) {
+    private void upgrade(ClickContext context, MatchRuntime<BedWarsMatch> runtime, RoomTeam team, Entry entry, UpgradeCatalog.Texts texts) {
         Player player = context.player();
         int level = team.level(entry.upgrade());
         if (entry.maxed(level)) {
@@ -233,31 +242,34 @@ public final class ShopService {
         int price = entry.nextPrice(level);
         Material currency = entry.currency(level);
         if (price > 0 && !runtime.state().resources(player, currency == Material.DIAMOND).take(currency, price)) {
-            player.sendMessage(Colors.translate(upgrades.texts().cannotAfford()));
+            player.sendMessage(Colors.translate(texts.cannotAfford()));
             MatchSounds.play(sounds.cannotAfford(), player);
             return;
         }
         team.upgrade(entry.upgrade(), level + 1);
         runtime.state().upgraded(team, entry.upgrade(), level + 1);
         MatchSounds.play(sounds.upgrade(), player);
-        String message = messages.get("upgrade-bought", "player", runtime.coloredName(runtime.match().player(player.getUniqueId()).orElseThrow()),
-            "upgrade", entry.boughtName(level + 1));
+        String buyer = runtime.coloredName(runtime.match().player(player.getUniqueId()).orElseThrow());
         runtime.match().members(team.color()).forEach(member -> {
             Player online = player.getServer().getPlayer(member.id());
             if (online != null) {
-                online.sendMessage(message);
+                online.sendMessage(messages.get(online, "upgrade-bought", "player", buyer, "upgrade", upgradeName(messages.language(online), entry, level + 1)));
             }
         });
     }
 
-    private Optional<Offer> offer(MatchRuntime<BedWarsMatch> runtime, ShopItem item, RoomPlayer roomPlayer) {
-        Offer offer = Offer.of(item, roomPlayer);
-        return runtime.state().shop(shop.currencies()).tier(item, offer.tier()).map(tier -> new Offer(offer.item(), offer.state(), tier, offer.level()));
+    String upgradeName(Language language, Entry bought, int level) {
+        return upgradeCatalogs.in(language).entry(bought.id()).orElse(bought).boughtName(level);
     }
 
-    private Optional<ItemBuilder> icon(Player player, MatchRuntime<BedWarsMatch> runtime, Participant roomPlayer, ShopItem item, QuickBuy layout) {
+    private Optional<Offer> offer(MatchRuntime<BedWarsMatch> runtime, ShopItem item, RoomPlayer roomPlayer, ShopCatalog shop) {
+        Offer offer = Offer.of(item, roomPlayer);
+        return runtime.state().shop().tier(item, offer.tier(), shop.currencies()).map(tier -> new Offer(offer.item(), offer.state(), tier, offer.level()));
+    }
+
+    private Optional<ItemBuilder> icon(Player player, MatchRuntime<BedWarsMatch> runtime, Participant roomPlayer, ShopItem item, QuickBuy layout, ShopCatalog shop) {
         Room room = runtime.state().room();
-        Optional<Offer> found = offer(runtime, item, room.player(roomPlayer.id()));
+        Optional<Offer> found = offer(runtime, item, room.player(roomPlayer.id()), shop);
         if (found.isEmpty()) {
             return Optional.empty();
         }
@@ -280,24 +292,25 @@ public final class ShopService {
         Participant participant = runtime.match().player(player.getUniqueId()).orElseThrow();
         RoomPlayer roomPlayer = runtime.state().room().player(participant.id());
         RoomTeam team = runtime.state().room().team(participant.team());
-        Optional<Offer> found = offer(runtime, item, roomPlayer);
+        ShopCatalog shop = shop(player);
+        Optional<Offer> found = offer(runtime, item, roomPlayer, shop);
         if (found.isEmpty()) {
             return;
         }
         Offer offer = found.get();
         if (offer.alreadyHad()) {
-            player.sendMessage(messages.get("already-have"));
+            player.sendMessage(messages.get(player, "already-have"));
             return;
         }
         if (item.type() == ShopCatalog.Type.SPECIAL && !BUYABLE_SPECIALS.contains(item.id())) {
-            player.sendMessage(messages.get("coming-soon"));
+            player.sendMessage(messages.get(player, "coming-soon"));
             return;
         }
         Tier tier = offer.tier();
         PlayerInventory inventory = player.getInventory();
-        CustomShop custom = runtime.state().shop(shop.currencies());
+        CustomShop custom = runtime.state().shop();
         if (!custom.allows(item, tier, participant.team().id(), participant.id().toString(), count(inventory, tier.material()))) {
-            player.sendMessage(messages.get("purchase-limit"));
+            player.sendMessage(messages.get(player, "purchase-limit"));
             MatchSounds.play(sounds.cannotAfford(), player);
             return;
         }
@@ -309,25 +322,27 @@ public final class ShopService {
         }
         boolean needsSlot = item.type() != ShopCatalog.Type.ARMOR && item.type() != ShopCatalog.Type.PICKAXE && item.type() != ShopCatalog.Type.AXE;
         if (needsSlot && inventory.firstEmpty() < 0) {
-            player.sendMessage(messages.get("inventory-full"));
+            player.sendMessage(messages.get(player, "inventory-full"));
             return;
         }
         pool.take(tier.currency().material(), tier.price());
         custom.bought(item, tier, participant.team().id(), participant.id().toString());
-        give(player, roomPlayer, team, item, offer);
+        String bought = offer.boughtName(shop.texts());
+        give(player, roomPlayer, team, item, offer, bought);
         if (tier.material() == Material.HARD_CLAY || tier.material() == Material.STAINED_CLAY) {
             roomPlayer.addClay(item.amount());
         }
-        player.sendMessage(messages.get("bought", "item", offer.boughtName()));
+        player.sendMessage(messages.get(player, "bought", "item", bought));
         MatchSounds.play(sounds.bought(), player);
     }
 
-    private void give(Player player, RoomPlayer roomPlayer, RoomTeam team, ShopItem item, Offer offer) {
+    private void give(Player player, RoomPlayer roomPlayer, RoomTeam team, ShopItem item, Offer offer, String bought) {
         PlayerInventory inventory = player.getInventory();
         Tier tier = offer.tier();
+        ItemNames names = itemNames.in(messages.language(player));
         switch (item.type()) {
             case WOOL -> deliver(player, item, Kits.wool(team.color(), item.amount(), names));
-            case BLOCK -> deliver(player, item, names.named(block(woods, player.getUniqueId(), item, tier), offer.boughtName()));
+            case BLOCK -> deliver(player, item, names.named(block(woods, player.getUniqueId(), item, tier), bought));
             case SWORD -> {
                 inventory.remove(Material.WOOD_SWORD);
                 deliver(player, item, Kits.sword(tier.material(), team, names));
@@ -351,9 +366,9 @@ public final class ShopService {
                 deliver(player, item, Kits.axe(offer.level(), team, names));
             }
             case POTION -> deliver(player, item, potion(item, tier));
-            case ITEM -> deliver(player, item, names.named(plain(item, tier), offer.boughtName()));
+            case ITEM -> deliver(player, item, names.named(plain(item, tier), bought));
             case SPECIAL -> deliver(player, item, names.named(new ItemStack(tier.material(), item.amount(), (short) item.data()),
-                item.id().equals(Slingshot.ITEM_ID) ? Slingshot.ITEM_NAME : offer.boughtName()));
+                item.id().equals(Slingshot.ITEM_ID) ? messages.get(player, "slingshot-item") : bought));
         }
     }
 
@@ -363,6 +378,10 @@ public final class ShopService {
             return new ItemStack(wood.material(), item.amount(), wood.data());
         }
         return new ItemStack(tier.material(), item.amount(), (short) item.data());
+    }
+
+    private ShopCatalog shop(Player player) {
+        return shops.in(messages.language(player));
     }
 
     private void deliver(Player player, ShopItem item, ItemStack stack) {

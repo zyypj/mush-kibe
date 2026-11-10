@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
@@ -58,6 +59,7 @@ public final class BedPreview implements PreviewGate, Listener {
     private final BuildMode buildMode;
     private final Optional<BlockMask> blocks;
     private final Supplier<PreviewSettings> settings;
+    private final Function<UUID, PreviewSettings> texts;
     private final BedAnimations animations;
     private final AnimationPlayer animator;
     private final MessageCatalog messages;
@@ -65,11 +67,13 @@ public final class BedPreview implements PreviewGate, Listener {
     private Stage stage;
     private boolean listening;
 
-    public BedPreview(Plugin plugin, BuildMode buildMode, Optional<BlockMask> blocks, Supplier<PreviewSettings> settings, BedAnimations animations, MessageCatalog messages) {
+    public BedPreview(Plugin plugin, BuildMode buildMode, Optional<BlockMask> blocks, Supplier<PreviewSettings> settings, Function<UUID, PreviewSettings> texts,
+                      BedAnimations animations, MessageCatalog messages) {
         this.plugin = plugin;
         this.buildMode = buildMode;
         this.blocks = blocks;
         this.settings = settings;
+        this.texts = texts;
         this.animations = animations;
         this.animator = new AnimationPlayer(plugin);
         this.messages = messages;
@@ -132,19 +136,20 @@ public final class BedPreview implements PreviewGate, Listener {
         Stage active = stage;
         Optional<BedAnimation> animation = animations.find(cosmetic.id());
         if (active == null || animation.isEmpty()) {
-            viewer.sendMessage(messages.get(active == null ? "preview-only-lobby" : "cosmetic-no-preview"));
+            viewer.sendMessage(messages.get(viewer, active == null ? "preview-only-lobby" : "cosmetic-no-preview"));
             return;
         }
         if (previewing(viewer)) {
-            viewer.sendMessage(messages.get("preview-busy"));
+            viewer.sendMessage(messages.get(viewer, "preview-busy"));
             return;
         }
         PreviewSettings config = active.settings();
+        PreviewSettings shown = texts.apply(viewer.getUniqueId());
         Session session = new Session(viewer, animation.get(), back, active);
         sessions.put(viewer.getUniqueId(), session);
         viewer.getInventory().clear();
         viewer.getInventory().setArmorContents(new ItemStack[4]);
-        viewer.getInventory().setItem(config.back().slot(), backItem(config));
+        viewer.getInventory().setItem(config.back().slot(), backItem(config, shown));
         buildMode.releaseGameMode(viewer);
         viewer.setGameMode(GameMode.SURVIVAL);
         viewer.setAllowFlight(false);
@@ -163,16 +168,16 @@ public final class BedPreview implements PreviewGate, Listener {
             }
         }
         Sidebar sidebar = Sidebar.create(viewer);
-        sidebar.title(config.title());
-        sidebar.lines(config.lines(cosmetic.name()));
-        String bar = Colors.translate(config.actionBar());
+        sidebar.title(shown.title());
+        sidebar.lines(shown.lines(cosmetic.name()));
+        String bar = Colors.translate(shown.actionBar());
         session.actionBar = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> ActionBar.send(viewer, bar), 0L, TICKS_PER_SECOND);
         session.timeout = plugin.getServer().getScheduler().runTaskLater(plugin, () -> finish(viewer, true), config.timeout().toSeconds() * TICKS_PER_SECOND);
     }
 
-    private ItemStack backItem(PreviewSettings config) {
+    private ItemStack backItem(PreviewSettings config, PreviewSettings shown) {
         Material material = Material.matchMaterial(config.back().material());
-        return ItemBuilder.of(material == null ? Material.BED : material).name(config.back().name()).build();
+        return ItemBuilder.of(material == null ? Material.BED : material).name(shown.back().name()).build();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

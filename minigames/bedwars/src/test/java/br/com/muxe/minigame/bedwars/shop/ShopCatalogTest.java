@@ -93,6 +93,6 @@ class ShopCatalogTest {
         assertThat(Offer.of(catalog.items().get("armadura-malha"), player).state()).isEqualTo(State.OWNED);
         assertThat(Offer.of(catalog.items().get("armadura-ferro"), player).state()).isEqualTo(State.OWNED);
         assertThat(Offer.of(catalog.items().get("armadura-diamante"), player).state()).isEqualTo(State.AVAILABLE);
-        assertThat(Offer.of(catalog.items().get("armadura-diamante"), player).boughtName()).isEqualTo("Armadura de Diamante");
+        assertThat(Offer.of(catalog.items().get("armadura-diamante"), player).boughtName(catalog.texts())).isEqualTo("Armadura de Diamante");
     }
 }

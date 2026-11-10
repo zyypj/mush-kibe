@@ -28,11 +28,11 @@ public record TopSelectorSettings(
             section.getDouble("list-spacing", 0.28125),
             section.getDouble("footer-offset", 1.90625),
             Math.max(1, section.getInt("visible-modes", 5)),
-            section.getString("header", "&b&lSELECIONAR MODO"),
-            section.getString("footer", "&eClique para alterar."),
-            section.getString("selected", "&a{mode}"),
-            section.getString("other", "&7{mode}"),
-            section.getString("general-name", "Geral")
+            section.getString("header", ""),
+            section.getString("footer", ""),
+            section.getString("selected", "{mode}"),
+            section.getString("other", "{mode}"),
+            section.getString("general-name", "")
         ));
     }
 }

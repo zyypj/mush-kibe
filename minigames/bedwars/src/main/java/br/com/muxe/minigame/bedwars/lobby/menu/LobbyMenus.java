@@ -5,6 +5,8 @@ import br.com.muxe.core.bukkit.item.ItemBuilder;
 import br.com.muxe.core.bukkit.menu.Menu;
 import br.com.muxe.core.bukkit.prompt.ChatPrompts;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.api.arena.ArenaSchema;
 import br.com.muxe.minigame.api.cosmetic.menu.MenuSlot;
 import br.com.muxe.minigame.api.matchmaking.MatchConnector;
@@ -22,6 +24,7 @@ import br.com.muxe.minigame.bedwars.stats.domain.PlayerStats;
 import br.com.muxe.minigame.bedwars.stats.domain.StatsPeriod;
 import br.com.muxe.minigame.bedwars.stats.domain.TopCategory;
 import br.com.muxe.minigame.bedwars.stats.domain.TopEntry;
+import br.com.muxe.minigame.engine.mode.ModeNames;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +42,9 @@ public final class LobbyMenus {
     public static final Duration SEARCH_TIMEOUT = Duration.ofSeconds(60);
 
     private final MuxeCore core;
-    private final LobbyMenuSettings settings;
+    private final Localized<LobbyMenuSettings> settings;
     private final ArenaSchema schema;
+    private final ModeNames modeNames;
     private final MatchConnector connector;
     private final TopData tops;
     private final TagColors colors;
@@ -48,11 +52,12 @@ public final class LobbyMenus {
     private final MessageCatalog messages;
     private final ChatPrompts prompts;
 
-    public LobbyMenus(Plugin plugin, MuxeCore core, LobbyMenuSettings settings, ArenaSchema schema, MatchConnector connector, TopData tops, TagColors colors,
-                      LevelBadges badges, MessageCatalog messages) {
+    public LobbyMenus(Plugin plugin, MuxeCore core, Localized<LobbyMenuSettings> settings, ArenaSchema schema, ModeNames modeNames, MatchConnector connector,
+                      TopData tops, TagColors colors, LevelBadges badges, MessageCatalog messages) {
         this.core = core;
         this.settings = settings;
         this.schema = schema;
+        this.modeNames = modeNames;
         this.connector = connector;
         this.tops = tops;
         this.colors = colors;
@@ -61,44 +66,46 @@ public final class LobbyMenus {
         this.prompts = ChatPrompts.start(plugin, core.clock());
     }
 
-    public String modeName(String mode) {
-        return schema.modes().contains(mode) ? schema.mode(mode).displayName() : mode;
+    public String modeName(Language language, String mode) {
+        return schema.modes().contains(mode) ? modeNames.in(language, mode) : mode;
     }
 
     public List<String> topModeOrder() {
-        return List.copyOf(settings.topModes().entries().keySet());
+        return List.copyOf(settings.standard().topModes().entries().keySet());
     }
 
-    public String modeLabel(String mode) {
+    public String modeLabel(Language language, String mode) {
         if (schema.modes().contains(mode)) {
-            return schema.mode(mode).displayName();
+            return modeNames.in(language, mode);
         }
         return mode.isEmpty() ? mode : Character.toUpperCase(mode.charAt(0)) + mode.substring(1);
     }
 
-    public String modeTitle(String mode) {
-        LobbyMenuSettings.TopModeEntry entry = settings.topModes().entries().get(mode);
-        return entry == null ? modeName(mode) : entry.title();
+    public String modeTitle(Language language, String mode) {
+        LobbyMenuSettings.TopModeEntry entry = settings.in(language).topModes().entries().get(mode);
+        return entry == null ? modeName(language, mode) : entry.title();
     }
 
     public void openMode(Player player, String mode) {
+        Language language = messages.language(player);
+        LobbyMenuSettings settings = this.settings.in(language);
         LobbyMenuSettings.Mode menu = settings.mode();
-        String name = modeName(mode);
+        String name = modeName(language, mode);
         RoomDirectory directory = connector.directory();
         Menu.Builder builder = Menu.builder(menu.title().replace("{mode}", name)).rows(menu.rows());
         ItemBuilder play = menu.play().item().replacing("mode", name, "players", String.valueOf(directory.playersIn(mode)));
-        builder.button(menu.play().slot(), play.lore(expandTop(play.lore(), mode)), context -> {
+        builder.button(menu.play().slot(), play.lore(expandTop(play.lore(), mode, settings)), context -> {
             context.close();
             connector.join(context.player(), mode, Optional.empty());
         });
         builder.button(menu.map().slot(), menu.map().item(), context -> {
             if (!context.player().hasPermission(MAP_PERMISSION)) {
-                context.player().sendMessage(messages.get("map-vip-only"));
+                context.player().sendMessage(messages.get(language, "map-vip-only"));
                 return;
             }
             openMaps(context.player(), mode, 0, Optional.empty());
         });
-        builder.button(menu.training().slot(), menu.training().item(), context -> context.player().sendMessage(messages.get("coming-soon")));
+        builder.button(menu.training().slot(), menu.training().item(), context -> context.player().sendMessage(messages.get(language, "coming-soon")));
         if (menu.backModes().contains(mode)) {
             builder.button(menu.back().slot(), menu.back().item(), context -> openDuels(context.player()));
         }
@@ -106,12 +113,13 @@ public final class LobbyMenus {
     }
 
     public void openDuels(Player player) {
-        LobbyMenuSettings.Duels menu = settings.duels();
+        Language language = messages.language(player);
+        LobbyMenuSettings.Duels menu = settings.in(language).duels();
         Menu.Builder builder = Menu.builder(menu.title()).rows(menu.rows());
         for (Map.Entry<String, LobbyMenuSettings.DuelEntry> entry : menu.entries().entrySet()) {
             String mode = entry.getKey();
             ItemBuilder icon = menu.item().amount(entry.getValue().amount())
-                .replacing("mode", modeName(mode), "players", String.valueOf(connector.directory().playersIn(mode)));
+                .replacing("mode", modeName(language, mode), "players", String.valueOf(connector.directory().playersIn(mode)));
             builder.button(entry.getValue().slot(), icon, context -> openMode(context.player(), mode));
         }
         builder.build().open(player);
@@ -126,17 +134,18 @@ public final class LobbyMenus {
     }
 
     private void showMaps(Player player, String mode, int page, Optional<String> search, Set<String> favourites) {
-        LobbyMenuSettings.Maps menu = settings.maps();
+        Language language = messages.language(player);
+        LobbyMenuSettings.Maps menu = settings.in(language).maps();
         List<ArenaInfo> arenas = MapList.order(connector.directory().arenas(mode), favourites, search);
         if (search.isPresent() && arenas.isEmpty()) {
-            player.sendMessage(messages.get("map-search-none", "search", search.get()));
+            player.sendMessage(messages.get(language, "map-search-none", "search", search.get()));
             showMaps(player, mode, 0, Optional.empty(), favourites);
             return;
         }
         int perPage = Math.max(1, menu.slots().size());
         int pages = Math.max(1, (arenas.size() + perPage - 1) / perPage);
         int current = Math.max(0, Math.min(page, pages - 1));
-        String name = modeName(mode);
+        String name = modeName(language, mode);
         Menu.Builder builder = Menu.builder(menu.title().replace("{mode}", name).replace("{page}", String.valueOf(current + 1)).replace("{pages}", String.valueOf(pages)))
             .rows(menu.rows());
         List<ArenaInfo> shown = arenas.subList(current * perPage, Math.min(arenas.size(), (current + 1) * perPage));
@@ -159,7 +168,7 @@ public final class LobbyMenus {
         builder.button(menu.random().slot(), menu.random().item(), context -> {
             List<ArenaInfo> liked = arenas.stream().filter(arena -> favourites.contains(arena.name())).toList();
             if (liked.isEmpty()) {
-                context.player().sendMessage(messages.get("map-no-favourites"));
+                context.player().sendMessage(messages.get(language, "map-no-favourites"));
                 return;
             }
             context.close();
@@ -167,7 +176,7 @@ public final class LobbyMenus {
         });
         builder.button(menu.search().slot(), menu.search().item(), context -> {
             context.close();
-            context.player().sendMessage(messages.get("map-search"));
+            context.player().sendMessage(messages.get(language, "map-search"));
             prompts.ask(context.player(), SEARCH_TIMEOUT, text -> openMaps(player, mode, 0, Optional.of(text)), () -> openMaps(player, mode, 0, Optional.empty()), () -> {
             });
         });
@@ -181,7 +190,7 @@ public final class LobbyMenus {
     }
 
     public void openTopModes(Player player, String current, Consumer<String> chosen) {
-        LobbyMenuSettings.TopModes menu = settings.topModes();
+        LobbyMenuSettings.TopModes menu = settings.in(messages.language(player)).topModes();
         Menu.Builder builder = Menu.builder(menu.title()).rows(menu.rows());
         for (Map.Entry<String, LobbyMenuSettings.TopModeEntry> entry : menu.entries().entrySet()) {
             String mode = entry.getKey();
@@ -206,7 +215,7 @@ public final class LobbyMenus {
     }
 
     private void showStats(Player player, PlayerStats stats) {
-        LobbyMenuSettings.Stats menu = settings.stats();
+        LobbyMenuSettings.Stats menu = settings.in(messages.language(player)).stats();
         Menu.Builder builder = Menu.builder(menu.title()).rows(menu.rows());
         Levels.Progress progress = Levels.progress(Math.max(0, stats.general().xp()));
         ItemBuilder general = menu.general().item();
@@ -219,7 +228,7 @@ public final class LobbyMenus {
         builder.build().open(player);
     }
 
-    private List<String> expandTop(List<String> lore, String mode) {
+    private List<String> expandTop(List<String> lore, String mode, LobbyMenuSettings settings) {
         List<TopEntry> top = tops.get(TopCategory.WINSTREAK, mode, StatsPeriod.DAILY);
         List<String> expanded = new ArrayList<>();
         for (String line : lore) {

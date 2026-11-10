@@ -15,7 +15,7 @@ public record LobbyScoreboardSettings(String title, List<String> lines, List<Str
 
     public static LobbyScoreboardSettings from(ConfigurationSection section) {
         return new LobbyScoreboardSettings(
-            section.getString("title", "&b&lBED WARS"),
+            section.getString("title", ""),
             section.getStringList("lines"),
             section.getStringList("mode-lines"),
             section.getStringList("default-modes"),

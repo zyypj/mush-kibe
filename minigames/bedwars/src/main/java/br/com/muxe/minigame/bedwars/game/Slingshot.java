@@ -12,7 +12,6 @@ import java.util.UUID;
 public final class Slingshot {
 
     public static final String ITEM_ID = "estilingue";
-    public static final String ITEM_NAME = "&cEstilingue";
     public static final Duration COOLDOWN = Duration.ofSeconds(7);
     public static final List<Float> SOUND_PITCHES = List.of(1.25f, 1.5f, 1.75f, 2.0f);
     public static final String SOUND = "mob.slime.small";
@@ -20,7 +19,8 @@ public final class Slingshot {
     public static final int SLIME_BLOCK_ID = 165;
     static final double FORWARD = 1.5625;
     static final double LIFT = 1.0;
-    private static final String LABEL = "ESTILINGUE:";
+    public static final String LABEL = "ESTILINGUE:";
+    public static final String DECIMAL_SEPARATOR = ",";
 
     private final Map<UUID, Instant> readyAt = new HashMap<>();
 
@@ -57,16 +57,20 @@ public final class Slingshot {
     }
 
     public static String actionBar(Duration remaining, Duration cooldown) {
+        return actionBar(LABEL, DECIMAL_SEPARATOR, remaining, cooldown);
+    }
+
+    public static String actionBar(String label, String decimalSeparator, Duration remaining, Duration cooldown) {
         long total = Math.max(1, cooldown.toMillis() / 100);
         long tenths = (remaining.toMillis() + 99) / 100;
-        int underlined = (int) Math.min(LABEL.length(), (LABEL.length() * tenths + total - 1) / total);
+        int underlined = (int) Math.min(label.length(), (label.length() * tenths + total - 1) / total);
         StringBuilder text = new StringBuilder();
         if (underlined > 0) {
-            text.append("§c§n§l").append(LABEL, 0, underlined);
+            text.append("§c§n§l").append(label, 0, underlined);
         }
-        if (underlined < LABEL.length()) {
-            text.append("§c§l").append(LABEL.substring(underlined));
+        if (underlined < label.length()) {
+            text.append("§c§l").append(label.substring(underlined));
         }
-        return text.append("§r ").append(tenths / 10).append(',').append(tenths % 10).append('s').toString();
+        return text.append("§r ").append(tenths / 10).append(decimalSeparator).append(tenths % 10).append('s').toString();
     }
 }

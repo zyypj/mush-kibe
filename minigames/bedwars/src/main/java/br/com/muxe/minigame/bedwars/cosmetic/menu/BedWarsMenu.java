@@ -2,6 +2,8 @@ package br.com.muxe.minigame.bedwars.cosmetic.menu;
 
 import br.com.muxe.core.bukkit.menu.Menu;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.api.cosmetic.menu.CosmeticMenus;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -10,7 +12,7 @@ import org.bukkit.entity.Player;
 
 public final class BedWarsMenu {
 
-    private final BedWarsMenuSettings settings;
+    private final Localized<BedWarsMenuSettings> settings;
     private final CosmeticMenus cosmetics;
     private final MessageCatalog messages;
     private BiConsumer<Player, Consumer<Player>> quickBuy = (player, back) -> {
@@ -22,7 +24,7 @@ public final class BedWarsMenu {
     private BiConsumer<Player, Optional<Consumer<Player>>> missions = (player, back) -> {
     };
 
-    public BedWarsMenu(BedWarsMenuSettings settings, CosmeticMenus cosmetics, MessageCatalog messages) {
+    public BedWarsMenu(Localized<BedWarsMenuSettings> settings, CosmeticMenus cosmetics, MessageCatalog messages) {
         this.settings = settings;
         this.cosmetics = cosmetics;
         this.messages = messages;
@@ -49,6 +51,8 @@ public final class BedWarsMenu {
     }
 
     public void open(Player player) {
+        Language language = messages.language(player);
+        BedWarsMenuSettings settings = this.settings.in(language);
         Menu.Builder menu = Menu.builder(settings.title()).rows(settings.rows());
         settings.items().forEach(menu::button);
         settings.missions().ifPresent(button -> menu.button(button.slot(), button.item(),
@@ -59,7 +63,7 @@ public final class BedWarsMenu {
             context -> preferences.accept(context.player(), this::open)));
         settings.hotbar().ifPresent(button -> menu.button(button.slot(), button.item(),
             context -> hotbar.accept(context.player(), this::open)));
-        settings.soon().forEach((slot, item) -> menu.button(slot, item, context -> context.player().sendMessage(messages.get("coming-soon"))));
+        settings.soon().forEach((slot, item) -> menu.button(slot, item, context -> context.player().sendMessage(messages.get(language, "coming-soon"))));
         menu.button(settings.cosmetics().slot(), settings.cosmetics().item(), context -> cosmetics.openCategories(context.player(), Optional.of(this::open)))
             .build()
             .open(player);

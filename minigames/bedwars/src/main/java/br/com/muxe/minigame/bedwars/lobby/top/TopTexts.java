@@ -1,6 +1,7 @@
 package br.com.muxe.minigame.bedwars.lobby.top;
 
 import br.com.muxe.core.bukkit.nms.PacketHologramTransport;
+import br.com.muxe.minigame.bedwars.stats.domain.PlayerStats;
 import br.com.muxe.minigame.bedwars.stats.domain.StatsPeriod;
 import java.util.EnumMap;
 import java.util.Locale;
@@ -36,13 +37,13 @@ public record TopTexts(
             names.put(period, configured == null ? period.id() : configured.getString(period.name(), period.id()));
         }
         return new TopTexts(
-            section.getString("header", "&b&lTOP 100&r &7({page}/{pages})"),
-            section.getString("entry", "&e{position}.&r &f{name}&r &7- &e{value}&r"),
-            section.getString("empty", "&e{position}.&r &f&7Ninguém&r &7- &e{value}&r"),
-            section.getString("click", "&6&lClique para trocar!"),
-            section.getString("period-selected", "&a&l{period}&r"),
-            section.getString("period-other", "&7{period}&r"),
-            section.getString("general", "GERAL"),
+            section.getString("header", "({page}/{pages})"),
+            section.getString("entry", "{position}. {name} - {value}"),
+            section.getString("empty", "{position}. - {value}"),
+            section.getString("click", ""),
+            section.getString("period-selected", "{period}"),
+            section.getString("period-other", "{period}"),
+            section.getString("general", PlayerStats.GENERAL),
             names,
             section.getDouble("label-above-stand", PacketHologramTransport.FULL_STAND_LABEL_HEIGHT),
             Math.max(10, section.getInt("refresh-seconds", 60)),

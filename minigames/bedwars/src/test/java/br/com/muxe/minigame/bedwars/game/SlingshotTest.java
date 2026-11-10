@@ -42,4 +42,10 @@ class SlingshotTest {
         assertThat(Slingshot.actionBar(Duration.ofMillis(4400))).isEqualTo("§c§n§lESTILIN§c§lGUE:§r 4,4s");
         assertThat(Slingshot.actionBar(Duration.ofMillis(4351))).isEqualTo("§c§n§lESTILIN§c§lGUE:§r 4,4s");
     }
+
+    @Test
+    void theActionBarShowsTheNameInTheLanguageOfThePlayer() {
+        assertThat(Slingshot.actionBar("SLINGSHOT:", ".", Duration.ofMillis(7000), Slingshot.COOLDOWN)).isEqualTo("§c§n§lSLINGSHOT:§r 7.0s");
+        assertThat(Slingshot.actionBar("SLINGSHOT:", ".", Duration.ofMillis(3500), Slingshot.COOLDOWN)).isEqualTo("§c§n§lSLING§c§lSHOT:§r 3.5s");
+    }
 }

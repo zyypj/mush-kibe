@@ -5,6 +5,7 @@ import br.com.muxe.core.bukkit.cosmetic.animation.Vec;
 import br.com.muxe.core.bukkit.nms.Fireballs;
 import br.com.muxe.core.bukkit.text.ActionBar;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.api.listener.GameHandlers;
 import br.com.muxe.minigame.api.match.Match;
 import br.com.muxe.minigame.api.match.Participant;
@@ -17,6 +18,7 @@ import br.com.muxe.minigame.bedwars.game.ExplosionKnockback.Source;
 import br.com.muxe.minigame.bedwars.game.ExplosionKnockback;
 import br.com.muxe.minigame.bedwars.game.Foliage;
 import br.com.muxe.minigame.bedwars.game.Slingshot;
+import br.com.muxe.minigame.bedwars.item.ItemNames;
 import br.com.muxe.minigame.bedwars.preferences.PlayerPreferences;
 import br.com.muxe.minigame.bedwars.room.BedWarsMatch;
 import br.com.muxe.minigame.bedwars.room.ForgePickup;
@@ -67,6 +69,7 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
     private final Plugin plugin;
     private final MuxeCore core;
     private final BedWarsSettings settings;
+    private final Localized<BedWarsSettings> localized;
     private final MessageCatalog messages;
     private final Bedbugs bedbugs;
     private final PlayerPreferences preferences;
@@ -77,11 +80,12 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
     private final BiConsumer<Player, String> playAgain;
     private final Map<UUID, UUID> explosives = new HashMap<>();
 
-    public BedWarsHandlers(Plugin plugin, MuxeCore core, BedWarsSettings settings, MessageCatalog messages, Bedbugs bedbugs, PlayerPreferences preferences,
+    public BedWarsHandlers(Plugin plugin, MuxeCore core, Localized<BedWarsSettings> localized, MessageCatalog messages, Bedbugs bedbugs, PlayerPreferences preferences,
                            TntTimers tntTimers, Activity activity, Slingshot slingshot, Consumer<Player> openMenu, BiConsumer<Player, String> playAgain) {
         this.plugin = plugin;
         this.core = core;
-        this.settings = settings;
+        this.settings = localized.standard();
+        this.localized = localized;
         this.messages = messages;
         this.bedbugs = bedbugs;
         this.preferences = preferences;
@@ -152,7 +156,7 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         Block block = event.getBlockPlaced();
         if (!state.mayPlace(block.getLocation())) {
             event.setCancelled(true);
-            player.sendMessage(messages.get("cannot-place"));
+            player.sendMessage(messages.get(player, "cannot-place"));
             return;
         }
         if (block.getType() == Material.TNT) {
@@ -283,8 +287,8 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
             carried.add(cursor.getType());
         }
         switch (ChestDeposits.verdict(item.getType(), carried)) {
-            case KEPT -> player.sendMessage(messages.get("chest-kept"));
-            case LAST_SWORD -> player.sendMessage(messages.get("chest-last-one"));
+            case KEPT -> player.sendMessage(messages.get(player, "chest-kept"));
+            case LAST_SWORD -> player.sendMessage(messages.get(player, "chest-last-one"));
             case STORE, NOTHING -> {
                 return true;
             }
@@ -308,17 +312,17 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         int kept = target.addItem(item.clone()).values().stream().mapToInt(ItemStack::getAmount).sum();
         int stored = held - kept;
         if (stored <= 0) {
-            player.sendMessage(messages.get("chest-full"));
+            player.sendMessage(messages.get(player, "chest-full"));
             return;
         }
-        String name = settings.items().display(item);
+        String name = names(player).display(item);
         if (kept == 0) {
             player.setItemInHand(null);
         } else {
             item.setAmount(kept);
             player.setItemInHand(item);
         }
-        player.sendMessage(messages.get("chest-deposited", "item", name, "amount", String.valueOf(stored)));
+        player.sendMessage(messages.get(player, "chest-deposited", "item", name, "amount", String.valueOf(stored)));
         MatchSounds.play(settings.sounds().deposited(), player);
     }
 
@@ -326,7 +330,7 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         if (amount <= 0) {
             return;
         }
-        player.getInventory().addItem(settings.items().named(new ItemStack(type, amount))).values()
+        player.getInventory().addItem(names(player).named(new ItemStack(type, amount))).values()
             .forEach(rest -> player.getWorld().dropItem(player.getLocation(), rest));
         player.playSound(player.getLocation(), Sound.ITEM_PICKUP, ForgePickup.SOUND_VOLUME, ForgePickup.SOUND_PITCH);
         if (type == Material.EMERALD) {
@@ -352,6 +356,8 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
                 }
             }, (long) index * Slingshot.SOUND_GAP_TICKS);
         }
+        String label = messages.get(player, "slingshot-label");
+        String decimalSeparator = messages.get(player, "decimal-separator");
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -360,9 +366,13 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
                     cancel();
                     return;
                 }
-                ActionBar.send(player, Slingshot.actionBar(left.get(), cooldown));
+                ActionBar.send(player, Slingshot.actionBar(label, decimalSeparator, left.get(), cooldown));
             }
         }.runTaskTimer(plugin, 0L, SLINGSHOT_BAR_TICKS);
+    }
+
+    private ItemNames names(Player player) {
+        return localized.in(messages.language(player)).items();
     }
 
     @SuppressWarnings("deprecation")

@@ -1,9 +1,12 @@
 package br.com.muxe.minigame.bedwars.bootstrap;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.mission.menu.MissionMenus;
 import br.com.muxe.core.bukkit.npc.NpcLabelLayout;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.api.arena.ArenaSchema;
 import br.com.muxe.minigame.api.matchmaking.MatchConnector;
 import br.com.muxe.minigame.bedwars.lobby.LevelChat;
@@ -24,11 +27,11 @@ import br.com.muxe.minigame.bedwars.lobby.top.TopSelectorSettings;
 import br.com.muxe.minigame.bedwars.lobby.top.TopTexts;
 import br.com.muxe.minigame.bedwars.preferences.PlayerPreferences;
 import br.com.muxe.minigame.engine.level.LevelUps;
+import br.com.muxe.minigame.engine.mode.ModeNames;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -48,27 +51,33 @@ public final class LobbyFeatures {
         this.boards = boards;
     }
 
-    public static LobbyFeatures start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, MessageCatalog messages, ArenaSchema schema, MissionMenus missions,
-                                      PlayerPreferences preferences, MatchConnector connector) {
-        ConfigurationSection lobby = section(config, "lobby");
-        LevelBadges badges = LevelBadges.from(section(config, "levels"));
-        TopTexts texts = TopTexts.from(section(lobby, "tops"));
-        StatsCache stats = new StatsCache(plugin, core, new LevelUps(messages.get("level-up"), badges::of));
+    public static LobbyFeatures start(JavaPlugin plugin, MuxeCore core, LocalizedConfig texts, MessageCatalog messages, ArenaSchema schema, ModeNames modeNames,
+                                      MissionMenus missions, PlayerPreferences preferences, MatchConnector connector) {
+        ConfigurationSection lobby = section(texts.standard(), "lobby");
+        LevelBadges badges = LevelBadges.from(section(texts.standard(), "levels"));
+        Localized<TopTexts> topTexts = texts.map(root -> TopTexts.from(section(root, "lobby.tops")));
+        StatsCache stats = new StatsCache(plugin, core, new LevelUps(messages.text("level-up"), badges::of, core.languages()));
         stats.start();
         plugin.getServer().getPluginManager().registerEvents(new LevelChat(stats, badges, preferences), plugin);
         TagColors colors = new TagColors(core);
-        TopData tops = new TopData(plugin, core, Duration.ofSeconds(texts.refreshSeconds()));
-        LobbyMenus menus = new LobbyMenus(plugin, core, LobbyMenuSettings.from(section(lobby, "menus")), schema, connector, tops, colors, badges, messages);
-        LobbyNpcs npcs = new LobbyNpcs(plugin, LobbyNpc.from(section(lobby, "npcs")), NpcLabelLayout.from(lobby.getConfigurationSection("npc-labels")), lobby.getStringList("blink-colors"),
-            StatsNpcSettings.from(section(lobby, "stats-npc")), connector.directory(), stats, badges, (player, action) -> act(player, action, menus, schema, missions));
+        TopData tops = new TopData(plugin, core, Duration.ofSeconds(topTexts.standard().refreshSeconds()));
+        LobbyMenus menus = new LobbyMenus(plugin, core, texts.map(root -> LobbyMenuSettings.from(section(root, "lobby.menus"))), schema, modeNames, connector, tops,
+            colors, badges, messages);
+        LobbyNpcs npcs = new LobbyNpcs(plugin, texts.map(root -> LobbyNpc.from(section(root, "lobby.npcs"))), NpcLabelLayout.from(lobby.getConfigurationSection("npc-labels")),
+            lobby.getStringList("blink-colors"), texts.map(root -> StatsNpcSettings.from(section(root, "lobby.stats-npc"))), core.languages(), connector.directory(), stats,
+            badges, (player, action) -> act(player, action, menus, schema, missions));
         npcs.start();
-        ConfigurationSection topSection = section(lobby, "tops");
-        TopBoards boards = new TopBoards(plugin, TopBoardSettings.from(section(topSection, "boards")), texts, tops, colors, badges, menus::modeTitle, menus::openTopModes,
-            TopSelectorSettings.from(topSection.getConfigurationSection("selector")), menus.topModeOrder(), menus::modeLabel);
+        TopBoards boards = new TopBoards(plugin, texts.map(root -> TopBoardSettings.from(section(root, "lobby.tops.boards"))), topTexts, tops, colors, badges,
+            menus::modeTitle, menus::openTopModes, texts.map(root -> TopSelectorSettings.from(root.getConfigurationSection("lobby.tops.selector"))),
+            menus.topModeOrder(), menus::modeLabel, core.languages());
         boards.start();
-        LobbyScoreboardSettings scoreboard = LobbyScoreboardSettings.from(section(lobby, "scoreboard"));
-        core.sidebars().provide(player -> Optional.of(LobbySidebar.content(scoreboard, stats.of(player.getUniqueId()), badges, schema.modes(),
-            menus::modeName, core.servers().gamePlayers(BedWarsBootstrap.GAME))));
+        core.languages().onChange(boards::refresh);
+        Localized<LobbyScoreboardSettings> scoreboards = texts.map(root -> LobbyScoreboardSettings.from(section(root, "lobby.scoreboard")));
+        core.sidebars().provide(player -> {
+            Language language = core.languages().of(player);
+            return Optional.of(LobbySidebar.content(scoreboards.in(language), stats.of(player.getUniqueId()), badges, schema.modes(),
+                mode -> menus.modeName(language, mode), core.servers().gamePlayers(BedWarsBootstrap.GAME)));
+        });
         return new LobbyFeatures(core, npcs, boards);
     }
 

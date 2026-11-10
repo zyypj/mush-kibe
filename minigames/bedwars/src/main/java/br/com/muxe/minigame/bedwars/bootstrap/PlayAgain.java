@@ -1,6 +1,7 @@
 package br.com.muxe.minigame.bedwars.bootstrap;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.minigame.api.arena.ArenaSchema;
 import br.com.muxe.minigame.api.matchmaking.MatchConnector;
@@ -10,10 +11,10 @@ import br.com.muxe.minigame.bedwars.lobby.menu.LobbyMenus;
 import br.com.muxe.minigame.bedwars.lobby.top.TagColors;
 import br.com.muxe.minigame.bedwars.lobby.top.TopData;
 import br.com.muxe.minigame.bedwars.lobby.top.TopTexts;
+import br.com.muxe.minigame.engine.mode.ModeNames;
 import java.time.Duration;
 import java.util.Objects;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 final class PlayAgain {
@@ -21,11 +22,16 @@ final class PlayAgain {
     private PlayAgain() {
     }
 
-    static LobbyMenus menus(JavaPlugin plugin, MuxeCore core, FileConfiguration config, MessageCatalog messages, ArenaSchema schema, MatchConnector connector) {
-        ConfigurationSection lobby = Objects.requireNonNull(config.getConfigurationSection("lobby"), "Missing configuration section lobby");
-        TopTexts texts = TopTexts.from(Objects.requireNonNull(lobby.getConfigurationSection("tops"), "Missing configuration section lobby.tops"));
-        TopData tops = new TopData(plugin, core, Duration.ofSeconds(texts.refreshSeconds()));
-        return new LobbyMenus(plugin, core, LobbyMenuSettings.from(Objects.requireNonNull(lobby.getConfigurationSection("menus"), "Missing configuration section lobby.menus")),
-            schema, connector, tops, new TagColors(core), LevelBadges.from(config.getConfigurationSection("levels")), messages);
+    static LobbyMenus menus(JavaPlugin plugin, MuxeCore core, LocalizedConfig texts, MessageCatalog messages, ArenaSchema schema, ModeNames modeNames,
+                            MatchConnector connector) {
+        ConfigurationSection lobby = section(texts.standard(), "lobby");
+        TopTexts tops = TopTexts.from(section(lobby, "tops"));
+        TopData data = new TopData(plugin, core, Duration.ofSeconds(tops.refreshSeconds()));
+        return new LobbyMenus(plugin, core, texts.map(root -> LobbyMenuSettings.from(section(root, "lobby.menus"))), schema, modeNames, connector, data,
+            new TagColors(core), LevelBadges.from(texts.standard().getConfigurationSection("levels")), messages);
+    }
+
+    private static ConfigurationSection section(ConfigurationSection parent, String path) {
+        return Objects.requireNonNull(parent.getConfigurationSection(path), "Missing configuration section " + path);
     }
 }

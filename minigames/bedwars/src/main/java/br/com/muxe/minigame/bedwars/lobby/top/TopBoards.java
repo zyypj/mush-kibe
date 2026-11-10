@@ -6,6 +6,9 @@ import br.com.muxe.core.bukkit.hologram.SpawnedHologram;
 import br.com.muxe.core.bukkit.hologram.TextHolograms;
 import br.com.muxe.core.bukkit.nms.EntityUse;
 import br.com.muxe.core.bukkit.nms.PacketInterceptor;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.bedwars.lobby.format.LevelBadges;
 import br.com.muxe.minigame.bedwars.stats.domain.PlayerStats;
 import java.util.List;
@@ -13,8 +16,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,38 +32,48 @@ public final class TopBoards implements Listener {
     public static final long JOIN_DELAY_TICKS = 20L;
 
     private final Plugin plugin;
-    private final List<TopBoardSettings> boards;
+    private final Localized<List<TopBoardSettings>> boards;
+    private final Localized<TopTexts> localizedTexts;
     private final TopTexts texts;
     private final TopData data;
     private final TagColors colors;
     private final LevelBadges badges;
-    private final Function<String, String> modeTitle;
+    private final BiFunction<Language, String, String> modeTitle;
     private final ModeChooser chooser;
-    private final Optional<TopSelectorSettings> selector;
+    private final Localized<Optional<TopSelectorSettings>> selectors;
     private final List<String> modeOrder;
-    private final Function<String, String> modeName;
+    private final BiFunction<Language, String, String> modeName;
+    private final LanguageLookup languages;
     private final TextHolograms holograms;
     private final Map<UUID, Map<String, Shown>> shown = new ConcurrentHashMap<>();
-    private final Map<UUID, SelectorShown> selectors = new ConcurrentHashMap<>();
+    private final Map<UUID, SelectorShown> shownSelectors = new ConcurrentHashMap<>();
     private final Map<UUID, String> modes = new ConcurrentHashMap<>();
     private Optional<PacketInterceptor> interceptor = Optional.empty();
     private boolean refreshQueued;
 
-    public TopBoards(Plugin plugin, List<TopBoardSettings> boards, TopTexts texts, TopData data, TagColors colors, LevelBadges badges,
-                     Function<String, String> modeTitle, ModeChooser chooser, Optional<TopSelectorSettings> selector, List<String> modeOrder,
-                     Function<String, String> modeName) {
+    public TopBoards(Plugin plugin, Localized<List<TopBoardSettings>> boards, Localized<TopTexts> texts, TopData data, TagColors colors, LevelBadges badges,
+                     BiFunction<Language, String, String> modeTitle, ModeChooser chooser, Localized<Optional<TopSelectorSettings>> selectors,
+                     List<String> modeOrder, BiFunction<Language, String, String> modeName, LanguageLookup languages) {
         this.plugin = plugin;
-        this.boards = List.copyOf(boards);
-        this.texts = texts;
+        this.boards = boards.map(List::copyOf);
+        this.localizedTexts = texts;
+        this.texts = texts.standard();
         this.data = data;
         this.colors = colors;
         this.badges = badges;
         this.modeTitle = modeTitle;
         this.chooser = chooser;
-        this.selector = selector;
+        this.selectors = selectors;
         this.modeOrder = List.copyOf(modeOrder);
         this.modeName = modeName;
-        this.holograms = TextHolograms.standard(selector.map(TopSelectorSettings::listSpacing).orElse(TextHolograms.DEFAULT_LINE_SPACING));
+        this.languages = languages;
+        this.holograms = TextHolograms.standard(selectors.standard().map(TopSelectorSettings::listSpacing).orElse(TextHolograms.DEFAULT_LINE_SPACING));
+    }
+
+    public void refresh(Player player) {
+        if (shown.containsKey(player.getUniqueId()) || shownSelectors.containsKey(player.getUniqueId())) {
+            show(player);
+        }
     }
 
     public void start() {
@@ -78,8 +91,8 @@ public final class TopBoards implements Listener {
         interceptor.ifPresent(PacketInterceptor::stop);
         shown.values().forEach(views -> views.values().forEach(view -> view.hologram().remove()));
         shown.clear();
-        selectors.values().forEach(SelectorShown::remove);
-        selectors.clear();
+        shownSelectors.values().forEach(SelectorShown::remove);
+        shownSelectors.clear();
     }
 
     @EventHandler
@@ -99,7 +112,7 @@ public final class TopBoards implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         UUID id = event.getPlayer().getUniqueId();
         shown.remove(id);
-        selectors.remove(id);
+        shownSelectors.remove(id);
         modes.remove(id);
     }
 
@@ -109,8 +122,9 @@ public final class TopBoards implements Listener {
         }
         hide(player);
         String mode = mode(player);
+        Language language = languages.of(player.getUniqueId());
         Map<String, Shown> views = new ConcurrentHashMap<>();
-        for (TopBoardSettings board : boards) {
+        for (TopBoardSettings board : boards.in(language)) {
             Location top = top(board);
             if (top.getWorld() == null || !top.getWorld().equals(player.getWorld())) {
                 continue;
@@ -119,15 +133,15 @@ public final class TopBoards implements Listener {
             if (board.modes()) {
                 state.mode(mode);
             }
-            views.put(board.id(), new Shown(board, state, holograms.show(player, top, lines(board, state), TopView.gaps(texts.spacing()))));
+            views.put(board.id(), new Shown(board, state, language, holograms.show(player, top, lines(board, state, language), TopView.gaps(texts.spacing()))));
         }
         shown.put(player.getUniqueId(), views);
-        selector.ifPresent(settings -> {
+        selectors.in(language).ifPresent(settings -> {
             Location header = settings.spot().above(texts.labelAboveStand()).toLocation(plugin.getServer());
             if (header.getWorld() != null && header.getWorld().equals(player.getWorld())) {
-                selectors.put(player.getUniqueId(), new SelectorShown(
+                shownSelectors.put(player.getUniqueId(), new SelectorShown(
                     holograms.show(player, header, List.of(settings.header())),
-                    holograms.show(player, header.clone().subtract(0, settings.listOffset(), 0), selectorModes(settings, mode)),
+                    holograms.show(player, header.clone().subtract(0, settings.listOffset(), 0), selectorModes(settings, mode, language)),
                     holograms.show(player, header.clone().subtract(0, settings.footerOffset(), 0), List.of(settings.footer()))
                 ));
             }
@@ -139,7 +153,7 @@ public final class TopBoards implements Listener {
         if (views != null) {
             views.values().forEach(view -> view.hologram().remove());
         }
-        SelectorShown shownSelector = selectors.remove(player.getUniqueId());
+        SelectorShown shownSelector = shownSelectors.remove(player.getUniqueId());
         if (shownSelector != null) {
             shownSelector.remove();
         }
@@ -149,8 +163,8 @@ public final class TopBoards implements Listener {
         return modes.getOrDefault(player.getUniqueId(), PlayerStats.GENERAL);
     }
 
-    private List<String> selectorModes(TopSelectorSettings settings, String mode) {
-        return TopSelectorView.modes(settings, modeOrder, mode, modeName);
+    private List<String> selectorModes(TopSelectorSettings settings, String mode, Language language) {
+        return TopSelectorView.modes(settings, modeOrder, mode, id -> modeName.apply(language, id));
     }
 
     private void queueRefresh() {
@@ -180,32 +194,36 @@ public final class TopBoards implements Listener {
             return;
         }
         Location top = top(view.board());
-        List<HologramPixel> pixels = holograms.layout(top, lines(view.board(), view.state()), TopView.gaps(texts.spacing()));
+        List<HologramPixel> pixels = holograms.layout(top, lines(view.board(), view.state(), view.language()), TopView.gaps(texts.spacing()));
         if (view.hologram().rename(pixels.stream().map(HologramPixel::name).toList())) {
             return;
         }
         view.hologram().remove();
-        views.put(boardId, new Shown(view.board(), view.state(), holograms.show(player, top, lines(view.board(), view.state()), TopView.gaps(texts.spacing()))));
+        views.put(boardId, new Shown(view.board(), view.state(), view.language(),
+            holograms.show(player, top, lines(view.board(), view.state(), view.language()), TopView.gaps(texts.spacing()))));
     }
 
     private void refreshSelector(Player player) {
-        SelectorShown shownSelector = selectors.get(player.getUniqueId());
+        SelectorShown shownSelector = shownSelectors.get(player.getUniqueId());
+        Language language = languages.of(player.getUniqueId());
+        Optional<TopSelectorSettings> selector = selectors.in(language);
         if (shownSelector == null || selector.isEmpty()) {
             return;
         }
         TopSelectorSettings settings = selector.get();
         Location list = settings.spot().above(texts.labelAboveStand() - settings.listOffset()).toLocation(plugin.getServer());
-        List<String> lines = selectorModes(settings, mode(player));
+        List<String> lines = selectorModes(settings, mode(player), language);
         List<String> names = holograms.layout(list, lines).stream().map(HologramPixel::name).toList();
         if (!shownSelector.list().rename(names)) {
             shownSelector.list().remove();
-            selectors.put(player.getUniqueId(), new SelectorShown(shownSelector.header(), holograms.show(player, list, lines), shownSelector.footer()));
+            shownSelectors.put(player.getUniqueId(), new SelectorShown(shownSelector.header(), holograms.show(player, list, lines), shownSelector.footer()));
         }
     }
 
-    private List<String> lines(TopBoardSettings board, TopState state) {
+    private List<String> lines(TopBoardSettings board, TopState state, Language language) {
         String mode = board.modes() ? state.mode() : PlayerStats.GENERAL;
-        return TopView.lines(board, texts, state, data.get(board.category(), mode, TopView.period(board, state)), colors::of, badges, modeTitle);
+        return TopView.lines(board, localizedTexts.in(language), state, data.get(board.category(), mode, TopView.period(board, state)), colors::of, badges,
+            id -> modeTitle.apply(language, id));
     }
 
     private Location top(TopBoardSettings board) {
@@ -230,7 +248,7 @@ public final class TopBoards implements Listener {
                     }
                 }
             }
-            SelectorShown shownSelector = selectors.get(player.getUniqueId());
+            SelectorShown shownSelector = shownSelectors.get(player.getUniqueId());
             if (shownSelector != null && shownSelector.owns(entityId)) {
                 click(player);
                 chooser.choose(player, mode(player), mode -> choose(player, mode));
@@ -272,7 +290,7 @@ public final class TopBoards implements Listener {
         void choose(Player player, String current, Consumer<String> chosen);
     }
 
-    private record Shown(TopBoardSettings board, TopState state, SpawnedHologram hologram) {
+    private record Shown(TopBoardSettings board, TopState state, Language language, SpawnedHologram hologram) {
     }
 
     private record SelectorShown(SpawnedHologram header, SpawnedHologram list, SpawnedHologram footer) {

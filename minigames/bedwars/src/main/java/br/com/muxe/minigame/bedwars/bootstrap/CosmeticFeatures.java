@@ -5,6 +5,7 @@ import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.config.edit.ConfigReloads;
 import br.com.muxe.core.bukkit.cosmetic.animation.Area;
 import br.com.muxe.core.bukkit.cosmetic.stage.AnimationPlayer;
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.mission.menu.MissionMenus;
 import br.com.muxe.core.bukkit.nms.BlockMask;
 import br.com.muxe.core.bukkit.permission.command.Replies;
@@ -12,6 +13,8 @@ import br.com.muxe.core.bukkit.permission.command.TargetLookup;
 import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.config.live.LiveValue;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.api.cosmetic.GameCosmetics;
 import br.com.muxe.minigame.api.cosmetic.aura.AuraCosmetics;
 import br.com.muxe.minigame.api.cosmetic.catalog.CosmeticCatalog;
@@ -51,7 +54,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -71,22 +73,29 @@ final class CosmeticFeatures implements MatchEvents {
         this.preview = preview;
     }
 
-    static CosmeticFeatures start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, MessageCatalog messages, Commands commands, boolean lobby, EndTitles titles,
+    static CosmeticFeatures start(JavaPlugin plugin, MuxeCore core, LocalizedConfig texts, MessageCatalog messages, Commands commands, boolean lobby, EndTitles titles,
                                   ConfigReloads reloads) {
-        ConfigurationSection section = section(config, "cosmetics");
-        ConfigurationSection menus = section(section, "menus");
-        CosmeticMenuSettings menuSettings = BedWarsCosmetics.menuSettings(menus);
+        ConfigurationSection config = texts.standard();
+        Localized<ConfigurationSection> menus = texts.map(root -> section(root, "cosmetics.menus"));
+        Localized<CosmeticMenuSettings> menuSettings = menus.map(BedWarsCosmetics::menuSettings);
         BedAnimations animations = new BedAnimations();
-        CosmeticCatalog catalog = BedBreakCosmetics.catalog(section, id -> animations.find(id).isPresent());
+        Localized<CosmeticCatalog> catalogs = texts.map(root -> BedBreakCosmetics.catalog(section(root, "cosmetics"), id -> animations.find(id).isPresent()));
+        CosmeticCatalog catalog = catalogs.standard();
         CosmeticProfiles profiles = GameCosmetics.profiles(plugin, core, catalog);
-        CosmeticCatalog woodCatalog = CosmeticCatalog.from(section(section, BedWarsCosmetics.WOOD_TYPE), "cosmetics", BedWarsCosmetics.WOOD_CATEGORY, id -> true);
+        Localized<CosmeticCatalog> woodCatalogs = texts.map(root -> CosmeticCatalog.from(section(root, "cosmetics." + BedWarsCosmetics.WOOD_TYPE), "cosmetics",
+            BedWarsCosmetics.WOOD_CATEGORY, id -> true));
+        CosmeticCatalog woodCatalog = woodCatalogs.standard();
         CosmeticProfiles woodProfiles = GameCosmetics.profiles(plugin, core, woodCatalog);
 
         BedPreview preview = null;
-        PreviewGate bedGate = (player, cosmetic, back) -> player.sendMessage(messages.get("preview-only-lobby"));
+        PreviewGate bedGate = (player, cosmetic, back) -> player.sendMessage(messages.get(player, "preview-only-lobby"));
         if (lobby) {
             LiveValue<PreviewSettings> bedSettings = new LiveValue<>(PreviewSettings.from(section(config, "preview")));
-            BedPreview started = new BedPreview(plugin, core.buildMode(), BlockMask.start(plugin), bedSettings, animations, messages);
+            Localized<PreviewSettings> translated = texts.map(root -> PreviewSettings.from(section(root, "preview")));
+            BedPreview started = new BedPreview(plugin, core.buildMode(), BlockMask.start(plugin), bedSettings, id -> {
+                Language language = core.languages().of(id);
+                return language == Language.DEFAULT ? bedSettings.get() : translated.in(language);
+            }, animations, messages);
             started.start();
             preview = started;
             bedGate = started;
@@ -98,28 +107,38 @@ final class CosmeticFeatures implements MatchEvents {
             });
         }
         BedPreview bedPreview = preview;
+        PreviewGate bedPreviews = bedGate;
         GameCosmetics shared = GameCosmetics.start(new GameCosmetics.Setup(plugin, core, BedWarsMatch.GAME, BedWarsCosmetics.SHARED, config, messages, lobby, titles,
-            reloads, MatchSounds.from(config.getConfigurationSection("sounds")).countdown(), player -> bedPreview != null && bedPreview.previewing(player)));
+            reloads, MatchSounds.from(config.getConfigurationSection("sounds")).countdown(), player -> bedPreview != null && bedPreview.previewing(player),
+            texts.map(root -> root), core.languages()));
 
-        List<CosmeticCategory> categories = new ArrayList<>();
-        categories.add(CosmeticCategory.of(menuSettings.category(BedWarsCosmetics.BED_DESTRUCTION), catalog, profiles, bedGate));
+        List<Localized<CosmeticCategory>> categories = new ArrayList<>();
+        categories.add(Localized.of(language -> CosmeticCategory.of(menuSettings.in(language).category(BedWarsCosmetics.BED_DESTRUCTION), catalogs.in(language),
+            profiles, bedPreviews)));
         shared.category(CosmeticKind.FINAL_KILL, menuSettings).ifPresent(categories::add);
         shared.category(CosmeticKind.VICTORY_EFFECT, menuSettings).ifPresent(categories::add);
         shared.category(CosmeticKind.AURA, menuSettings).ifPresent(categories::add);
         shared.category(CosmeticKind.PROJECTILE_TRAIL, menuSettings).ifPresent(categories::add);
-        if (menuSettings.categories().containsKey(BedWarsCosmetics.WOOD_TYPE)) {
-            categories.add(CosmeticCategory.of(menuSettings.category(BedWarsCosmetics.WOOD_TYPE), woodCatalog, woodProfiles, (player, cosmetic, back) -> {
-            }));
+        if (menuSettings.standard().categories().containsKey(BedWarsCosmetics.WOOD_TYPE)) {
+            categories.add(Localized.of(language -> CosmeticCategory.of(menuSettings.in(language).category(BedWarsCosmetics.WOOD_TYPE), woodCatalogs.in(language),
+                woodProfiles, (player, cosmetic, back) -> {
+                })));
         }
         shared.category(CosmeticKind.KILL_MESSAGE, menuSettings).ifPresent(categories::add);
-        CosmeticMenus cosmeticMenus = new CosmeticMenus(menuSettings, categories, core.commands(), core.mainThread(), messages, plugin.getLogger(),
+        CosmeticMenus cosmeticMenus = new CosmeticMenus(menuSettings, Localized.of(language -> categories.stream().map(category -> category.in(language)).toList()),
+            core.languages(), core.commands(), core.mainThread(), messages, plugin.getLogger(),
             player -> Colors.translate(core.permissions().display(player.getUniqueId()).color()) + player.getName());
-        BedWarsMenu menu = new BedWarsMenu(BedWarsMenuSettings.from(menus), cosmeticMenus, messages);
+        BedWarsMenu menu = new BedWarsMenu(menus.map(BedWarsMenuSettings::from), cosmeticMenus, messages);
         if (lobby) {
-            BedWarsMenuItem item = new BedWarsMenuItem(plugin, MenuSlot.from(section(config, "lobby.menu-item")), menu);
+            BedWarsMenuItem item = new BedWarsMenuItem(plugin, texts.map(root -> MenuSlot.from(section(root, "lobby.menu-item"))), core.languages(), menu);
             plugin.getServer().getPluginManager().registerEvents(item, plugin);
             core.buildMode().addHook(item);
             plugin.getServer().getOnlinePlayers().forEach(item::give);
+            core.languages().onChange(player -> {
+                if (!core.buildMode().isBuilding(player) && (bedPreview == null || !bedPreview.previewing(player)) && !shared.previewing(player)) {
+                    item.give(player);
+                }
+            });
         }
         TargetLookup targets = new TargetLookup(name -> Optional.ofNullable(plugin.getServer().getPlayerExact(name)), core.queries());
         commands.register(new CosmeticCommand(catalog, cosmeticMenus, core.commands(), targets, new Replies(core.mainThread(), messages, plugin.getLogger()),
@@ -132,8 +151,8 @@ final class CosmeticFeatures implements MatchEvents {
         return bedBreaks;
     }
 
-    MessageSets messageSets() {
-        return shared.messageSets().orElseThrow();
+    Localized<MessageSets> messageSets() {
+        return shared.localizedMessageSets().orElseThrow();
     }
 
     KillMessages killMessages() {

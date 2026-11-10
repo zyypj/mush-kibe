@@ -1,0 +1,2126 @@
+modes:
+  solo:
+    display-name: "Solo"
+  duplas:
+    display-name: "Doubles"
+  trios:
+    display-name: "Trios"
+  quartetos:
+    display-name: "Squads"
+
+custom-room:
+  diamond-currency:
+    one: "Diamond"
+    many: "Diamonds"
+  shop-page-title: "Shop items ({page}/{pages})"
+  upgrades-page-title: "Upgrades (1/1)"
+  knockback:
+    title: "Change knockback"
+    entries:
+      vertical:
+        name: "Vertical"
+        description:
+          - "&7Base value of the vertical"
+          - "&7knockback."
+      horizontal:
+        name: "Horizontal"
+        description:
+          - "&7Base value of the horizontal"
+          - "&7knockback."
+      vertical-boost:
+        name: "Vertical (Boost)"
+        description:
+          - "&7Boost value of the vertical"
+          - "&7knockback."
+      horizontal-boost:
+        name: "Horizontal (Boost)"
+        description:
+          - "&7Boost value of the horizontal"
+          - "&7knockback."
+      vertical-limit:
+        name: "Maximum vertical"
+        description:
+          - "&7Maximum value of the base"
+          - "&7vertical knockback."
+      vertical-friction:
+        name: "Vertical friction"
+        description:
+          - "&7Divisor of the previous"
+          - "&7vertical knockback."
+      horizontal-friction:
+        name: "Horizontal friction"
+        description:
+          - "&7Divisor of the previous"
+          - "&7horizontal knockback."
+      attacker-multiplier:
+        name: "Attacker multiplier"
+        description:
+          - "&7Horizontal multiplier"
+          - "&7applied when you hit someone."
+      restore-velocity:
+        name: "Restore velocity"
+        description:
+          - "&7Whether the previous velocity"
+          - "&7is restored after the"
+          - "&7knockback is sent."
+      simulate-y:
+        name: "Simulate Y"
+        description:
+          - "&7Simulates the vertical"
+          - "&7position of the player from"
+          - "&7their ping before applying"
+          - "&7the knockback."
+      keep-sprint:
+        name: "Keep sprint"
+        description:
+          - "&7Keeps the sprint state"
+          - "&7when dealing knockback."
+      ignore-sprint:
+        name: "Ignore sprint"
+        description:
+          - "&7Turns off the special"
+          - "&7sprint boost."
+      use-rotation:
+        name: "Use rotation"
+        description:
+          - "&7Uses the rotation of the"
+          - "&7attacker to apply"
+          - "&7the knockback."
+      click-limiter:
+        name: "Click limiter"
+        description:
+          - "&7Controls the strength of"
+          - "&7the knockback click"
+          - "&7limiter."
+    values:
+      "off": "Off"
+      low: "Low"
+      normal: "Normal"
+      high: "High"
+  shop-free-text: "&7Changes the price of every shop item."
+  upgrades-free-text: "&7Changes the price of every upgrade."
+  pages:
+    options:
+      title: "Options"
+      entries:
+        team-size:
+          name: "Team size"
+          description:
+            - "&7The number of players"
+            - "&7per team."
+        teams:
+          name: "Teams"
+          lore:
+            - "&7Changes the number"
+            - "&7of teams, enables or disables"
+            - "&7and renames each one."
+            - " "
+            - "&eClick to see more."
+        generators:
+          name: "Generators"
+          lore:
+            - "&7Changes the forge and the"
+            - "&7Diamond and Emerald"
+            - "&7generators."
+            - " "
+            - "&eClick to see more"
+        shop:
+          name: "Shop"
+          lore:
+            - "&7Changes the options of the"
+            - "&7items available in the"
+            - "&7shop."
+            - " "
+            - "&eClick to see more."
+        upgrades:
+          name: "Upgrades"
+          lore:
+            - "&7Changes the status and"
+            - "&7price of the team"
+            - "&7upgrades."
+            - " "
+            - "&eClick to see more."
+        events:
+          name: "Events"
+          lore:
+            - "&7Changes the timing and"
+            - "&7enables or disables the"
+            - "&7game events."
+            - " "
+            - "&eClick to see more."
+        items:
+          name: "Items"
+          lore:
+            - "&7Changes the options of the"
+            - "&7game items."
+            - " "
+            - "&eClick to see more"
+        knockback:
+          name: "Knockback"
+          lore:
+            - "&7Knockback values of"
+            - "&7hits."
+            - " "
+            - "&eClick to see more."
+        others:
+          name: "Others"
+          lore:
+            - "&7Changes other game"
+            - "&7options."
+            - " "
+            - "&eClick to see more"
+    teams:
+      title: "Teams"
+      entries:
+        count:
+          name: "Number of teams"
+          description:
+            - "&7Increase the number"
+            - "&7of teams available"
+            - "&7on the map."
+    generators:
+      title: "Generators"
+      entries:
+        forge-speed:
+          name: "Forge speed"
+          description:
+            - "&7Changes the forge's"
+            - "&7generation speed."
+        diamond:
+          name: "Diamond Generator"
+          description:
+            - "&7Enables or disables the"
+            - "&7Diamond generators."
+        diamond-speed:
+          name: "Diamond speed"
+          description:
+            - "&7Changes the speed"
+            - "&7of the Diamond generators."
+        diamond-amount:
+          name: "Diamond amount"
+          description:
+            - "&7Changes how many items"
+            - "&7the Diamond generators"
+            - "&7drop at a time."
+        emerald:
+          name: "Emerald Generator"
+          description:
+            - "&7Enables or disables the"
+            - "&7Emerald generators."
+        emerald-speed:
+          name: "Emerald speed"
+          description:
+            - "&7Changes the speed"
+            - "&7of the Emerald generators."
+        emerald-amount:
+          name: "Emerald amount"
+          description:
+            - "&7Changes how many items"
+            - "&7the Emerald generators"
+            - "&7drop at a time."
+    events:
+      title: "Events"
+      entries:
+        diamond-2:
+          name: "Diamond II"
+        emerald-2:
+          name: "Emerald II"
+        diamond-3:
+          name: "Diamond III"
+        emerald-3:
+          name: "Emerald III"
+        beds-destroyed:
+          name: "Bed Destruction"
+        dragons:
+          name: "Deathmatch"
+        game-end:
+          name: "Game End"
+    items:
+      title: "Items"
+      entries:
+        fireball:
+          name: "Fireball type"
+          description:
+            - "&7Change the fireball"
+            - "&7presets."
+          values:
+            default:
+              label: "Default"
+            fireball-fight:
+              label: "Fireball Fight"
+        slingshot:
+          name: "Slingshot cooldown"
+          description:
+            - "&7Changes the waiting time"
+            - "&7between Slingshot uses."
+    others:
+      title: "Others"
+      entries:
+        totem:
+          name: "Totem"
+          description:
+            - "&7Changes the block that"
+            - "&7teams need to protect."
+          values:
+            bed:
+              label: "Bed"
+            dragon-egg:
+              label: "Dragon Egg"
+        creative:
+          name: "Creative"
+          description:
+            - "&7Enables creative mode"
+            - "&7for every player"
+            - "&7in the game."
+
+countdown:
+  titles:
+    '30': "&a30 seconds"
+    '10': "&610 seconds"
+    '5': "&c5"
+    '4': "&c4"
+    '3': "&c3"
+    '2': "&c2"
+    '1': "&c1"
+
+events:
+  names:
+    diamond: "Diamond {tier}"
+    emerald: "Emerald {tier}"
+    beds-destroyed: "Bed Destruction"
+    dragons: "Sudden Death"
+    game-end: "Game End"
+
+levels:
+  badges:
+    "0": "&7[{level}&l✫&7]"
+    "10": "&a[{level}&l✶&a]"
+    "20": "&b[{level}&l✽&b]"
+    "30": "&d[{level}&l✿&d]"
+    "40": "&e[{level}&l✸&e]"
+    "50": "&6[{level}&l✹&6]"
+    "60": "&5[{level}&l✣&5]"
+    "70": "&2[{level}&l✦&2]"
+    "80": "&9[{level}&l✵&9]"
+    "90": "&c[{level}&l❊&c]"
+    "100": "&4[{level}&l❤&4]"
+    "200": "&e[&6{level}✪&e]"
+    "300": "&b[&3{level}❂&b]"
+    "400": "&d[&5{level}❁&d]"
+    "500": "&7[&f{level}❋&7]"
+    "600": "&1[&9{level}✟&1]"
+    "700": "&2[&a{level}&l۞&2]"
+    "800": "&6[&e{level}&l✌&6]"
+    "900": "&4[&c{level}&l⚝&4]"
+  rainbow:
+    open: "&c["
+    close: "&dΩ&5]"
+
+hotbar:
+  waiting:
+    menu:
+      name: "&aBed Wars Menu"
+    leave:
+      name: "&aBack to Lobby"
+  spectator:
+    teleporter:
+      name: "&aTeleporter"
+    random-player:
+      name: "&aTeleport: Random player"
+    player-in-combat:
+      name: "&aTeleport: Player in combat"
+    play-again:
+      name: "&aPlay again"
+    leave:
+      name: "&aBack to Lobby"
+  teleporter:
+    title: "Teleporter"
+    entry-lore:
+      - "&eClick to teleport."
+
+scoreboard:
+  title: "&b&lBED WARS"
+  waiting:
+    - "&8{code}"
+    - ""
+    - "&fMap: &a{map}"
+    - "&fPlayers: &a{players}/{max}"
+    - ""
+    - "&fWaiting..."
+    - ""
+    - "&fMode: &a{mode}"
+    - "&fWinstreak: &a{winstreak}"
+    - ""
+    - "&amuxe.com.br"
+  starting:
+    - "&8{code}"
+    - ""
+    - "&fMap: &a{map}"
+    - "&fPlayers: &a{players}/{max}"
+    - ""
+    - "&fStarting in: &a{seconds}s"
+    - ""
+    - "&fMode: &a{mode}"
+    - "&fWinstreak: &a{winstreak}"
+    - ""
+    - "&amuxe.com.br"
+  playing:
+    - "&8{code}"
+    - ""
+    - "{event}"
+    - ""
+    - "{teams}"
+    - ""
+    - "&fKills: &a{kills}"
+    - "&fFinal Kills: &a{final-kills}"
+    - "&fBeds Broken: &a{beds}"
+    - ""
+    - "&amuxe.com.br"
+  playing-eight-teams:
+    - "&8{code}"
+    - ""
+    - "{event}"
+    - ""
+    - "{teams}"
+    - ""
+    - "&amuxe.com.br"
+  event: "&f{event} in &a{time}"
+  no-event: "&fGame End"
+  team: "{color}{letter} &f{name}: {status}{you}"
+  team-you: " &7YOU"
+  status-online: "&a✔"
+  status-offline: "&e✔"
+  status-players: "&a{count}"
+  status-eliminated: "&c✘"
+
+holograms:
+  shop:
+    - "{color}&lSHOP"
+    - "&7Click to see more."
+  shop-team:
+    - "{color}&lTEAM SHOP"
+    - "&7Click to see more."
+  upgrades:
+    - "{color}&lUPGRADES"
+    - "&7Click to see more."
+  upgrades-team:
+    - "{color}&lTEAM UPGRADES"
+    - "&7Click to see more."
+  diamond:
+    - "&eTier &c{tier}"
+    - "&b&lDiamond"
+    - "&eSpawns in &c{seconds} &eseconds"
+  emerald:
+    - "&eTier &c{tier}"
+    - "&2&lEmerald"
+    - "&eSpawns in &c{seconds} &eseconds"
+
+missions:
+  daily:
+    ninguem-me-para:
+      name: "Unstoppable!"
+      description:
+        - "&fKill 2 opponents"
+        - "&fin a row in one game:"
+        - "&f{progress}"
+    quem-foi:
+      name: "Who Did That?"
+      description:
+        - "&fDestroy 1 bed while using"
+        - "&fan invisibility potion:"
+        - "&f{progress}"
+    protecao-do-fim:
+      name: "End Protection"
+      description:
+        - "&fProtect your bed with 10"
+        - "&fEnd Stone: {progress}"
+    rei-das-pontes:
+      name: "King of the Bridges"
+      description:
+        - "&fWin 1 game without using"
+        - "&fexplosives (TNT and"
+        - "&fFireball): {progress}"
+    um-aliado-inesperado:
+      name: "An Unexpected Ally"
+      description:
+        - "&fKill 3 opponents"
+        - "&fwith help from Bedbugs:"
+        - "&f{progress}"
+    colecionador-de-esmeraldas:
+      name: "Emerald Collector"
+      description:
+        - "&fCollect 8 Emeralds without"
+        - "&fdying: {progress}"
+  weekly:
+    sou-eu-bola-de-fogo:
+      name: "I Am the Fireball"
+      description:
+        - "&fDeal 1,000 damage using"
+        - "&fFireballs: {progress}"
+    fim-da-linha:
+      name: "End of the Line"
+      description:
+        - "&fGet 35 Final"
+        - "&fKills: {progress}"
+    olha-a-explosao:
+      name: "Watch the Blast"
+      description:
+        - "&fDestroy 1,000 blocks with"
+        - "&fTNT or Fireballs: {progress}"
+    ansiedade-mais-de-8000:
+      name: "Anxiety Over 8000"
+      description:
+        - "&fWin 1 game in 3:30"
+        - "&fminutes: {progress}"
+    artesao:
+      name: "Craftsman"
+      description:
+        - "&fBuy 50 Hardened Clay blocks:"
+        - "&f{progress}"
+  credit-path:
+    complecionista:
+      name: "Completionist"
+      description:
+        - "&fComplete every weekly"
+        - "&fmission: {progress}"
+  announce:
+    prefix: "&b&lMISSIONS &aYou completed "
+    name: "&e{name} &7({category})"
+    description: "&7{description}"
+    progress: "&f{progress}/{target}"
+    xp: "&b+{xp} XP (Bed Wars)"
+    credits: "&d+{credits} credits"
+  summary:
+    border: "&a----------------------------------------"
+    headers:
+      DAILY: "&aDAILY MISSIONS"
+      WEEKLY: "&6WEEKLY MISSIONS"
+      CREDIT_PATH: "&dCREDIT PATH"
+    line: " &e{name}: &7{progress}/{target} &a(+{added})"
+    completed: " &bCOMPLETE!"
+  menu:
+    title: "Bed Wars Missions"
+    categories:
+      DAILY:
+        label: "Daily"
+        item:
+          name: "&aDaily missions"
+      WEEKLY:
+        label: "Weekly"
+        item:
+          name: "&aWeekly missions"
+      CREDIT_PATH:
+        label: "Credit path"
+        item:
+          name: "&aCredit path"
+    category-lore:
+      - "&fProgress:"
+      - "&a{done}/{total}"
+      - " "
+      - "&fTime left:"
+      - "&a{time}"
+    mission:
+      name: "&e{name}"
+    reward-one: "&eReward:"
+    reward-many: "&eRewards:"
+    xp-reward: "&b+{xp} XP (Bed Wars)"
+    credits-reward: "&d+{credits} credits"
+    in-progress: "&eIn progress."
+    completed: "&aCompleted."
+    progress: "&a{progress}/{target}"
+    back:
+      item:
+        name: "&aGo Back"
+        lore:
+          - "&7To Bed Wars Menu"
+    time:
+      day: "1 day"
+      days: "{n} days"
+      hour: "1 hour"
+      hours: "{n} hours"
+      minute: "1 minute"
+      minutes: "{n} minutes"
+
+messages:
+  room-requesting: "&aRequesting a new room..."
+  room-sending: "&aSending you to {room}..."
+  room-created: "&aRoom created!"
+  room-unavailable: "&cNo &f{mode} &croom available right now."
+  map-vip-only: "&cExclusive to &aVIPs&c."
+  map-no-favourites: "&cYou don't have any favourite maps yet."
+  map-search: "&eType the map name in the chat. To cancel, type &ccancel&e."
+  map-search-none: "&cNo map matches &f{search}&c."
+  no-arena: "&cNo Bed Wars {mode} arena is ready on this server."
+  sending-to-room: "&aSending you to {code}..."
+  bought: "&eYou purchased &a{item}&e."
+  upgrade-bought: "{player} &epurchased &a{upgrade}&e."
+  chest-locked: "&cThis chest belongs to the {team-color}{team} Team&c. You can only open it once that team has been eliminated."
+  ender-chest-title: "Ender Chest"
+  global-usage: "&cUse /g <message> to talk to everyone."
+  global-prefix: "&6[G] "
+  chest-deposited: "&eYou deposited: &a{item} ({amount}x) &einto your chest."
+  chest-full: "&cThe chest is full."
+  chest-kept: "&cYou can't deposit this item."
+  chest-last-one: "&cYou can't deposit just one of this item."
+  already-have: "&cYou already have this item."
+  chest-hologram:
+    - "&ePunch to"
+    - "&edeposit!"
+  room-joined: "{player} &ehas joined (&b{players}&e/&b{max}&e)."
+  room-left: "{player} &ehas quit (&b{players}&e/&b{max}&e)."
+  countdown: "&eThe game starts in &c{seconds} &eseconds&e!"
+  countdown-one: "&eThe game starts in &c1 &esecond&e!"
+  match-started:
+    - "&eThe game has started!"
+    - ""
+    - "&4&lWARNING:"
+    - "&c - Teaming with other players is not allowed and will be punished."
+  health-below-name: "&c❤"
+  level-up: "&b&lCONGRATULATIONS &7You reached level {level}&7!"
+  own-bed: "&cYou can't break your own bed."
+  xp: "&b+{xp} XP"
+  loot-iron-one: "&f+1 Iron"
+  loot-iron-many: "&f+{amount} Iron"
+  loot-gold-one: "&6+1 Gold"
+  loot-gold-many: "&6+{amount} Gold"
+  loot-diamond-one: "&b+1 Diamond"
+  loot-diamond-many: "&b+{amount} Diamonds"
+  loot-emerald-one: "&2+1 Emerald"
+  loot-emerald-many: "&2+{amount} Emeralds"
+  team-eliminated: "&f&lTEAM ELIMINATED &f» &cThe {team-color}{team} Team &chas been eliminated."
+  cannot-place: "&cYou can't place blocks here."
+  cannot-break: "&cYou can't break this block."
+  left-match: "&cYou disconnected from a Bed Wars {mode} game in progress. Use /retornar to rejoin."
+  reconnected: "{player} &7reconnected."
+  died-title: "&c&lYOU DIED!"
+  respawn-subtitle: "&eRespawning in &c{seconds} &eseconds."
+  respawn-subtitle-one: "&eRespawning in &c1 &esecond."
+  respawned: "&aYou have respawned!"
+  spectator-subtitle: "&7You are now a spectator."
+  spectator-no-target: "&cNo player to teleport to."
+  spectator-no-combat: "&cNo player is in combat right now."
+  generator-upgrade: "&e{type} &eGenerators have been upgraded to Tier &c{tier}&e."
+  generator-diamond: "&bDiamond"
+  generator-emerald: "&2Emerald"
+  beds-destroyed-event: "&c&lALL BEDS HAVE BEEN DESTROYED!"
+  dragons-event: "&5&lSUDDEN DEATH! &dThe dragons have spawned!"
+  game-draw: "&eThe game ended in a draw."
+  result:
+    - ""
+    - "<center>&eWinner: {team-color}{team} Team"
+    - "<center>&eGame time: &a{time}"
+    - ""
+    - "<center>&b&lTOP FINAL KILLS:"
+    - "{top-final-kills}"
+    - ""
+    - "<center>&b&lTOP BEDS BROKEN:"
+    - "{top-beds}"
+    - ""
+  result-draw:
+    - ""
+    - "<center>&eThe game ended in a draw."
+    - "<center>&eGame time: &a{time}"
+    - ""
+  result-rank-1: "<center>&a1st {player} &7- {score}"
+  result-rank-2: "<center>&e2nd {player} &7- {score}"
+  result-rank-3: "<center>&c3rd {player} &7- {score}"
+  result-nobody: "<center>&7Nobody"
+  coming-soon: "&cThis item is coming soon."
+  unknown-mode: "&cInvalid mode. Modes: &f{modes}&c."
+  forced-start: "&aThe game is about to start."
+  cannot-force-start: "&cYou are not in a waiting room."
+  forced-end: "&aGame ended."
+  cannot-force-end: "&cYou are not in a game in progress."
+  bedwars-usage:
+    - "&e/bedwars entrar <mode> &7- Joins a room of the mode."
+    - "&e/bedwars iniciar &7- Starts the game without waiting for the minimum."
+    - "&e/bedwars finalizar &7- Ends the game with no winner."
+  inventory-full: "&cYour inventory is full."
+  purchase-limit: "&cYou have reached the purchase limit for this item."
+  hotbar-slot-full: "&cThis hotbar slot already has the maximum number of entries."
+  trap-triggered: "&c&lTRAP! &cAn enemy has set off one of your island's traps."
+  slingshot-label: "SLINGSHOT:"
+  slingshot-item: "&cSlingshot"
+  decimal-separator: "."
+  cosmetic-selected: "&aYou selected &f{name}&a."
+  cosmetic-bought: "&aYou purchased &f{name} &afor &d{price} credits&a."
+  cosmetic-not-enough: "&cYou don't have enough credits."
+  cosmetic-already-owned: "&cYou already own this cosmetic."
+  cosmetic-unavailable: "&cThis cosmetic is not available."
+  cosmetic-no-preview: "&cThis cosmetic has no preview yet."
+  cosmetic-failed: "&cThis could not be completed right now. Try again in a moment."
+  preview-only-lobby: "&cYou can only preview cosmetics in the lobby."
+  preview-busy: "&cYou are already previewing a cosmetic."
+  preview-config-unknown-kind: "&cUnknown preview type: &f{value}&c. Use: &f{kinds}&c."
+  preview-config-unknown-action: "&cUnknown action: &f{value}&c. Use: &f{actions}&c."
+  preview-config-not-supported: "&cThe &f{kind} &cpreview does not accept this action."
+  preview-config-bad-number: "&cInvalid distance: &f{value}&c. Use a number greater than 0."
+  preview-config-bad-duration: "&cInvalid duration: &f{value}&c. Use something like &f60s&c or &f2m&c."
+  preview-config-not-a-bed: "&cLook at a bed, up to {distance} blocks away."
+  preview-config-spawn: "&aEntry point of the &f{kind} &apreview set: &f{detail}&a."
+  preview-config-cama: "&aPreview bed set: &f{detail}&a."
+  preview-config-distancia: "&aTarget distance of the &f{kind} &apreview set to &f{detail} &ablocks."
+  preview-config-tempo: "&aDuration of the &f{kind} &apreview set to &f{detail}&a."
+  cosmetic-granted: "&aYou gave &f{name} &ato &f{player}&a."
+  cosmetic-already-had: "&f{player} &calready owns &f{name}&c."
+  cosmetic-unknown: "&cUnknown cosmetic: &f{id}&c."
+  player-unknown: "&cThe player &f{player} &chas never joined the server."
+
+preferences:
+  title: "Bed Wars Preferences"
+  value-on: "&7Value: &aEnabled"
+  value-off: "&7Value: &cDisabled"
+  click-off: "&eClick to disable."
+  click-on: "&eClick to enable."
+  show-level:
+    name: "&aShow level in chat"
+    description:
+      - "&7Choose whether your level"
+      - "&7is shown in the chat."
+  tnt-timer:
+    name: "&aShow TNT timer"
+    description:
+      - "&7Choose whether the TNT timer"
+      - "&7hologram is shown."
+  chest-deposit:
+    name: "&aDeposit items by clicking the chest"
+    description:
+      - "&7Choose whether to deposit"
+      - "&7items by clicking the chest."
+    option: "&7- {option}"
+    selected: "&a- {option}&7 (Selected)"
+    click: "&eClick to switch to {option}."
+    options:
+      enabled:
+        name: "&aEnabled"
+      no-holograms:
+        name: "&bNo holograms"
+      disabled:
+        name: "&cDisabled"
+  back:
+    item:
+      name: "&aGo Back"
+      lore:
+        - "&7To Bed Wars Menu"
+
+favourite-color:
+  title: "Favourite color (1/1)"
+  choose:
+    - " "
+    - "&eClick to select."
+  chosen:
+    - " "
+    - "&aSelected!"
+  none:
+    item:
+      name: "&aNone"
+  colors:
+    vermelho:
+      name: "&cRed"
+    azul:
+      name: "&9Blue"
+    verde:
+      name: "&aGreen"
+    amarelo:
+      name: "&eYellow"
+    ciano:
+      name: "&bAqua"
+    branco:
+      name: "&fWhite"
+    laranja:
+      name: "&6Orange"
+    rosa:
+      name: "&dPink"
+    cinza:
+      name: "&8Gray"
+  back:
+    item:
+      name: "&aGo Back"
+      lore:
+        - "&7To Bed Wars Cosmetics"
+
+tnt-timer:
+  decimal-separator: "."
+
+item-names:
+  IRON_INGOT: "Iron Ingot"
+  GOLD_INGOT: "Gold Ingot"
+  DIAMOND: "Diamond"
+  EMERALD: "Emerald"
+  WOOL: "Wool"
+  HARD_CLAY: "Hardened Clay"
+  STAINED_CLAY: "Hardened Clay"
+  GLASS: "Blast-Proof Glass"
+  STAINED_GLASS: "Blast-Proof Glass"
+  ENDER_STONE: "End Stone"
+  LADDER: "Ladder"
+  WOOD: "Wood"
+  OBSIDIAN: "Obsidian"
+  WOOD_SWORD: "Wooden Sword"
+  STONE_SWORD: "Stone Sword"
+  IRON_SWORD: "Iron Sword"
+  DIAMOND_SWORD: "Diamond Sword"
+  STICK: "Stick"
+  WOOD_PICKAXE: "Wooden Pickaxe"
+  STONE_PICKAXE: "Stone Pickaxe"
+  IRON_PICKAXE: "Iron Pickaxe"
+  GOLD_PICKAXE: "Golden Pickaxe"
+  DIAMOND_PICKAXE: "Diamond Pickaxe"
+  WOOD_AXE: "Wooden Axe"
+  STONE_AXE: "Stone Axe"
+  IRON_AXE: "Iron Axe"
+  DIAMOND_AXE: "Diamond Axe"
+  SHEARS: "Shears"
+  LEATHER_HELMET: "Leather Helmet"
+  LEATHER_CHESTPLATE: "Leather Chestplate"
+  LEATHER_LEGGINGS: "Leather Leggings"
+  LEATHER_BOOTS: "Leather Boots"
+  CHAINMAIL_LEGGINGS: "Chainmail Leggings"
+  CHAINMAIL_BOOTS: "Chainmail Boots"
+  IRON_LEGGINGS: "Iron Leggings"
+  IRON_BOOTS: "Iron Boots"
+  DIAMOND_LEGGINGS: "Diamond Leggings"
+  DIAMOND_BOOTS: "Diamond Boots"
+  ARROW: "Arrow"
+  BOW: "Bow"
+  GOLDEN_APPLE: "Golden Apple"
+  SNOW_BALL: "Bedbug"
+  FIREBALL: "Fireball"
+  MONSTER_EGG: "Iron Golem"
+  TNT: "TNT"
+  ENDER_PEARL: "Ender Pearl"
+  WATER_BUCKET: "Water Bucket"
+  MILK_BUCKET: "Magic Milk"
+  SPONGE: "Sponge"
+  CHEST: "Compact Pop-up Tower"
+  EGG: "Bridge Egg"
+  COMPASS: "Tracker"
+  MAGMA_CREAM: "Slingshot"
+  POTION: "Potion"
+  BUCKET: "Bucket"
+
+shop:
+  quick-buy-title: "Quick Buy"
+  category-title: "Shop: {category}"
+  tabs:
+    - name: "&aQuick Buy"
+    - name: "&aBlocks"
+    - name: "&aCombat"
+    - name: "&aArmor"
+    - name: "&aTools"
+    - name: "&aBows"
+    - name: "&aPotions"
+    - name: "&aUtility"
+  currencies:
+    iron:
+      one: "Iron"
+      many: "Iron"
+    gold:
+      one: "Gold"
+      many: "Gold"
+    emerald:
+      one: "Emerald"
+      many: "Emeralds"
+    diamond:
+      one: "Diamond"
+      many: "Diamonds"
+  price: "&7Cost: {color}{amount} {currency}"
+  level: "&7Tier: &e{level}"
+  quick-buy-add:
+    - "&bShift Click to add"
+    - "&bto Quick Buy."
+  quick-buy-remove:
+    - "&bShift Click to remove"
+    - "&bfrom Quick Buy."
+  quick-buy-adding-title: "Adding to Quick Buy..."
+  quick-buy-adding: "&eAdding to Quick Buy..."
+  quick-buy-replace:
+    - "&eClick to replace!"
+  quick-buy-empty-name: "&cEmpty slot!"
+  quick-buy-empty-add:
+    - "&eClick to add!"
+  quick-buy-empty:
+    - "&7This is a Quick Buy slot!"
+    - "&bShift Click any item in"
+    - "&bthe shop to add it here."
+  quick-buy-editor:
+    title: "Editing Quick Buy..."
+    picker-title: "Selecting item... ({page}/{pages})"
+    name: "&a{name}"
+    swap: "&eLeft click: &fSwap"
+    remove: "&eRight click: &fRemove"
+    select: "&eClick to select."
+    back:
+      item:
+        name: "&aGo Back"
+        lore:
+          - "&7To Bed Wars Menu"
+    picker-back:
+      item:
+        name: "&aGo Back"
+        lore:
+          - "&7To Editing Quick Buy..."
+    previous:
+      item:
+        name: "&aPage {page}"
+    next:
+      item:
+        name: "&aPage {page}"
+    import:
+      item:
+        name: "&aImport Quick Buy"
+        lore:
+          - "&7Import another player's"
+          - "&7Quick Buy!"
+          - " "
+          - "&eClick to see more."
+    import-prompt: "Enter the username"
+    import-title: "Importing Quick Buy..."
+    cancel:
+      item:
+        name: "&cCancel"
+        lore:
+          - "&7Go back to edit mode."
+          - " "
+          - "&eClick to select."
+    confirm:
+      item:
+        name: "&aConfirm"
+        lore:
+          - "&7Confirm importing"
+          - "&7the Quick Buy of"
+          - "&7{player}."
+          - " "
+          - "&eClick to select."
+  cannot-afford: "&cYou don't have enough {currency}!"
+  can-afford: "&eClick to purchase!"
+  maxed: "&aUnlocked!"
+  owned: "&aUnlocked!"
+  open-category: "&eClick to view!"
+  permanent-suffix: " (Permanent)"
+  tracker-locked:
+    - "&cOnly available when there are no enemy beds"
+    - "&cremaining."
+  hotbar-editor:
+    name: "&aHotbar Manager"
+    lore:
+      - "&7Change your hotbar"
+      - "&7presets."
+      - ""
+      - "&eClick to see more."
+  hotbar-menus:
+    destinations:
+      bedwars-menu: "Bed Wars Menu"
+      shop: "Quick Buy"
+    editing:
+      title: "Editing hotbar..."
+      slot-name: "&aSlot #{slot}"
+      selected-one: "&eSelected:"
+      selected-many: "&eSelected:"
+      entry-shown: "&a- {name}"
+      entry-other: "&7- {name}"
+      add: "&eLeft click: &fAdd"
+      remove: "&eRight click: &fRemove"
+      back:
+        item:
+          name: "&aGo Back"
+          lore:
+            - "&7To {destination}"
+    adding:
+      title: "Adding to slot #{slot}..."
+      item-name: "&a{name}"
+      category-name: "&a{name}"
+      category-description:
+        - "&7Includes every item in this category."
+      add: "&eClick to add."
+      other-tab: "&eClick to see more."
+      categories-tab:
+        item:
+          name: "&aCategories"
+      items-tab:
+        item:
+          name: "&aItems"
+      back:
+        item:
+          name: "&aGo Back"
+          lore:
+            - "&7To Editing hotbar..."
+      previous:
+        item:
+          name: "&aPage {page}"
+      next:
+        item:
+          name: "&aPage {page}"
+    removing:
+      title: "Removing from slot #{slot}..."
+      remove: "&eClick to remove."
+      back:
+        item:
+          name: "&aGo Back"
+          lore:
+            - "&7To Editing hotbar..."
+  categories:
+    blocos:
+      name: "Blocks"
+    combate:
+      name: "Combat"
+    armadura:
+      name: "Armor"
+    ferramentas:
+      name: "Tools"
+    arcos:
+      name: "Bows"
+    pocoes:
+      name: "Potions"
+    utilidades:
+      name: "Utility"
+  items:
+    la:
+      name: "Wool"
+      description:
+        - "&7Great for bridging across islands."
+    argila:
+      name: "Hardened Clay"
+      description:
+        - "&7Basic block to defend your"
+        - "&7bed."
+    vidro:
+      name: "Blast-Proof Glass"
+      description:
+        - "&7Immune to explosions."
+    pedra-do-fim:
+      name: "End Stone"
+      description:
+        - "&7Solid block to defend your"
+        - "&7bed."
+    escada:
+      name: "Ladder"
+      description:
+        - "&7Useful to save cats stuck"
+        - "&7in trees."
+    madeira:
+      name: "Wood"
+      description:
+        - "&7Good block to defend your"
+        - "&7bed. Strong against pickaxes."
+    espada-pedra:
+      name: "Stone Sword"
+    espada-ferro:
+      name: "Iron Sword"
+    espada-diamante:
+      name: "Diamond Sword"
+    graveto:
+      name: "Stick"
+    armadura-malha:
+      name: "Chainmail Armor (Permanent)"
+      description:
+        - "&7Chainmail leggings and boots."
+    armadura-ferro:
+      name: "Iron Armor (Permanent)"
+      description:
+        - "&7Iron leggings and boots."
+    armadura-diamante:
+      name: "Diamond Armor (Permanent)"
+      description:
+        - "&7Diamond leggings and boots."
+    tesoura:
+      name: "Shears (Permanent)"
+      description:
+        - "&7Great to get rid of Wool."
+    picareta:
+      tiers:
+        - name: "Wooden Pickaxe (Efficiency I)"
+        - name: "Stone Pickaxe (Efficiency I)"
+        - name: "Iron Pickaxe (Efficiency II)"
+        - name: "Golden Pickaxe (Efficiency III)"
+        - name: "Diamond Pickaxe (Efficiency III)"
+      editor-name: "Pickaxe"
+      description:
+        - "&7You will always respawn with at least"
+        - "&7the previous tier."
+    machado:
+      tiers:
+        - name: "Wooden Axe (Efficiency I)"
+        - name: "Stone Axe (Efficiency I)"
+        - name: "Iron Axe (Efficiency II)"
+        - name: "Diamond Axe (Efficiency III)"
+      editor-name: "Axe"
+      description:
+        - "&7You will always respawn with at least"
+        - "&7the previous tier."
+    flecha:
+      name: "Arrow"
+    arco:
+      name: "Bow"
+    arco-forca:
+      name: "Bow (Power I)"
+    arco-forca-impacto:
+      name: "Bow (Power I and Punch I)"
+    pocao-agilidade:
+      name: "Speed II Potion (45 seconds)"
+    pocao-pulo:
+      name: "Jump V Potion (45 seconds)"
+    pocao-invisibilidade:
+      name: "Invisibility Potion (30 seconds)"
+    pocao-lentidao:
+      name: "Splash Slowness Potion (15 seconds)"
+    maca-dourada:
+      name: "Golden Apple"
+    percevejo:
+      editor-description:
+        - "&7Spawns a silverfish where the Snowball"
+        - "&7lands to distract your"
+        - "&7enemies. Lasts 15 seconds."
+      name: "Bedbug"
+      description:
+        - "&7Spawns a silverfish where the"
+        - "&7Snowball lands to distract your"
+        - "&7enemies. Lasts 15 seconds."
+    bola-de-fogo:
+      editor-description:
+        - "&7Right click to launch! Great to"
+        - "&7knock back enemies while they bridge."
+      name: "Fireball"
+      description:
+        - "&7Right click to launch! Great"
+        - "&7to knock back enemies while they"
+        - "&7bridge."
+    golem:
+      editor-description:
+        - "&7Spawns an Iron Golem to defend"
+        - "&7your base. Lasts 4 minutes."
+      name: "Iron Golem"
+      description:
+        - "&7Spawns an Iron Golem to"
+        - "&7defend your base. Lasts 4 minutes."
+    tnt:
+      name: "TNT"
+      description:
+        - "&7Instantly ignites, good"
+        - "&7for blowing things up!"
+    perola:
+      editor-description:
+        - "&7The quickest way to invade enemy"
+        - "&7bases."
+      name: "Ender Pearl"
+      description:
+        - "&7The quickest way to invade"
+        - "&7enemy bases."
+    balde-de-agua:
+      name: "Water Bucket"
+      description:
+        - "&7Great to slow down enemies. Also"
+        - "&7protects against TNT."
+    leite:
+      editor-description:
+        - "&7Become immune to Traps for 30"
+        - "&7seconds after drinking it."
+      name: "Magic Milk"
+      description:
+        - "&7Become immune to Traps for"
+        - "&730 seconds after drinking it."
+    esponja:
+      name: "Sponge"
+      description:
+        - "&7Great for soaking up water."
+    torre-compacta:
+      name: "Compact Pop-up Tower"
+      description:
+        - "&7Places a mini tower."
+    ovo-das-pontes:
+      name: "Bridge Egg"
+      description:
+        - "&7Throw this egg to build a"
+        - "&7bridge."
+    rastreador:
+      name: "Tracker"
+      description:
+        - "&7Track the enemy team. Single use."
+    estilingue:
+      name: "Slingshot"
+      description:
+        - "&7Gives you a small boost."
+    obsidian:
+      name: "Obsidian"
+      description:
+        - "&7Extreme protection for your bed."
+    troca-congelante:
+      name: "Freezing Swap"
+      description:
+        - "&7Swap places with an enemy."
+    ponte-de-gelo:
+      name: "Ice Bridge"
+      description:
+        - "&7Build a bridge of ice."
+    para-quedas:
+      name: "Parachute"
+      description:
+        - "&7Create a platform to save yourself."
+    rebobinar:
+      name: "Rewind"
+      description:
+        - "&7Take a leap back in time."
+    spider:
+      name: "Spider"
+      description:
+        - "&7Shoot webs at your enemies."
+    loja-portatil:
+      name: "Portable Shop"
+      description:
+        - "&7Shop whenever and wherever you want!"
+        - "&7(Single use)"
+    bau-do-fim:
+      name: "Ender Chest"
+      description:
+        - "&7Access your items wherever you are!"
+        - "&7(Single use)"
+    ressurreicao:
+      name: "Resurrection"
+      description:
+        - "&7Revive a dead player from your team."
+
+upgrades:
+  title: "Team Upgrades"
+  tier-bought: "&a&l✓ &7"
+  tier-missing: "&c✗ &7"
+  price: "&7Cost: &b{amount} {currency}"
+  diamond-one: "Diamond"
+  diamond-many: "Diamonds"
+  free: "&aFree"
+  cannot-afford: "&cYou don't have enough Diamonds!"
+  can-afford: "&eClick to purchase!"
+  maxed: "&aMaxed out!"
+  list:
+    afiacao:
+      tiers:
+        - label: "Tier 1: Sharpness I, &b4 Diamonds"
+        - label: "Tier 2: Sharpness II, &b16 Diamonds"
+      name: "Sharpness on Swords"
+      description:
+        - "&7Your team permanently gains"
+        - "&7Sharpness on all"
+        - "&7swords."
+    reforco:
+      tiers:
+        - label: "Tier 1: Protection I, &b2 Diamonds"
+        - label: "Tier 2: Protection II, &b4 Diamonds"
+        - label: "Tier 3: Protection III, &b8 Diamonds"
+        - label: "Tier 4: Protection IV, &b16 Diamonds"
+      name: "Armor Reinforcement"
+      description:
+        - "&7Your team permanently gains"
+        - "&7Protection on all armor pieces."
+    pressa:
+      tiers:
+        - label: "Tier 1: Haste I, &b2 Diamonds"
+        - label: "Tier 2: Haste II, &b4 Diamonds"
+      name: "No Time, Bro"
+      description:
+        - "&7Your team permanently gains"
+        - "&7the Haste effect."
+    forja:
+      tiers:
+        - label: "Tier 1: +50% Resources, &b2 Diamonds"
+        - label: "Tier 2: +100% Resources, &b4 Diamonds"
+        - label: "Tier 3: Spawns Emeralds, &b6 Diamonds"
+        - label: "Tier 4: +200% Resources, &b8 Diamonds"
+      name: "Forge"
+      description:
+        - "&7Increases the amount of"
+        - "&7resources that spawn"
+        - "&7on your island."
+    regeneracao:
+      name: "Island Regeneration"
+      description:
+        - "&7Creates a Regeneration field"
+        - "&7around your island."
+    cilada:
+      name: "It's a Trap!"
+      description:
+        - "&7Inflicts Blindness and Slowness"
+        - "&7on intruders for 8 seconds."
+    fadiga:
+      tiers:
+        - label: "Tier 1: Fatigue I for 7 seconds, &b1"
+          extra: "&bDiamond"
+        - label: "Tier 2: Fatigue I for 10 seconds,"
+          extra: "&7&b2 Diamonds"
+      name: "Fatigue"
+      description:
+        - "&7Inflicts Mining Fatigue on intruders."
+  custom-list:
+    protecao-cama:
+      tiers:
+        - label: "Tier 1: Wood, Wool, Glass, &b2 Diamonds"
+        - label: "Tier 2: Wood, Wool, End Stone,"
+          extra: "&7&b4 Diamonds"
+        - label: "Tier 3: Wood, Wool, End Stone,"
+          extra: "&7Glass, &b6 Diamonds"
+      name: "Bed Protection"
+      description:
+        - "&7Improves the protection of"
+        - "&7your bed."
+
+cosmetics:
+  bed-destruction:
+    ajudante-do-papai-noel:
+      name: "Santa's Helper"
+      tag: "&cChristmas 2025"
+    avalanche:
+      name: "Avalanche"
+      tag: "&cChristmas 2024"
+      description:
+        - "&7Unleashes a blizzard on"
+        - "&7your opponent's island!"
+    coelhos:
+      name: "Bunnies"
+      tag: "&bEaster 2024"
+    passarinhos:
+      name: "Little Birds"
+      tag: "&dCarnival 2024"
+    friaca:
+      name: "Cold Snap"
+      tag: "&cChristmas 2023"
+      description:
+        - "&7A freezing destruction"
+        - "&7for your bed!"
+    fogos-de-artificio:
+      name: "Fireworks"
+      description:
+        - "&7Sets off fireworks"
+    raio:
+      name: "Lightning"
+      description:
+        - "&7Summon the power of Thor"
+    colheita-de-aboboras:
+      name: "Pumpkin Harvest"
+      tag: "&6Halloween 2026"
+    apavorante:
+      name: "Terrifying"
+      tag: "&6Halloween 2026"
+    deserto:
+      name: "Desert"
+      description:
+        - "&7When the cactus blooms..."
+        - "&7it's a sign the bed is"
+        - "&7already gone!"
+    tinta:
+      name: "Paint"
+      description:
+        - "&7Careful, wet paint!"
+    bola-de-canhao:
+      name: "Cannonball"
+      description:
+        - "&7Fire! All that's left of"
+        - "&7that bed is the stuffing."
+    enderman:
+      name: "Enderman"
+      description:
+        - "&7Don't look him in the eyes..."
+        - "&7and forget about your bed."
+    sal-na-ferida:
+      name: "Salt in the Wound"
+      description:
+        - "&7Losing your bed already hurts..."
+        - "&7let us add the seasoning."
+    tornado:
+      name: "Tornado"
+      description:
+        - "&7Weather forecast: 100%"
+        - "&7chance of flying beds."
+    tesouro-encontrado:
+      name: "Treasure Found"
+      description:
+        - "&7X marks the spot... and"
+        - "&7the bed was the treasure!"
+    encantado:
+      name: "Enchanted"
+      description:
+        - "&7Once upon a time there was a bed..."
+        - "&7until the enchanted garden"
+        - "&7took back what is its own."
+    garota-magica:
+      name: "Magical Girl"
+      description:
+        - "&7A sparkling heart"
+        - "&7and a shower of magical"
+        - "&7stars!"
+    anoitecer:
+      name: "Nightfall"
+      description:
+        - "&7The moon rises, the sky darkens..."
+        - "&7and the bed becomes an"
+        - "&7owl's nest."
+    six-seven:
+      name: "Six Seven"
+    tubarao:
+      name: "Shark"
+      tag: "&aAnniversary 2026"
+    vulcanica:
+      name: "Volcanic"
+      tag: "&aAnniversary 2026"
+    espiral-de-coelhos:
+      name: "Bunny Spiral"
+      tag: "&bEaster 2026"
+    explosao-da-vitoria:
+      name: "Victory Blast"
+      tag: "&6Tournament reward"
+    assombrado:
+      name: "Haunted"
+      tag: "&6Halloween 2025"
+    chuva-de-bolos:
+      name: "Cake Rain"
+      tag: "&aAnniversary 2025"
+    carro:
+      name: "Car"
+      tag: "&6Monthly reward"
+      description:
+        - "&7Vroooommmmm"
+    ghor:
+      name: "Ghor"
+      description:
+        - "&7On the other side of the rift,"
+        - "&7a hungry eye... and"
+        - "&7it has already seen your bed."
+    quarto-abandonado:
+      name: "Abandoned Room"
+      tag: "&6Halloween 2023"
+      description:
+        - "&7Bats appear after"
+        - "&7your bed is broken"
+    baloes:
+      name: "Balloons"
+      tag: "&6Tournament reward"
+      description:
+        - "&7Celebrate your bed"
+        - "&7destruction with balloons!"
+    kraken:
+      name: "Kraken"
+      description:
+        - "&7A Kraken rises from the sea and"
+        - "&7crushes your opponent's bed!"
+  wood-type:
+    cosmetics:
+      carvalho:
+        name: "Oak wood"
+      pinheiro:
+        name: "Spruce wood"
+      eucalipto:
+        name: "Birch wood"
+      selva:
+        name: "Jungle wood"
+      acacia:
+        name: "Acacia wood"
+      carvalho-escuro:
+        name: "Dark oak wood"
+      tronco-carvalho:
+        name: "Oak log"
+      tronco-pinheiro:
+        name: "Spruce log"
+      tronco-eucalipto:
+        name: "Birch log"
+        tag: "&6Tournament reward"
+      tronco-selva:
+        name: "Jungle log"
+      tronco-acacia:
+        name: "Acacia log"
+      tronco-carvalho-escuro:
+        name: "Dark oak log"
+  menus:
+    bedwars:
+      title: "Bed Wars Menu"
+      cosmetics:
+        item:
+          name: "&aCosmetics"
+          lore:
+            - "&7View the available"
+            - "&7cosmetics."
+            - " "
+            - "&eClick to see more."
+      items:
+        "15":
+          name: "&aLevel List"
+          lore:
+            - " "
+            - "&7[0&l✫&7] &a[10&l✶&a] &b[20&l✽&b]"
+            - "&d[30&l✿&d] &e[40&l✸&e] &6[50&l✹&6]"
+            - "&5[60&l✣&5] &2[70&l✦&2] &9[80&l✵&9]"
+            - "&c[90&l❊&c] &4[100&l❤&4] &e[&6200✪&e]"
+            - "&b[&3300❂&b] &d[&5400❁&d] &7[&f500❋&7]"
+            - "&1[&9600✟&1] &2[&a700&l۞&2] &6[&e800&l✌&6]"
+            - "&4[&c900&l⚝&4] &c[&61&e0&a0&b0&dΩ&5]"
+      missions:
+        item:
+          name: "&aMissions"
+          lore:
+            - "&7Complete missions"
+            - "&7and earn rewards."
+            - " "
+            - "&eClick to see more."
+      quick-buy:
+        item:
+          name: "&aQuick Buy"
+          lore:
+            - "&7Customize the items in"
+            - "&7your Quick Buy."
+            - " "
+            - "&eClick to see more."
+      preferences:
+        item:
+          name: "&aPreferences"
+          lore:
+            - "&7Change the mode's"
+            - "&7preferences."
+            - " "
+            - "&eClick to see more."
+      hotbar:
+        item:
+          name: "&aHotbar Manager"
+          lore:
+            - "&7Change your hotbar"
+            - "&7presets."
+            - " "
+            - "&eClick to see more."
+    categories:
+      title: "Bed Wars Cosmetics"
+      bed-destruction:
+        item:
+          name: "&aBed Destruction"
+          lore:
+            - "&8{owned}/{total} ({percent}%)"
+            - " "
+            - "&7Customize your bed"
+            - "&7destruction animation!"
+            - " "
+            - "&7Selected: &a{selected}"
+            - " "
+            - "&eClick to see more."
+      final-kill:
+        item:
+          name: "&aFinal Kill"
+          lore:
+            - "&8{owned}/{total} ({percent}%)"
+            - " "
+            - "&7Customize your final"
+            - "&7kill animation!"
+            - " "
+            - "&7Selected: &a{selected}"
+            - " "
+            - "&eClick to see more."
+      victory-effect:
+        item:
+          name: "&aVictory Effect"
+          lore:
+            - "&8{owned}/{total} ({percent}%)"
+            - " "
+            - "&7Customize your victory"
+            - "&7effect!"
+            - " "
+            - "&7Selected: &a{selected}"
+            - " "
+            - "&eClick to see more."
+      aura:
+        item:
+          name: "&aAura"
+          lore:
+            - "&8{owned}/{total} ({percent}%)"
+            - " "
+            - "&7Customize your aura."
+            - " "
+            - "&7Selected: &a{selected}"
+            - " "
+            - "&eClick to see more."
+      projectile-trail:
+        item:
+          name: "&aProjectile Trails"
+          lore:
+            - "&8{owned}/{total} ({percent}%)"
+            - " "
+            - "&7Customize the trail of"
+            - "&7your projectiles."
+            - " "
+            - "&7Selected: &a{selected}"
+            - " "
+            - "&eClick to see more."
+      wood-type:
+        item:
+          name: "&aWood Types"
+          lore:
+            - "&8{owned}/{total} ({percent}%)"
+            - " "
+            - "&7Customize the wood type"
+            - "&7of your shop."
+            - " "
+            - "&7Selected: &a{selected}"
+            - " "
+            - "&eClick to see more."
+      kill-message:
+        item:
+          name: "&aKill Messages"
+          lore:
+            - "&8{owned}/{total} ({percent}%)"
+            - " "
+            - "&7Customize your kill"
+            - "&7messages."
+            - " "
+            - "&7Selected: &a{selected}"
+            - " "
+            - "&eClick to see more."
+      soon:
+        "14":
+          name: "&aShopkeeper Skins"
+          lore:
+            - "&80/4 (0%)"
+            - " "
+            - "&7Customize the skin of the"
+            - "&7island shopkeepers."
+            - " "
+            - "&7Selected: &aRandom"
+            - " "
+            - "&eClick to see more."
+      team-color:
+        item:
+          name: "&aFavourite color"
+          lore:
+            - "&7Choose your favourite color"
+            - "&7for the game!"
+            - " "
+            - "&7Exclusive to &d&lULTRA"
+            - " "
+            - "&eClick to see more."
+      back:
+        item:
+          name: "&aGo Back"
+          lore:
+            - "&7To Bed Wars Menu"
+    final-kill:
+      title: "Final Kill ({page}/{pages})"
+      random:
+        name: "&aRandom"
+        lore:
+          - "&7Selects a random cosmetic"
+          - "&7that you own"
+    victory-effect:
+      title: "Victory Effect ({page}/{pages})"
+      random:
+        name: "&aRandom"
+        lore:
+          - "&7Selects a random cosmetic"
+          - "&7that you own"
+    aura:
+      title: "Aura ({page}/{pages})"
+      random:
+        name: "&aRandom"
+        lore:
+          - "&7Selects a random cosmetic"
+          - "&7that you own"
+    projectile-trail:
+      title: "Projectile Trails ({page}/{pages})"
+      random:
+        name: "&aRandom"
+        lore:
+          - "&7Selects a random cosmetic"
+          - "&7that you own"
+    kill-message:
+      title: "Kill Messages ({page}/{pages})"
+      random:
+        name: "&aRandom"
+        lore:
+          - "&7Selects a random cosmetic"
+          - "&7that you own"
+      lore:
+        select-only:
+          - "&eLeft click: &fSelect"
+        select:
+          - "&eLeft click: &fSelect"
+        selected:
+          - "&aAlready selected."
+        selected-with-preview:
+          - "&aAlready selected."
+        unavailable:
+          - "&cUnavailable."
+    wood-type:
+      title: "Wood Types ({page}/{pages})"
+      selected:
+        item:
+          name: "&eSelected: &7{name}"
+      lore:
+        select-only:
+          - "&eLeft click: &fSelect"
+        select:
+          - "&eLeft click: &fSelect"
+        selected:
+          - "&aAlready selected."
+        selected-with-preview:
+          - "&aAlready selected."
+        unavailable:
+          - "&cUnavailable."
+    bed-destruction:
+      title: "Bed Destruction ({page}/{pages})"
+      none:
+        name: "&aNone"
+      random:
+        name: "&aRandom"
+        lore:
+          - "&7Selects a random cosmetic"
+          - "&7that you own"
+      back:
+        item:
+          name: "&aGo Back"
+          lore:
+            - "&7To Bed Wars Cosmetics"
+      previous:
+        item:
+          name: "&aPage {page}"
+      next:
+        item:
+          name: "&aPage {page}"
+      selected:
+        item:
+          name: "&eSelected: &7{name}"
+      shop:
+        item:
+          name: "&aShop"
+          lore:
+            - " "
+            - "&7Check out the cosmetics"
+            - "&7on sale."
+            - " "
+            - "&eClick to see more."
+      lore:
+        owned-name: "&a{name}"
+        locked-name: "&c{name}"
+        ultra-tag: "&7Included in &d&lULTRA"
+        select-only:
+          - "&eLeft click: &fSelect"
+        select:
+          - "&eLeft click: &fSelect"
+          - "&eRight click: &fPreview"
+        selected:
+          - "&aAlready selected."
+        selected-with-preview:
+          - "&aAlready selected."
+          - "&eRight click: &fPreview"
+        buy:
+          - "&7Cost: &d{price} credits"
+          - "&cYou need {missing} more credits!"
+          - " "
+          - "&eLeft click: &fPurchase"
+          - "&eRight click: &fPreview"
+        buy-affordable:
+          - "&7Cost: &d{price} credits"
+          - " "
+          - "&eLeft click: &fPurchase"
+          - "&eRight click: &fPreview"
+        unavailable:
+          - "&cUnavailable."
+          - "&eRight click: &fPreview"
+
+end-titles:
+  victory:
+    word: "VICTORY"
+  defeat:
+    word: "DEFEAT"
+
+victory-preview:
+  countdown:
+    - "&a3..."
+    - "&a2..."
+    - "&a1..."
+  back-item:
+    name: "&aBack to Lobby"
+  scoreboard:
+    title: "&b&lMUXE"
+    lines:
+      - ""
+      - "&fPreviewing:"
+      - "&e{name}"
+      - ""
+      - "&amuxe.com.br"
+
+final-kill-preview:
+  target:
+    action-bar: "&eHit the player!"
+    names:
+      - "&7Lucas"
+      - "&7Pedro"
+      - "&7Gabriel"
+      - "&7Noah"
+      - "&7Theo"
+      - "&7Davi"
+      - "&7Enzo"
+      - "&7Arthur"
+  back-item:
+    name: "&aBack to Lobby"
+  scoreboard:
+    title: "&b&lMUXE"
+    lines:
+      - ""
+      - "&fPreviewing:"
+      - "&e{name}"
+      - ""
+      - "&amuxe.com.br"
+
+aura-preview:
+  back-item:
+    name: "&aBack to Lobby"
+  scoreboard:
+    title: "&b&lMUXE"
+    lines:
+      - ""
+      - "&fPreviewing:"
+      - "&e{name}"
+      - ""
+      - "&amuxe.com.br"
+
+projectile-trail-preview:
+  back-item:
+    name: "&aBack to Lobby"
+  scoreboard:
+    title: "&b&lMUXE"
+    lines:
+      - ""
+      - "&fPreviewing:"
+      - "&e{name}"
+      - ""
+      - "&amuxe.com.br"
+
+preview:
+  action-bar: "&eBreak the bed!"
+  back-item:
+    name: "&aBack to Lobby"
+  scoreboard:
+    title: "&b&lMUXE"
+    lines:
+      - ""
+      - "&fPreviewing:"
+      - "&e{name}"
+      - ""
+      - "&amuxe.com.br"
+
+lobby:
+  menu-item:
+    item:
+      name: "&aBed Wars Menu"
+  menus:
+    mode:
+      title: "Bed Wars {mode}"
+      play:
+        item:
+          name: "&aBed Wars ({mode})"
+          lore:
+            - "&7{players} playing now!"
+            - " "
+            - "&6&lTOP DAILY WINSTREAK:"
+            - "{top}"
+            - " "
+            - "&eClick to play."
+      top-lines:
+        - "&a 1st &7{name}: &e{value}"
+        - "&e 2nd &7{name}: &e{value}"
+        - "&c 3rd &7{name}: &e{value}"
+      top-empty: "&7 Nobody yet."
+      map:
+        item:
+          name: "&aSelect map"
+          lore:
+            - "&7Choose the map you"
+            - "&7want to play."
+            - " "
+            - "&cExclusive to &aVIPs"
+      training:
+        item:
+          name: "&aPractice: Bridging"
+          lore:
+            - " "
+            - "&eClick to see more."
+      back:
+        item:
+          name: "&aGo Back"
+          lore:
+            - "&7To Bed Wars 1v1/2v2/3v3/4v4/4S"
+    duels:
+      title: "Bed Wars 1v1/2v2/3v3/4v4/4S"
+      item:
+        name: "&a{mode}"
+        lore:
+          - "&7{players} playing now!"
+    maps:
+      title: "Bed Wars {mode} ({page}/{pages})"
+      favourite:
+        name: "&6✰ &b{map}"
+        lore:
+          - " "
+          - "&7Rooms:"
+          - " &7Available: &e{available}"
+          - " &7Total: &e{total}"
+          - " "
+          - "&bRight click"
+          - "&bto remove from favourites."
+          - " "
+          - "&eClick to request a room!"
+      other:
+        name: "&a{map}"
+        lore:
+          - " "
+          - "&7Rooms:"
+          - " &7Available: &e{available}"
+          - " &7Total: &e{total}"
+          - " "
+          - "&bRight click"
+          - "&bto add to favourites."
+          - " "
+          - "&eClick to request a room!"
+      back:
+        item:
+          name: "&aGo Back"
+          lore:
+            - "&7To Bed Wars {mode}"
+      random:
+        item:
+          name: "&aRandom favourite map"
+          lore:
+            - "&7Join a random map"
+            - "&7from your favourites."
+            - " "
+            - "&eClick to join!"
+      search:
+        item:
+          name: "&aSearch"
+          lore:
+            - "&7Filter the maps by"
+            - "&7name."
+            - " "
+            - "&eClick to see more."
+      previous:
+        item:
+          name: "&aPrevious page"
+      next:
+        item:
+          name: "&aNext page"
+    top-modes:
+      title: "Select mode"
+      selected-lore:
+        - " "
+        - "&aSelected."
+      other-lore:
+        - " "
+        - "&eClick to select."
+      entries:
+        "geral":
+          title: "OVERALL"
+          item:
+            name: "&aOverall"
+        "solo":
+          title: "SOLO"
+          item:
+            name: "&aSolo"
+        "duplas":
+          title: "DOUBLES"
+          item:
+            name: "&aDoubles"
+        "trios":
+          title: "TRIOS"
+          item:
+            name: "&aTrios"
+        "quartetos":
+          title: "SQUADS"
+          item:
+            name: "&aSquads"
+        "1v1":
+          title: "1V1"
+          item:
+            name: "&a1v1"
+        "2v2":
+          title: "2V2"
+          item:
+            name: "&a2v2"
+        "3v3":
+          title: "3V3"
+          item:
+            name: "&a3v3"
+        "4v4":
+          title: "4V4"
+          item:
+            name: "&a4v4"
+        "4s":
+          title: "4S"
+          item:
+            name: "&a4s"
+        "mega":
+          title: "MEGA"
+          item:
+            name: "&aMega"
+        "pilares":
+          title: "PILLARS"
+          item:
+            name: "&aPillars"
+    stats:
+      title: "Your statistics (Bed Wars)"
+      general:
+        item:
+          name: "&aOverall"
+          lore:
+            - "&7Level: {level}"
+            - "&7XP: &a{xp}"
+            - " "
+            - "&7Games: &a{games}"
+            - " "
+            - "&7Beds Broken: &a{beds-broken}"
+            - "&7Beds Lost: &a{beds-lost}"
+            - " "
+            - "&7Kills: &a{kills}"
+            - "&7Deaths: &a{deaths}"
+            - "&7Assists: &a{assists}"
+            - "&7Final Kills: &a{final-kills}"
+            - "&7Final Deaths: &a{final-deaths}"
+            - "&7Final Assists: &a{final-assists}"
+            - " "
+            - "&7Wins: &a{wins}"
+            - "&7Losses: &a{losses}"
+            - " "
+            - "&7Winstreak: &a{winstreak}"
+            - "&7Best Winstreak: &a{best-winstreak}"
+      lore:
+        - "&7Games: &a{games}"
+        - " "
+        - "&7Beds Broken: &a{beds-broken}"
+        - "&7Beds Lost: &a{beds-lost}"
+        - " "
+        - "&7Kills: &a{kills}"
+        - "&7Deaths: &a{deaths}"
+        - "&7Assists: &a{assists}"
+        - "&7Final Kills: &a{final-kills}"
+        - "&7Final Deaths: &a{final-deaths}"
+        - "&7Final Assists: &a{final-assists}"
+        - " "
+        - "&7Wins: &a{wins}"
+        - "&7Losses: &a{losses}"
+        - " "
+        - "&7Winstreak: &a{winstreak}"
+        - "&7Best Winstreak: &a{best-winstreak}"
+      entries:
+        "solo":
+          item:
+            name: "&aSolo"
+        "duplas":
+          item:
+            name: "&aDoubles"
+        "trios":
+          item:
+            name: "&aTrios"
+        "quartetos":
+          item:
+            name: "&aSquads"
+        "1v1":
+          item:
+            name: "&a1v1"
+        "2v2":
+          item:
+            name: "&a2v2"
+        "3v3":
+          item:
+            name: "&a3v3"
+        "4v4":
+          item:
+            name: "&a4v4"
+        "mega":
+          item:
+            name: "&aMega"
+  npcs:
+    solo:
+      lines:
+        - "&b&lSOLO"
+        - "&e{players} playing"
+    duplas:
+      lines:
+        - "&b&lDOUBLES"
+        - "&e{players} playing"
+    trios:
+      lines:
+        - "&b&lTRIOS"
+        - "&e{players} playing"
+    quartetos:
+      lines:
+        - "&b&lSQUADS"
+        - "&e{players} playing"
+    duelos:
+      lines:
+        - "&6&lUSE"
+        - "&a/duel <name>"
+        - "&b&l1V1/2V2/3V3/4V4/4S"
+        - "&e{players} playing"
+    mega:
+      lines:
+        - "&eMonday to Friday:"
+        - "&a7 PM"
+        - "&eWeekends:"
+        - "&a3 PM 5 PM 7 PM"
+        - "&b&lMEGA"
+        - "&e... playing"
+    pilares:
+      lines:
+        - "{blink}&lNEW LIMITED"
+        - "{blink}&lTIME MODE!"
+        - "&b&lPILLARS"
+        - "&e{players} playing"
+    missoes:
+      lines:
+        - "&b&lMISSIONS"
+        - "&eClick to view!"
+  scoreboard:
+    title: "&b&lBED WARS"
+    lines:
+      - ""
+      - "Your level: {level}"
+      - "{bar}"
+      - ""
+      - "{modes}"
+      - ""
+      - "Players: &b{players}"
+      - ""
+      - "&amuxe.com.br"
+    mode-lines:
+      - "&e{mode}:"
+      - " Wins: &a{wins}"
+      - " Winstreak: &a{winstreak}"
+  stats-npc:
+    lines:
+      - "Your level: {level}"
+      - "{bar}"
+      - "Wins: &a{wins}"
+      - "Kills: &a{kills}"
+      - "Final Kills: &a{final-kills}"
+      - "Beds Broken: &a{beds}"
+      - "Winstreak: &a{winstreak}"
+      - "&b&lYOUR STATISTICS"
+      - "&eClick to view!"
+  tops:
+    boards:
+      kills-finais:
+        title: "&e&lFINAL KILLS {mode}"
+      vitorias:
+        title: "&e&lWINS {mode}"
+      winstreak:
+        title: "&e&lWINSTREAK {mode}"
+      nivel:
+        title: "&e&lLEVEL"
+    header: "&b&lTOP 100&r &7({page}/{pages})"
+    entry: "&e{position}.&r &f{name}&r &7- &e{value}&r"
+    empty: "&e{position}.&r &f&7Nobody&r &7- &e{value}&r"
+    click: "&6&lClick to switch!"
+    period-selected: "&a&l{period}&r"
+    period-other: "&7{period}&r"
+    general: "OVERALL"
+    period-names:
+      DAILY: "Daily"
+      WEEKLY: "Weekly"
+      MONTHLY: "Monthly"
+      TOTAL: "All Time"
+    xp-value: "{xp} XP"
+    selector:
+      header: "&b&lSELECT MODE"
+      footer: "&eClick to change."
+      selected: "&a{mode}"
+      other: "&7{mode}"
+      general-name: "Overall"

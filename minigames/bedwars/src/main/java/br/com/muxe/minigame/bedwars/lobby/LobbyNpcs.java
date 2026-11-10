@@ -4,6 +4,9 @@ import br.com.muxe.core.bukkit.nms.PlayerSkins;
 import br.com.muxe.core.bukkit.npc.Npc;
 import br.com.muxe.core.bukkit.npc.NpcLabelLayout;
 import br.com.muxe.core.bukkit.npc.NpcService;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.api.matchmaking.RoomDirectory;
 import br.com.muxe.minigame.bedwars.lobby.format.LevelBadges;
 import br.com.muxe.minigame.bedwars.lobby.settings.LobbyNpc;
@@ -31,8 +34,11 @@ public final class LobbyNpcs implements Listener {
 
     private final Plugin plugin;
     private final Map<String, LobbyNpc> npcs;
+    private final Localized<Map<String, LobbyNpc>> translated;
     private final List<String> blinkColors;
     private final StatsNpcSettings statsNpc;
+    private final Localized<StatsNpcSettings> statsTexts;
+    private final LanguageLookup languages;
     private final NpcLabelLayout labels;
     private final RoomDirectory directory;
     private final StatsCache stats;
@@ -40,13 +46,16 @@ public final class LobbyNpcs implements Listener {
     private final BiConsumer<Player, String> actions;
     private NpcService service;
 
-    public LobbyNpcs(Plugin plugin, List<LobbyNpc> npcs, NpcLabelLayout labels, List<String> blinkColors, StatsNpcSettings statsNpc, RoomDirectory directory,
-                     StatsCache stats, LevelBadges badges, BiConsumer<Player, String> actions) {
+    public LobbyNpcs(Plugin plugin, Localized<List<LobbyNpc>> npcs, NpcLabelLayout labels, List<String> blinkColors, Localized<StatsNpcSettings> statsNpc,
+                     LanguageLookup languages, RoomDirectory directory, StatsCache stats, LevelBadges badges, BiConsumer<Player, String> actions) {
         this.labels = labels;
         this.plugin = plugin;
-        this.npcs = npcs.stream().collect(Collectors.toMap(LobbyNpc::id, npc -> npc, (first, second) -> first, LinkedHashMap::new));
+        this.translated = npcs.map(LobbyNpcs::byId);
+        this.npcs = translated.standard();
         this.blinkColors = List.copyOf(blinkColors);
-        this.statsNpc = statsNpc;
+        this.statsNpc = statsNpc.standard();
+        this.statsTexts = statsNpc;
+        this.languages = languages;
         this.directory = directory;
         this.stats = stats;
         this.badges = badges;
@@ -54,7 +63,8 @@ public final class LobbyNpcs implements Listener {
     }
 
     public void start() {
-        service = NpcService.start(plugin, npc -> npc.id().startsWith(STATS_PREFIX) ? statsNpc.labels() : labels, this::lines);
+        service = NpcService.startForViewers(plugin, npc -> npc.id().startsWith(STATS_PREFIX) ? statsNpc.labels() : labels,
+            (viewer, npc) -> lines(npc, languages.of(viewer.getUniqueId())));
         service.visibleTo((viewer, npc) -> !npc.id().startsWith(STATS_PREFIX) || npc.id().equals(STATS_PREFIX + viewer.getUniqueId()));
         service.onClick(this::clicked);
         for (LobbyNpc npc : npcs.values()) {
@@ -84,17 +94,21 @@ public final class LobbyNpcs implements Listener {
         service.put(new Npc(STATS_PREFIX + player.getUniqueId(), statsNpc.spot().toLocation(plugin.getServer()), PlayerSkins.of(player)));
     }
 
-    private List<String> lines(Npc npc) {
+    List<String> lines(Npc npc, Language language) {
         if (npc.id().startsWith(STATS_PREFIX)) {
             UUID owner = UUID.fromString(npc.id().substring(STATS_PREFIX.length()));
-            return LobbyLines.stats(statsNpc.lines(), stats.of(owner).general(), badges, statsNpc.barSegments());
+            return LobbyLines.stats(statsTexts.in(language).lines(), stats.of(owner).general(), badges, statsNpc.barSegments());
         }
-        LobbyNpc lobbyNpc = npcs.get(npc.id());
+        LobbyNpc lobbyNpc = translated.in(language).get(npc.id());
         if (lobbyNpc == null) {
             return List.of();
         }
         int players = directory.playersIn(Set.copyOf(lobbyNpc.players()));
         return LobbyLines.npc(lobbyNpc.lines(), players, LobbyLines.blink(blinkColors, System.currentTimeMillis(), BLINK_MILLIS));
+    }
+
+    private static Map<String, LobbyNpc> byId(List<LobbyNpc> npcs) {
+        return npcs.stream().collect(Collectors.toMap(LobbyNpc::id, npc -> npc, (first, second) -> first, LinkedHashMap::new));
     }
 
     private void clicked(Player player, Npc npc) {

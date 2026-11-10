@@ -22,7 +22,7 @@ public record LobbyMenuSettings(Mode mode, Duels duels, Maps maps, TopModes topM
     public record Mode(String title, int rows, MenuSlot play, List<String> topLines, String topEmpty, MenuSlot map, MenuSlot training, MenuSlot back, List<String> backModes) {
 
         static Mode from(ConfigurationSection section) {
-            return new Mode(section.getString("title", "Bed Wars {mode}"), section.getInt("rows", 3), MenuSlot.from(section(section, "play")),
+            return new Mode(section.getString("title", "{mode}"), section.getInt("rows", 3), MenuSlot.from(section(section, "play")),
                 section.getStringList("top-lines"), section.getString("top-empty", ""), MenuSlot.from(section(section, "map")),
                 MenuSlot.from(section(section, "training")), MenuSlot.from(section(section, "back")), section.getStringList("back-modes"));
         }

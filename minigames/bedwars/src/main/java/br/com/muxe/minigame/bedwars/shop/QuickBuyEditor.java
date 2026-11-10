@@ -5,6 +5,8 @@ import br.com.muxe.core.bukkit.menu.Menu;
 import br.com.muxe.core.bukkit.menu.Page;
 import br.com.muxe.core.bukkit.prompt.AnvilPrompts;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.api.cosmetic.menu.MenuSlot;
 import br.com.muxe.minigame.bedwars.quickbuy.domain.QuickBuy;
 import br.com.muxe.minigame.bedwars.shop.ShopCatalog.ShopItem;
@@ -27,17 +29,17 @@ public final class QuickBuyEditor {
 
     private static final int PANE_RED = 14;
 
-    private final ShopCatalog shop;
-    private final Settings settings;
+    private final Localized<ShopCatalog> shops;
+    private final Localized<Settings> settings;
     private final QuickBuys quickBuys;
     private final MessageCatalog messages;
     private final AnvilPrompts anvils;
     private final Executor mainThread;
     private final Logger logger;
 
-    public QuickBuyEditor(ShopCatalog shop, Settings settings, QuickBuys quickBuys, MessageCatalog messages, AnvilPrompts anvils, Executor mainThread,
-                          Logger logger) {
-        this.shop = shop;
+    public QuickBuyEditor(Localized<ShopCatalog> shops, Localized<Settings> settings, QuickBuys quickBuys, MessageCatalog messages, AnvilPrompts anvils,
+                          Executor mainThread, Logger logger) {
+        this.shops = shops;
         this.settings = settings;
         this.quickBuys = quickBuys;
         this.messages = messages;
@@ -48,13 +50,16 @@ public final class QuickBuyEditor {
 
     public void open(Player player, Consumer<Player> back) {
         UUID id = player.getUniqueId();
+        Language language = messages.language(player);
+        ShopCatalog shop = shops.in(language);
+        Settings settings = this.settings.in(language);
         QuickBuy layout = quickBuys.of(id);
         Menu.Builder menu = Menu.builder(settings.title()).rows(settings.rows());
         for (int position = 0; position < QuickBuy.SIZE; position++) {
             int chosen = position;
             Optional<ShopItem> item = layout.at(position).map(shop.items()::get);
             ItemBuilder icon = item
-                .map(found -> look(found).lore(slotLore(found.editor().lore(), settings)))
+                .map(found -> look(found, settings).lore(slotLore(found.editor().lore(), settings)))
                 .orElseGet(() -> ItemBuilder.of(Material.STAINED_GLASS_PANE, PANE_RED).name(shop.quickBuyTexts().emptyName()).lore(" ", settings.swap()));
             menu.button(SLOTS.get(position), icon, context -> {
                 if (context.isRightClick() && item.isPresent()) {
@@ -71,12 +76,15 @@ public final class QuickBuyEditor {
     }
 
     public void openPicker(Player player, int position, int requested, Consumer<Player> back) {
+        Language language = messages.language(player);
+        ShopCatalog shop = shops.in(language);
+        Settings settings = this.settings.in(language);
         Page<String> page = Page.of(shop.sellable(), SLOTS.size(), requested);
         String title = settings.pickerTitle().replace("{page}", Integer.toString(page.number())).replace("{pages}", Integer.toString(page.total()));
         Menu.Builder menu = Menu.builder(title).rows(settings.rows());
         for (int index = 0; index < page.items().size(); index++) {
             ShopItem item = shop.items().get(page.items().get(index));
-            menu.button(SLOTS.get(index), look(item).lore(pickerLore(item.editor().lore(), settings)), context -> {
+            menu.button(SLOTS.get(index), look(item, settings).lore(pickerLore(item.editor().lore(), settings)), context -> {
                 UUID id = context.player().getUniqueId();
                 quickBuys.change(id, quickBuys.of(id).place(position, item.id()));
                 open(context.player(), back);
@@ -97,13 +105,13 @@ public final class QuickBuyEditor {
     }
 
     private void askImport(Player player, Consumer<Player> back) {
-        anvils.ask(player, settings.importPrompt(), username -> quickBuys.find(username).whenCompleteAsync((found, error) -> {
+        anvils.ask(player, settings.in(messages.language(player)).importPrompt(), username -> quickBuys.find(username).whenCompleteAsync((found, error) -> {
             if (!player.isOnline()) {
                 return;
             }
             if (error != null) {
                 logger.log(Level.WARNING, "Could not find the quick buy of " + username, error);
-                player.sendMessage(messages.get("cosmetic-failed"));
+                player.sendMessage(messages.get(player, "cosmetic-failed"));
                 return;
             }
             openImport(player, username, found.orElse(QuickBuy.of(List.of())), back);
@@ -111,10 +119,13 @@ public final class QuickBuyEditor {
     }
 
     public void openImport(Player player, String username, QuickBuy imported, Consumer<Player> back) {
+        Language language = messages.language(player);
+        ShopCatalog shop = shops.in(language);
+        Settings settings = this.settings.in(language);
         Menu.Builder menu = Menu.builder(settings.importTitle()).rows(settings.rows());
         for (int position = 0; position < QuickBuy.SIZE; position++) {
             Optional<ShopItem> item = imported.at(position).map(shop.items()::get);
-            menu.button(SLOTS.get(position), item.map(this::look)
+            menu.button(SLOTS.get(position), item.map(found -> look(found, settings))
                 .orElseGet(() -> ItemBuilder.of(Material.STAINED_GLASS_PANE, PANE_RED).name(shop.quickBuyTexts().emptyName())));
         }
         menu.button(settings.cancel().slot(), settings.cancel().item(), context -> open(context.player(), back));
@@ -125,7 +136,7 @@ public final class QuickBuyEditor {
         menu.build().open(player);
     }
 
-    private ItemBuilder look(ShopItem item) {
+    private static ItemBuilder look(ShopItem item, Settings settings) {
         return ShopLook.icon(item, settings.name());
     }
 
@@ -158,8 +169,8 @@ public final class QuickBuyEditor {
 
         public static Settings from(ConfigurationSection section) {
             return new Settings(
-                section.getString("title", "Editando compra rápida..."),
-                section.getString("picker-title", "Selecionando item... ({page}/{pages})"),
+                section.getString("title", ""),
+                section.getString("picker-title", "({page}/{pages})"),
                 section.getInt("rows", 5),
                 section.getString("name", "&a{name}"),
                 section.getString("swap"),
@@ -170,8 +181,8 @@ public final class QuickBuyEditor {
                 MenuSlot.from(section(section, "previous")),
                 MenuSlot.from(section(section, "next")),
                 MenuSlot.from(section(section, "import")),
-                section.getString("import-prompt", "Insira o usuário"),
-                section.getString("import-title", "Importando compra rápida..."),
+                section.getString("import-prompt", ""),
+                section.getString("import-title", ""),
                 MenuSlot.from(section(section, "cancel")),
                 MenuSlot.from(section(section, "confirm"))
             );

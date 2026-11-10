@@ -3,9 +3,13 @@ package br.com.muxe.minigame.bedwars.hotbar.menu;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import br.com.muxe.core.bukkit.item.ItemBuilder;
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.menu.Menu;
 import br.com.muxe.core.bukkit.menu.MenuButton;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
+import br.com.muxe.minigame.bedwars.BedWarsPlugin;
 import br.com.muxe.minigame.bedwars.hotbar.HotbarChoices;
 import br.com.muxe.minigame.bedwars.hotbar.domain.HotbarEntry;
 import br.com.muxe.minigame.bedwars.hotbar.domain.HotbarLayout;
@@ -72,6 +76,24 @@ class HotbarEditorTest {
         assertThat(settings.removing().rows()).isEqualTo(4);
         assertThat(HotbarEditor.REMOVING_SLOTS).hasSize(HotbarLayout.MAX_ENTRIES);
         assertThat(HotbarEditor.ADDING_SLOTS).hasSize(21).startsWith(19, 20).endsWith(42, 43);
+    }
+
+    @Test
+    void anEnglishReaderEditsTheHotbarInEnglish() {
+        LocalizedConfig texts = LocalizedConfig.bundled(BedWarsPlugin.class, "config.yml");
+        Localized<ShopCatalog> shops = texts.map(root -> ShopCatalog.from(root.getConfigurationSection("shop")));
+        Localized<HotbarMenuSettings> menus = texts.map(root -> HotbarMenuSettings.from(root.getConfigurationSection("shop.hotbar-menus")));
+        Localized<HotbarChoices> localizedChoices = shops.map(HotbarChoices::new);
+        HotbarEditor english = new HotbarEditor(menus, localizedChoices,
+            Localized.of(language -> new HotbarIcons(shops.in(language), localizedChoices.in(language), menus.in(language).adding())), id -> Language.ENGLISH, store,
+            MessageCatalog.from(texts, "messages"), (viewer, menu) -> opened.add(menu));
+
+        english.openFromBedWarsMenu(player, returned::add);
+
+        assertThat(lastOpened().title()).isEqualTo("Editing hotbar...");
+        assertThat(english.adding(0, AddingTab.CATEGORIES, 1, new Back("", returned::add, Language.ENGLISH)).title()).isEqualTo(
+            menus.in(Language.ENGLISH).adding().title().replace("{slot}", "1"));
+        assertThat(editing().title()).isEqualTo("Editando hotbar...");
     }
 
     @Test

@@ -71,14 +71,14 @@ class BedWarsRoomSchemaTest {
     @Test
     void customPricesAndLimitsReachTheShop() {
         CustomShop shop = new CustomShop(CustomRules.of(Optional.of(new RoomOptions(Map.of("shop.la.price", "2", "shop.la.currency", "emerald",
-            "shop.la.limit-type", "team", "shop.la.limit", "1", "shop.tnt.enabled", "false")))), SHOP.currencies());
+            "shop.la.limit-type", "team", "shop.la.limit", "1", "shop.tnt.enabled", "false")))));
         ShopCatalog.ShopItem wool = SHOP.items().get("la");
 
-        ShopCatalog.Tier tier = shop.tier(wool, wool.tiers().getFirst()).orElseThrow();
+        ShopCatalog.Tier tier = shop.tier(wool, wool.tiers().getFirst(), SHOP.currencies()).orElseThrow();
 
         assertThat(tier.price()).isEqualTo(2);
         assertThat(tier.currency().id()).isEqualTo("emerald");
-        assertThat(shop.tier(SHOP.items().get("tnt"), SHOP.items().get("tnt").tiers().getFirst())).isEmpty();
+        assertThat(shop.tier(SHOP.items().get("tnt"), SHOP.items().get("tnt").tiers().getFirst(), SHOP.currencies())).isEmpty();
         assertThat(shop.allows(wool, tier, "vermelho", "a", 0)).isTrue();
         shop.bought(wool, tier, "vermelho", "a");
         assertThat(shop.allows(wool, tier, "vermelho", "b", 0)).isFalse();
@@ -88,15 +88,15 @@ class BedWarsRoomSchemaTest {
     @Test
     void customUpgradePricesRewriteTheLevelLines() {
         CustomShop shop = new CustomShop(CustomRules.of(Optional.of(new RoomOptions(Map.of("upgrades.reforco.1.price", "3", "upgrades.reforco.1.currency", "iron",
-            "upgrades.pressa.enabled", "false")))), SHOP.currencies());
+            "upgrades.pressa.enabled", "false")))));
         UpgradeCatalog.Entry armor = UPGRADES.entries().stream().filter(entry -> entry.id().equals("reforco")).findFirst().orElseThrow();
         UpgradeCatalog.Entry haste = UPGRADES.entries().stream().filter(entry -> entry.id().equals("pressa")).findFirst().orElseThrow();
 
-        UpgradeCatalog.Entry priced = shop.upgrade(armor).orElseThrow();
+        UpgradeCatalog.Entry priced = shop.upgrade(armor, SHOP.currencies(), UPGRADES.texts()).orElseThrow();
 
         assertThat(priced.nextPrice(0)).isEqualTo(3);
         assertThat(priced.currency(0)).isEqualTo(Material.IRON_INGOT);
         assertThat(priced.tiers().getFirst().label()).isEqualTo("Nível 1: Proteção I, &f3 Ferros");
-        assertThat(shop.upgrade(haste)).isEmpty();
+        assertThat(shop.upgrade(haste, SHOP.currencies(), UPGRADES.texts())).isEmpty();
     }
 }

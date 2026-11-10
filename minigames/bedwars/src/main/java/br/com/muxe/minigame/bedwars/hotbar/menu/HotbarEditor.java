@@ -7,6 +7,9 @@ import br.com.muxe.core.bukkit.menu.MenuButton;
 import br.com.muxe.core.bukkit.menu.MenuClick;
 import br.com.muxe.core.bukkit.menu.Page;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.bedwars.hotbar.HotbarChoices;
 import br.com.muxe.minigame.bedwars.hotbar.HotbarStore;
 import br.com.muxe.minigame.bedwars.hotbar.domain.HotbarEntry;
@@ -35,33 +38,43 @@ public final class HotbarEditor {
     private static final int PANE_FIRST = 9;
     private static final int PANE_COUNT = 9;
 
-    private final HotbarMenuSettings settings;
-    private final HotbarChoices choices;
-    private final HotbarIcons icons;
+    private final Localized<HotbarMenuSettings> settings;
+    private final Localized<HotbarChoices> choices;
+    private final Localized<HotbarIcons> icons;
+    private final LanguageLookup languages;
     private final HotbarStore hotbars;
     private final MessageCatalog messages;
     private final BiConsumer<Player, Menu> opener;
 
-    public HotbarEditor(HotbarMenuSettings settings, HotbarChoices choices, HotbarIcons icons, HotbarStore hotbars, MessageCatalog messages) {
-        this(settings, choices, icons, hotbars, messages, (player, menu) -> menu.open(player));
+    public HotbarEditor(Localized<HotbarMenuSettings> settings, Localized<HotbarChoices> choices, Localized<HotbarIcons> icons, LanguageLookup languages,
+                        HotbarStore hotbars, MessageCatalog messages) {
+        this(settings, choices, icons, languages, hotbars, messages, (player, menu) -> menu.open(player));
     }
 
     HotbarEditor(HotbarMenuSettings settings, HotbarChoices choices, HotbarIcons icons, HotbarStore hotbars, MessageCatalog messages,
                  BiConsumer<Player, Menu> opener) {
+        this(Localized.same(settings), Localized.same(choices), Localized.same(icons), LanguageLookup.DEFAULT, hotbars, messages, opener);
+    }
+
+    HotbarEditor(Localized<HotbarMenuSettings> settings, Localized<HotbarChoices> choices, Localized<HotbarIcons> icons, LanguageLookup languages,
+                 HotbarStore hotbars, MessageCatalog messages, BiConsumer<Player, Menu> opener) {
         this.settings = settings;
         this.choices = choices;
         this.icons = icons;
+        this.languages = languages;
         this.hotbars = hotbars;
         this.messages = messages;
         this.opener = opener;
     }
 
     public void openFromBedWarsMenu(Player player, Consumer<Player> back) {
-        open(player, new Back(settings.bedwarsMenu(), back));
+        Language language = languages.of(player.getUniqueId());
+        open(player, new Back(settings.in(language).bedwarsMenu(), back, language));
     }
 
     public void openFromShop(Player player, Consumer<Player> back) {
-        open(player, new Back(settings.shop(), back));
+        Language language = languages.of(player.getUniqueId());
+        open(player, new Back(settings.in(language).shop(), back, language));
     }
 
     void open(Player player, Back back) {
@@ -69,6 +82,7 @@ public final class HotbarEditor {
     }
 
     Menu editing(UUID id, Back back) {
+        HotbarMenuSettings settings = this.settings.in(back.language());
         Editing texts = settings.editing();
         HotbarLayout layout = hotbars.of(id);
         Menu.Builder menu = Menu.builder(texts.title()).rows(texts.rows());
@@ -77,9 +91,9 @@ public final class HotbarEditor {
             MenuClick click = context -> clickedSlot(context, chosen, back);
             List<HotbarEntry> entries = layout.entries(slot);
             if (entries.isEmpty()) {
-                menu.button(FIRST_SLOT + slot, MenuButton.of(emptySlot(slot), click));
+                menu.button(FIRST_SLOT + slot, MenuButton.of(emptySlot(slot, texts), click));
             } else {
-                menu.button(FIRST_SLOT + slot, MenuButton.animated(frames(slot, entries), settings.frameTicks(), click));
+                menu.button(FIRST_SLOT + slot, MenuButton.animated(frames(slot, entries, texts, icons.in(back.language())), settings.frameTicks(), click));
             }
         }
         menu.button(texts.back().slot(), texts.back().item().replacing("destination", back.destination()), context -> back.action().accept(context.player()));
@@ -87,16 +101,18 @@ public final class HotbarEditor {
     }
 
     Menu adding(int slot, AddingTab tab, int requested, Back back) {
-        Adding texts = settings.adding();
+        Adding texts = settings.in(back.language()).adding();
+        HotbarIcons icons = this.icons.in(back.language());
         Menu.Builder menu = Menu.builder(texts.title().replace("{slot}", Integer.toString(slot + 1))).rows(texts.rows());
         boolean categories = tab == AddingTab.CATEGORIES;
-        menu.button(texts.categoriesTab().slot(), tabIcon(texts.categoriesTab().item(), categories), context -> show(context, adding(slot, AddingTab.CATEGORIES, 1, back)));
-        menu.button(texts.itemsTab().slot(), tabIcon(texts.itemsTab().item(), !categories), context -> show(context, adding(slot, AddingTab.ITEMS, 1, back)));
+        menu.button(texts.categoriesTab().slot(), tabIcon(texts.categoriesTab().item(), categories, texts), context -> show(context, adding(slot, AddingTab.CATEGORIES, 1, back)));
+        menu.button(texts.itemsTab().slot(), tabIcon(texts.itemsTab().item(), !categories, texts), context -> show(context, adding(slot, AddingTab.ITEMS, 1, back)));
         int openColumn = (categories ? texts.categoriesTab() : texts.itemsTab()).slot();
         for (int column = 0; column < PANE_COUNT; column++) {
             menu.button(PANE_FIRST + column, ItemBuilder.of(Material.STAINED_GLASS_PANE, column == openColumn ? PANE_GREEN : PANE_GRAY).name(" "));
         }
-        Page<HotbarEntry> page = Page.of(categories ? categoryEntries() : itemEntries(), ADDING_SLOTS.size(), requested);
+        HotbarChoices choices = this.choices.in(back.language());
+        Page<HotbarEntry> page = Page.of(categories ? categoryEntries(choices) : itemEntries(choices), ADDING_SLOTS.size(), requested);
         for (int index = 0; index < page.items().size(); index++) {
             HotbarEntry entry = page.items().get(index);
             menu.button(ADDING_SLOTS.get(index), icons.described(entry, texts.add()), context -> choose(context, slot, entry, back));
@@ -116,7 +132,8 @@ public final class HotbarEditor {
     }
 
     Menu removing(UUID id, int slot, Back back) {
-        Removing texts = settings.removing();
+        Removing texts = settings.in(back.language()).removing();
+        HotbarIcons icons = this.icons.in(back.language());
         Menu.Builder menu = Menu.builder(texts.title().replace("{slot}", Integer.toString(slot + 1))).rows(texts.rows());
         List<HotbarEntry> entries = hotbars.of(id).entries(slot);
         for (int index = 0; index < entries.size() && index < REMOVING_SLOTS.size(); index++) {
@@ -140,8 +157,7 @@ public final class HotbarEditor {
         return lore;
     }
 
-    private List<ItemBuilder> frames(int slot, List<HotbarEntry> entries) {
-        Editing texts = settings.editing();
+    private static List<ItemBuilder> frames(int slot, List<HotbarEntry> entries, Editing texts, HotbarIcons icons) {
         List<String> names = entries.stream().map(icons::name).toList();
         String title = texts.slotName().replace("{slot}", Integer.toString(slot + 1));
         List<ItemBuilder> frames = new ArrayList<>(entries.size());
@@ -151,23 +167,22 @@ public final class HotbarEditor {
         return frames;
     }
 
-    private ItemBuilder emptySlot(int slot) {
-        Editing texts = settings.editing();
+    private static ItemBuilder emptySlot(int slot, Editing texts) {
         return ItemBuilder.of(Material.STAINED_GLASS_PANE, PANE_RED)
             .name(texts.slotName().replace("{slot}", Integer.toString(slot + 1)))
             .lore(" ", texts.add())
             .showFlags();
     }
 
-    private ItemBuilder tabIcon(ItemBuilder icon, boolean open) {
-        return open ? icon : icon.lore(settings.adding().otherTab());
+    private static ItemBuilder tabIcon(ItemBuilder icon, boolean open, Adding texts) {
+        return open ? icon : icon.lore(texts.otherTab());
     }
 
-    private List<HotbarEntry> categoryEntries() {
+    private static List<HotbarEntry> categoryEntries(HotbarChoices choices) {
         return choices.categories().stream().map(category -> HotbarEntry.category(category.id())).toList();
     }
 
-    private List<HotbarEntry> itemEntries() {
+    private static List<HotbarEntry> itemEntries(HotbarChoices choices) {
         return choices.items().stream().map(item -> HotbarEntry.item(item.id())).toList();
     }
 
@@ -184,7 +199,7 @@ public final class HotbarEditor {
             return;
         }
         if (layout.isFull(slot)) {
-            player.sendMessage(messages.get("hotbar-slot-full"));
+            player.sendMessage(messages.get(back.language(), "hotbar-slot-full"));
             return;
         }
         opener.accept(player, adding(slot, AddingTab.CATEGORIES, 1, back));
@@ -195,7 +210,7 @@ public final class HotbarEditor {
         UUID id = player.getUniqueId();
         HotbarLayout layout = hotbars.of(id);
         if (!layout.entries(slot).contains(entry) && layout.isFull(slot)) {
-            player.sendMessage(messages.get("hotbar-slot-full"));
+            player.sendMessage(messages.get(back.language(), "hotbar-slot-full"));
             return;
         }
         HotbarLayout changed = layout.add(slot, entry);
@@ -229,6 +244,10 @@ public final class HotbarEditor {
         ITEMS
     }
 
-    record Back(String destination, Consumer<Player> action) {
+    record Back(String destination, Consumer<Player> action, Language language) {
+
+        Back(String destination, Consumer<Player> action) {
+            this(destination, action, Language.DEFAULT);
+        }
     }
 }

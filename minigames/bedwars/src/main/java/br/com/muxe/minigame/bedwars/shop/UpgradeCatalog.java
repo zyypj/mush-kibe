@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -33,11 +34,11 @@ public record UpgradeCatalog(String title, Texts texts, List<Entry> entries, Lis
         List<Entry> entries = entries(Objects.requireNonNull(section.getConfigurationSection("list"), "Missing upgrades.list"));
         ConfigurationSection custom = section.getConfigurationSection("custom-list");
         List<Entry> customEntries = custom == null ? List.of() : entries(custom);
-        return new UpgradeCatalog(section.getString("title", "Melhorias do Time"), new Texts(
+        return new UpgradeCatalog(section.getString("title", ""), new Texts(
             section.getString("tier-bought"), section.getString("tier-missing"), section.getString("price"),
             section.getString("diamond-one"), section.getString("diamond-many"), section.getString("cannot-afford"),
             section.getString("can-afford"), section.getString("maxed"), section.getString("name-unaffordable"),
-            section.getString("name-affordable"), section.getString("name-maxed")
+            section.getString("name-affordable"), section.getString("name-maxed"), section.getString("free", "")
         ), entries, customEntries);
     }
 
@@ -67,7 +68,7 @@ public record UpgradeCatalog(String title, Texts texts, List<Entry> entries, Lis
     }
 
     public record Texts(String bought, String missing, String price, String diamondOne, String diamondMany, String cannotAfford,
-                        String canAfford, String maxed, String nameUnaffordable, String nameAffordable, String nameMaxed) {
+                        String canAfford, String maxed, String nameUnaffordable, String nameAffordable, String nameMaxed, String free) {
     }
 
     public static final int LINE_WIDTH = 40;
@@ -82,6 +83,10 @@ public record UpgradeCatalog(String title, Texts texts, List<Entry> entries, Lis
     }
 
     public record Cost(Material material, String text) {
+    }
+
+    public Optional<Entry> entry(String id) {
+        return withCustom().stream().filter(entry -> entry.id().equals(id)).findFirst();
     }
 
     public record Entry(String id, int slot, Material material, String name, Upgrade upgrade, boolean single, List<String> description, List<Tier> tiers,

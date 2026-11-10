@@ -31,7 +31,7 @@ public final class BedWarsCommand {
     public void join(Player player, @Arg("modo") @Suggest(provider = MODES) String mode) {
         String id = mode.toLowerCase(Locale.ROOT);
         if (!rooms.modes().contains(id)) {
-            player.sendMessage(messages.get("unknown-mode", "modes", String.join(", ", rooms.modes())));
+            player.sendMessage(messages.get(player, "unknown-mode", "modes", String.join(", ", rooms.modes())));
             return;
         }
         rooms.switchTo(player.getUniqueId(), player.getName(), id);
@@ -40,13 +40,13 @@ public final class BedWarsCommand {
     @Subcommand("iniciar")
     @Permission(ADMIN)
     public void start(Player player) {
-        player.sendMessage(messages.get(rooms.forceStart(player.getUniqueId()) ? "forced-start" : "cannot-force-start"));
+        player.sendMessage(messages.get(player, rooms.forceStart(player.getUniqueId()) ? "forced-start" : "cannot-force-start"));
     }
 
     @Subcommand("finalizar")
     @Permission(ADMIN)
     public void end(Player player) {
-        player.sendMessage(messages.get(rooms.forceEnd(player.getUniqueId()) ? "forced-end" : "cannot-force-end"));
+        player.sendMessage(messages.get(player, rooms.forceEnd(player.getUniqueId()) ? "forced-end" : "cannot-force-end"));
     }
 
     @Suggestions(MODES)

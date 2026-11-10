@@ -86,7 +86,89 @@ custom-room:
     material: DIAMOND
   shop-page-title: "Itens da loja ({page}/{pages})"
   upgrades-page-title: "Melhorias (1/1)"
-  knockback-title: "Alterar knockback"
+  knockback:
+    title: "Alterar knockback"
+    entries:
+      vertical:
+        name: "Vertical"
+        description:
+          - "&7Valor base do impulso"
+          - "&7vertical."
+      horizontal:
+        name: "Horizontal"
+        description:
+          - "&7Valor base do impulso"
+          - "&7horizontal."
+      vertical-boost:
+        name: "Vertical (Boost)"
+        description:
+          - "&7Valor de boost do impulso"
+          - "&7vertical."
+      horizontal-boost:
+        name: "Horizontal (Boost)"
+        description:
+          - "&7Valor de boost do impulso"
+          - "&7horizontal."
+      vertical-limit:
+        name: "Vertical máximo"
+        description:
+          - "&7Valor máximo do impulso"
+          - "&7vertical base."
+      vertical-friction:
+        name: "Atrito Vertical"
+        description:
+          - "&7Divisor do impulso vertical"
+          - "&7anterior."
+      horizontal-friction:
+        name: "Atrito Horizontal"
+        description:
+          - "&7Divisor do impulso horizontal"
+          - "&7anterior."
+      attacker-multiplier:
+        name: "Multiplicador de atacante"
+        description:
+          - "&7Multiplicador horizontal"
+          - "&7aplicado ao atacar alguém."
+      restore-velocity:
+        name: "Restaurar impulso"
+        description:
+          - "&7Se o impulso anterior"
+          - "&7é restaurado após ser"
+          - "&7enviado ao jogador."
+      simulate-y:
+        name: "Simular Y"
+        description:
+          - "&7Faz uma simulação vertical"
+          - "&7do jogador baseado no"
+          - "&7ping antes de aplicar"
+          - "&7um impulso."
+      keep-sprint:
+        name: "Manter sprint"
+        description:
+          - "&7Mantém o estado de sprint"
+          - "&7ao causar um impulso."
+      ignore-sprint:
+        name: "Ignorar sprint"
+        description:
+          - "&7Desativa o boost especial"
+          - "&7de sprint."
+      use-rotation:
+        name: "Usar rotação"
+        description:
+          - "&7Utiliza a rotação do"
+          - "&7atacante para causar"
+          - "&7o impulso."
+      click-limiter:
+        name: "Limitador de cliques"
+        description:
+          - "&7Controla a força do"
+          - "&7limitador de cliques"
+          - "&7de knockback."
+    values:
+      "off": "Desativado"
+      low: "Baixo"
+      normal: "Normal"
+      high: "Alto"
   shop-free-text: "&7Altera o preço de todos os itens da loja."
   upgrades-free-text: "&7Altera o preço de todas as melhorias."
   pages:
@@ -1052,6 +1134,9 @@ messages:
   purchase-limit: "&cVocê atingiu o limite de compras deste item."
   hotbar-slot-full: "&cEste slot da hotbar já tem o máximo de entradas."
   trap-triggered: "&c&lARMADILHA! &cUm inimigo ativou uma armadilha da sua ilha."
+  slingshot-label: "ESTILINGUE:"
+  slingshot-item: "&cEstilingue"
+  decimal-separator: ","
   cosmetic-selected: "&aVocê selecionou &f{name}&a."
   cosmetic-bought: "&aVocê comprou &f{name} &apor &d{price} créditos&a."
   cosmetic-not-enough: "&cVocê não tem créditos suficientes."
@@ -1187,6 +1272,7 @@ favourite-color:
 
 tnt-timer:
   format: "{color}{seconds}s"
+  decimal-separator: ","
   decimals: 2
   height: 1.1
   view-distance: 24
@@ -1373,6 +1459,7 @@ shop:
   open-category: "&eClique para ver."
   name-affordable: "&a"
   name-unaffordable: "&c"
+  permanent-suffix: " (Permanente)"
   tracker-locked:
     - "&cDisponível apenas quando não há camas inimigas"
     - "&crestantes."
@@ -2044,6 +2131,7 @@ upgrades:
   price: "&7Preço: &b{amount} {currency}"
   diamond-one: "Diamante"
   diamond-many: "Diamantes"
+  free: "&aGrátis"
   cannot-afford: "&cVocê não tem Diamantes o suficiente."
   can-afford: "&eClique para melhorar."
   maxed: "&aMelhorado ao máximo."

@@ -1,5 +1,8 @@
 package br.com.muxe.minigame.bedwars.settings;
 
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
+import br.com.muxe.core.common.language.domain.Localized;
+import br.com.muxe.core.common.language.domain.Text;
 import br.com.muxe.minigame.api.timeline.Timeline.Entry;
 import br.com.muxe.minigame.api.timeline.Timeline;
 import br.com.muxe.minigame.bedwars.game.BedWarsEvent.Kind;
@@ -11,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 
 public record BedWarsSettings(
     Timings timings,
@@ -25,12 +27,21 @@ public record BedWarsSettings(
 
     private static final String[] ROMAN = {"", "I", "II", "III", "IV", "V"};
 
-    public static BedWarsSettings from(FileConfiguration config) {
+    public static Localized<BedWarsSettings> from(LocalizedConfig texts) {
+        Localized<ConfigurationSection> names = texts.map(BedWarsSettings::eventNames);
+        return texts.map(root -> from(root, names));
+    }
+
+    public static BedWarsSettings from(ConfigurationSection config) {
+        return from(config, Localized.same(eventNames(config)));
+    }
+
+    private static BedWarsSettings from(ConfigurationSection config, Localized<ConfigurationSection> names) {
         Forges forges = Forges.from(section(config, "forges"));
         return new BedWarsSettings(
             Timings.from(section(config, "timings")),
             forges,
-            timeline(forges, section(config, "events")),
+            timeline(forges, section(config, "events"), names),
             XpRewards.from(section(config, "xp-rewards")),
             Holograms.from(section(config, "holograms")),
             MatchSounds.from(config.getConfigurationSection("sounds")),
@@ -46,19 +57,26 @@ public record BedWarsSettings(
         return Objects.requireNonNull(parent.getConfigurationSection(path), "Missing configuration section " + path);
     }
 
-    private static Timeline<BedWarsEvent> timeline(Forges forges, ConfigurationSection events) {
-        ConfigurationSection names = section(events, "names");
+    private static ConfigurationSection eventNames(ConfigurationSection config) {
+        return section(section(config, "events"), "names");
+    }
+
+    private static Timeline<BedWarsEvent> timeline(Forges forges, ConfigurationSection events, Localized<ConfigurationSection> names) {
         List<Entry<BedWarsEvent>> list = new ArrayList<>();
         for (int tier = 2; tier <= forges.diamond().size(); tier++) {
-            list.add(new Entry<>(new BedWarsEvent(Kind.DIAMOND_TIER, tier), forges.diamond().get(tier - 1).start(), names.getString("diamond", "Diamante {tier}").replace("{tier}", roman(tier))));
+            list.add(new Entry<>(new BedWarsEvent(Kind.DIAMOND_TIER, tier), forges.diamond().get(tier - 1).start(), name(names, "diamond", roman(tier))));
         }
         for (int tier = 2; tier <= forges.emerald().size(); tier++) {
-            list.add(new Entry<>(new BedWarsEvent(Kind.EMERALD_TIER, tier), forges.emerald().get(tier - 1).start(), names.getString("emerald", "Esmeralda {tier}").replace("{tier}", roman(tier))));
+            list.add(new Entry<>(new BedWarsEvent(Kind.EMERALD_TIER, tier), forges.emerald().get(tier - 1).start(), name(names, "emerald", roman(tier))));
         }
-        list.add(new Entry<>(new BedWarsEvent(Kind.BEDS_DESTROYED, 0), events.getInt("beds-destroyed", 1800), names.getString("beds-destroyed", "Camas destruídas")));
-        list.add(new Entry<>(new BedWarsEvent(Kind.DRAGONS, 0), events.getInt("dragons", 2400), names.getString("dragons", "Morte súbita")));
-        list.add(new Entry<>(new BedWarsEvent(Kind.GAME_END, 0), events.getInt("game-end", 2520), names.getString("game-end", "Fim de jogo")));
+        list.add(new Entry<>(new BedWarsEvent(Kind.BEDS_DESTROYED, 0), events.getInt("beds-destroyed", 1800), name(names, "beds-destroyed", "")));
+        list.add(new Entry<>(new BedWarsEvent(Kind.DRAGONS, 0), events.getInt("dragons", 2400), name(names, "dragons", "")));
+        list.add(new Entry<>(new BedWarsEvent(Kind.GAME_END, 0), events.getInt("game-end", 2520), name(names, "game-end", "")));
         return new Timeline<>(list);
+    }
+
+    private static Text name(Localized<ConfigurationSection> names, String key, String tier) {
+        return language -> names.in(language).getString(key, key).replace("{tier}", tier);
     }
 
     public record Timings(int islandRadius, int spawnRadius, int npcRadius, int generatorRadius) {

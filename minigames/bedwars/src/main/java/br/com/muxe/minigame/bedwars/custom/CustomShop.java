@@ -15,18 +15,17 @@ import org.bukkit.Material;
 
 public final class CustomShop {
 
-    public static final String FREE = "&aGrátis";
+    public static final String DIAMOND = "diamond";
+    public static final String DIAMOND_COLOR = "&b";
 
     private final CustomRules rules;
-    private final Map<String, Currency> currencies;
     private final Map<String, Integer> purchases = new HashMap<>();
 
-    public CustomShop(CustomRules rules, Map<String, Currency> currencies) {
+    public CustomShop(CustomRules rules) {
         this.rules = rules;
-        this.currencies = Map.copyOf(currencies);
     }
 
-    public Optional<Tier> tier(ShopItem item, Tier tier) {
+    public Optional<Tier> tier(ShopItem item, Tier tier, Map<String, Currency> currencies) {
         if (!rules.custom()) {
             return item.enabled() ? Optional.of(tier) : Optional.empty();
         }
@@ -38,7 +37,7 @@ public final class CustomShop {
         return Optional.of(new Tier(tier.material(), tier.name(), rules.price(key, tier.price()), currency));
     }
 
-    public Optional<UpgradeCatalog.Entry> upgrade(UpgradeCatalog.Entry entry) {
+    public Optional<UpgradeCatalog.Entry> upgrade(UpgradeCatalog.Entry entry, Map<String, Currency> currencies, UpgradeCatalog.Texts texts) {
         if (!rules.custom()) {
             return entry.enabled() ? Optional.of(entry) : Optional.empty();
         }
@@ -49,10 +48,11 @@ public final class CustomShop {
         List<Cost> costs = new ArrayList<>();
         for (int level = 1; level <= entry.tiers().size(); level++) {
             int price = rules.upgradePrice(entry.id(), level, entry.tiers().get(level - 1).price());
-            Currency currency = Optional.ofNullable(currencies.get(rules.upgradeCurrency(entry.id(), level, "diamond")))
-                .orElseGet(() -> new Currency("diamond", Material.DIAMOND, "Diamante", "Diamantes", "&b"));
+            Currency currency = Optional.ofNullable(currencies.get(rules.upgradeCurrency(entry.id(), level, DIAMOND)))
+                .or(() -> Optional.ofNullable(currencies.get(DIAMOND)))
+                .orElseGet(() -> new Currency(DIAMOND, Material.DIAMOND, texts.diamondOne(), texts.diamondMany(), DIAMOND_COLOR));
             prices.add(price);
-            costs.add(new Cost(currency.material(), price == 0 ? FREE : currency.color() + price + " " + currency.name(price)));
+            costs.add(new Cost(currency.material(), price == 0 ? texts.free() : currency.color() + price + " " + currency.name(price)));
         }
         return Optional.of(entry.priced(prices, costs));
     }

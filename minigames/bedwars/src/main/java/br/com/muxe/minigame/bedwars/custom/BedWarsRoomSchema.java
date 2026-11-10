@@ -1,6 +1,9 @@
 package br.com.muxe.minigame.bedwars.custom;
 
+import br.com.muxe.core.bukkit.customroom.schema.SchemaReader;
 import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.api.customroom.KnockbackPage;
 import br.com.muxe.minigame.api.timeline.Timeline;
 import br.com.muxe.minigame.bedwars.game.BedWarsEvent;
@@ -11,8 +14,10 @@ import br.com.muxe.minigame.bedwars.shop.UpgradeCatalog;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public final class BedWarsRoomSchema {
@@ -24,11 +29,37 @@ public final class BedWarsRoomSchema {
     public static final int LIST_FREE = 44;
     public static final String SHOP_PAGE = "shop-";
     public static final String UPGRADES_PAGE = "upgrades";
+    public static final String KNOCKBACK_TEXTS = "knockback";
 
     private BedWarsRoomSchema() {
     }
 
     public static String build(ConfigurationSection custom, ShopCatalog shop, UpgradeCatalog upgrades, Timeline<BedWarsEvent> timeline, KnockbackProfile knockback) {
+        return build(Localized.same(new Texts(custom, shop, upgrades)), timeline, knockback);
+    }
+
+    public static String build(Localized<Texts> texts, Timeline<BedWarsEvent> timeline, KnockbackProfile knockback) {
+        YamlConfiguration yaml = tree(texts.standard(), timeline, knockback);
+        for (Language language : Language.values()) {
+            if (language == Language.DEFAULT) {
+                continue;
+            }
+            YamlConfiguration translated = tree(texts.in(language), timeline, knockback);
+            ConfigurationSection target = yaml.createSection(SchemaReader.TRANSLATIONS + "." + language.tag());
+            for (String key : translated.getKeys(true)) {
+                Object value = translated.get(key);
+                if (!(value instanceof ConfigurationSection) && !Objects.equals(value, yaml.get(key))) {
+                    target.set(key, value);
+                }
+            }
+        }
+        return yaml.saveToString();
+    }
+
+    private static YamlConfiguration tree(Texts texts, Timeline<BedWarsEvent> timeline, KnockbackProfile knockback) {
+        ConfigurationSection custom = texts.custom();
+        ShopCatalog shop = texts.shop();
+        UpgradeCatalog upgrades = texts.upgrades();
         YamlConfiguration yaml = new YamlConfiguration();
         yaml.set("root", custom.getString("root", "options"));
         ConfigurationSection currencies = yaml.createSection("currencies");
@@ -54,8 +85,9 @@ public final class BedWarsRoomSchema {
         events(pages, timeline);
         shopPages(pages, custom, shop);
         upgradesPage(pages, custom, upgrades);
-        KnockbackPage.write(pages, knockback, custom.getString("knockback-title", "Alterar knockback"), 30, "options");
-        return yaml.saveToString();
+        ConfigurationSection knockbackTexts = custom.getConfigurationSection(KNOCKBACK_TEXTS);
+        KnockbackPage.write(pages, knockback, knockbackTexts == null ? new MemoryConfiguration() : knockbackTexts, 30, "options");
+        return yaml;
     }
 
     public static List<Entry> shopEntries(ShopCatalog shop) {
@@ -107,7 +139,7 @@ public final class BedWarsRoomSchema {
         List<Entry> entries = shopEntries(shop);
         int perPage = LIST_SLOTS.size();
         int count = Math.max(1, (entries.size() + perPage - 1) / perPage);
-        String title = custom.getString("shop-page-title", "Itens da loja ({page}/{pages})");
+        String title = custom.getString("shop-page-title", "({page}/{pages})");
         for (int page = 1; page <= count; page++) {
             ConfigurationSection section = pages.createSection(SHOP_PAGE + page);
             section.set("title", title.replace("{page}", String.valueOf(page)).replace("{pages}", String.valueOf(count)));
@@ -148,7 +180,7 @@ public final class BedWarsRoomSchema {
 
     private static void upgradesPage(ConfigurationSection pages, ConfigurationSection custom, UpgradeCatalog upgrades) {
         ConfigurationSection section = pages.createSection(UPGRADES_PAGE);
-        section.set("title", custom.getString("upgrades-page-title", "Melhorias (1/1)"));
+        section.set("title", custom.getString("upgrades-page-title", UPGRADES_PAGE));
         section.set("rows", LIST_ROWS);
         section.set("back-slot", LIST_BACK);
         section.set("back-to", "options");
@@ -196,5 +228,8 @@ public final class BedWarsRoomSchema {
     }
 
     public record Entry(String key, ShopItem item, Tier tier) {
+    }
+
+    public record Texts(ConfigurationSection custom, ShopCatalog shop, UpgradeCatalog upgrades) {
     }
 }

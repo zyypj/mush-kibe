@@ -44,7 +44,7 @@ public record PreviewSettings(
             BedFrame.of(foot.getInt("x"), foot.getInt("y"), foot.getInt("z"), head.getInt("x"), head.getInt("z")),
             DurationParser.parse(section.getString("timeout", "120s")),
             DurationParser.parse(section.getString("return-delay", "2s")),
-            section.getString("action-bar", "&eQuebre a cama!"),
+            section.getString("action-bar", ""),
             new HotbarItem(back.getInt("slot"), back.getString("material"), back.getString("name")),
             scoreboard.getString("title", "&b&lMUXE"),
             scoreboard.getStringList("lines")

@@ -23,24 +23,23 @@ class CustomRoomExtrasTest {
 
     @Test
     void bedProtectionOnlyExistsInCustomRoomsAndStartsOff() {
-        CustomShop ordinary = new CustomShop(CustomRules.NONE, SHOP.currencies());
-        CustomShop untouched = new CustomShop(CustomRules.of(Optional.of(RoomOptions.EMPTY)), SHOP.currencies());
-        CustomShop turnedOn = new CustomShop(CustomRules.of(Optional.of(new RoomOptions(Map.of("upgrades.protecao-cama.enabled", "true")))), SHOP.currencies());
+        CustomShop ordinary = new CustomShop(CustomRules.NONE);
+        CustomShop untouched = new CustomShop(CustomRules.of(Optional.of(RoomOptions.EMPTY)));
+        CustomShop turnedOn = new CustomShop(CustomRules.of(Optional.of(new RoomOptions(Map.of("upgrades.protecao-cama.enabled", "true")))));
 
         assertThat(UPGRADES.entries()).extracting(UpgradeCatalog.Entry::id).doesNotContain("protecao-cama");
         assertThat(BED_PROTECTION.slot()).isEqualTo(19);
-        assertThat(ordinary.upgrade(BED_PROTECTION)).isEmpty();
-        assertThat(untouched.upgrade(BED_PROTECTION)).isEmpty();
-        assertThat(turnedOn.upgrade(BED_PROTECTION)).isPresent();
+        assertThat(ordinary.upgrade(BED_PROTECTION, SHOP.currencies(), UPGRADES.texts())).isEmpty();
+        assertThat(untouched.upgrade(BED_PROTECTION, SHOP.currencies(), UPGRADES.texts())).isEmpty();
+        assertThat(turnedOn.upgrade(BED_PROTECTION, SHOP.currencies(), UPGRADES.texts())).isPresent();
     }
 
     @Test
     void freeLevelsWrapLikeTheReference() {
-        CustomShop free = new CustomShop(CustomRules.of(Optional.of(new RoomOptions(Map.of("upgrades.free", "true", "upgrades.protecao-cama.enabled", "true")))),
-            SHOP.currencies());
+        CustomShop free = new CustomShop(CustomRules.of(Optional.of(new RoomOptions(Map.of("upgrades.free", "true", "upgrades.protecao-cama.enabled", "true")))));
 
-        UpgradeCatalog.Entry bed = free.upgrade(BED_PROTECTION).orElseThrow();
-        UpgradeCatalog.Entry fatigue = free.upgrade(FATIGUE).orElseThrow();
+        UpgradeCatalog.Entry bed = free.upgrade(BED_PROTECTION, SHOP.currencies(), UPGRADES.texts()).orElseThrow();
+        UpgradeCatalog.Entry fatigue = free.upgrade(FATIGUE, SHOP.currencies(), UPGRADES.texts()).orElseThrow();
 
         assertThat(bed.tiers().get(0).label()).isEqualTo("Nível 1: Madeira, Lã, Vidro, &aGrátis");
         assertThat(bed.tiers().get(0).extra()).isNull();
@@ -56,15 +55,15 @@ class CustomRoomExtrasTest {
     void theNewShopItemsAreListedOffAndOnlyOnInCustomRooms() {
         ShopCatalog.ShopItem swap = SHOP.items().get("troca-congelante");
         ShopCatalog.ShopItem obsidian = SHOP.items().get("obsidian");
-        CustomShop ordinary = new CustomShop(CustomRules.NONE, SHOP.currencies());
-        CustomShop on = new CustomShop(CustomRules.of(Optional.of(new RoomOptions(Map.of("shop.troca-congelante.enabled", "true")))), SHOP.currencies());
+        CustomShop ordinary = new CustomShop(CustomRules.NONE);
+        CustomShop on = new CustomShop(CustomRules.of(Optional.of(new RoomOptions(Map.of("shop.troca-congelante.enabled", "true")))));
 
         assertThat(SHOP.categories().get("utilidades").items()).doesNotContain("troca-congelante");
         assertThat(SHOP.categories().get("utilidades").customItems()).containsExactly("troca-congelante", "ponte-de-gelo", "para-quedas", "rebobinar", "spider",
             "loja-portatil", "bau-do-fim", "ressurreicao");
-        assertThat(ordinary.tier(swap, swap.tiers().getFirst())).isEmpty();
-        assertThat(ordinary.tier(obsidian, obsidian.tiers().getFirst())).isEmpty();
-        assertThat(on.tier(swap, swap.tiers().getFirst())).isPresent();
+        assertThat(ordinary.tier(swap, swap.tiers().getFirst(), SHOP.currencies())).isEmpty();
+        assertThat(ordinary.tier(obsidian, obsidian.tiers().getFirst(), SHOP.currencies())).isEmpty();
+        assertThat(on.tier(swap, swap.tiers().getFirst(), SHOP.currencies())).isPresent();
     }
 
     @Test
