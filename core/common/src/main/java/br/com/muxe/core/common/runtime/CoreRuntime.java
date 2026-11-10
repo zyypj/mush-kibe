@@ -32,6 +32,8 @@ import br.com.muxe.core.common.messaging.packet.PacketRegistry;
 import br.com.muxe.core.common.messaging.security.HmacEnvelopeSigner;
 import br.com.muxe.core.common.messaging.transport.ConnectionListener;
 import br.com.muxe.core.common.messaging.transport.redis.RedisMessageTransport;
+import br.com.muxe.core.common.language.LanguageModule;
+import br.com.muxe.core.common.language.infrastructure.postgres.PostgresLanguageRepository;
 import br.com.muxe.core.common.metrics.MetricRegistry;
 import br.com.muxe.core.common.metrics.Tags;
 import br.com.muxe.core.common.metrics.export.MetricsConfig;
@@ -261,6 +263,7 @@ public final class CoreRuntime implements AutoCloseable {
             ParkourModule.register(commands, queries, new PostgresParkourRecordRepository(), transactions, clock);
             ShopModule.register(commands, queries, new PostgresPromotionRepository(), transactions, clock);
             VisibilityModule.register(commands, queries, new PostgresVisibilityRepository(), transactions, clock);
+            LanguageModule.register(commands, queries, new PostgresLanguageRepository(), transactions, clock);
             PostgresCreditRepository credits = new PostgresCreditRepository();
             CreditModule.register(commands, queries, credits, transactions, clock);
             CosmeticModule.register(commands, queries, new PostgresCosmeticRepository(), credits, transactions, clock);

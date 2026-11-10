@@ -7,6 +7,7 @@ import br.com.muxe.core.common.network.auth.PlayerAuthenticatedPacket;
 import br.com.muxe.core.common.network.customroom.CreateCustomRoomReply;
 import br.com.muxe.core.common.network.customroom.CreateCustomRoomRequest;
 import br.com.muxe.core.common.network.customroom.CustomRoomCatalogPacket;
+import br.com.muxe.core.common.network.language.LanguageChangedPacket;
 import br.com.muxe.core.common.network.party.PartyActionPacket;
 import br.com.muxe.core.common.network.party.PartyGatherRequest;
 import br.com.muxe.core.common.network.party.PartyGatherResponse;
@@ -56,6 +57,7 @@ public final class NetworkPackets {
             .register(PartyGatherResponse.TYPE)
             .register(CustomRoomCatalogPacket.TYPE)
             .register(CreateCustomRoomRequest.TYPE)
-            .register(CreateCustomRoomReply.TYPE);
+            .register(CreateCustomRoomReply.TYPE)
+            .register(LanguageChangedPacket.TYPE);
     }
 }
