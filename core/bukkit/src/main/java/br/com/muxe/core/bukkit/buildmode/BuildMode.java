@@ -102,13 +102,12 @@ public final class BuildMode implements Listener, Runnable {
 
     @Override
     public void run() {
-        String text = messages.get("build-action-bar");
         for (UUID builder : Set.copyOf(active)) {
             Player player = server.getPlayer(builder);
             if (player == null) {
                 active.remove(builder);
             } else {
-                ActionBar.send(player, text);
+                ActionBar.send(player, messages.get(player, "build-action-bar"));
             }
         }
     }
@@ -157,7 +156,7 @@ public final class BuildMode implements Listener, Runnable {
         active.add(player.getUniqueId());
         player.getInventory().clear();
         player.setGameMode(GameMode.CREATIVE);
-        ActionBar.send(player, messages.get("build-action-bar"));
+        ActionBar.send(player, messages.get(player, "build-action-bar"));
         hooks.forEach(hook -> hook.entered(player));
     }
 

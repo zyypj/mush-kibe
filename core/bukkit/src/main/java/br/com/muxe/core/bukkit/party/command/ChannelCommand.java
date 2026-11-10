@@ -35,10 +35,10 @@ public final class ChannelCommand {
             return;
         }
         switch (channel.get()) {
-            case CLAN -> player.sendMessage(messages.get("channel-no-clan"));
+            case CLAN -> player.sendMessage(messages.get(player, "channel-no-clan"));
             case PARTY -> {
                 if (!chat.inParty(player.getUniqueId())) {
-                    player.sendMessage(messages.get("party-not-in-party"));
+                    player.sendMessage(messages.get(player, "party-not-in-party"));
                     return;
                 }
                 changed(player, ChatChannel.PARTY);
@@ -49,12 +49,12 @@ public final class ChannelCommand {
 
     @Usage
     public void usage(CommandSender sender) {
-        sender.sendMessage(messages.get("channel-usage"));
+        sender.sendMessage(messages.get(sender, "channel-usage"));
     }
 
     private void changed(Player player, ChatChannel channel) {
         channels.choose(player.getUniqueId(), channel);
-        String name = messages.get("channel-name-" + channel.id().toLowerCase(Locale.ROOT));
-        player.sendMessage(messages.get("channel-changed", "channel", name));
+        String name = messages.get(player, "channel-name-" + channel.id().toLowerCase(Locale.ROOT));
+        player.sendMessage(messages.get(player, "channel-changed", "channel", name));
     }
 }

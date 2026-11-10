@@ -65,7 +65,7 @@ public final class VisibilityService {
         settings.put(player.getUniqueId(), next);
         hotbar.showVisibility(player, next);
         apply(player);
-        player.sendMessage(messages.get(switch (next) {
+        player.sendMessage(messages.get(player, switch (next) {
             case ALL -> "visibility-all";
             case FRIENDS -> "visibility-friends";
             case NONE -> "visibility-none";

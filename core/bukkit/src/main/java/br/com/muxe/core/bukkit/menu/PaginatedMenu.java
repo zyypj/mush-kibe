@@ -1,6 +1,8 @@
 package br.com.muxe.core.bukkit.menu;
 
 import br.com.muxe.core.bukkit.item.ItemBuilder;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Text;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,6 +11,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public final class PaginatedMenu {
+
+    public static final Text PREVIOUS_PAGE = Text.of("&aPágina anterior", "&aPrevious page");
+    public static final Text NEXT_PAGE = Text.of("&aPróxima página", "&aNext page");
 
     private final String titleTemplate;
     private final List<MenuButton> items;
@@ -76,14 +81,18 @@ public final class PaginatedMenu {
         return Math.min(Menu.MAX_ROWS, needed);
     }
 
+    private static ItemBuilder arrow(Text name, Language language) {
+        return ItemBuilder.of(Material.ARROW).name(name.in(language));
+    }
+
     public static final class Builder {
 
         private final String title;
         private final List<MenuButton> items = new ArrayList<>();
         private List<Integer> slots;
         private int rows;
-        private ItemBuilder previous = ItemBuilder.of(Material.ARROW).name("&aPágina anterior");
-        private ItemBuilder next = ItemBuilder.of(Material.ARROW).name("&aPróxima página");
+        private ItemBuilder previous = arrow(PREVIOUS_PAGE, Language.DEFAULT);
+        private ItemBuilder next = arrow(NEXT_PAGE, Language.DEFAULT);
         private final Map<Integer, MenuButton> extras = new LinkedHashMap<>();
         private ItemBuilder fill;
 
@@ -114,6 +123,12 @@ public final class PaginatedMenu {
                 throw new IllegalArgumentException("Menus have 1 to 6 rows, got " + value);
             }
             this.rows = value;
+            return this;
+        }
+
+        public Builder language(Language language) {
+            this.previous = arrow(PREVIOUS_PAGE, language);
+            this.next = arrow(NEXT_PAGE, language);
             return this;
         }
 

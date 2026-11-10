@@ -44,8 +44,8 @@ public final class EditorCommand {
             String url = link(baseUrl, token);
             String minutes = Long.toString(sessions.duration().toMinutes());
             if (sender instanceof Player player) {
-                ChatLines.send(player, replies.messages().lines("editor-opened", "minutes", minutes), CenteredText.DEFAULT_CENTER, url,
-                    replies.messages().lines("editor-hover", "url", url));
+                ChatLines.send(player, replies.messages().lines(player, "editor-opened", "minutes", minutes), CenteredText.DEFAULT_CENTER, url,
+                    replies.messages().lines(player, "editor-hover", "url", url));
             } else {
                 replies.send(sender, "editor-console", "url", url, "minutes", minutes);
             }

@@ -6,6 +6,7 @@ import br.com.muxe.core.bukkit.mission.config.MissionConfig;
 import br.com.muxe.core.bukkit.text.ChatButton;
 import br.com.muxe.core.bukkit.text.ClickableText;
 import br.com.muxe.core.bukkit.text.Colors;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.mission.application.command.RecordMissionProgressCommand;
 import br.com.muxe.core.common.mission.application.query.FindMissionsQuery;
 import br.com.muxe.core.common.mission.domain.Mission;
@@ -28,16 +29,20 @@ public final class MissionTracker {
 
     private final MuxeCore core;
     private final String game;
-    private final MissionConfig config;
+    private final Localized<MissionConfig> configs;
     private final String label;
     private final Logger logger;
     private final Map<UUID, MissionSession> sessions = new HashMap<>();
     private final Map<UUID, CompletableFuture<Void>> saving = new HashMap<>();
 
     public MissionTracker(MuxeCore core, String game, MissionConfig config, String label, Logger logger) {
+        this(core, game, Localized.same(config), label, logger);
+    }
+
+    public MissionTracker(MuxeCore core, String game, Localized<MissionConfig> configs, String label, Logger logger) {
         this.core = core;
         this.game = game;
-        this.config = config;
+        this.configs = configs;
         this.label = label;
         this.logger = logger;
     }
@@ -64,7 +69,7 @@ public final class MissionTracker {
             for (Mission mission : completed) {
                 entry(session, mission).ifPresent(entry -> {
                     if (online != null) {
-                        announce(online, MissionTexts.completion(config, entry));
+                        announce(online, MissionTexts.completion(configOf(online), entry));
                     }
                 });
             }
@@ -77,11 +82,15 @@ public final class MissionTracker {
         sessions.forEach((id, session) -> {
             Player online = Bukkit.getPlayer(id);
             if (online != null) {
-                MissionTexts.summary(config, session.changes()).forEach(line -> online.sendMessage(Colors.translate(line)));
+                MissionTexts.summary(configOf(online), session.changes()).forEach(line -> online.sendMessage(Colors.translate(line)));
             }
             save(id, session);
         });
         sessions.clear();
+    }
+
+    private MissionConfig configOf(Player player) {
+        return configs.in(core.languages().of(player));
     }
 
     private void announce(Player player, MissionTexts.Completion completion) {

@@ -86,7 +86,7 @@ public final class PartyClient implements Parties {
     public void send(Player player, PartyAction action, boolean allowed, List<String> arguments) {
         PartyActionPacket packet = new PartyActionPacket(player.getUniqueId(), player.getName(), action, arguments, allowed);
         packets.publish(PacketTarget.proxy(), packet).exceptionally(error -> {
-            mainThread.execute(() -> player.sendMessage(texts.messages().get("command-failed")));
+            mainThread.execute(() -> player.sendMessage(texts.messages().get(player, "command-failed")));
             return null;
         });
     }
@@ -109,7 +109,7 @@ public final class PartyClient implements Parties {
     }
 
     public void show(Player player, PartyNotice notice) {
-        List<String> lines = texts.lines(notice);
+        List<String> lines = texts.lines(texts.messages().language(player), notice);
         Optional<String> click = notice.clickCommand();
         if (click.isEmpty() || lines.isEmpty()) {
             lines.forEach(player::sendMessage);

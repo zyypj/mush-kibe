@@ -5,6 +5,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.bukkit.entity.Player;
@@ -18,6 +19,7 @@ import org.bukkit.plugin.Plugin;
 public final class ChatPrompts implements Listener {
 
     public static final String CANCEL_WORD = "cancelar";
+    public static final Set<String> CANCEL_WORDS = Set.of(CANCEL_WORD, "cancel");
     private static final long EXPIRY_CHECK_TICKS = 20L;
 
     private final Plugin plugin;
@@ -47,6 +49,10 @@ public final class ChatPrompts implements Listener {
         prompts.cancel(player.getUniqueId());
     }
 
+    public static boolean cancels(String message) {
+        return CANCEL_WORDS.contains(message.trim().toLowerCase(Locale.ROOT));
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onChat(AsyncPlayerChatEvent event) {
         Optional<Prompt> prompt = prompts.answer(event.getPlayer().getUniqueId());
@@ -59,7 +65,7 @@ public final class ChatPrompts implements Listener {
             if (!event.getPlayer().isOnline()) {
                 return;
             }
-            if (message.toLowerCase(Locale.ROOT).equals(CANCEL_WORD)) {
+            if (cancels(message)) {
                 prompt.get().onCancel().run();
             } else {
                 prompt.get().onAnswer().accept(message);

@@ -8,11 +8,11 @@ import br.com.muxe.core.bukkit.combat.knockback.KnockbackProfiles;
 import br.com.muxe.core.bukkit.combat.knockback.KnockbackService;
 import br.com.muxe.core.bukkit.command.BuildCommand;
 import br.com.muxe.core.bukkit.command.LobbyCommand;
+import br.com.muxe.core.bukkit.command.MuxeAdminCommand;
 import br.com.muxe.core.bukkit.command.ReturnCommand;
 import br.com.muxe.core.bukkit.command.config.ConfigPathSuggestions;
 import br.com.muxe.core.bukkit.command.config.ConfigReplies;
 import br.com.muxe.core.bukkit.command.config.CoreConfigCommand;
-import br.com.muxe.core.bukkit.command.MuxeAdminCommand;
 import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.command.framework.registry.CommandMapRegistrar;
 import br.com.muxe.core.bukkit.command.framework.registry.PermissionMessages;
@@ -29,12 +29,13 @@ import br.com.muxe.core.bukkit.language.LanguageCommand;
 import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.language.PlayerLanguages;
 import br.com.muxe.core.bukkit.menu.MenuAnimator;
+import br.com.muxe.core.bukkit.menu.MenuHolder;
 import br.com.muxe.core.bukkit.menu.MenuListener;
 import br.com.muxe.core.bukkit.monitor.BukkitServerLoad;
 import br.com.muxe.core.bukkit.monitor.TickMonitor;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
-import br.com.muxe.core.bukkit.party.PartyClient;
 import br.com.muxe.core.bukkit.nms.JoinTraffic;
+import br.com.muxe.core.bukkit.party.PartyClient;
 import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.bukkit.text.Title;
@@ -105,6 +106,7 @@ public final class CoreBukkitBootstrap {
 
         plugin.getServer().getScheduler().runTaskTimer(plugin, new TickMonitor(load, runtime.metrics()), 1L, 1L);
         plugin.getServer().getPluginManager().registerEvents(new MenuListener(), plugin);
+        languages.onChange(MenuHolder::closeOpen);
         plugin.getServer().getPluginManager().registerEvents(new KnockbackListener(knockback), plugin);
         plugin.getServer().getScheduler().runTaskTimer(plugin, new MenuAnimator(), 1L, 1L);
         ClearMidday.start(plugin);
@@ -130,7 +132,7 @@ public final class CoreBukkitBootstrap {
         CommandMapRegistrar.commandMap(plugin.getServer())
             .ifPresent(map -> {
                 new PermissionMessages(plugin, map, messages.get("no-permission")).start();
-                plugin.getServer().getPluginManager().registerEvents(new UnknownCommands(map, messages.get("unknown-command")), plugin);
+                plugin.getServer().getPluginManager().registerEvents(new UnknownCommands(map, messages), plugin);
             });
 
         plugin.getLogger().info("Muxe-Core ready as " + settings.server().id() + " (" + settings.server().group() + ")");

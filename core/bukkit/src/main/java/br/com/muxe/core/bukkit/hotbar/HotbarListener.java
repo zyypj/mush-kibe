@@ -61,7 +61,7 @@ public final class HotbarListener implements Listener {
         event.setCancelled(true);
         SpamDecision decision = spam.use(player.getUniqueId());
         if (!decision.allowed()) {
-            player.sendMessage(messages.get("spam-cooldown", "seconds", CooldownFormat.seconds(decision.remaining())));
+            player.sendMessage(messages.get(player, "spam-cooldown", "seconds", CooldownFormat.seconds(decision.remaining())));
             return;
         }
         actions.run(action.get(), player);

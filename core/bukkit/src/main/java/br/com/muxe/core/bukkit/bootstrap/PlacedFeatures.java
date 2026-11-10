@@ -11,13 +11,13 @@ import br.com.muxe.core.bukkit.command.SocialHeadCommand;
 import br.com.muxe.core.bukkit.command.framework.Commands;
 import br.com.muxe.core.bukkit.hologram.TextHolograms;
 import br.com.muxe.core.bukkit.hologram.placed.PlacedHolograms;
+import br.com.muxe.core.bukkit.network.GameConnector;
 import br.com.muxe.core.bukkit.npc.NpcLabelLayout;
 import br.com.muxe.core.bukkit.npc.placed.NpcLines;
 import br.com.muxe.core.bukkit.npc.placed.PlacedNpcs;
-import br.com.muxe.core.bukkit.network.GameConnector;
+import br.com.muxe.core.bukkit.npc.skin.MojangSkins;
 import br.com.muxe.core.bukkit.parkour.Parkour;
 import br.com.muxe.core.bukkit.parkour.ParkourSettings;
-import br.com.muxe.core.bukkit.npc.skin.MojangSkins;
 import br.com.muxe.core.bukkit.placement.PlacementImport;
 import br.com.muxe.core.bukkit.placement.PlacementSync;
 import br.com.muxe.core.bukkit.prompt.ChatPrompts;
@@ -32,6 +32,7 @@ import br.com.muxe.core.bukkit.social.SocialHeads;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.config.source.DurationParser;
 import br.com.muxe.core.common.cooldown.SpamGuard;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.placement.domain.SkinTexture;
 import java.util.Objects;
 import java.util.Optional;
@@ -89,16 +90,16 @@ final class PlacedFeatures {
         );
         PlacementSync placements = new PlacementSync(core.identity().group(), core.commands(), core.queries(), core.packets(), core.mainThread(), plugin.getLogger());
 
-        Optional<ShopSettings> shopSettings = Optional.empty();
+        Optional<Localized<ShopSettings>> shopSettings = Optional.empty();
         if (config.isSet(SHOP_SECTION)) {
-            shopSettings = Optional.of(ShopSettings.from(Objects.requireNonNull(config.getConfigurationSection(SHOP_SECTION))));
+            shopSettings = Optional.of(core.texts().map(root -> ShopSettings.from(Objects.requireNonNull(root.getConfigurationSection(SHOP_SECTION)))));
         } else {
             plugin.getLogger().warning("The shop is off: config.yml has no '" + SHOP_SECTION + "' section");
         }
-        Optional<Shop> shop = shopSettings.filter(settings -> settings.appliesTo(core.identity().kind())).map(settings -> shop(plugin, core, settings, spam));
+        Optional<Shop> shop = shopSettings.filter(settings -> settings.standard().appliesTo(core.identity().kind())).map(settings -> shop(plugin, core, settings, spam));
         GameConnector games = new GameConnector(core.servers(), core.network(), core.mainThread(), messages);
         ShopAccess shopAccess = new ShopAccess(shop.map(Shop::service), messages);
-        PlacedNpcs npcs = new PlacedNpcs(plugin, games, NpcLines.from(config.getConfigurationSection("npcs.lines")),
+        PlacedNpcs npcs = new PlacedNpcs(plugin, games, core.texts().map(root -> NpcLines.from(root.getConfigurationSection("npcs.lines"))),
             NpcLabelLayout.from(config.getConfigurationSection("npcs.labels")), spam, messages, shopAccess::open);
         PlacedHolograms holograms = new PlacedHolograms(plugin,
             config.getDouble("holograms.top", 2.0),
@@ -107,6 +108,11 @@ final class PlacedFeatures {
         Optional<SocialHeads> socialHeads = socialHeads(plugin, core, config, spam);
         Optional<Parkour> parkour = parkour(plugin, core, config, spam);
 
+        core.languages().onChange(player -> {
+            socialHeads.ifPresent(heads -> heads.refresh(player));
+            shop.ifPresent(found -> found.refresh(player));
+            parkour.ifPresent(course -> course.refresh(player));
+        });
         placements.onChange(current -> {
             npcs.show(current.npcs());
             holograms.show(current.holograms());
@@ -157,7 +163,7 @@ final class PlacedFeatures {
             plugin.getLogger().warning("The social heads are off: config.yml has no '" + SOCIAL_SECTION + "' section");
             return Optional.empty();
         }
-        SocialHeadSettings settings = SocialHeadSettings.from(Objects.requireNonNull(config.getConfigurationSection(SOCIAL_SECTION)));
+        Localized<SocialHeadSettings> settings = core.texts().map(root -> SocialHeadSettings.from(Objects.requireNonNull(root.getConfigurationSection(SOCIAL_SECTION))));
         SocialHeads heads = new SocialHeads(plugin, settings, spam, core.messages(), core.clock());
         plugin.getServer().getPluginManager().registerEvents(heads, plugin);
         plugin.getServer().getScheduler().runTaskTimer(plugin, heads, SocialHeads.CHECK_PERIOD_TICKS, SocialHeads.CHECK_PERIOD_TICKS);
@@ -169,15 +175,17 @@ final class PlacedFeatures {
             plugin.getLogger().warning("The parkour is off: config.yml has no '" + PARKOUR_SECTION + "' section");
             return Optional.empty();
         }
-        ParkourSettings settings = ParkourSettings.from(Objects.requireNonNull(config.getConfigurationSection(PARKOUR_SECTION)));
+        Localized<ParkourSettings> settings = core.texts().map(root -> ParkourSettings.from(Objects.requireNonNull(root.getConfigurationSection(PARKOUR_SECTION))));
         Parkour parkour = new Parkour(plugin, settings, core.identity().group(), core.commands(), core.queries(), core.mainThread(), core.messages(), spam, core.clock());
         plugin.getServer().getPluginManager().registerEvents(parkour, plugin);
         return Optional.of(parkour);
     }
 
-    private static Shop shop(JavaPlugin plugin, MuxeCore core, ShopSettings settings, SpamGuard spam) {
+    private static Shop shop(JavaPlugin plugin, MuxeCore core, Localized<ShopSettings> localized, SpamGuard spam) {
+        ShopSettings settings = localized.standard();
         ShopPromotion promotion = new ShopPromotion(settings.defaultPromotion(), core.commands(), core.queries(), core.packets(), core.mainThread(), plugin.getLogger());
-        ShopService service = new ShopService(plugin, settings, core.messages(), ChatPrompts.start(plugin, core.clock()), spam, () -> promotion.current().productId());
-        return new Shop(service, promotion, new ShopRegisters(plugin, settings.register(), service::openPromotion));
+        ShopService service = new ShopService(plugin, localized, core.messages(), ChatPrompts.start(plugin, core.clock()), spam, () -> promotion.current().productId());
+        return new Shop(service, promotion, new ShopRegisters(plugin, settings.register(), service::openPromotion,
+            localized.map(own -> own.defaultPromotion().lines()), core.languages()));
     }
 }

@@ -80,7 +80,8 @@ final class RankFeatures {
         commands.register(
             new TagCommand(permissions, targets, replies, new TagList(core.messages(), chatFormat)),
             new MedalCommand(permissions, targets, replies, new MedalList(core.messages(), chatFormat)),
-            new AccountCommands(new AccountProfiles(core.queries(), permissions), accountLines, new AccountMenu(accountSettings, accountLines, core.messages()), replies),
+            new AccountCommands(new AccountProfiles(core.queries(), permissions), accountLines, new AccountMenu(core.texts().map(root -> AccountSettings.from(Objects.requireNonNull(root.getConfigurationSection(ACCOUNT_MENU)))), accountLines,
+                core.messages()), replies),
             new RankCommand(permissions, targets, replies, reports),
             new PermissionCommand(permissions, targets, replies, reports),
             new EditorCommand(editor, core.async(), config.getString(EDITOR_URL, DEFAULT_EDITOR_URL), replies),

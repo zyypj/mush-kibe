@@ -34,19 +34,19 @@ public final class Replies {
             }
             if (error != null) {
                 logger.log(Level.WARNING, "A rank command of " + sender.getName() + " failed", error);
-                sender.sendMessage(messages.get(FAILED));
+                sender.sendMessage(messages.get(sender, FAILED));
                 return;
             }
             try {
                 onDone.accept(value);
             } catch (RuntimeException exception) {
                 logger.log(Level.WARNING, "A rank command of " + sender.getName() + " failed", exception);
-                sender.sendMessage(messages.get(FAILED));
+                sender.sendMessage(messages.get(sender, FAILED));
             }
         }, mainThread);
     }
 
     public void send(CommandSender sender, String key, String... placeholders) {
-        messages.lines(key, placeholders).forEach(sender::sendMessage);
+        messages.lines(sender, key, (Object[]) placeholders).forEach(sender::sendMessage);
     }
 }

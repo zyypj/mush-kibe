@@ -12,6 +12,7 @@ import br.com.muxe.core.common.customroom.application.query.FindPresetQuery;
 import br.com.muxe.core.common.customroom.application.query.ListPresetsQuery;
 import br.com.muxe.core.common.customroom.domain.RoomOptions;
 import br.com.muxe.core.common.customroom.domain.RoomPreset;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.result.Result;
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,12 +25,16 @@ import org.bukkit.event.inventory.ClickType;
 public final class PresetMenu {
 
     private final MuxeCore core;
-    private final CustomRoomSettings settings;
+    private final Localized<CustomRoomSettings> localized;
     private final AnvilEdits anvils;
 
     public PresetMenu(MuxeCore core, CustomRoomSettings settings, AnvilEdits anvils) {
+        this(core, Localized.same(settings), anvils);
+    }
+
+    public PresetMenu(MuxeCore core, Localized<CustomRoomSettings> settings, AnvilEdits anvils) {
         this.core = core;
-        this.settings = settings;
+        this.localized = settings;
         this.anvils = anvils;
     }
 
@@ -43,6 +48,7 @@ public final class PresetMenu {
     }
 
     private void show(Player player, Target target, List<RoomPreset> presets) {
+        CustomRoomSettings settings = settingsOf(player);
         ConfigurationSection section = settings.section("presets-menu");
         Menu.Builder menu = Menu.builder(Colors.translate(section.getString("title", "Predefinições"))).rows(section.getInt("rows", 4));
         List<Integer> slots = section.getIntegerList("slots");
@@ -64,35 +70,36 @@ public final class PresetMenu {
         switch (type) {
             case DROP, CONTROL_DROP -> core.commands().dispatch(new DeletePresetCommand(player.getUniqueId(), preset.id())).whenCompleteAsync((deleted, error) -> {
                 if (Boolean.TRUE.equals(deleted)) {
-                    player.sendMessage(core.messages().get("custom-room-preset-deleted", "name", preset.name()));
+                    player.sendMessage(core.messages().get(player, "custom-room-preset-deleted", "name", preset.name()));
                 }
                 open(player, target);
             }, core.mainThread());
-            case RIGHT, SHIFT_RIGHT -> player.sendMessage(core.messages().get("custom-room-preset-share", "name", preset.name(), "code", preset.code()));
+            case RIGHT, SHIFT_RIGHT -> player.sendMessage(core.messages().get(player, "custom-room-preset-share", "name", preset.name(), "code", preset.code()));
             default -> load(player, target, preset);
         }
     }
 
     private void load(Player player, Target target, RoomPreset preset) {
         if (!preset.game().equals(target.game())) {
-            player.sendMessage(core.messages().get("custom-room-preset-other-game"));
+            player.sendMessage(core.messages().get(player, "custom-room-preset-other-game"));
             return;
         }
         target.loaded().accept(preset);
-        player.sendMessage(core.messages().get("custom-room-preset-loaded", "name", preset.name()));
+        player.sendMessage(core.messages().get(player, "custom-room-preset-loaded", "name", preset.name()));
         target.back().accept(player);
     }
 
     private void askName(Player player, Target target) {
+        CustomRoomSettings settings = settingsOf(player);
         String label = settings.text("presets-menu.name-label", "Nome");
         anvils.edit(player, " ", typed -> settings.texts().get("anvil-result", "label", label, "value", typed), typed -> {
             Snapshot snapshot = target.snapshot().get();
             core.commands().dispatch(new SavePresetCommand(player.getUniqueId(), target.game(), typed, snapshot.mode(), snapshot.maps(), snapshot.options()))
                 .whenCompleteAsync((result, error) -> {
                     if (error == null && result instanceof Result.Success<RoomPreset> saved) {
-                        player.sendMessage(core.messages().get("custom-room-preset-saved", "name", saved.value().name(), "code", saved.value().code()));
+                        player.sendMessage(core.messages().get(player, "custom-room-preset-saved", "name", saved.value().name(), "code", saved.value().code()));
                     } else {
-                        player.sendMessage(core.messages().get("custom-room-preset-failed"));
+                        player.sendMessage(core.messages().get(player, "custom-room-preset-failed"));
                     }
                     open(player, target);
                 }, core.mainThread());
@@ -100,16 +107,21 @@ public final class PresetMenu {
     }
 
     private void askCode(Player player, Target target) {
+        CustomRoomSettings settings = settingsOf(player);
         String label = settings.text("presets-menu.code-label", "Código");
         anvils.edit(player, " ", typed -> settings.texts().get("anvil-result", "label", label, "value", typed), typed ->
             core.queries().ask(new FindPresetQuery(typed)).whenCompleteAsync((found, error) -> {
                 if (error != null || found == null || found.isEmpty()) {
-                    player.sendMessage(core.messages().get("custom-room-preset-not-found"));
+                    player.sendMessage(core.messages().get(player, "custom-room-preset-not-found"));
                     open(player, target);
                     return;
                 }
                 load(player, target, found.get());
             }, core.mainThread()), () -> open(player, target));
+    }
+
+    private CustomRoomSettings settingsOf(Player player) {
+        return localized.in(core.messages().language(player));
     }
 
     public record Snapshot(String mode, List<String> maps, RoomOptions options) {

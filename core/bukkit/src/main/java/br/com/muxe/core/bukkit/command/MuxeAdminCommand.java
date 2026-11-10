@@ -50,9 +50,9 @@ public final class MuxeAdminCommand {
     public void listServers(CommandSender sender) {
         MessageCatalog messages = core.messages();
         List<ServerStatus> servers = core.servers().alive();
-        sender.sendMessage(messages.get("admin.servers-header", "count", Integer.toString(servers.size())));
+        sender.sendMessage(messages.get(sender, "admin.servers-header", "count", Integer.toString(servers.size())));
         for (ServerStatus status : servers) {
-            sender.sendMessage(messages.get("admin.servers-line",
+            sender.sendMessage(messages.get(sender, "admin.servers-line",
                 "id", status.identity().id(),
                 "group", status.identity().group(),
                 "kind", status.identity().kind().name(),
@@ -68,11 +68,11 @@ public final class MuxeAdminCommand {
             .request(PacketTarget.proxy(), new PlayerLocateRequest(username), PlayerLocateResponse.class, core.requestTimeout())
             .whenComplete((response, error) -> core.mainThread().execute(() -> {
                 if (error != null) {
-                    sender.sendMessage(messages.get("admin.find-failed", "reason", rootMessage(error)));
+                    sender.sendMessage(messages.get(sender, "admin.find-failed", "reason", rootMessage(error)));
                 } else if (response.online()) {
-                    sender.sendMessage(messages.get("admin.find-online", "player", response.username(), "server", response.serverId()));
+                    sender.sendMessage(messages.get(sender, "admin.find-online", "player", response.username(), "server", response.serverId()));
                 } else {
-                    sender.sendMessage(messages.get("admin.find-offline", "player", response.username()));
+                    sender.sendMessage(messages.get(sender, "admin.find-offline", "player", response.username()));
                 }
             }));
     }
@@ -81,7 +81,7 @@ public final class MuxeAdminCommand {
     public void showMetrics(CommandSender sender) {
         MessageCatalog messages = core.messages();
         MetricsSnapshot snapshot = core.metrics().snapshot();
-        sender.sendMessage(messages.get("admin.metrics",
+        sender.sendMessage(messages.get(sender, "admin.metrics",
             "published", Long.toString(snapshot.counterTotal("muxe_packets_published_total")),
             "received", Long.toString(snapshot.counterTotal("muxe_packets_received_total")),
             "duplicates", Long.toString(snapshot.counterTotal("muxe_packets_duplicates_total")),
@@ -100,10 +100,10 @@ public final class MuxeAdminCommand {
         }
         pingReader.ifPresent(reader -> Bukkit.getOnlinePlayers().forEach(player -> reader.of(player).ifPresent(ping -> pings.put(player.getName(), ping))));
         if (!pings.isEmpty()) {
-            sender.sendMessage(messages.get("admin.latency-pings", "players", PingList.describe(pings, messages.get("admin.latency-ping"))));
+            sender.sendMessage(messages.get(sender, "admin.latency-pings", "players", PingList.describe(pings, messages.get("admin.latency-ping"))));
         }
         joins.ifPresent(traffic -> Bukkit.getOnlinePlayers().forEach(player -> traffic.report(player.getUniqueId()).ifPresent(report -> {
-            sender.sendMessage(messages.get("admin.latency-join",
+            sender.sendMessage(messages.get(sender, "admin.latency-join",
                 "player", player.getName(),
                 "ready", report.readyMillis().isPresent() ? Long.toString(report.readyMillis().getAsLong()) : "?",
                 "total", Integer.toString(report.total()),
@@ -111,26 +111,26 @@ public final class MuxeAdminCommand {
                 "wait", Long.toString(report.slowestWriteMillis()),
                 "busiest", report.busiest(JOIN_PACKET_KINDS).stream().map(entry -> entry.getKey() + " " + entry.getValue()).collect(Collectors.joining(", "))));
             if (!report.probes().isEmpty()) {
-                sender.sendMessage(messages.get("admin.latency-probes", "probes", report.probes().stream()
-                    .map(probe -> messages.get("admin.latency-probe",
+                sender.sendMessage(messages.get(sender, "admin.latency-probes", "probes", report.probes().stream()
+                    .map(probe -> messages.get(sender, "admin.latency-probe",
                         "at", String.format(Locale.ROOT, "%.1f", probe.sentAfterMillis() / 1000.0),
                         "answer", probe.answeredInMillis().isPresent() ? Long.toString(probe.answeredInMillis().getAsLong()) : "?"))
                     .collect(Collectors.joining(", "))));
             }
         })));
-        sender.sendMessage(messages.get("admin.latency-pools",
+        sender.sendMessage(messages.get(sender, "admin.latency-pools",
             "db-active", whole(snapshot.gaugeTotal("muxe_db_connections_active")),
             "db-pending", whole(snapshot.gaugeTotal("muxe_db_connections_pending")),
             "active", whole(snapshot.gaugeTotal("muxe_executor_tasks_active")),
             "queued", whole(snapshot.gaugeTotal("muxe_executor_tasks_queued"))));
         List<SlowestTimers.Line> slowest = SlowestTimers.of(snapshot, LATENCY_LINES);
         if (slowest.isEmpty()) {
-            sender.sendMessage(messages.get("admin.latency-empty"));
+            sender.sendMessage(messages.get(sender, "admin.latency-empty"));
             return;
         }
-        sender.sendMessage(messages.get("admin.latency-header"));
+        sender.sendMessage(messages.get(sender, "admin.latency-header"));
         for (SlowestTimers.Line line : slowest) {
-            sender.sendMessage(messages.get("admin.latency-line",
+            sender.sendMessage(messages.get(sender, "admin.latency-line",
                 "label", line.label(),
                 "count", Long.toString(line.count()),
                 "mean", String.format(Locale.ROOT, "%.1f", line.meanMillis()),

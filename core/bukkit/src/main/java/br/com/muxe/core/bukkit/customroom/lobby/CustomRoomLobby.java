@@ -17,6 +17,8 @@ import br.com.muxe.core.common.customroom.schema.ModeContext;
 import br.com.muxe.core.common.customroom.schema.RoomEditor;
 import br.com.muxe.core.common.customroom.schema.RoomLore;
 import br.com.muxe.core.common.customroom.schema.RoomSchema;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.messaging.channel.PacketTarget;
 import br.com.muxe.core.common.network.customroom.CreateCustomRoomReply;
 import br.com.muxe.core.common.network.customroom.CreateCustomRoomRequest;
@@ -39,7 +41,7 @@ public final class CustomRoomLobby {
     public static final String PERMISSION = "muxe.customroom.create";
 
     private final MuxeCore core;
-    private final CustomRoomSettings settings;
+    private final Localized<CustomRoomSettings> localized;
     private final CatalogDirectory catalogs;
     private final ModeSelector modes;
     private final MapSelector maps;
@@ -52,8 +54,13 @@ public final class CustomRoomLobby {
 
     public CustomRoomLobby(MuxeCore core, CustomRoomSettings settings, CatalogDirectory catalogs, ModeSelector modes, MapSelector maps, OptionMenus options,
                            PresetMenu presets, Consumer<Player> gameSelector, Consumer<Player> shop) {
+        this(core, Localized.same(settings), catalogs, modes, maps, options, presets, gameSelector, shop);
+    }
+
+    public CustomRoomLobby(MuxeCore core, Localized<CustomRoomSettings> settings, CatalogDirectory catalogs, ModeSelector modes, MapSelector maps, OptionMenus options,
+                           PresetMenu presets, Consumer<Player> gameSelector, Consumer<Player> shop) {
         this.core = core;
-        this.settings = settings;
+        this.localized = settings;
         this.catalogs = catalogs;
         this.modes = modes;
         this.maps = maps;
@@ -74,10 +81,10 @@ public final class CustomRoomLobby {
         }
         Optional<PartySnapshot> party = core.parties().of(player.getUniqueId());
         if (party.isPresent() && !party.get().isLeader(player.getUniqueId())) {
-            player.sendMessage(core.messages().get("custom-room-not-leader"));
+            player.sendMessage(core.messages().get(player, "custom-room-not-leader"));
             return;
         }
-        modes.open(player, choice(gameSelector, settings.section("selector").getString("back-title", "Selecionar jogo")));
+        modes.open(player, choice(gameSelector, settings(player).section("selector").getString("back-title", "Selecionar jogo")));
     }
 
     public void forget(UUID player) {
@@ -101,10 +108,13 @@ public final class CustomRoomLobby {
             open(player);
             return;
         }
+        CustomRoomSettings settings = settings(player);
+        Language language = core.messages().language(player);
         ConfigurationSection menu = settings.section("room-menu");
         String title = menu.getString("create-title", "Criando sala...");
         Menu.Builder builder = Menu.builder(Colors.translate(title)).rows(menu.getInt("rows", 5));
-        builder.button(settings.slot("room-menu.game"), draft.icon().lore(menu.getStringList("game.lore").stream().map(Colors::translate).toList()),
+        ItemBuilder modeIcon = modes.icon(language, draft.game(), draft.mode()).orElse(draft.icon());
+        builder.button(settings.slot("room-menu.game"), modeIcon.lore(menu.getStringList("game.lore").stream().map(Colors::translate).toList()),
             context -> modes.open(context.player(), choice(this::openCreate, title)));
         List<CustomRoomCatalogPacket.Arena> arenas = arenas(draft);
         String selected = MapSelector.summary(draft.maps(), arenas, menu.getString("maps.none", "Nenhum"));
@@ -117,17 +127,18 @@ public final class CustomRoomLobby {
             context.close();
             create(context.player());
         });
-        String modeMenuTitle = modeMenuTitle(draft.game());
+        String modeMenuTitle = modeMenuTitle(settings, draft.game());
         builder.button(settings.slot("room-menu.back"), OptionMenus.backButton(settings.texts(), modeMenuTitle),
-            context -> modes.openModes(context.player(), modeMenu(draft.game()), choice(gameSelector, settings.section("selector").getString("back-title", "Selecionar jogo"))));
+            context -> modes.openModes(context.player(), modeMenu(settings, draft.game()), choice(gameSelector, settings.section("selector").getString("back-title", "Selecionar jogo"))));
         builder.button(settings.slot("room-menu.presets"), settings.item("room-menu.presets"), context -> presets.open(context.player(), presetTarget(context.player(), title)));
         builder.build().open(player);
     }
 
     private PresetMenu.Target presetTarget(Player player, String title) {
         Draft draft = draft(player);
-        return new PresetMenu.Target(draft.game(), mode -> catalogs.catalog(draft.game()).flatMap(packet -> packet.mode(mode))
-            .map(CustomRoomCatalogPacket.Mode::displayName).orElse(mode),
+        Language language = core.messages().language(player);
+        return new PresetMenu.Target(draft.game(), mode -> modes.icon(language, draft.game(), mode).map(ItemBuilder::name).map(Colors::strip)
+            .or(() -> catalogs.catalog(draft.game()).flatMap(packet -> packet.mode(mode)).map(CustomRoomCatalogPacket.Mode::displayName)).orElse(mode),
             () -> {
                 Draft current = draft(player);
                 return new PresetMenu.Snapshot(current.mode(), current.maps(), current.options());
@@ -146,11 +157,12 @@ public final class CustomRoomLobby {
 
     private Optional<OptionsTarget> target(Player player) {
         Draft draft = draft(player);
-        Optional<RoomSchema> schema = catalogs.schema(draft.game());
+        Optional<RoomSchema> schema = catalogs.schema(draft.game(), core.messages().language(player));
         Optional<CustomRoomCatalogPacket.Mode> mode = catalogs.catalog(draft.game()).flatMap(packet -> packet.mode(draft.mode()));
         if (schema.isEmpty() || mode.isEmpty()) {
             return Optional.empty();
         }
+        CustomRoomSettings settings = settings(player);
         RoomLore lore = new RoomLore(new RoomEditor(schema.get(), context(mode.get())), settings.texts());
         String title = settings.section("room-menu").getString("create-title", "Criando sala...");
         return Optional.of(new OptionsTarget() {
@@ -186,19 +198,19 @@ public final class CustomRoomLobby {
         List<String> servers = catalogs.servers(draft.game());
         if (servers.isEmpty() || !creating.add(player.getUniqueId())) {
             if (servers.isEmpty()) {
-                player.sendMessage(core.messages().get("custom-room-unavailable"));
+                player.sendMessage(core.messages().get(player, "custom-room-unavailable"));
             }
             return;
         }
         Optional<PartySnapshot> party = core.parties().of(player.getUniqueId());
         if (party.isPresent() && !party.get().isLeader(player.getUniqueId())) {
             creating.remove(player.getUniqueId());
-            player.sendMessage(core.messages().get("custom-room-not-leader"));
+            player.sendMessage(core.messages().get(player, "custom-room-not-leader"));
             return;
         }
         List<UUID> companions = core.parties().companions(player.getUniqueId());
         String server = servers.get(ThreadLocalRandom.current().nextInt(servers.size()));
-        player.sendMessage(core.messages().get("custom-room-creating"));
+        player.sendMessage(core.messages().get(player, "custom-room-creating"));
         CreateCustomRoomRequest request = new CreateCustomRoomRequest(player.getUniqueId(), player.getName(), draft.game(), draft.mode(), draft.maps(),
             draft.options(), companions);
         core.packets().request(PacketTarget.server(server), request, CreateCustomRoomReply.class, core.requestTimeout()).whenCompleteAsync((reply, error) -> {
@@ -207,12 +219,12 @@ public final class CustomRoomLobby {
                 return;
             }
             if (error != null || reply == null || !reply.accepted()) {
-                player.sendMessage(core.messages().get("custom-room-unavailable"));
+                player.sendMessage(core.messages().get(player, "custom-room-unavailable"));
                 return;
             }
-            player.sendMessage(core.messages().get("custom-room-sending", "code", reply.code()));
+            player.sendMessage(core.messages().get(player, "custom-room-sending", "code", reply.code()));
             core.network().connectToServer(player.getUniqueId(), server).exceptionally(failure -> {
-                core.mainThread().execute(() -> player.sendMessage(core.messages().get("custom-room-unavailable")));
+                core.mainThread().execute(() -> player.sendMessage(core.messages().get(player, "custom-room-unavailable")));
                 return null;
             });
             companions.forEach(companion -> core.network().connectToServer(companion, server));
@@ -223,7 +235,7 @@ public final class CustomRoomLobby {
         return catalogs.catalog(draft.game()).map(packet -> packet.arenasOf(draft.mode())).orElse(List.of());
     }
 
-    private String modeMenu(String game) {
+    private String modeMenu(CustomRoomSettings settings, String game) {
         ConfigurationSection menus = settings.section("mode-menus");
         for (String id : menus.getKeys(false)) {
             if (menus.getString(id + ".game", id).equals(game)) {
@@ -233,8 +245,12 @@ public final class CustomRoomLobby {
         return game;
     }
 
-    private String modeMenuTitle(String game) {
-        return settings.section("mode-menus." + modeMenu(game)).getString("title", "Selecionar modo");
+    private String modeMenuTitle(CustomRoomSettings settings, String game) {
+        return settings.section("mode-menus." + modeMenu(settings, game)).getString("title", "Selecionar modo");
+    }
+
+    private CustomRoomSettings settings(Player player) {
+        return localized.in(core.messages().language(player));
     }
 
     private Draft draft(Player player) {

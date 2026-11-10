@@ -36,28 +36,28 @@ public final class HologramCommand {
     public void create(Player player, @Arg("id") String typedId, @Arg("texto") @Greedy String text) {
         String id = CommandText.id(typedId);
         if (!PlacementIds.isValid(id)) {
-            player.sendMessage(messages.get("hologram-invalid-id"));
+            player.sendMessage(messages.get(player, "hologram-invalid-id"));
             return;
         }
         if (placements.current().hologram(id).isPresent()) {
-            player.sendMessage(messages.get("hologram-exists", "id", id));
+            player.sendMessage(messages.get(player, "hologram-exists", "id", id));
             return;
         }
         HologramPlacement hologram = new HologramPlacement(placements.group(), id, Positions.of(player.getLocation()), List.of(CommandText.line(text)));
-        reply.then(player, placements.save(hologram), saved -> player.sendMessage(messages.get("hologram-created", "id", id)));
+        reply.then(player, placements.save(hologram), saved -> player.sendMessage(messages.get(player, "hologram-created", "id", id)));
     }
 
     @Subcommand("adicionar")
     public void addLine(Player player, @Arg("id") HologramPlacement hologram, @Arg("texto") @Greedy String text) {
         reply.then(player, placements.save(hologram.adding(CommandText.line(text))),
-            saved -> player.sendMessage(messages.get("hologram-line-added", "id", hologram.id())));
+            saved -> player.sendMessage(messages.get(player, "hologram-line-added", "id", hologram.id())));
     }
 
     @Subcommand("linha")
     public void changeLine(Player player, @Arg("id") HologramPlacement hologram, @Arg("número") int number, @Arg("texto") @Greedy String text) {
         if (validLine(player, hologram, number)) {
             reply.then(player, placements.save(hologram.replacing(number, CommandText.line(text))),
-                saved -> player.sendMessage(messages.get("hologram-line-changed", "id", hologram.id(), "line", Integer.toString(number))));
+                saved -> player.sendMessage(messages.get(player, "hologram-line-changed", "id", hologram.id(), "line", Integer.toString(number))));
         }
     }
 
@@ -67,44 +67,44 @@ public final class HologramCommand {
             return;
         }
         if (hologram.lines().size() == 1) {
-            player.sendMessage(messages.get("hologram-last-line"));
+            player.sendMessage(messages.get(player, "hologram-last-line"));
             return;
         }
         reply.then(player, placements.save(hologram.without(number)),
-            saved -> player.sendMessage(messages.get("hologram-line-removed", "id", hologram.id(), "line", Integer.toString(number))));
+            saved -> player.sendMessage(messages.get(player, "hologram-line-removed", "id", hologram.id(), "line", Integer.toString(number))));
     }
 
     @Subcommand("ver")
     public void show(Player player, @Arg("id") HologramPlacement hologram) {
-        player.sendMessage(messages.get("hologram-lines-header", "id", hologram.id(), "location", hologram.position().describe()));
+        player.sendMessage(messages.get(player, "hologram-lines-header", "id", hologram.id(), "location", hologram.position().describe()));
         for (int index = 0; index < hologram.lines().size(); index++) {
             String line = hologram.lines().get(index);
-            player.sendMessage(messages.get("hologram-lines-line", "line", Integer.toString(index + 1), "text", line.isEmpty() ? CommandText.EMPTY_LINE : Colors.translate(line)));
+            player.sendMessage(messages.get(player, "hologram-lines-line", "line", Integer.toString(index + 1), "text", line.isEmpty() ? CommandText.EMPTY_LINE : Colors.translate(line)));
         }
     }
 
     @Subcommand("mover")
     public void move(Player player, @Arg("id") HologramPlacement hologram) {
         reply.then(player, placements.save(hologram.movedTo(Positions.of(player.getLocation()))),
-            saved -> player.sendMessage(messages.get("hologram-moved", "id", hologram.id())));
+            saved -> player.sendMessage(messages.get(player, "hologram-moved", "id", hologram.id())));
     }
 
     @Subcommand("remover")
     public void remove(Player player, @Arg("id") HologramPlacement hologram) {
         reply.then(player, placements.remove(PlacementKind.HOLOGRAM, hologram.id()),
-            removed -> player.sendMessage(messages.get("hologram-removed", "id", hologram.id())));
+            removed -> player.sendMessage(messages.get(player, "hologram-removed", "id", hologram.id())));
     }
 
     @Subcommand("listar")
     public void list(Player player) {
         List<HologramPlacement> all = placements.current().holograms();
         if (all.isEmpty()) {
-            player.sendMessage(messages.get("hologram-list-empty"));
+            player.sendMessage(messages.get(player, "hologram-list-empty"));
             return;
         }
-        player.sendMessage(messages.get("hologram-list-header", "count", Integer.toString(all.size()), "group", placements.group()));
+        player.sendMessage(messages.get(player, "hologram-list-header", "count", Integer.toString(all.size()), "group", placements.group()));
         for (HologramPlacement hologram : all) {
-            player.sendMessage(messages.get("hologram-list-line",
+            player.sendMessage(messages.get(player, "hologram-list-line",
                 "id", hologram.id(),
                 "lines", Integer.toString(hologram.lines().size()),
                 "location", hologram.position().describe()));
@@ -115,7 +115,7 @@ public final class HologramCommand {
         if (number > 0 && hologram.hasLine(number)) {
             return true;
         }
-        player.sendMessage(messages.get("hologram-invalid-line", "count", Integer.toString(hologram.lines().size())));
+        player.sendMessage(messages.get(player, "hologram-invalid-line", "count", Integer.toString(hologram.lines().size())));
         return false;
     }
 }

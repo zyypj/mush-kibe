@@ -1,6 +1,7 @@
 package br.com.muxe.core.bukkit.permission.command;
 
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Language;
 import br.com.muxe.core.common.permission.domain.Medal;
 import br.com.muxe.core.common.permission.domain.Tag;
 import java.util.List;
@@ -19,19 +20,28 @@ public final class TagList {
     }
 
     public List<TagChoice> choices(List<Tag> usable, String player, Optional<Medal> medal) {
-        return TagChoice.of(usable, player, medal, chatTemplate, messages.get("tag-preview-message"), messages.lines("tag-hover"));
+        return choices(Language.DEFAULT, usable, player, medal);
+    }
+
+    public List<TagChoice> choices(Language language, List<Tag> usable, String player, Optional<Medal> medal) {
+        return TagChoice.of(usable, player, medal, chatTemplate, messages.get(language, "tag-preview-message"), messages.lines(language, "tag-hover"));
     }
 
     public void send(Player player, List<Tag> usable, Optional<Medal> medal) {
-        List<TagChoice> choices = choices(usable, player.getName(), medal);
+        Language language = messages.language(player);
+        List<TagChoice> choices = choices(language, usable, player.getName(), medal);
         if (choices.isEmpty()) {
-            player.sendMessage(messages.get("tag-none"));
+            player.sendMessage(messages.get(language, "tag-none"));
             return;
         }
-        player.spigot().sendMessage(components(choices));
+        player.spigot().sendMessage(components(language, choices));
     }
 
     public BaseComponent[] components(List<TagChoice> choices) {
-        return ChoiceLine.components(messages.get("tag-list-header"), messages.get("tag-list-separator"), choices);
+        return components(Language.DEFAULT, choices);
+    }
+
+    public BaseComponent[] components(Language language, List<TagChoice> choices) {
+        return ChoiceLine.components(messages.get(language, "tag-list-header"), messages.get(language, "tag-list-separator"), choices);
     }
 }

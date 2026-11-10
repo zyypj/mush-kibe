@@ -12,6 +12,8 @@ import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cooldown.CooldownFormat;
 import br.com.muxe.core.common.cooldown.SpamDecision;
 import br.com.muxe.core.common.cooldown.SpamGuard;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.placement.domain.SocialHeadPlacement;
 import java.time.Clock;
 import java.util.List;
@@ -40,8 +42,10 @@ public final class SocialHeads implements Listener, Runnable {
 
     private static final byte FLOOR = 1;
     private static final double CENTER = 0.5;
+    private static final String LABEL = "{label}";
 
     private final Plugin plugin;
+    private final Localized<SocialHeadSettings> localized;
     private final SocialHeadSettings settings;
     private final SpamGuard spam;
     private final MessageCatalog messages;
@@ -52,14 +56,20 @@ public final class SocialHeads implements Listener, Runnable {
     private int current;
 
     public SocialHeads(Plugin plugin, SocialHeadSettings settings, SpamGuard spam, MessageCatalog messages, Clock clock) {
+        this(plugin, Localized.same(settings), spam, messages, clock);
+    }
+
+    public SocialHeads(Plugin plugin, Localized<SocialHeadSettings> settings, SpamGuard spam, MessageCatalog messages, Clock clock) {
         this.plugin = plugin;
-        this.settings = settings;
+        this.localized = settings;
+        this.settings = settings.standard();
         this.spam = spam;
         this.messages = messages;
         this.clock = clock;
-        this.current = settings.indexAt(clock.instant());
+        this.current = this.settings.indexAt(clock.instant());
         this.displays = DisplayService.start(plugin);
         this.displays.onClick((player, display) -> clicked(player));
+        this.displays.labelText((viewer, text) -> text.replace(LABEL, network(messages.language(viewer)).label()));
     }
 
     public void show(List<SocialHeadPlacement> heads) {
@@ -100,6 +110,14 @@ public final class SocialHeads implements Listener, Runnable {
         return settings.networks().get(current);
     }
 
+    public SocialNetwork network(Language language) {
+        return localized.in(language).networks().get(current);
+    }
+
+    public void refresh(Player player) {
+        displays.refresh(player);
+    }
+
     public void stop() {
         displays.stop();
     }
@@ -129,10 +147,10 @@ public final class SocialHeads implements Listener, Runnable {
     private void clicked(Player player) {
         SpamDecision decision = spam.use(player.getUniqueId());
         if (!decision.allowed()) {
-            player.sendMessage(messages.get("spam-cooldown", "seconds", CooldownFormat.seconds(decision.remaining())));
+            player.sendMessage(messages.get(player, "spam-cooldown", "seconds", CooldownFormat.seconds(decision.remaining())));
             return;
         }
-        network().message().forEach(line -> player.sendMessage(Colors.translate(line)));
+        network(messages.language(player)).message().forEach(line -> player.sendMessage(Colors.translate(line)));
     }
 
     private void place(SocialHeadPlacement head, Block block) {
@@ -150,7 +168,7 @@ public final class SocialHeads implements Listener, Runnable {
             BlockUpdates.resend(block);
         }
         Location anchor = block.getLocation().add(CENTER, 0, CENTER);
-        displays.put(new Display(DISPLAY_PREFIX + head.id(), anchor, List.of(), List.of(new DisplayLabel(network.label(), settings.labelHeight()))));
+        displays.put(new Display(DISPLAY_PREFIX + head.id(), anchor, List.of(), List.of(new DisplayLabel(LABEL, settings.labelHeight()))));
     }
 
     private void clear(String id) {

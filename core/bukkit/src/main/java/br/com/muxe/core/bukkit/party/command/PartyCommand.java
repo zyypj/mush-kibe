@@ -64,10 +64,10 @@ public final class PartyCommand {
     public void members(Player player) {
         Optional<PartySnapshot> party = parties.of(player.getUniqueId());
         if (party.isEmpty()) {
-            player.sendMessage(parties.texts().messages().get("party-not-in-party"));
+            player.sendMessage(parties.texts().messages().get(player, "party-not-in-party"));
             return;
         }
-        player.sendMessage(parties.texts().members(party.get()));
+        player.sendMessage(parties.texts().members(parties.texts().messages().language(player), party.get()));
     }
 
     @Subcommand(value = "teleportar", aliases = "warp")
@@ -92,7 +92,7 @@ public final class PartyCommand {
 
     @Usage
     public void usage(CommandSender sender) {
-        parties.texts().messages().lines("party-usage").forEach(sender::sendMessage);
+        parties.texts().messages().lines(sender, "party-usage").forEach(sender::sendMessage);
     }
 
     static List<String> distinct(String names) {

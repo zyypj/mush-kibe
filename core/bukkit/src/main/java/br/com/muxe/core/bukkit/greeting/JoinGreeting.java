@@ -40,8 +40,8 @@ public final class JoinGreeting implements Listener {
             return;
         }
         Title.builder()
-            .title(messages.get("join-title"))
-            .subtitle(messages.get("join-subtitle"))
+            .title(messages.get(player, "join-title"))
+            .subtitle(messages.get(player, "join-subtitle"))
             .timings(current.fadeInTicks(), current.stayTicks(), current.fadeOutTicks())
             .build()
             .send(player);

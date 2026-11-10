@@ -24,7 +24,7 @@ public final class PartyChatCommand {
     @Default
     public void talk(Player player, @Arg("mensagem") @Greedy String message) {
         if (!chat.inParty(player.getUniqueId())) {
-            player.sendMessage(messages.get("party-not-in-party"));
+            player.sendMessage(messages.get(player, "party-not-in-party"));
             return;
         }
         chat.send(player, message);
@@ -32,6 +32,6 @@ public final class PartyChatCommand {
 
     @Usage
     public void usage(CommandSender sender) {
-        sender.sendMessage(messages.get("party-chat-usage"));
+        sender.sendMessage(messages.get(sender, "party-chat-usage"));
     }
 }

@@ -4,6 +4,8 @@ import br.com.muxe.core.bukkit.customroom.CustomRoomSettings;
 import br.com.muxe.core.bukkit.item.ItemBuilder;
 import br.com.muxe.core.bukkit.menu.Menu;
 import br.com.muxe.core.bukkit.text.Colors;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.network.customroom.CustomRoomCatalogPacket.Arena;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,10 +18,16 @@ import org.bukkit.entity.Player;
 
 public final class MapSelector {
 
-    private final CustomRoomSettings settings;
+    private final Localized<CustomRoomSettings> localized;
+    private final LanguageLookup languages;
 
     public MapSelector(CustomRoomSettings settings) {
-        this.settings = settings;
+        this(Localized.same(settings), LanguageLookup.DEFAULT);
+    }
+
+    public MapSelector(Localized<CustomRoomSettings> settings, LanguageLookup languages) {
+        this.localized = settings;
+        this.languages = languages;
     }
 
     public static List<String> toggle(List<String> selected, String map, boolean shift) {
@@ -48,6 +56,7 @@ public final class MapSelector {
     }
 
     public void open(Player player, Selection selection, int page) {
+        CustomRoomSettings settings = localized.in(languages.of(player.getUniqueId()));
         ConfigurationSection section = settings.section("maps-menu");
         List<Integer> slots = section.getIntegerList("slots");
         List<Arena> arenas = selection.arenas().stream().sorted(Comparator.comparing(arena -> arena.displayName().toLowerCase(Locale.ROOT))).toList();
@@ -70,12 +79,12 @@ public final class MapSelector {
             });
         }
         if (current > 1) {
-            menu.button(section.getInt("previous-slot", 48), pageButton(current - 1), context -> open(context.player(), selection, current - 1));
+            menu.button(section.getInt("previous-slot", 48), pageButton(settings, current - 1), context -> open(context.player(), selection, current - 1));
         } else {
             menu.button(section.getInt("back-slot", 48), OptionMenus.backButton(settings.texts(), selection.backTitle()), context -> selection.back().accept(context.player()));
         }
         if (current < pages) {
-            menu.button(section.getInt("next-slot", 50), pageButton(current + 1), context -> open(context.player(), selection, current + 1));
+            menu.button(section.getInt("next-slot", 50), pageButton(settings, current + 1), context -> open(context.player(), selection, current + 1));
         }
         String none = settings.text("room-menu.maps.none", "Nenhum");
         menu.button(settings.slot("maps-menu.summary"), settings.item("maps-menu.summary")
@@ -84,7 +93,7 @@ public final class MapSelector {
         menu.build().open(player);
     }
 
-    private ItemBuilder pageButton(int number) {
+    private static ItemBuilder pageButton(CustomRoomSettings settings, int number) {
         return ItemBuilder.of(Material.ARROW).name(Colors.translate(settings.texts().get("page-name", "page", String.valueOf(number))));
     }
 

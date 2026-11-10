@@ -13,6 +13,7 @@ import br.com.muxe.core.bukkit.customroom.menu.ModeSelector;
 import br.com.muxe.core.bukkit.customroom.menu.OptionMenus;
 import br.com.muxe.core.bukkit.customroom.menu.PresetMenu;
 import br.com.muxe.core.bukkit.prompt.AnvilEdits;
+import br.com.muxe.core.common.language.domain.Localized;
 import java.util.function.Consumer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -29,16 +30,17 @@ final class CustomRoomFeatures {
     }
 
     static CustomRoomKit kit(JavaPlugin plugin, MuxeCore core, FileConfiguration config) {
-        CustomRoomSettings settings = CustomRoomSettings.from(DefaultedSections.of(config, "custom-room"));
+        Localized<CustomRoomSettings> localized = core.texts().map(root -> CustomRoomSettings.from(DefaultedSections.of(root, "custom-room")));
+        CustomRoomSettings settings = localized.standard();
         AnvilEdits anvils = AnvilEdits.start(plugin);
-        OptionMenus options = new OptionMenus(anvils, player -> player.sendMessage(core.messages().get("custom-room-invalid-value")));
-        return new CustomRoomKit(settings, new CatalogDirectory(core.clock(), plugin.getLogger()), anvils, new ModeSelector(settings), new MapSelector(settings),
-            options, new PresetMenu(core, settings, anvils));
+        OptionMenus options = new OptionMenus(anvils, player -> player.sendMessage(core.messages().get(player, "custom-room-invalid-value")));
+        return new CustomRoomKit(settings, new CatalogDirectory(core.clock(), plugin.getLogger()), anvils, new ModeSelector(localized, core.languages()),
+            new MapSelector(localized, core.languages()), options, new PresetMenu(core, localized, anvils), localized);
     }
 
     static void lobby(JavaPlugin plugin, MuxeCore core, Commands commands, Consumer<Player> gameSelector, Consumer<Player> shop) {
         CustomRoomKit kit = core.customRooms();
-        CustomRoomLobby lobby = new CustomRoomLobby(core, kit.settings(), kit.catalogs(), kit.modes(), kit.maps(), kit.options(), kit.presets(), gameSelector, shop);
+        CustomRoomLobby lobby = new CustomRoomLobby(core, kit.localized(), kit.catalogs(), kit.modes(), kit.maps(), kit.options(), kit.presets(), gameSelector, shop);
         lobby.start();
         commands.register(new CustomRoomCommand(lobby));
         plugin.getServer().getPluginManager().registerEvents(new Listener() {

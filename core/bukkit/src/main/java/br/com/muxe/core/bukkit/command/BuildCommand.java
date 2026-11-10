@@ -27,17 +27,17 @@ public final class BuildCommand {
     public void toggle(Player player, @Arg("on|off") @Suggest({"on", "off"}) Optional<String> choice) {
         Optional<Boolean> wanted = BuildRules.wants(choice.orElse(""), build.isBuilding(player));
         if (wanted.isEmpty()) {
-            player.sendMessage(messages.get("build-usage"));
+            player.sendMessage(messages.get(player, "build-usage"));
             return;
         }
         if (wanted.get()) {
-            player.sendMessage(messages.get(switch (build.enter(player)) {
+            player.sendMessage(messages.get(player, switch (build.enter(player)) {
                 case CHANGED -> "build-enabled";
                 case UNCHANGED -> "build-already-on";
                 case NOT_ALLOWED -> "build-not-allowed";
             }));
         } else {
-            player.sendMessage(messages.get(build.leave(player) == BuildMode.Change.CHANGED ? "build-disabled" : "build-already-off"));
+            player.sendMessage(messages.get(player, build.leave(player) == BuildMode.Change.CHANGED ? "build-disabled" : "build-already-off"));
         }
     }
 }

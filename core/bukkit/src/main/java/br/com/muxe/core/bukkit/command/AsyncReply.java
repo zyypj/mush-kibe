@@ -30,7 +30,7 @@ public final class AsyncReply {
             }
             if (error != null || result.isFailure()) {
                 if (player.isOnline()) {
-                    player.sendMessage(messages.get(FAILED));
+                    player.sendMessage(messages.get(player, FAILED));
                 }
                 return;
             }

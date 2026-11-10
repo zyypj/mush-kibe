@@ -34,7 +34,7 @@ public final class AccountCommands {
             if (profile.isEmpty()) {
                 replies.send(sender, "account.not-found", "player", name.orElse(sender.getName()));
             } else {
-                lines.lines(profile.get()).forEach(sender::sendMessage);
+                lines.lines(sender, profile.get()).forEach(sender::sendMessage);
             }
         }));
     }
@@ -45,7 +45,7 @@ public final class AccountCommands {
             if (profile.isEmpty()) {
                 replies.send(player, "account.not-found", "player", name.orElse(player.getName()));
             } else {
-                menu.menu(profile.get(), player.hasPermission(STAFF_PERMISSION)).open(player);
+                menu.menu(replies.messages().language(player), profile.get(), player.hasPermission(STAFF_PERMISSION)).open(player);
             }
         }));
     }

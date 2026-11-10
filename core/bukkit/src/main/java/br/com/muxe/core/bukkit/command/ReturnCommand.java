@@ -32,11 +32,11 @@ public final class ReturnCommand {
             return;
         }
         if (server.isEmpty() || server.get().equals(core.identity().id())) {
-            player.sendMessage(core.messages().get("nothing-to-return"));
+            player.sendMessage(core.messages().get(player, "nothing-to-return"));
             return;
         }
         core.network().connectToServer(player.getUniqueId(), server.get()).exceptionally(failure -> {
-            core.mainThread().execute(() -> player.sendMessage(core.messages().get("connect-failed")));
+            core.mainThread().execute(() -> player.sendMessage(core.messages().get(player, "connect-failed")));
             return null;
         });
     }

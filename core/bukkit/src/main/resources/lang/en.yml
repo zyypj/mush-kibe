@@ -1,3 +1,1005 @@
+npcs:
+  lines:
+    game:
+      - "&b&l{name}"
+      - "&e{players} playing"
+    shop:
+      - "&b&l{name}"
+      - "&eClick to open the shop"
+    none:
+      - "&b&l{name}"
+social-heads:
+  networks:
+    instagram:
+      label: "&d@muxe"
+      message:
+        - ""
+        - "&d&lINSTAGRAM:"
+        - "&fhttps://www.instagram.com/muxe/"
+        - ""
+    twitch:
+      label: "&5@muxe"
+      message:
+        - ""
+        - "&5&lTWITCH:"
+        - "&fhttps://twitch.tv/muxe"
+        - ""
+    tiktok:
+      label: "&b@muxe"
+      message:
+        - ""
+        - "&b&lTIKTOK:"
+        - "&fhttps://tiktok.com/@muxe"
+        - ""
+    twitter:
+      label: "&b@muxe"
+      message:
+        - ""
+        - "&b&lTWITTER:"
+        - "&fhttps://twitter.com/muxe"
+        - ""
+    youtube:
+      label: "&c@muxe"
+      message:
+        - ""
+        - "&c&lYOUTUBE:"
+        - "&fhttps://www.youtube.com/@muxe"
+        - ""
+parkour:
+  items:
+    restart:
+      item:
+        name: "&aRestart Parkour"
+    checkpoint:
+      item:
+        name: "&aBack to Checkpoint"
+    stop:
+      item:
+        name: "&aStop Parkour"
+  holograms:
+    start:
+      - text: "&b&lPARKOUR"
+        height: 2.56875
+      - text: "&aStart"
+        height: 2.2875
+      - text: "&ePersonal best: &7{record}"
+        height: 1.75625
+    checkpoint:
+      - text: "&b&lPARKOUR"
+        height: 2.0375
+      - text: "&eCheckpoint &a#{number}"
+        height: 1.75625
+    end:
+      - text: "&b&lPARKOUR"
+        height: 2.0375
+      - text: "&cEnd"
+        height: 1.75625
+hotbar:
+  game-selector:
+    item:
+      name: "&aSelect game"
+  profile:
+    item:
+      name: "&aMy profile"
+  cosmetics:
+    item:
+      name: "&aCosmetics"
+  visibility:
+    all:
+      name: "&fPlayers: &aEnabled"
+    friends:
+      name: "&fPlayers: &bFriends only"
+    none:
+      name: "&fPlayers: &7Disabled"
+  lobby-selector:
+    item:
+      name: "&aSelect lobby"
+menus:
+  game-selector:
+    title: "Select game"
+    buttons:
+      bedwars:
+        item:
+          name: "&b&lBED WARS"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      hg:
+        item:
+          name: "&b&lHG"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      duels:
+        item:
+          name: "&b&lDUELS"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      pvp:
+        item:
+          name: "&b&lPVP"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      skywars:
+        item:
+          name: "&b&lSKY WARS"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      thebridge:
+        item:
+          name: "&b&lTHE BRIDGE"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      ctf:
+        item:
+          name: "&b&lCTF"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      party:
+        item:
+          name: "&b&lPARTY"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      murder:
+        item:
+          name: "&b&lMURDER"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      quickbuilders:
+        item:
+          name: "&b&lQUICK BUILDERS"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      buildbattle:
+        item:
+          name: "&b&lBUILD BATTLE"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      hideandseek:
+        item:
+          name: "&b&lHIDE AND SEEK"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      treinoponte:
+        item:
+          name: "&b&lTRAINING: BRIDGE"
+          lore:
+            - " "
+            - "&aClick to join!"
+      nascomandou:
+        item:
+          name: "&b&lNASCÓ MANDOU"
+          lore:
+            - "&e{players} playing now!"
+            - " "
+            - "&aClick to join!"
+      custom-room:
+        item:
+          name: "&aCustom room (/salacustom)"
+          lore:
+            - "&7Create your own room"
+            - "&7to play with friends."
+            - " "
+            - "&7Exclusive to &d&lULTRA&6+"
+            - " "
+            - "&eClick to buy."
+  account:
+    title: "Account: {player}"
+    date-format: "dd/MM/yyyy HH:mm"
+    menu-date-format: "dd/MM/yyyy HH:mm:ss"
+    head:
+      item:
+        lore:
+          - "&7Type: &f{type}"
+          - "&7ID: &f({number})"
+          - "&7Profile ID: &f{profile-id}"
+          - "&7UUID: &f{uuid}"
+          - " "
+    rank-line: "&7Rank: {rank}"
+    head-footer:
+      - "&7First login: &f{first-login}"
+      - "&7Last login: &f{last-login}"
+      - "&7Discord: &f{discord}"
+    close:
+      item:
+        name: "&cClose"
+    staff-buttons:
+      punishments:
+        item:
+          name: "&aPunishments"
+          lore:
+            - "&7View active punishments."
+            - " "
+            - "&eClick to view more."
+      punishment-history:
+        item:
+          name: "&aPunishment history"
+          lore:
+            - "&7View every punishment ever applied."
+            - " "
+            - "&eClick to view more."
+      statistics:
+        item:
+          name: "&aStatistics"
+          lore:
+            - "&7View the player's statistics."
+            - " "
+            - "&eClick to view more."
+      migrate-statistics:
+        item:
+          name: "&aMigrate statistics"
+          lore:
+            - "&7Move the statistics to another account."
+            - " "
+            - "&eClick to view more."
+  profile:
+    title: "My profile"
+    first-login:
+      format: "dd/MM/yyyy HH:mm"
+    ranks:
+      line: "&7Rank: {rank} &7({time})"
+    head:
+      item:
+        lore:
+          - " "
+          - "&7First login: {first-login}"
+          - "&7Credits: &d{credits}"
+    buttons:
+      friends:
+        item:
+          name: "&aFriends"
+          lore:
+            - "&7View and manage your friends."
+            - " "
+            - "&eClick to view more."
+      statistics:
+        item:
+          name: "&aView statistics"
+          lore:
+            - "&7View your statistics"
+            - "&7for every game."
+            - " "
+            - "&eClick to view more."
+      preferences:
+        item:
+          name: "&aPreferences"
+          lore:
+            - "&7Change your preferences."
+            - " "
+            - "&eClick to view more."
+      medals:
+        item:
+          name: "&aMedals"
+          lore:
+            - "&7View and select medals."
+            - " "
+            - "&eClick to view more."
+      skin:
+        item:
+          name: "&aYour skin"
+          lore:
+            - "&7Change your current skin."
+            - " "
+            - "&eClick to view more."
+      nick:
+        item:
+          name: "&aNick (/nick)"
+          lore:
+            - "&7Choose a disguise"
+            - "&7to use on the server."
+            - " "
+            - "&7Exclusive to &d&lULTRA&6+"
+            - " "
+            - "&eClick to buy."
+      ultra-plus:
+        item:
+          name: "&dUltra&6+ &aMenu"
+          lore:
+            - "&7Check out the Ultra+"
+            - "&7customizations."
+            - " "
+            - "&7Exclusive to &d&lULTRA&6+"
+            - " "
+            - "&eClick to view more."
+  lobby-selector:
+    title: "Select lobby ({page}/{pages})"
+    current:
+      name: "&aMain Lobby #{number}"
+      lore:
+        - "&fPlayers &a{online}/{max}"
+    other:
+      name: "&aMain Lobby #{number}"
+      lore:
+        - "&fPlayers &a{online}/{max}"
+    previous-page:
+      name: "&aPrevious page"
+    next-page:
+      name: "&aNext page"
+shop:
+  title: "Shop: {name}"
+  promotion:
+    lines:
+      - "&b&lSHOP"
+      - "&5&lENDERLORE RANK"
+      - "&b&l13% OFF!"
+      - "&2&mR$ 74,99&r &aR$ 64,99"
+      - "&eClick to buy!"
+  categories:
+    ranks:
+      tab:
+        name: "&aRanks"
+        lore:
+          - " "
+          - "&eClick to select."
+      products:
+        vip:
+          item:
+            name: "&aVIP"
+            lore:
+              - "&8Lifetime."
+              - " "
+              - "&a✔ &7Fly in the Lobby"
+              - "&a✔ &7Create clans"
+              - " "
+              - "&7Price: &aR$ 39,99"
+              - " "
+              - "&eLeft click: &fBuy"
+        ultra:
+          item:
+            name: "&dUltra"
+            lore:
+              - "&8Lifetime."
+              - " "
+              - "&a✔ &7Announcement when joining the Lobby"
+              - "&a✔ &7+50 exclusive Cosmetics"
+              - "&a✔ &78 Medals included"
+              - "&a✔ &7Color preference (Bed Wars)"
+              - "&7+ everything from &aVIP&7!"
+              - " "
+              - "&7Price: &aR$ 54,99"
+              - " "
+              - "&eLeft click: &fBuy"
+        enderlore:
+          item:
+            name: "&5Enderlore"
+            lore:
+              - "&8Lifetime."
+              - " "
+              - "&c&lLIMITED TIME!"
+              - " "
+              - "&7Price: &2&mR$ 74,99&r &aR$ 64,99"
+              - "&b&l13% OFF!"
+              - " "
+              - "&eLeft click: &fBuy"
+          page:
+            item:
+              name: "&5Enderlore"
+              lore:
+                - "&8Lifetime."
+                - " "
+                - "&c&lLIMITED TIME!"
+                - " "
+                - "&7Price: &2&mR$ 74,99&r &aR$ 64,99"
+                - "&b&l13% OFF!"
+                - " "
+                - "&eClick to see the full"
+                - "&elist of perks!"
+        ultra-plus:
+          item:
+            name: "&dUltra&6+"
+            lore:
+              - "&8Temporary."
+              - " "
+              - "&a✔ &7Custom nick*"
+              - "&a✔ &7Custom rooms"
+              - "&a✔ &7Clan tag color"
+              - "&a✔ &7Titles in the Lobby"
+              - "&a✔ &7Tag customization"
+              - "&a✔ &7&7Everything from &dUltra&7 and &6+&7!"
+              - " "
+              - "&7&o*Random only, 3 names per day."
+              - " "
+              - "&cRequires Ultra"
+      extras:
+        vip-perks:
+          item:
+            name: "&aVIP &aPerks"
+            lore:
+              - " "
+              - "&eClick to see the full"
+              - "&elist of perks!"
+        ultra-perks:
+          item:
+            name: "&dUltra &dPerks"
+            lore:
+              - " "
+              - "&eClick to see the full"
+              - "&elist of perks!"
+        enderlore-perks:
+          item:
+            name: "&5Enderlore &5Perks"
+            lore:
+              - " "
+              - "&eClick to see the full"
+              - "&elist of perks!"
+        ultra-plus-perks:
+          item:
+            name: "&dUltra&6+ &dPerks"
+            lore:
+              - " "
+              - "&eClick to see the full"
+              - "&elist of perks!"
+    ultra-plus:
+      tab:
+        name: "&aUltra+"
+        lore:
+          - " "
+          - "&eClick to select."
+      products:
+        ultra-plus-1:
+          item:
+            name: "&dUltra&6+ &7(1 month)"
+            lore:
+              - "&81 month or 30 days."
+              - " "
+              - "&a✔ &7Custom nick*"
+              - "&a✔ &7Custom rooms"
+              - "&a✔ &7Clan tag color"
+              - "&a✔ &7Titles in the Lobby"
+              - "&a✔ &7Tag customization"
+              - "&a✔ &7&7Everything from &dUltra&7 and &6+&7!"
+              - " "
+              - "&7&o*Random only, 3 names per day."
+              - " "
+              - "&7Price: &aR$ 24,99"
+              - " "
+              - "&cRequires Ultra."
+        ultra-plus-3:
+          item:
+            name: "&dUltra&6+ &7(3 months)"
+            lore:
+              - "&83 months or 90 days."
+              - " "
+              - "&a✔ &7Custom nick*"
+              - "&a✔ &7Custom rooms"
+              - "&a✔ &7Clan tag color"
+              - "&a✔ &7Titles in the Lobby"
+              - "&a✔ &7Tag customization"
+              - "&a✔ &7&7Everything from &dUltra&7 and &6+&7!"
+              - " "
+              - "&7&o*Random only, 3 names per day."
+              - " "
+              - "&7Price: &2&mR$ 74,97&r &aR$ 63,99"
+              - "&b&l14% OFF!"
+              - " "
+              - "&cRequires Ultra."
+        ultra-plus-6:
+          item:
+            name: "&dUltra&6+ &7(6 months)"
+            lore:
+              - "&86 months or 180 days."
+              - " "
+              - "&a✔ &7Custom nick*"
+              - "&a✔ &7Custom rooms"
+              - "&a✔ &7Clan tag color"
+              - "&a✔ &7Titles in the Lobby"
+              - "&a✔ &7Tag customization"
+              - "&a✔ &7&7Everything from &dUltra&7 and &6+&7!"
+              - " "
+              - "&7&o*Random only, 3 names per day."
+              - " "
+              - "&7Price: &2&mR$ 149,94&r &aR$ 119,99"
+              - "&b&l19% OFF!"
+              - " "
+              - "&cRequires Ultra."
+        ultra-plus-12:
+          item:
+            name: "&dUltra&6+ &7(12 months)"
+            lore:
+              - "&812 months or 360 days."
+              - " "
+              - "&a✔ &7Custom nick*"
+              - "&a✔ &7Custom rooms"
+              - "&a✔ &7Clan tag color"
+              - "&a✔ &7Titles in the Lobby"
+              - "&a✔ &7Tag customization"
+              - "&a✔ &7&7Everything from &dUltra&7 and &6+&7!"
+              - " "
+              - "&7&o*Random only, 3 names per day."
+              - " "
+              - "&7Price: &2&mR$ 299,88&r &aR$ 224,99"
+              - "&b&l24% OFF!"
+              - " "
+              - "&cRequires Ultra."
+      extras:
+        ultra-plus-perks:
+          item:
+            name: "&dUltra&6+ &dPerks"
+            lore:
+              - " "
+              - "&eClick to see the full"
+              - "&elist of perks!"
+    credits:
+      tab:
+        name: "&aCredits"
+        lore:
+          - " "
+          - "&eClick to select."
+      products:
+        credits-900:
+          item:
+            name: "&6900 Credits (+100 Bonus)"
+            lore:
+              - " "
+              - "&7Price: &aR$ 18,99"
+              - " "
+              - "&eLeft click: &fBuy"
+        credits-1300:
+          item:
+            name: "&61,300 Credits (+200 Bonus)"
+            lore:
+              - " "
+              - "&7Price: &aR$ 27,99"
+              - " "
+              - "&eLeft click: &fBuy"
+        credits-2000:
+          item:
+            name: "&62,000 Credits (+500 Bonus)"
+            lore:
+              - " "
+              - "&7Price: &aR$ 45,99"
+              - " "
+              - "&eLeft click: &fBuy"
+        credits-4000:
+          item:
+            name: "&64,000 Credits (+1,500 Bonus)"
+            lore:
+              - " "
+              - "&7Price: &aR$ 99,99"
+              - " "
+              - "&eLeft click: &fBuy"
+    medals:
+      tab:
+        name: "&aMedals"
+        lore:
+          - " "
+          - "&eClick to select."
+      products:
+        medals-elements:
+          item:
+            name: "&aPack: Three Elements"
+            lore:
+              - " "
+              - "&7Preview:"
+              - "&c&c火 &7{player}: &fFire"
+              - "&b&b水 &7{player}: &fWater"
+              - "&f&f気 &7{player}: &fAir"
+              - " "
+              - "&7Price: &aR$ 9,99"
+              - " "
+              - "&eLeft click: &fBuy"
+        medals-star:
+          item:
+            name: "&aPack: Star"
+            lore:
+              - " "
+              - "&7Preview:"
+              - "&e&e✯ &7{player}: &fStar"
+              - "&2&2☘ &7{player}: &fLucky"
+              - "&f&f回 &7{player}: &fCard"
+              - " "
+              - "&7Price: &aR$ 8,99"
+              - " "
+              - "&eLeft click: &fBuy"
+        medals-airplane:
+          item:
+            name: "&aPack: Airplane Mode"
+            lore:
+              - " "
+              - "&7Preview:"
+              - "&b&b✈ &7{player}: &fAirplane Mode"
+              - "&a&a✆ &7{player}: &fPhone"
+              - "&d&d✿ &7{player}: &fFlower"
+              - " "
+              - "&7Price: &aR$ 9,99"
+              - " "
+              - "&eLeft click: &fBuy"
+        medals-toxic:
+          item:
+            name: "&aPack: Toxic"
+            lore:
+              - " "
+              - "&7Preview:"
+              - "&a&a☣ &7{player}: &fToxic"
+              - "&7&7⚔ &7{player}: &fSword Fight"
+              - "&6&6⚜ &7{player}: &fImperial"
+              - " "
+              - "&7Price: &aR$ 8,99"
+              - " "
+              - "&eLeft click: &fBuy"
+    orders:
+      name: "My orders"
+      tab:
+        name: "&aMy orders"
+        lore:
+          - " "
+          - "&eClick to select."
+      extras:
+        empty:
+          item:
+            name: "&cNo orders found!"
+  checkout:
+    method-title: "Purchase: Payment method"
+    supporter-title: "Purchase: Supporter code"
+    loading-title: "Purchase: Loading..."
+    pix:
+      name: "&aPix"
+      lore:
+        - "&7Choose Pix as your"
+        - "&7payment method."
+        - " "
+        - "&7Order:"
+        - " &a{product}"
+        - "  "
+        - " &7Total: &0&a{price}"
+        - "  "
+        - "&eClick to continue"
+    card:
+      name: "&aCredit Card"
+      lore:
+        - "&7Choose Credit Card"
+        - "&7as your payment method."
+        - " "
+        - "&7Order:"
+        - " &a{product}"
+        - "  "
+        - " &7Total: &0&a{price}"
+        - "  "
+        - "&eClick to continue"
+    summary:
+      name: "&a{product}"
+      lore:
+        - " "
+        - "&7Total: &0&a{price}"
+    back:
+      name: "&aBack"
+      lore:
+        - "&7To {menu}"
+    use-code:
+      name: "&aUse supporter code"
+      lore:
+        - "&7Get discounts by using"
+        - "&7a supporter code."
+        - " "
+        - "&eClick to continue"
+    skip-code:
+      name: "&cDon't use a supporter code"
+      lore:
+        - "&7Continue the purchase"
+        - "&7without using a"
+        - "&7supporter code."
+        - " "
+        - "&eClick to continue"
+    loading:
+      lit:
+        name: "&a..."
+      dim:
+        name: "&a..."
+custom-room:
+  selector:
+    title: "Select mode"
+    back-title: "Select game"
+    lore:
+      - " "
+      - "&eClick to continue."
+    games:
+      bedwars:
+        name: "&aBed Wars"
+      duels:
+        name: "&aDuels"
+      skywars:
+        name: "&aSky Wars"
+      ctf:
+        name: "&aCTF"
+      party:
+        name: "&aParty"
+      block-party:
+        name: "&aBlock Party"
+      murder:
+        name: "&aMurder"
+      build-battle:
+        name: "&aBuild Battle"
+      quick-builders:
+        name: "&aQuick Builders"
+      hide-and-seek:
+        name: "&aHide and Seek"
+      nasco-mandou:
+        name: "&aNascó Mandou"
+      spleef:
+        name: "&aSpleef"
+  mode-menus:
+    bedwars:
+      title: "Select mode (Bed Wars)"
+      modes:
+        solo:
+          name: "&aBed Wars Solo"
+        duplas:
+          name: "&aBed Wars Doubles"
+        trios:
+          name: "&aBed Wars Trios"
+        quartetos:
+          name: "&aBed Wars Quads"
+        1v1:
+          name: "&aBed Wars 1v1"
+        2v2:
+          name: "&aBed Wars 2v2"
+        3v3:
+          name: "&aBed Wars 3v3"
+        4v4:
+          name: "&aBed Wars 4v4"
+        4s:
+          name: "&aBed Wars 4s"
+        mega:
+          name: "&aBed Wars Mega"
+        temporary:
+          name: "&aTemporary modes"
+    duels:
+      title: "Select mode (Duels)"
+      modes:
+        sopa:
+          name: "&aSoup"
+        gladiator:
+          name: "&aGladiator"
+        no-debuff:
+          name: "&aNo Debuff"
+        uhc:
+          name: "&aUHC"
+        combo:
+          name: "&aCombo"
+        gapple:
+          name: "&aGapple"
+        lava:
+          name: "&aLava"
+        the-bridge:
+          name: "&aThe Bridge"
+        sumo:
+          name: "&aSumo"
+        boxing:
+          name: "&aBoxing"
+        bed-fight:
+          name: "&aBed Fight"
+        fireball-fight:
+          name: "&aFireball Fight"
+        hg-simulator:
+          name: "&aHG Simulator"
+        pearl-fight:
+          name: "&aPearl Fight"
+        bed-rush:
+          name: "&aBed Rush"
+        classic:
+          name: "&aClassic"
+        block-fight:
+          name: "&aBlock Fight"
+        block-sumo:
+          name: "&aBlock Sumo"
+  room-menu:
+    create-title: "Creating room..."
+    room-title: "Your room"
+    game:
+      lore:
+        - " "
+        - "&eClick to change the game."
+    maps:
+      name: "&aMaps"
+      lore:
+        - "&7Choose the maps for"
+        - "&7your room."
+        - " "
+        - "&7Selected: &a{maps}"
+        - " "
+        - "&eClick to edit."
+      room-lore:
+        - "&7Choose the maps for"
+        - "&7your room."
+        - " "
+        - "&cIt will apply on the next"
+        - "&crestart."
+        - " "
+        - "&7Selected: &a{maps}"
+        - " "
+        - "&eClick to edit."
+    options:
+      name: "&aOptions"
+      lore:
+        - "&7View and change options"
+        - "&7specific to the mode."
+        - " "
+        - "&eClick to view more"
+    create:
+      name: "&aCreate room"
+      lore:
+        - " "
+        - "&eClick to create the room."
+    presets:
+      name: "&aPresets"
+      lore:
+        - "&7Save, load and share"
+        - "&7the room options."
+        - " "
+        - "&eClick to view more."
+    start:
+      name: "&aStart room"
+      lore:
+        - " "
+        - "&eClick to start the room."
+    pause:
+      name: "&9Pause countdown"
+      lore:
+        - " "
+        - "&eClick to pause the countdown."
+    restart:
+      name: "&eRestart room"
+      lore:
+        - " "
+        - "&eClick to restart the room."
+    close:
+      name: "&cClose room"
+      lore:
+        - " "
+        - "&eClick to close the room."
+    skip-event:
+      name: "&aSkip event"
+      lore:
+        - "&7Next event: &f{event}"
+        - " "
+        - "&eClick to skip."
+  maps-menu:
+    title: "Select maps ({page}/{pages})"
+    selected-name: "&a{map}"
+    other-name: "&c{map}"
+    lore:
+      - " "
+      - "&bUse shift to add"
+      - "&bmore than one map."
+      - " "
+      - "&eClick to change."
+    summary:
+      name: "&aMaps"
+      lore:
+        - " "
+        - "&eSelected: &a{maps}"
+    external:
+      name: "&aLoad external map"
+      lore:
+        - " "
+        - "&eClick to select."
+  presets-menu:
+    empty:
+      name: "&cNo saved presets"
+      lore:
+        - "&7Save the current room"
+        - "&7options to use them"
+        - "&7later."
+    preset:
+      name: "&a{name}"
+      lore:
+        - " "
+        - "&7Mode: &f{mode}"
+        - "&7Code: &f{code}"
+        - " "
+        - "&eLeft click: &fLoad"
+        - "&eRight click: &fShare"
+        - "&eQ: &fDelete"
+    save:
+      name: "&aSave new"
+      lore:
+        - "&7Save the current room"
+        - "&7options as a new"
+        - "&7preset."
+        - " "
+        - "&eClick to select."
+    code:
+      name: "&aUse code"
+      lore:
+        - "&7Use the code of a"
+        - "&7preset shared"
+        - "&7by another player."
+        - " "
+        - "&eClick to select."
+  teams-menu:
+    title: "Select team"
+    team:
+      lore:
+        - " "
+        - "&7Players: &a{players}/{size}"
+        - " "
+        - "&eClick to join."
+    spectator:
+      name: "&7Spectator"
+      lore:
+        - " "
+        - "&7Players: &a{players}"
+        - " "
+        - "&eClick to join."
+  hotbar:
+    team:
+      name: "&aSelect team"
+    room-menu:
+      name: "&aRoom menu &7(/menu)"
+  texts:
+    value: "&7Value: &a{value}"
+    value-plain: "&7Value: {value}"
+    left-increase: "&eLeft click: &fIncrease"
+    right-decrease: "&eRight click: &fDecrease"
+    click-change: "&eClick to change."
+    click-enable: "&eClick to enable."
+    click-disable: "&eClick to disable."
+    click-switch: "&eClick to switch."
+    enabled: "&aEnabled"
+    disabled: "&cDisabled"
+    choice-selected: "&a- {label}"
+    choice-other: "&7- {label}"
+    time: "&7Time: &f{time}"
+    status: "&7Status: {status}"
+    timer-left: "&eLeft click: &f+30s"
+    timer-right: "&eRight click: &f-30s"
+    timer-shift: "&eShift: &f±1min"
+    timer-drop: "&eQ: &fEnable/disable"
+    team-name: "Team #{index}"
+    team-original: "&7Original name: &f{name}"
+    team-toggle: "&eLeft click: &fEnable/disable"
+    team-rename: "&eRight click: &fRename"
+    team-restore: "&eQ: &fRestore name"
+    price: "&7Price: {price}"
+    free: "&aFree"
+    limit: "&7Limit: &f{limit}"
+    limit-none: "None"
+    limit-team: "{amount} per team"
+    limit-player: "{amount} per player"
+    limit-inventory: "{amount} in inventory"
+    status-name: "&aStatus"
+    price-name: "&aPrice"
+    limit-name: "&aLimit"
+    change-value: "&eLeft click: &fChange value"
+    change-currency: "&eRight click: &fChange currency"
+    change-amount: "&eLeft click: &fChange amount"
+    change-type: "&eRight click: &fChange type"
+    level-name: "&aLevel {level}"
+    level-line: "&7Level {level}: {price}"
+    level-label: "&7{label}"
+    free-on-name: "&aEverything free"
+    free-off-name: "&cEverything free"
+    free-on-click: "&eClick to go back to the default price."
+    free-off-click: "&eClick to make everything free."
+    back-name: "&aBack"
+    back-lore: "&7To {title}"
+    page-name: "&aPage {page}"
+    anvil-result: "&a{label}: &f{value}"
+    anvil-result-plain: "&f{value}"
+    editing-title: "Editing {name}..."
+
 messages:
   language-usage: "&eUsage: /language <portuguese|english>. Current language: &f{language}&e."
   language-changed: "&aLanguage changed to &f{language}&a."
@@ -5,3 +1007,474 @@ messages:
   language-failed: "&cThe language could not be changed right now. Try again in a moment."
   language-name-pt-br: "Portuguese"
   language-name-en: "English"
+  no-permission: "&cYou don't have permission to use this command."
+  unknown-command: "&cCommand not found."
+  players-only: "&cOnly players can use this command."
+  console-only: "&cOnly the console can use this command."
+  command-usage: "&cUsage: &f{usage}"
+  command-usage-header: "&e/{command} usage:"
+  command-usage-line: "&f{usage}"
+  command-invalid-number: "&cThe value &f{input} &cis not a valid number."
+  command-invalid-option: "&cInvalid option: &f{input}&c. Use: &f{options}&c."
+  command-player-offline: "&cThe player &f{input} &cis not online."
+  command-failed: "&cThis command could not be run right now."
+  chat-format: "{medal}{prefix}{color}{player}: &f{message}"
+  join-title: "&b&lMUXE"
+  join-subtitle: "&eWelcome!"
+  build-usage: "&eUsage: /build <on|off>"
+  build-enabled: "&aBuild mode enabled."
+  build-disabled: "&cBuild mode disabled."
+  build-already-on: "&cYou are already in build mode."
+  build-already-off: "&cYou are not in build mode."
+  build-not-allowed: "&cYou can't enter build mode right now."
+  build-action-bar: "&aBuild mode enabled"
+  connect-failed: "&cWe couldn't send you right now. Try again in a moment."
+  nothing-to-return: "&cYou don't have any match to return to."
+  party-usage:
+    - "&6Usage &a/party&6:"
+    - "&e/party <players> - &bInvite to a party"
+    - "&e/party aceitar <player> - &bAccept a party invite"
+    - "&e/party sair - &bLeave the party"
+    - "&e/party acabar - &bDisband the party"
+    - "&e/party expulsar <player> - &bKick from the party"
+    - "&e/party transferir <player> - &bTransfer party leadership"
+    - "&e/party membros - &bView the party members"
+    - "&e/party teleportar - &bSend every party player to your room"
+    - "&e/party entrar <name> - &bJoin a party"
+    - "&e/party removeroffline - &bKick offline players from the party"
+    - "&e/pc - &bTalk in the party chat"
+    - "&e/canal party - &bSet your default chat channel to the party"
+  party-invite-sent: "&d[PARTY] {player} &ereceived a party invite."
+  party-invite:
+    - "{player} &einvited you to a party"
+    - "&b&lCLICK HERE &eto accept the invite."
+  party-disbanded: "&d[PARTY] {player} &cdisbanded the party."
+  party-joined: "&d[PARTY] {player} &ajoined the party."
+  party-kicked: "&d[PARTY] {leader} &cremoved {player} &cfrom the party."
+  party-new-leader: "&d[PARTY] {player} &eis now the party leader."
+  party-members: "&eParty members &7({count})&e: {members}"
+  party-members-online: "&a{name}"
+  party-members-offline: "&c{name}"
+  party-chat: "&d[PARTY] {chat}"
+  party-chat-usage: "&cUsage /pc <message>"
+  party-left: "&d[PARTY] {player} &cleft the party."
+  party-you-left: "&eYou left the party."
+  party-opened: "&d[PARTY] {player} &aopened the party."
+  party-closed: "&d[PARTY] {player} &cclosed the party."
+  party-offline-removed: "&d[PARTY] {player} &cremoved {count} offline players from the party."
+  party-offline-kicked: "&d[PARTY] {player} &cwas removed from the party for being offline."
+  party-member-disconnected: "&d[PARTY] {player} &cdisconnected and has {minutes} minutes to come back."
+  party-member-reconnected: "&d[PARTY] {player} &ereconnected."
+  party-summoned: "&d[PARTY] {player} &ebrought the party to their room."
+  party-invite-expired-sender: "&eThe party invite to {player} &eexpired."
+  party-invite-expired: "&eThe party invite from {player} &eexpired."
+  party-player-not-found: "&cPlayers: {names} were not found or have party invites disabled."
+  party-not-in-party: "&cYou are not in a party."
+  party-already-in-party: "&cYou are already in a party."
+  party-not-leader: "&cOnly the party leader can do that."
+  party-target-in-party: "{player} &cis already in a party."
+  party-already-member: "{player} &cis already in your party."
+  party-already-invited: "&cYou already invited {player}&c."
+  party-no-invite: "&cYou don't have a party invite from &f{name}&c."
+  party-not-member: "&cThe player &f{name} &cis not in your party."
+  party-member-offline: "&cThe player &f{name} &cis not online."
+  party-invite-self: "&cYou can't invite yourself."
+  party-kick-self: "&cYou can't kick yourself."
+  party-already-leader: "&cYou are already the party leader."
+  party-not-open: "&cThat party is not open."
+  party-open-no-permission: "&cOnly Ultra+ or higher can open the party."
+  party-no-offline: "&cThere are no offline players in the party."
+  party-leader-only: "&cOnly the party leader can search for rooms!"
+  party-too-big: "&cYour party has too many players for this mode."
+  custom-room-creating: "&aCreating room..."
+  custom-room-sending: "&aSending to {code}..."
+  custom-room-unavailable: "&cThe room could not be created right now. Try again."
+  custom-room-not-leader: "&cOnly the party leader can create a room."
+  custom-room-invalid-value: "&cInvalid value."
+  custom-room-only-leader: "&cOnly the room leader can do that."
+  custom-room-not-in-room: "&cYou are not in a custom room."
+  custom-room-closed: "&cThe room was closed."
+  custom-room-restarted: "&eThe room was restarted."
+  custom-room-paused: "&9The countdown was paused."
+  custom-room-team-full: "&cThis team is full."
+  custom-room-team-chosen: "&aYou joined team {team}&a."
+  custom-room-spectator-chosen: "&7You will spectate the next match."
+  custom-room-event-skipped: "&aThe event {event} &awas brought forward."
+  custom-room-mode-changed: "&aThe room mode is now {mode}."
+  custom-room-preset-saved: "&aPreset &f{name} &asaved. Code: &f{code}"
+  custom-room-preset-loaded: "&aPreset &f{name} &aloaded."
+  custom-room-preset-deleted: "&cPreset &f{name} &cdeleted."
+  custom-room-preset-share: "&aCode for preset &f{name}&a: &f{code}"
+  custom-room-preset-not-found: "&cNo preset found with that code."
+  custom-room-preset-other-game: "&cThat preset is for another game."
+  custom-room-preset-failed: "&cThe preset could not be saved."
+  party-split: "&4&lWARNING &cThis match does not count statistics."
+  channel-usage: "&cUsage /canal <channel>"
+  channel-changed: "&eYour chat channel is now &b{channel}&e."
+  channel-no-clan: "&cYou are not in a clan."
+  no-other-lobby: "&cThere is no other lobby available right now."
+  placement-failed: "&cIt could not be saved right now. Try again in a moment."
+  spam-cooldown: "&cWait {seconds}s to use it again."
+  game-unavailable: "&cNo &f{name} &croom available at the moment."
+  visibility-all: "&aYou are now seeing every player."
+  visibility-friends: "&bYou are now seeing only your friends."
+  visibility-none: "&cYou hid every player."
+  lobby-current: "&cYou are already connected to this lobby."
+  lobby-full: "&cThis lobby is full."
+  lobby-failed: "&cThe lobby could not be changed right now. Try again."
+  npc-usage:
+    - "&e/npc usage:"
+    - "&f/npc criar <id> <action> <skin> <name> &7- creates an NPC where you are"
+    - "&f/npc acao <id> <action> &7- changes what the NPC does when clicked"
+    - "&f/npc mover <id> &7- moves the NPC to where you are"
+    - "&f/npc skin <id> <skin> &7- changes the skin to a premium player's nick"
+    - "&f/npc nome <id> <name> &7- changes the name shown in the hologram"
+    - "&f/npc remover <id> &7- removes the NPC"
+    - "&f/npc listar &7- lists the NPCs of this server group"
+    - "&f/npc importar &7- imports Muxe-Core's import.yml now"
+    - "&7Action: &floja&7, &fnenhuma &7or the game group (e.g. &fskywars&7)."
+  npc-invalid-id: "&cThe id may only contain lowercase letters, numbers, - and _."
+  npc-exists: "&cAn NPC with the id &f{id} &calready exists."
+  npc-unknown: "&cThere is no NPC with the id &f{id}&c."
+  npc-fetching-skin: "&7Fetching the skin of &f{skin}&7..."
+  npc-skin-missing: "&eSkin of &f{skin} &enot found. The NPC keeps the default skin."
+  npc-created: "&aNPC &f{id} &acreated. Action: &f{action}&a."
+  npc-action-changed: "&aNPC &f{id} &anow has the action &f{action}&a."
+  npc-moved: "&aNPC &f{id} &amoved to where you are."
+  npc-skin-changed: "&aSkin of NPC &f{id} &achanged to &f{skin}&a."
+  npc-renamed: "&aNPC &f{id} &ais now called &f{name}&a."
+  npc-removed: "&aNPC &f{id} &aremoved."
+  npc-list-empty: "&7No NPCs created. Use &f/npc criar&7."
+  npc-list-header: "&eNPCs of group &f{group} &e({count}):"
+  npc-list-line: "&8- &f{id} &7→ &b{action} &7({name}, skin {skin}) &8{location}"
+  npc-importing: "&7Importing &f{file}&7..."
+  npc-import-missing: "&cThe file &fplugins/Muxe-Core/{file} &cdoes not exist."
+  npc-imported: "&a{count} items from &f{file} &aimported into group &f{group}&a."
+  hologram-usage:
+    - "&e/holograma usage:"
+    - "&f/holograma criar <id> <text> &7- creates a hologram where you are"
+    - "&f/holograma adicionar <id> <text> &7- adds a line at the end"
+    - "&f/holograma linha <id> <number> <text> &7- changes a line"
+    - "&f/holograma removerlinha <id> <number> &7- removes a line"
+    - "&f/holograma ver <id> &7- shows the numbered lines"
+    - "&f/holograma mover <id> &7- moves the hologram to where you are"
+    - "&f/holograma remover <id> &7- removes the hologram"
+    - "&f/holograma listar &7- lists the holograms of this server group"
+    - "&7Use &f& &7for colors and &f{vazio} &7for a blank line."
+  hologram-invalid-id: "&cThe id may only contain lowercase letters, numbers, - and _."
+  hologram-exists: "&cA hologram with the id &f{id} &calready exists."
+  hologram-unknown: "&cThere is no hologram with the id &f{id}&c."
+  hologram-created: "&aHologram &f{id} &acreated."
+  hologram-line-added: "&aLine added to hologram &f{id}&a."
+  hologram-line-changed: "&aLine &f{line} &aof hologram &f{id} &achanged."
+  hologram-line-removed: "&aLine &f{line} &aof hologram &f{id} &aremoved."
+  hologram-last-line: "&cThe hologram needs at least one line. Use &f/holograma remover&c."
+  hologram-invalid-line: "&cInvalid line. The hologram has &f{count} &clines."
+  hologram-moved: "&aHologram &f{id} &amoved to where you are."
+  hologram-removed: "&aHologram &f{id} &aremoved."
+  hologram-list-empty: "&7No holograms created. Use &f/holograma criar&7."
+  hologram-list-header: "&eHolograms of group &f{group} &e({count}):"
+  hologram-list-line: "&8- &f{id} &7({lines} lines) &8{location}"
+  social-usage:
+    - "&e/redes usage:"
+    - "&f/redes criar <id> &7- places a social media head where you are, facing where you look"
+    - "&f/redes mover <id> &7- moves the head to where you are"
+    - "&f/redes remover <id> &7- removes the head"
+    - "&f/redes listar &7- lists the heads of this group"
+  social-invalid-id: "&cThe id may only contain lowercase letters, numbers, - and _."
+  social-exists: "&cA social media head with the id &f{id} &calready exists."
+  social-unknown: "&cThere is no social media head with the id &f{id}&c."
+  social-created: "&aSocial media head &f{id} &aplaced."
+  social-moved: "&aSocial media head &f{id} &amoved to where you are."
+  social-removed: "&aSocial media head &f{id} &aremoved."
+  social-list-empty: "&7No social media heads. Use &f/redes criar&7."
+  social-list-header: "&eSocial media heads of group &f{group} &e({count}):"
+  social-list-line: "&8- &f{id} &8{location}"
+  parkour-started: "&b&lPARKOUR &aStarted!"
+  parkour-restarted: "&b&lPARKOUR &aTimer restarted!"
+  parkour-checkpoint: "&b&lPARKOUR &aYou reached &echeckpoint #{number} &ain &7{time}&a!"
+  parkour-returned: "&b&lPARKOUR &aYou went back to checkpoint #{number}."
+  parkour-finished: "&b&lPARKOUR &aYou finished the &eparkour &ain &7{time}&a!"
+  parkour-new-record: "&b&lPARKOUR &eYou set a new &brecord! &a{previous} &7-> &a{time}"
+  parkour-best-time: "&b&lPARKOUR &eYour best time was &a{best}&e."
+  parkour-stopped: "&b&lPARKOUR &cYou left the parkour."
+  parkour-usage:
+    - "&e/parkour usage:"
+    - "&f/parkour inicio &7- marks the start on the block you are standing on"
+    - "&f/parkour checkpoint <number> &7- marks a checkpoint on the block you are standing on"
+    - "&f/parkour fim &7- marks the end on the block you are standing on"
+    - "&f/parkour remover <inicio|fim|number> &7- removes a point"
+    - "&f/parkour listar &7- lists the points of this group"
+  parkour-invalid-point: "&cUse inicio, fim or the checkpoint number (1 or more)."
+  parkour-saved: "&aParkour point &f{point} &amarked where you are."
+  parkour-unknown: "&cThis group's parkour has no &f{point}&c."
+  parkour-removed: "&aPoint &f{point} &aremoved from the parkour."
+  parkour-list-empty: "&7This group's parkour has no points. Use &f/parkour inicio&7."
+  parkour-list-header: "&eParkour points of group &f{group} &e({count}):"
+  parkour-list-line: "&8- &f{point} &8{location}"
+  parkour-point-checkpoint: "checkpoint #{number}"
+  hologram-lines-header: "&eHologram &f{id} &8{location}"
+  hologram-lines-line: "&8{line}. &r{text}"
+  shop-unavailable: "&cThe shop is not available on this server."
+  shop-usage:
+    - "&e/loja usage:"
+    - "&f/loja &7- opens the shop"
+    - "&f/loja caixa criar <id> &7- creates a cash register where you are"
+    - "&f/loja caixa mover <id> &7- moves the register to where you are"
+    - "&f/loja caixa remover <id> &7- removes the register and its seller"
+    - "&f/loja caixa listar &7- lists the registers of this server group"
+    - "&f/loja vendedor <id> &7- moves the register's seller to where you are"
+    - "&f/loja vendedor <id> remover &7- removes the seller from the register"
+    - "&f/loja promocao &7- shows the promotion of every register on the network"
+    - "&f/loja promocao produto <id> &7- changes the product the register opens"
+    - "&f/loja promocao adicionar <text> &7- adds a line to the hologram"
+    - "&f/loja promocao linha <number> <text> &7- changes a hologram line"
+    - "&f/loja promocao removerlinha <number> &7- removes a hologram line"
+  shop-register-invalid-id: "&cThe id may only contain lowercase letters, numbers, - and _."
+  shop-register-exists: "&cA register with the id &f{id} &calready exists."
+  shop-register-unknown: "&cThere is no register with the id &f{id}&c."
+  shop-register-created: "&aRegister &f{id} &acreated where you are, with the seller in the same spot."
+  shop-register-moved: "&aRegister &f{id} &amoved to where you are."
+  shop-register-removed: "&aRegister &f{id} &aremoved."
+  shop-register-list-empty: "&7No registers created. Use &f/loja caixa criar&7."
+  shop-register-list-header: "&eRegisters of group &f{group} &e({count}):"
+  shop-register-list-line: "&8- &f{id} &8{location} &7seller: &8{seller}"
+  shop-seller-moved: "&aSeller of register &f{id} &amoved to where you are."
+  shop-seller-removed: "&aRegister &f{id} &anow has no seller."
+  shop-promotion-header: "&eNetwork promotion: product &f{product}"
+  shop-promotion-no-lines: "&7The register hologram has no lines."
+  shop-promotion-line: "&8{line}. &r{text}"
+  shop-promotion-product-unknown: "&cThe product &f{product} &cdoes not exist or has no page of its own."
+  shop-promotion-product-changed: "&aThe network's registers now open &f{product}&a."
+  shop-promotion-line-added: "&aLine added to the registers' hologram."
+  shop-promotion-line-changed: "&aLine &f{line} &aof the registers' hologram changed."
+  shop-promotion-line-removed: "&aLine &f{line} &aof the registers' hologram removed."
+  shop-promotion-invalid-line: "&cInvalid line. The hologram has &f{count} &clines."
+  shop-code-ask:
+    - "&eType the supporter code in the chat."
+    - "&7To cancel, type &ccancel&7."
+  shop-code-accepted: "&aSupporter code &f{code} &aregistered."
+  shop-code-cancelled: "&cPurchase cancelled."
+  shop-code-expired: "&cTime is up. Purchase cancelled."
+  shop-payment:
+    - "&a&m                                                         "
+    - "<center>&b&lPAYMENT"
+    - ""
+    - "<center>&eScan the &aQR Code &eon your screen to"
+    - "<center>&ecomplete the &6payment&e!"
+    - ""
+    - "<link>&cClick here to pay through the website."
+    - ""
+    - "&a&m                                                         "
+  tag-list-header: "&aYour tags: "
+  tag-list-separator: "&f, "
+  tag-hover:
+    - "&fPreview:"
+    - "{preview}"
+    - ""
+    - "&eClick to select!"
+  tag-none: "&cYou don't have any tags yet."
+  tag-selected: "&aYou selected the tag {tag} &asuccessfully."
+  tag-unknown: "&cThe tag &f{tag} &cdoes not exist."
+  tag-locked: "&cYou don't own the tag {tag}&c."
+  tag-not-decorative: "&cThe tag {tag} &ccomes from a rank. Use &f/cargo dar&c."
+  tag-already-held: "&f{player} &calready owns the tag {tag} &cforever."
+  tag-given: "&aTag {tag} &agiven to &f{player} &7({time})&a."
+  tag-removed: "&aTag {tag} &aremoved from &f{player}&a."
+  tag-not-held: "&f{player} &cdoes not own the tag {tag}&c."
+  tag-usage:
+    - "&cUsage: &f/tag [tag]"
+  tag-usage-staff:
+    - "&6&lTAGS"
+    - "&e/tag &8- &7lists your tags"
+    - "&e/tag <tag> &8- &7selects a tag"
+    - "&e/tag dar <player> <tag> [time] &8- &7gives a decorative tag"
+    - "&e/tag remover <player> <tag> &8- &7removes a decorative tag"
+    - "&7Time: &f30d&7, &f12h&7, &f1d12h &7or &fpermanente &7(default)."
+  medal-list-header: "&aAvailable medals: "
+  medal-list-separator: "&f, "
+  medal-list-none: "&7None"
+  medal-hover:
+    - "{name}"
+    - ""
+    - "&fPreview:"
+    - "{preview}"
+    - ""
+    - "&eClick to select!"
+  medal-none-hover:
+    - "&7None"
+    - ""
+    - "&fPreview:"
+    - "{preview}"
+    - ""
+    - "&eClick to select!"
+  medal-selected: "&aYou selected the medal {medal} &asuccessfully."
+  medal-cleared: "&aYou removed your medal."
+  medal-unknown: "&cThe medal &f{medal} &cdoes not exist."
+  medal-locked: "&cYou don't own the medal {medal}&c."
+  medal-already-held: "&f{player} &calready owns the medal {medal} &cforever."
+  medal-given: "&aMedal {medal} &agiven to &f{player} &7({time})&a."
+  medal-removed: "&aMedal {medal} &aremoved from &f{player}&a."
+  medal-not-held: "&f{player} &cdoes not own the medal {medal}&c."
+  medal-usage:
+    - "&cUsage: &f/medalha [medal]"
+  medal-usage-staff:
+    - "&6&lMEDALS"
+    - "&e/medalha &8- &7lists your medals"
+    - "&e/medalha <medal> &8- &7selects a medal"
+    - "&e/medalha nenhuma &8- &7removes your medal"
+    - "&e/medalha dar <player> <medal> [time] &8- &7gives a medal"
+    - "&e/medalha remover <player> <medal> &8- &7removes a medal"
+    - "&7Time: &f30d&7, &f12h&7, &f1d12h &7or &fpermanente &7(default)."
+  rank-failed: "&cThis could not be completed right now. Try again in a moment."
+  rank-invalid-time: "&cInvalid time: &f{input}&c. Use &f30d&c, &f12h&c, &f1d12h &cor &fpermanente&c."
+  rank-player-unknown: "&cThe player &f{player} &chas never joined the server."
+  credits-own: "&eYou have &d{amount} credits&e."
+  credits-of: "&f{player} &ehas &d{amount} credits&e."
+  credits-given: "&aYou gave &d{amount} credits &ato &f{player}&a. Balance: &d{balance}&a."
+  credits-taken: "&aYou removed &d{amount} credits &afrom &f{player}&a. Balance: &d{balance}&a."
+  credits-not-enough: "&f{player} &cdoesn't have enough credits."
+  credits-invalid-amount: "&cThe amount must be from 1 to {max}."
+  account:
+    usage: "&cUsage: &f/account <player>"
+    not-found: "&cThe player &f{player} &chas never joined the server."
+    soon: "Coming soon"
+    soon-click: "&cComing soon."
+    user: "&aUser: &f{player}"
+    type: "&aType: &f{type}"
+    discord: "&aDiscord: &f{discord}"
+    rank: "&aRank: &f{rank}"
+    rank-added: "  &7Added on: {date}"
+    rank-updated: "  &7Updated on: {date}"
+    rank-expires: "  &7Expires on: {date} ({time})"
+    first-login: "&aFirst login: &f{date}"
+    last-login: "&aLast login: &f{date}"
+    location: "&aLocation:"
+    country: "  &7Country: {value}"
+    region: "  &7State: {value}"
+    city: "  &7City: {value}"
+    asn: "  &7ASN: {value}"
+    location-unknown: "  &7Unknown"
+  rank-usage:
+    - "&6&lRANKS &8- &7commands"
+    - "&e/cargo ver <player> &8- &7shows a player's ranks"
+    - "&e/cargo dar <player> <rank> [time] &8- &7gives a rank"
+    - "&e/cargo remover <player> <rank> &8- &7removes a rank"
+    - "&e/cargo promover <player> <track> &8- &7moves up one rank on the track"
+    - "&e/cargo rebaixar <player> <track> &8- &7moves down one rank on the track"
+    - "&e/cargo listar &8- &7lists the ranks and tracks"
+    - "&e/cargo info <rank> &8- &7shows a rank and its permissions"
+    - "&7Time: &f30d&7, &f12h&7, &f1d12h &7or &fpermanente &7(default)."
+  rank-unknown: "&cThe rank &f{rank} &cdoes not exist. Use &f/cargo listar&c."
+  rank-default: "&cEvery player is already {rank}&c."
+  rank-given: "&aRank {rank} &agiven to &f{player} &7({time})&a."
+  rank-already-held: "&f{player} &calready has the rank {rank} &cforever."
+  rank-removed: "&aRank {rank} &aremoved from &f{player}&a."
+  rank-not-held: "&f{player} &cdoes not have the rank {rank}&c."
+  rank-track-unknown: "&cThe track &f{track} &cdoes not exist. Use &f/cargo listar&c."
+  rank-promoted: "&f{player} &awas promoted to {rank}&a."
+  rank-demoted: "&f{player} &ewas demoted to {rank}&e."
+  rank-track-top: "&f{player} &cis already at the top of the track &f{track}&c."
+  rank-track-bottom: "&f{player} &chas no rank on the track &f{track} &cto lose."
+  rank-view-header: "&6&lRANKS &8» &f{player}"
+  rank-view-primary: "&7Main rank: {rank}"
+  rank-view-tag: "&7Tag in use: {tag}"
+  rank-view-line: "&8• {rank} &8- &f{time} &8(since {date})"
+  rank-view-none: "&8• &7No ranks besides {rank}&7."
+  rank-list-header: "&6&lRANKS &8» &7from highest to lowest"
+  rank-list-line: "&8• {rank} &8({id}) &7weight &f{weight} &8- &7inherits {parents}"
+  rank-list-tracks: "&6&lTRACKS"
+  rank-list-track: "&8• &f{track}&8: {groups}"
+  rank-info-header: "&6&lRANK &8» {rank} &8({id})"
+  rank-info-weight: "&7Weight: &f{weight}"
+  rank-info-tag: "&7Tag: {tag} &8(in chat: {prefix}&8)"
+  rank-info-parents: "&7Inherits: {parents}"
+  rank-info-nodes: "&7Permissions &8({count})&7:"
+  rank-nothing: "&7none"
+  node-line: "&8• &f{key} &8= {value}{contexts}{time}"
+  node-true: "&atrue"
+  node-false: "&cfalse"
+  node-contexts: " &8[&7{contexts}&8]"
+  node-time: " &7(expires in {time})"
+  node-none: "&8• &7No permissions."
+  perm-usage:
+    - "&6&lPERMISSIONS &8- &7commands"
+    - "&e/permissao jogador ver <player> &8- &7lists the player's permissions"
+    - "&e/permissao jogador definir <player> <permission> [options] &8- &7sets a permission"
+    - "&e/permissao jogador remover <player> <permission> [context] &8- &7removes a permission"
+    - "&e/permissao jogador testar <player> <permission> &8- &7tests a permission"
+    - "&e/permissao cargo ver <rank> &8- &7lists the rank's permissions"
+    - "&e/permissao cargo definir <rank> <permission> [options] &8- &7sets a permission on the rank"
+    - "&e/permissao cargo remover <rank> <permission> [context] &8- &7removes a permission from the rank"
+    - "&7Options, in any order: &ftrue&7/&ffalse&7, a time (&f30d&7) and contexts (&fserver=lobby&7, &fworld=arena&7)."
+  perm-invalid-node: "&cInvalid permission: &f{input}&c. Use lowercase letters, numbers and &f. _ - + *&c."
+  perm-invalid-option: "&cInvalid option: &f{input}&c. Use &ftrue&c/&ffalse&c, a time such as &f30d &cor a context such as &fserver=lobby&c."
+  perm-user-set: "&aPermission &f{key} &8= {value}{contexts}{time} &aset for &f{player}&a."
+  perm-user-removed: "&aPermission &f{key}{contexts} &aremoved from &f{player}&a."
+  perm-user-missing: "&f{player} &cdoes not have the permission &f{key}{contexts} &cset."
+  perm-user-header: "&6&lPERMISSIONS &8» &f{player} &8({count})"
+  perm-test: "&f{player} &8» &f{key}&8: {result}"
+  perm-test-true: "&aAllowed"
+  perm-test-false: "&cDenied"
+  perm-test-undefined: "&7Not set &8(the server default applies)"
+  perm-test-online: "&8Tested with the server and world the player is in."
+  perm-test-offline: "&8Player is not on this server: tested without context."
+  perm-group-set: "&aPermission &f{key} &8= {value}{contexts}{time} &aset on rank {rank}&a."
+  perm-group-removed: "&aPermission &f{key}{contexts} &aremoved from rank {rank}&a."
+  perm-group-missing: "&cThe rank {rank} &cdoes not have the permission &f{key}{contexts}&c."
+  perm-group-refused: "&cChange refused: &f{reason}&c."
+  editor-opened:
+    - "&6&lPERMISSION EDITOR"
+    - "<link>&a&nClick here to open the editor in your browser."
+    - "&7The link is yours only and expires in &f{minutes} minutes&7."
+  editor-hover:
+    - "&7Opens the rank, tag and permission editor."
+    - "&8{url}"
+  editor-console: "&aPermission editor: &f{url} &7(expires in {minutes} minutes)"
+  admin:
+    usage: "&eUsage: /muxe <servers|find <player>|metrics|latencia>"
+    servers-header: "&bActive servers ({count}):"
+    servers-line: "&8- &f{id} &7({group}, {kind}) &a{online}&7/&a{max}"
+    find-online: "&a{player} &7is on &b{server}&7."
+    find-offline: "&c{player} is not online."
+    find-failed: "&cThe player could not be located: {reason}"
+    metrics: "&7Packets: &a{published} &7sent, &a{received} &7received, &e{duplicates} &7duplicates, &c{rejected} &7rejected, &c{failures} &7failures. &7TPS: &a{tps}"
+    latency-pings: "&7Ping (round trip to the player's game): {players}"
+    latency-ping: "&f{player} &e{ping} ms"
+    latency-join: "&f{player}&7: the game answered &e{ready} ms &7after joining; &e{total} &7packets and &e{kb} KB &7in the first 10 s, the slowest one waited &c{wait} ms &7to go out ({busiest})"
+    latency-probes: "&7Game response to a packet sent after joining: {probes}"
+    latency-probe: "&f{at} s &e{answer} ms"
+    latency-pools: "&7Database: &a{db-active} &7connections in use, &c{db-pending} &7waiting. Handlers: &a{active} &7running, &e{queued} &7queued."
+    latency-header: "&bSlowest operations since the server started (average / maximum):"
+    latency-line: "&8- &f{label} &7x{count}: &e{mean} ms &7/ &c{max} ms"
+    latency-empty: "&7No operations measured yet."
+  config:
+    invalid-path: "&cInvalid path: &f{path}&c. Use letters, numbers, dot, hyphen and underscore."
+    protected: "&cThe path &f{path} &cis protected and cannot be viewed or changed by command."
+    unknown-path: "&cThe path &f{path} &cdoes not exist. To create it, end the command with &f--novo&c."
+    is-section: "&cThe path &f{path} &cis a section, not a value. Use the &fver &csubcommand to list its keys."
+    blocked: "&cYou can't use &f{path}&c: &f{blocker} &calready holds a value, not a section."
+    type-mismatch: "&cThat value doesn't fit &f{path}&c, which expects a &f{type}&c."
+    not-list: "&cThe path &f{path} &cis not a list."
+    missing-item: "&cThe value &f{value} &cis not in the list &f{path}&c."
+    missing-value: "&cEnter the value."
+    unknown-option: "&cUnknown option: &f{option}&c. Options: &f{options}&c."
+    view-missing: "&cThere is no value at &f{path}&c."
+    view-scalar: "&e{path} &7= &f{value} &8({type})"
+    view-list-header: "&e{path} &7(list with {count} items):"
+    view-list-line: "&8- &f{item}"
+    view-keys-header: "&e{path} &7(section with {count} keys):"
+    view-keys-line: "&8- &f{key}"
+    view-more: "&7... and {count} more."
+    set: "&aValue of &f{path} &achanged to &f{value}&a."
+    list-added: "&aItem &f{value} &aadded to &f{path}&a."
+    list-removed: "&aItem &f{value} &aremoved from &f{path}&a."
+    location-set: "&aLocation of &f{path} &asaved: &f{location}&a."
+    live: "&7Applied live: &f{components}&7."
+    live-failed: "&cCould not apply &f{component} &clive: &f{reason}&c."
+    restart: "&eThis change only takes effect after restarting the server."
+    reload-done: "&aConfiguration reloaded from the file."
+    reload-applied: "&aApplied live: &f{components}&a."
+    reload-nothing: "&7No component of this server reloads live."
+    reload-pending: "&eWaiting for the server restart ({count}):"
+    reload-pending-line: "&8- &f{path}"

@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.InventoryView;
 
 public final class MenuHolder implements InventoryHolder {
 
@@ -21,6 +22,15 @@ public final class MenuHolder implements InventoryHolder {
         this.buttons = new HashMap<>(menu.buttons());
         this.inventory = Bukkit.createInventory(this, menu.size(), menu.title());
         buttons.forEach((slot, button) -> inventory.setItem(slot, button.icon().build()));
+    }
+
+    public static boolean closeOpen(Player player) {
+        InventoryView view = player.getOpenInventory();
+        if (view != null && view.getTopInventory() != null && view.getTopInventory().getHolder() instanceof MenuHolder) {
+            player.closeInventory();
+            return true;
+        }
+        return false;
     }
 
     public Menu menu() {

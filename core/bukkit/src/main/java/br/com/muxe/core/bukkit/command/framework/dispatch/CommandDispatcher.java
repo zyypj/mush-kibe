@@ -124,7 +124,7 @@ public final class CommandDispatcher {
     }
 
     private void send(CommandSender sender, String key, String... placeholders) {
-        messages.lines(key, placeholders).forEach(sender::sendMessage);
+        messages.lines(sender, key, (Object[]) placeholders).forEach(sender::sendMessage);
     }
 
     private static Optional<String> raw(ArgumentSpec argument, List<String> rest, int position) {

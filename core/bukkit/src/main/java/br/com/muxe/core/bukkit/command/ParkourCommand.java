@@ -7,6 +7,7 @@ import br.com.muxe.core.bukkit.command.framework.annotation.Subcommand;
 import br.com.muxe.core.bukkit.command.framework.annotation.Suggest;
 import br.com.muxe.core.bukkit.placement.PlacementSync;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.language.domain.Text;
 import br.com.muxe.core.common.placement.domain.ParkourPoint;
 import br.com.muxe.core.common.placement.domain.ParkourPointPlacement;
 import br.com.muxe.core.common.placement.domain.PlacementKind;
@@ -80,15 +81,15 @@ public final class ParkourCommand {
     public void remove(Player player, @Arg("ponto") @Suggest({START_WORD, END_WORD, CHECKPOINT_WORD}) Optional<String> word, @Arg("número") Optional<String> number) {
         Optional<ParkourPoint> point = point(word(word), word(number));
         if (point.isEmpty()) {
-            player.sendMessage(messages.get("parkour-invalid-point"));
+            player.sendMessage(messages.get(player, "parkour-invalid-point"));
             return;
         }
         if (placements.current().parkourPoint(point.get()).isEmpty()) {
-            player.sendMessage(messages.get("parkour-unknown", "point", name(point.get())));
+            player.sendMessage(messages.get(player, "parkour-unknown", "point", name(point.get())));
             return;
         }
         reply.then(player, placements.remove(PlacementKind.PARKOUR, point.get().id()),
-            removed -> player.sendMessage(messages.get("parkour-removed", "point", name(point.get()))));
+            removed -> player.sendMessage(messages.get(player, "parkour-removed", "point", name(point.get()))));
     }
 
     @Subcommand("listar")
@@ -97,29 +98,29 @@ public final class ParkourCommand {
             .sorted(Comparator.comparing((ParkourPointPlacement placed) -> placed.point().type()).thenComparingInt(placed -> placed.point().number()))
             .toList();
         if (points.isEmpty()) {
-            player.sendMessage(messages.get("parkour-list-empty"));
+            player.sendMessage(messages.get(player, "parkour-list-empty"));
             return;
         }
-        player.sendMessage(messages.get("parkour-list-header", "count", Integer.toString(points.size()), "group", placements.group()));
+        player.sendMessage(messages.get(player, "parkour-list-header", "count", Integer.toString(points.size()), "group", placements.group()));
         for (ParkourPointPlacement placed : points) {
-            player.sendMessage(messages.get("parkour-list-line", "point", name(placed.point()), "location", placed.position().describe()));
+            player.sendMessage(messages.get(player, "parkour-list-line", "point", name(placed.point()), "location", placed.position().describe()));
         }
     }
 
     private void place(Player player, Optional<ParkourPoint> point) {
         if (point.isEmpty()) {
-            player.sendMessage(messages.get("parkour-invalid-point"));
+            player.sendMessage(messages.get(player, "parkour-invalid-point"));
             return;
         }
         ParkourPointPlacement placed = new ParkourPointPlacement(placements.group(), point.get(), standingOn(player.getLocation()));
-        reply.then(player, placements.save(placed), saved -> player.sendMessage(messages.get("parkour-saved", "point", name(point.get()))));
+        reply.then(player, placements.save(placed), saved -> player.sendMessage(messages.get(player, "parkour-saved", "point", name(point.get()))));
     }
 
-    private String name(ParkourPoint point) {
+    private Text name(ParkourPoint point) {
         return switch (point.type()) {
-            case START -> messages.get("parkour-point-start");
-            case END -> messages.get("parkour-point-end");
-            case CHECKPOINT -> messages.get("parkour-point-checkpoint", "number", Integer.toString(point.number()));
+            case START -> messages.text("parkour-point-start");
+            case END -> messages.text("parkour-point-end");
+            case CHECKPOINT -> messages.text("parkour-point-checkpoint", "number", Integer.toString(point.number()));
         };
     }
 

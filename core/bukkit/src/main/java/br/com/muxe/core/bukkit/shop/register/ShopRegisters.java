@@ -6,6 +6,9 @@ import br.com.muxe.core.bukkit.npc.Npc;
 import br.com.muxe.core.bukkit.npc.NpcService;
 import br.com.muxe.core.bukkit.placement.Positions;
 import br.com.muxe.core.bukkit.placement.Reconciler;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.placement.domain.RegisterPlacement;
 import java.util.List;
 import java.util.Optional;
@@ -23,15 +26,24 @@ public final class ShopRegisters {
     private final DisplayService displays;
     private final NpcService sellers;
     private final Reconciler<RegisterPlacement> shown = new Reconciler<>(RegisterPlacement::id);
-    private List<String> lines = List.of();
+    private volatile List<String> lines = List.of();
 
     public ShopRegisters(Plugin plugin, RegisterSettings settings, Consumer<Player> onClick) {
+        this(plugin, settings, onClick, Localized.same(List.of()), LanguageLookup.DEFAULT);
+    }
+
+    public ShopRegisters(Plugin plugin, RegisterSettings settings, Consumer<Player> onClick, Localized<List<String>> defaultLines, LanguageLookup languages) {
         this.plugin = plugin;
         this.settings = settings;
         this.displays = DisplayService.start(plugin);
         this.sellers = NpcService.start(plugin, npc -> List.of());
         this.displays.onClick((player, display) -> onClick.accept(player));
         this.sellers.onClick((player, npc) -> onClick.accept(player));
+        this.displays.labelText((viewer, text) -> translate(defaultLines, languages.of(viewer.getUniqueId()), text));
+    }
+
+    public void refresh(Player viewer) {
+        displays.refresh(viewer);
     }
 
     public static String sellerId(String registerId) {
@@ -71,6 +83,16 @@ public final class ShopRegisters {
         } else {
             sellers.remove(sellerId(register.id()));
         }
+    }
+
+    private String translate(Localized<List<String>> defaults, Language language, String text) {
+        List<String> standard = defaults.standard();
+        if (!lines.equals(standard)) {
+            return text;
+        }
+        int index = standard.indexOf(text);
+        List<String> own = defaults.in(language);
+        return index >= 0 && index < own.size() ? own.get(index) : text;
     }
 
     private void hide(String id) {

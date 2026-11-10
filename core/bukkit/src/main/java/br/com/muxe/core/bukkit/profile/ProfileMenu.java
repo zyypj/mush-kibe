@@ -8,6 +8,9 @@ import br.com.muxe.core.bukkit.permission.PlayerRanks;
 import br.com.muxe.core.common.account.application.query.AccountProfileView;
 import br.com.muxe.core.common.account.application.query.FindAccountQuery;
 import br.com.muxe.core.common.cqrs.query.QueryBus;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -17,7 +20,8 @@ import org.bukkit.entity.Player;
 
 public final class ProfileMenu {
 
-    private final ProfileSettings settings;
+    private final Localized<ProfileSettings> settings;
+    private final LanguageLookup languages;
     private final ButtonActions actions;
     private final QueryBus queries;
     private final PlayerRanks ranks;
@@ -25,7 +29,13 @@ public final class ProfileMenu {
     private final Logger logger;
 
     public ProfileMenu(ProfileSettings settings, ButtonActions actions, QueryBus queries, PlayerRanks ranks, Executor mainThread, Logger logger) {
+        this(Localized.same(settings), LanguageLookup.DEFAULT, actions, queries, ranks, mainThread, logger);
+    }
+
+    public ProfileMenu(Localized<ProfileSettings> settings, LanguageLookup languages, ButtonActions actions, QueryBus queries, PlayerRanks ranks, Executor mainThread,
+                       Logger logger) {
         this.settings = settings;
+        this.languages = languages;
         this.actions = actions;
         this.queries = queries;
         this.ranks = ranks;
@@ -42,12 +52,17 @@ public final class ProfileMenu {
                 firstSeenAt = account.map(AccountProfileView::firstSeenAt);
             }
             if (player.isOnline()) {
-                menu(ProfileHead.of(ranks, player.getUniqueId(), player.getName(), firstSeenAt)).open(player);
+                menu(languages.of(player.getUniqueId()), ProfileHead.of(ranks, player.getUniqueId(), player.getName(), firstSeenAt)).open(player);
             }
         }));
     }
 
     public Menu menu(ProfileHead profile) {
+        return menu(Language.DEFAULT, profile);
+    }
+
+    public Menu menu(Language language, ProfileHead profile) {
+        ProfileSettings settings = this.settings.in(language);
         Menu.Builder builder = Menu.builder(settings.title()).rows(settings.rows());
         ConfiguredButton head = settings.head();
         ItemBuilder icon = head.item().skullOwner(profile.player()).replacing(

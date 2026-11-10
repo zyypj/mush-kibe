@@ -30,11 +30,11 @@ public final class GameConnector {
     public void connect(Player player, String group, String name) {
         Optional<String> entry = servers.entryGroup(group);
         if (entry.isEmpty()) {
-            player.sendMessage(messages.get("game-unavailable", "name", name));
+            player.sendMessage(messages.get(player, "game-unavailable", "name", name));
             return;
         }
         network.connectToGroup(player.getUniqueId(), entry.get()).exceptionally(error -> {
-            mainThread.execute(() -> player.sendMessage(messages.get("connect-failed")));
+            mainThread.execute(() -> player.sendMessage(messages.get(player, "connect-failed")));
             return null;
         });
     }

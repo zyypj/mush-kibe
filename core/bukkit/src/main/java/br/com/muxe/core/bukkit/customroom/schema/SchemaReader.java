@@ -2,12 +2,14 @@ package br.com.muxe.core.bukkit.customroom.schema;
 
 import br.com.muxe.core.common.customroom.schema.Currency;
 import br.com.muxe.core.common.customroom.schema.Icon;
-import br.com.muxe.core.common.customroom.schema.OptionEntry;
 import br.com.muxe.core.common.customroom.schema.OptionEntry.ChoiceValue;
 import br.com.muxe.core.common.customroom.schema.OptionEntry.Format;
 import br.com.muxe.core.common.customroom.schema.OptionEntry.Level;
+import br.com.muxe.core.common.customroom.schema.OptionEntry;
 import br.com.muxe.core.common.customroom.schema.OptionPage;
 import br.com.muxe.core.common.customroom.schema.RoomSchema;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Text;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,20 +22,34 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public final class SchemaReader {
 
+    public static final String TRANSLATIONS = "lang";
+
+    private static final Text IRON_ONE = Text.of("Ferro", "Iron");
+    private static final Text IRON_MANY = Text.of("Ferros", "Iron");
+
     private SchemaReader() {
     }
 
     public static RoomSchema parse(String game, String yaml) {
+        return parse(game, yaml, Language.DEFAULT);
+    }
+
+    public static RoomSchema parse(String game, String yaml, Language language) {
         YamlConfiguration configuration = new YamlConfiguration();
         try {
             configuration.loadFromString(yaml);
         } catch (InvalidConfigurationException exception) {
             throw new IllegalArgumentException("Invalid custom room schema of " + game, exception);
         }
-        return read(game, configuration);
+        translate(configuration, language);
+        return read(game, configuration, language);
     }
 
     public static RoomSchema read(String game, ConfigurationSection section) {
+        return read(game, section, Language.DEFAULT);
+    }
+
+    public static RoomSchema read(String game, ConfigurationSection section, Language language) {
         Map<String, Currency> currencies = new LinkedHashMap<>();
         ConfigurationSection currencySection = section.getConfigurationSection("currencies");
         if (currencySection != null) {
@@ -43,7 +59,7 @@ public final class SchemaReader {
             }
         }
         if (currencies.isEmpty()) {
-            currencies.put("iron", new Currency("iron", "Ferro", "Ferros", "&f", Icon.of("IRON_INGOT")));
+            currencies.put("iron", new Currency("iron", IRON_ONE.in(language), IRON_MANY.in(language), "&f", Icon.of("IRON_INGOT")));
         }
         Map<String, OptionPage> pages = new LinkedHashMap<>();
         ConfigurationSection pageSection = section.getConfigurationSection("pages");
@@ -53,6 +69,19 @@ public final class SchemaReader {
             }
         }
         return new RoomSchema(game, section.getString("root", "options"), pages, currencies);
+    }
+
+    private static void translate(ConfigurationSection section, Language language) {
+        ConfigurationSection translation = section.getConfigurationSection(TRANSLATIONS + "." + language.tag());
+        if (translation == null) {
+            return;
+        }
+        for (String key : translation.getKeys(true)) {
+            Object value = translation.get(key);
+            if (!(value instanceof ConfigurationSection)) {
+                section.set(key, value);
+            }
+        }
     }
 
     private static OptionPage page(String id, ConfigurationSection section) {

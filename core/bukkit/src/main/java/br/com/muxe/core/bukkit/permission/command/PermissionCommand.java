@@ -97,7 +97,7 @@ public final class PermissionCommand {
                 case FALSE -> "perm-test-false";
                 case UNDEFINED -> "perm-test-undefined";
             };
-            replies.send(sender, "perm-test", "player", target.name(), "key", key.toLowerCase(Locale.ROOT), "result", replies.messages().get(answer));
+            replies.send(sender, "perm-test", "player", target.name(), "key", key.toLowerCase(Locale.ROOT), "result", replies.messages().get(sender, answer));
             replies.send(sender, online.isPresent() ? "perm-test-online" : "perm-test-offline");
         });
     }

@@ -1,6 +1,7 @@
 package br.com.muxe.core.bukkit.parkour;
 
 import br.com.muxe.core.bukkit.display.Display;
+import br.com.muxe.core.bukkit.display.DisplayLabel;
 import br.com.muxe.core.bukkit.display.DisplayService;
 import br.com.muxe.core.bukkit.effect.FireworkBurst;
 import br.com.muxe.core.bukkit.placement.Reconciler;
@@ -10,6 +11,8 @@ import br.com.muxe.core.common.cooldown.SpamDecision;
 import br.com.muxe.core.common.cooldown.SpamGuard;
 import br.com.muxe.core.common.cqrs.command.CommandBus;
 import br.com.muxe.core.common.cqrs.query.QueryBus;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.parkour.application.command.SubmitParkourTimeCommand;
 import br.com.muxe.core.common.parkour.application.query.FindParkourRecordQuery;
 import br.com.muxe.core.common.parkour.domain.ParkourCourse;
@@ -50,6 +53,7 @@ public final class Parkour implements Listener {
     private static final double CENTER = 0.5;
 
     private final Plugin plugin;
+    private final Localized<ParkourSettings> localized;
     private final ParkourSettings settings;
     private final String group;
     private final CommandBus commands;
@@ -62,6 +66,7 @@ public final class Parkour implements Listener {
     private final Reconciler<ParkourPointPlacement> shown = new Reconciler<>(ParkourPointPlacement::id);
     private final Map<UUID, ParkourGear> gear = new ConcurrentHashMap<>();
     private final Map<UUID, Optional<Duration>> records = new ConcurrentHashMap<>();
+    private final Map<String, Localized<String>> labels = new ConcurrentHashMap<>();
     private volatile Optional<ParkourCourse> course = Optional.empty();
 
     public Parkour(
@@ -75,8 +80,23 @@ public final class Parkour implements Listener {
         SpamGuard spam,
         Clock clock
     ) {
+        this(plugin, Localized.same(settings), group, commands, queries, mainThread, messages, spam, clock);
+    }
+
+    public Parkour(
+        Plugin plugin,
+        Localized<ParkourSettings> settings,
+        String group,
+        CommandBus commands,
+        QueryBus queries,
+        Executor mainThread,
+        MessageCatalog messages,
+        SpamGuard spam,
+        Clock clock
+    ) {
         this.plugin = plugin;
-        this.settings = settings;
+        this.localized = settings;
+        this.settings = settings.standard();
         this.group = group;
         this.commands = commands;
         this.queries = queries;
@@ -85,7 +105,7 @@ public final class Parkour implements Listener {
         this.spam = spam;
         this.runs = new ParkourRuns(clock);
         this.displays = DisplayService.start(plugin);
-        this.displays.labelText((viewer, text) -> text.replace(ParkourSettings.RECORD, recordText(viewer.getUniqueId())));
+        this.displays.labelText((viewer, text) -> label(messages.language(viewer), text).replace(ParkourSettings.RECORD, recordText(viewer.getUniqueId())));
     }
 
     public void show(List<ParkourPointPlacement> points) {
@@ -99,7 +119,20 @@ public final class Parkour implements Listener {
                 plugin.getLogger().warning("Parkour point '" + point.id() + "' is in world '" + point.position().world() + "', which is not loaded");
                 continue;
             }
-            displays.put(new Display(DISPLAY_PREFIX + point.id(), plate.get(), List.of(), settings.labelsFor(point.point())));
+            List<DisplayLabel> standard = settings.labelsFor(point.point());
+            for (int index = 0; index < standard.size(); index++) {
+                int line = index;
+                labels.putIfAbsent(standard.get(line).text(), localized.map(own -> own.labelsFor(point.point()))
+                    .map(own -> line < own.size() ? own.get(line).text() : standard.get(line).text()));
+            }
+            displays.put(new Display(DISPLAY_PREFIX + point.id(), plate.get(), List.of(), standard));
+        }
+    }
+
+    public void refresh(Player player) {
+        displays.refresh(player);
+        if (runs.isRunning(player.getUniqueId())) {
+            localized.in(messages.language(player)).buildItems().forEach(player.getInventory()::setItem);
         }
     }
 
@@ -146,13 +179,13 @@ public final class Parkour implements Listener {
         event.setCancelled(true);
         SpamDecision decision = spam.use(player.getUniqueId());
         if (!decision.allowed()) {
-            player.sendMessage(messages.get("spam-cooldown", "seconds", CooldownFormat.seconds(decision.remaining())));
+            player.sendMessage(messages.get(player, "spam-cooldown", "seconds", CooldownFormat.seconds(decision.remaining())));
             return;
         }
         Optional<ParkourCourse> current = course;
         if (current.isEmpty() || item.get() == ParkourItem.STOP) {
             leave(player);
-            player.sendMessage(messages.get("parkour-stopped"));
+            player.sendMessage(messages.get(player, "parkour-stopped"));
             return;
         }
         ParkourStep step = item.get() == ParkourItem.RESTART
@@ -198,22 +231,22 @@ public final class Parkour implements Listener {
     private void handle(Player player, ParkourPointPlacement point, ParkourStep step) {
         switch (step) {
             case ParkourStep.Started _ -> {
-                gear.put(player.getUniqueId(), ParkourGear.equip(player, settings.buildItems()));
-                player.sendMessage(messages.get("parkour-started"));
+                gear.put(player.getUniqueId(), ParkourGear.equip(player, localized.in(messages.language(player)).buildItems()));
+                player.sendMessage(messages.get(player, "parkour-started"));
                 settings.sound(ParkourSound.START).ifPresent(cue -> cue.play(player));
             }
             case ParkourStep.Restarted restarted -> {
                 restarted.teleport().ifPresent(position -> teleport(player, position));
-                player.sendMessage(messages.get("parkour-restarted"));
+                player.sendMessage(messages.get(player, "parkour-restarted"));
                 settings.sound(ParkourSound.RESTART).ifPresent(cue -> cue.play(player));
             }
             case ParkourStep.CheckpointReached reached -> {
-                player.sendMessage(messages.get("parkour-checkpoint", "number", Integer.toString(reached.number()), "time", ParkourTime.format(reached.elapsed())));
+                player.sendMessage(messages.get(player, "parkour-checkpoint", "number", Integer.toString(reached.number()), "time", ParkourTime.format(reached.elapsed())));
                 settings.sound(ParkourSound.CHECKPOINT).ifPresent(cue -> cue.play(player));
             }
             case ParkourStep.ReturnedToCheckpoint returned -> {
                 teleport(player, returned.position());
-                player.sendMessage(messages.get("parkour-returned", "number", Integer.toString(returned.number())));
+                player.sendMessage(messages.get(player, "parkour-returned", "number", Integer.toString(returned.number())));
             }
             case ParkourStep.Finished finished -> finish(player, point, finished.elapsed());
             case ParkourStep.Ignored _ -> {
@@ -223,7 +256,7 @@ public final class Parkour implements Listener {
 
     private void finish(Player player, ParkourPointPlacement end, Duration time) {
         restoreGear(player);
-        player.sendMessage(messages.get("parkour-finished", "time", ParkourTime.format(time)));
+        player.sendMessage(messages.get(player, "parkour-finished", "time", ParkourTime.format(time)));
         plate(end.position()).ifPresent(at -> FireworkBurst.explode(plugin, at, settings.finishFirework()));
         commands.dispatch(new SubmitParkourTimeCommand(group, player.getUniqueId(), time)).whenCompleteAsync((result, error) -> {
             if (error != null || result.isFailure()) {
@@ -241,7 +274,7 @@ public final class Parkour implements Listener {
         }
         records.put(player.getUniqueId(), Optional.of(outcome.best()));
         displays.refresh(player);
-        ParkourNotice.after(outcome).ifPresent(notice -> player.sendMessage(messages.get(notice.key(), notice.placeholders())));
+        ParkourNotice.after(outcome).ifPresent(notice -> player.sendMessage(messages.get(player, notice.key(), (Object[]) notice.placeholders())));
     }
 
     private void leave(Player player) {
@@ -264,6 +297,11 @@ public final class Parkour implements Listener {
             player.setFallDistance(0);
             player.teleport(at);
         });
+    }
+
+    private String label(Language language, String text) {
+        Localized<String> translated = labels.get(text);
+        return translated == null ? text : translated.in(language);
     }
 
     private String recordText(UUID player) {

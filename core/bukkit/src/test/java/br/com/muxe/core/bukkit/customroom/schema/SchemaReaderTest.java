@@ -3,10 +3,11 @@ package br.com.muxe.core.bukkit.customroom.schema;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import br.com.muxe.core.common.customroom.schema.OptionEntry;
 import br.com.muxe.core.common.customroom.schema.OptionEntry.Format;
+import br.com.muxe.core.common.customroom.schema.OptionEntry;
 import br.com.muxe.core.common.customroom.schema.OptionPage;
 import br.com.muxe.core.common.customroom.schema.RoomSchema;
+import br.com.muxe.core.common.language.domain.Language;
 import org.junit.jupiter.api.Test;
 
 class SchemaReaderTest {
@@ -136,6 +137,46 @@ class SchemaReaderTest {
         OptionEntry.Upgrade armor = (OptionEntry.Upgrade) schema.page("upgrades").orElseThrow().at(11).orElseThrow();
         assertThat(armor.levels()).extracting(OptionEntry.Level::label).containsExactly("Proteção I", "Proteção II");
         assertThat(armor.enabled()).isTrue();
+    }
+
+    @Test
+    void theEnglishLabelsShippedWithTheSchemaReplaceThePortugueseOnes() {
+        String yaml = YAML + """
+            lang:
+              en:
+                currencies:
+                  iron:
+                    one: Iron
+                pages:
+                  options:
+                    title: "Options"
+                    entries:
+                      team-size:
+                        name: "Team size"
+            """;
+
+        RoomSchema english = SchemaReader.parse("bedwars", yaml, Language.ENGLISH);
+        RoomSchema portuguese = SchemaReader.parse("bedwars", yaml, Language.PORTUGUESE);
+
+        assertThat(english.page("options").orElseThrow().title()).isEqualTo("Options");
+        assertThat(((OptionEntry.Stepper) english.page("options").orElseThrow().at(10).orElseThrow()).name()).isEqualTo("Team size");
+        assertThat(((OptionEntry.Stepper) english.page("options").orElseThrow().at(10).orElseThrow()).max()).isEqualTo("mode-players");
+        assertThat(english.currency("iron").orElseThrow().one()).isEqualTo("Iron");
+        assertThat(english.currency("iron").orElseThrow().many()).isEqualTo("Ferros");
+        assertThat(portuguese.page("options").orElseThrow().title()).isEqualTo("Opções");
+        assertThat(((OptionEntry.Stepper) portuguese.page("options").orElseThrow().at(10).orElseThrow()).name()).isEqualTo("Tamanho do time");
+    }
+
+    @Test
+    void theDefaultCurrencyIsNamedInTheReaderLanguage() {
+        String yaml = """
+            pages:
+              options:
+                rows: 4
+            """;
+
+        assertThat(SchemaReader.parse("x", yaml, Language.ENGLISH).currency("iron").orElseThrow().one()).isEqualTo("Iron");
+        assertThat(SchemaReader.parse("x", yaml).currency("iron").orElseThrow().one()).isEqualTo("Ferro");
     }
 
     @Test

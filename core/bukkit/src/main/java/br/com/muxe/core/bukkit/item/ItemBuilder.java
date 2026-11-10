@@ -2,6 +2,8 @@ package br.com.muxe.core.bukkit.item;
 
 import br.com.muxe.core.bukkit.nms.SkullTextures;
 import br.com.muxe.core.bukkit.text.Colors;
+import br.com.muxe.core.common.language.domain.Language;
+import br.com.muxe.core.common.language.domain.Text;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -252,6 +254,14 @@ public final class ItemBuilder {
         }
         return new ItemBuilder(material, data, amount, replace(name, placeholders), lore.stream().map(line -> replace(line, placeholders)).toList(),
             enchantments, glowing, unbreakable, hideFlags, color, skullOwner, skullTexture);
+    }
+
+    public ItemBuilder replacing(Language language, Object... placeholders) {
+        String[] rendered = new String[placeholders.length];
+        for (int index = 0; index < placeholders.length; index++) {
+            rendered[index] = index % 2 == 0 ? String.valueOf(placeholders[index]) : Text.render(placeholders[index], language);
+        }
+        return replacing(rendered);
     }
 
     public ItemStack build() {

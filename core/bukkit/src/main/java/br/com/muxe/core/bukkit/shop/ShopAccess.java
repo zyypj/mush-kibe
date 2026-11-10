@@ -20,7 +20,7 @@ public final class ShopAccess {
 
     public void open(Player player, String category) {
         if (service.isEmpty()) {
-            player.sendMessage(messages.get("shop-unavailable"));
+            player.sendMessage(messages.get(player, "shop-unavailable"));
             return;
         }
         ShopService shop = service.get();

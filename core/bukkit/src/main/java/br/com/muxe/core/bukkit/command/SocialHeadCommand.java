@@ -34,39 +34,39 @@ public final class SocialHeadCommand {
     public void create(Player player, @Arg("id") String typedId) {
         String id = CommandText.id(typedId);
         if (!PlacementIds.isValid(id)) {
-            player.sendMessage(messages.get("social-invalid-id"));
+            player.sendMessage(messages.get(player, "social-invalid-id"));
             return;
         }
         if (placements.current().socialHead(id).isPresent()) {
-            player.sendMessage(messages.get("social-exists", "id", id));
+            player.sendMessage(messages.get(player, "social-exists", "id", id));
             return;
         }
         SocialHeadPlacement head = new SocialHeadPlacement(placements.group(), id, Positions.of(player.getLocation()));
-        reply.then(player, placements.save(head), saved -> player.sendMessage(messages.get("social-created", "id", id)));
+        reply.then(player, placements.save(head), saved -> player.sendMessage(messages.get(player, "social-created", "id", id)));
     }
 
     @Subcommand("mover")
     public void move(Player player, @Arg("id") SocialHeadPlacement head) {
         reply.then(player, placements.save(head.movedTo(Positions.of(player.getLocation()))),
-            saved -> player.sendMessage(messages.get("social-moved", "id", head.id())));
+            saved -> player.sendMessage(messages.get(player, "social-moved", "id", head.id())));
     }
 
     @Subcommand("remover")
     public void remove(Player player, @Arg("id") SocialHeadPlacement head) {
         reply.then(player, placements.remove(PlacementKind.SOCIAL_HEAD, head.id()),
-            removed -> player.sendMessage(messages.get("social-removed", "id", head.id())));
+            removed -> player.sendMessage(messages.get(player, "social-removed", "id", head.id())));
     }
 
     @Subcommand("listar")
     public void list(Player player) {
         List<SocialHeadPlacement> all = placements.current().socialHeads();
         if (all.isEmpty()) {
-            player.sendMessage(messages.get("social-list-empty"));
+            player.sendMessage(messages.get(player, "social-list-empty"));
             return;
         }
-        player.sendMessage(messages.get("social-list-header", "count", Integer.toString(all.size()), "group", placements.group()));
+        player.sendMessage(messages.get(player, "social-list-header", "count", Integer.toString(all.size()), "group", placements.group()));
         for (SocialHeadPlacement head : all) {
-            player.sendMessage(messages.get("social-list-line", "id", head.id(), "location", head.position().describe()));
+            player.sendMessage(messages.get(player, "social-list-line", "id", head.id(), "location", head.position().describe()));
         }
     }
 }

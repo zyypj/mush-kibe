@@ -21,11 +21,11 @@ public final class LobbyCommand {
     public void send(Player player) {
         Optional<String> lobby = core.servers().lobbyFor(core.identity(), lobbyGroup);
         if (lobby.isEmpty()) {
-            player.sendMessage(core.messages().get(lobbyGroup.equals(core.identity().group()) ? "no-other-lobby" : "connect-failed"));
+            player.sendMessage(core.messages().get(player, lobbyGroup.equals(core.identity().group()) ? "no-other-lobby" : "connect-failed"));
             return;
         }
         core.network().connectToServer(player.getUniqueId(), lobby.get()).exceptionally(error -> {
-            core.mainThread().execute(() -> player.sendMessage(core.messages().get("connect-failed")));
+            core.mainThread().execute(() -> player.sendMessage(core.messages().get(player, "connect-failed")));
             return null;
         });
     }

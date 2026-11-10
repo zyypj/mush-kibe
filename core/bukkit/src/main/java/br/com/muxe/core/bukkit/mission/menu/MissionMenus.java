@@ -4,6 +4,8 @@ import br.com.muxe.core.bukkit.item.ItemBuilder;
 import br.com.muxe.core.bukkit.menu.Menu;
 import br.com.muxe.core.bukkit.mission.config.MissionConfig;
 import br.com.muxe.core.common.cqrs.query.QueryBus;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.mission.application.query.FindMissionsQuery;
 import br.com.muxe.core.common.mission.domain.MissionBoard;
 import br.com.muxe.core.common.mission.domain.MissionCadence;
@@ -21,7 +23,8 @@ import org.bukkit.entity.Player;
 public final class MissionMenus {
 
     private final String game;
-    private final MissionConfig config;
+    private final Localized<MissionConfig> configs;
+    private final LanguageLookup languages;
     private final QueryBus queries;
     private final Executor mainThread;
     private final Clock clock;
@@ -29,8 +32,14 @@ public final class MissionMenus {
     private final Logger logger;
 
     public MissionMenus(String game, MissionConfig config, QueryBus queries, Executor mainThread, Clock clock, ZoneId zone, Logger logger) {
+        this(game, Localized.same(config), LanguageLookup.DEFAULT, queries, mainThread, clock, zone, logger);
+    }
+
+    public MissionMenus(String game, Localized<MissionConfig> configs, LanguageLookup languages, QueryBus queries, Executor mainThread, Clock clock, ZoneId zone,
+                        Logger logger) {
         this.game = game;
-        this.config = config;
+        this.configs = configs;
+        this.languages = languages;
         this.queries = queries;
         this.mainThread = mainThread;
         this.clock = clock;
@@ -39,6 +48,7 @@ public final class MissionMenus {
     }
 
     public void open(Player player, Optional<Consumer<Player>> back) {
+        MissionConfig config = configs.in(languages.of(player.getUniqueId()));
         if (config.menu() == null) {
             return;
         }
@@ -48,12 +58,12 @@ public final class MissionMenus {
                 return;
             }
             if (player.isOnline()) {
-                menu(board, back).open(player);
+                menu(config, board, back).open(player);
             }
         }, mainThread);
     }
 
-    private Menu menu(MissionBoard board, Optional<Consumer<Player>> back) {
+    private Menu menu(MissionConfig config, MissionBoard board, Optional<Consumer<Player>> back) {
         MissionConfig.Menu menu = config.menu();
         Menu.Builder builder = Menu.builder(menu.title()).rows(menu.rows());
         for (Map.Entry<MissionCadence, MissionConfig.Category> category : menu.categories().entrySet()) {

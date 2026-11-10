@@ -41,6 +41,10 @@ public final class ShopMenus {
         return catalog;
     }
 
+    public CheckoutSettings checkout() {
+        return checkout;
+    }
+
     public Menu category(ShopCategory current, String playerName, ShopNavigator navigator) {
         Menu.Builder menu = Menu.builder(catalog.title(current.name())).rows(CATEGORY_ROWS);
         for (ShopCategory category : catalog.categories()) {

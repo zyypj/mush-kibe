@@ -5,6 +5,7 @@ import br.com.muxe.core.bukkit.shop.promotion.ShopPromotion;
 import br.com.muxe.core.bukkit.shop.register.ShopRegisters;
 import br.com.muxe.core.common.placement.domain.Placements;
 import br.com.muxe.core.common.shop.domain.Promotion;
+import org.bukkit.entity.Player;
 
 public final class Shop {
 
@@ -30,6 +31,10 @@ public final class Shop {
 
     public ShopPromotion promotion() {
         return promotion;
+    }
+
+    public void refresh(Player player) {
+        registers.refresh(player);
     }
 
     public void stop() {

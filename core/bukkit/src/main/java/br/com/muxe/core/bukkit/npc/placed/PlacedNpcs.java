@@ -11,6 +11,7 @@ import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cooldown.CooldownFormat;
 import br.com.muxe.core.common.cooldown.SpamDecision;
 import br.com.muxe.core.common.cooldown.SpamGuard;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.placement.domain.HeldItem;
 import br.com.muxe.core.common.placement.domain.NpcPlacement;
 import br.com.muxe.core.common.placement.domain.SkinTexture;
@@ -29,7 +30,7 @@ public final class PlacedNpcs {
 
     private final Plugin plugin;
     private final GameConnector games;
-    private final NpcLines lines;
+    private final Localized<NpcLines> lines;
     private final SpamGuard spam;
     private final MessageCatalog messages;
     private final Consumer<Player> openShop;
@@ -38,13 +39,18 @@ public final class PlacedNpcs {
     private final Map<String, NpcPlacement> byId = new ConcurrentHashMap<>();
 
     public PlacedNpcs(Plugin plugin, GameConnector games, NpcLines lines, NpcLabelLayout layout, SpamGuard spam, MessageCatalog messages, Consumer<Player> openShop) {
+        this(plugin, games, Localized.same(lines), layout, spam, messages, openShop);
+    }
+
+    public PlacedNpcs(Plugin plugin, GameConnector games, Localized<NpcLines> lines, NpcLabelLayout layout, SpamGuard spam, MessageCatalog messages,
+                      Consumer<Player> openShop) {
         this.plugin = plugin;
         this.games = games;
         this.lines = lines;
         this.spam = spam;
         this.messages = messages;
         this.openShop = openShop;
-        this.service = NpcService.start(plugin, layout, this::linesOf);
+        this.service = NpcService.startForViewers(plugin, layout, this::linesOf);
         this.service.onClick(this::clicked);
     }
 
@@ -92,12 +98,12 @@ public final class PlacedNpcs {
         return item;
     }
 
-    private List<String> linesOf(Npc npc) {
+    private List<String> linesOf(Player viewer, Npc npc) {
         NpcPlacement placement = byId.get(npc.id());
         if (placement == null) {
             return List.of();
         }
-        return lines.render(placement, games.players(placement.action().target()));
+        return lines.in(messages.language(viewer)).render(placement, games.players(placement.action().target()));
     }
 
     private void clicked(Player player, Npc npc) {
@@ -124,7 +130,7 @@ public final class PlacedNpcs {
     private boolean allowed(Player player) {
         SpamDecision decision = spam.use(player.getUniqueId());
         if (!decision.allowed()) {
-            player.sendMessage(messages.get("spam-cooldown", "seconds", CooldownFormat.seconds(decision.remaining())));
+            player.sendMessage(messages.get(player, "spam-cooldown", "seconds", CooldownFormat.seconds(decision.remaining())));
         }
         return decision.allowed();
     }

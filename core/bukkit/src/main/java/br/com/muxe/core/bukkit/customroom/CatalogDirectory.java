@@ -2,6 +2,7 @@ package br.com.muxe.core.bukkit.customroom;
 
 import br.com.muxe.core.bukkit.customroom.schema.SchemaReader;
 import br.com.muxe.core.common.customroom.schema.RoomSchema;
+import br.com.muxe.core.common.language.domain.Language;
 import br.com.muxe.core.common.network.customroom.CustomRoomCatalogPacket;
 import java.time.Clock;
 import java.time.Duration;
@@ -21,7 +22,7 @@ public final class CatalogDirectory {
     private final Clock clock;
     private final Logger logger;
     private final Map<String, Entry> byServer = new ConcurrentHashMap<>();
-    private final Map<String, Parsed> schemas = new ConcurrentHashMap<>();
+    private final Map<Key, Parsed> schemas = new ConcurrentHashMap<>();
 
     public CatalogDirectory(Clock clock, Logger logger) {
         this.clock = clock;
@@ -45,15 +46,20 @@ public final class CatalogDirectory {
     }
 
     public Optional<RoomSchema> schema(String game) {
+        return schema(game, Language.DEFAULT);
+    }
+
+    public Optional<RoomSchema> schema(String game, Language language) {
         return catalog(game).flatMap(packet -> {
             String text = packet.schemaText();
-            Parsed parsed = schemas.get(game);
+            Key key = new Key(game, language);
+            Parsed parsed = schemas.get(key);
             if (parsed != null && parsed.text().equals(text)) {
                 return Optional.of(parsed.schema());
             }
             try {
-                RoomSchema schema = SchemaReader.parse(game, text);
-                schemas.put(game, new Parsed(text, schema));
+                RoomSchema schema = SchemaReader.parse(game, text, language);
+                schemas.put(key, new Parsed(text, schema));
                 return Optional.of(schema);
             } catch (RuntimeException exception) {
                 logger.log(Level.WARNING, "Could not read the custom room schema of " + game, exception);
@@ -68,6 +74,9 @@ public final class CatalogDirectory {
     }
 
     private record Entry(CustomRoomCatalogPacket packet, Instant at) {
+    }
+
+    private record Key(String game, Language language) {
     }
 
     private record Parsed(String text, RoomSchema schema) {

@@ -146,20 +146,25 @@ public final class LocalizedConfig {
         MemoryConfiguration root = new MemoryConfiguration();
         root.setDefaults(standard);
         root.options().copyDefaults(true);
+        copyLeaves(standard, root);
         if (translation != null) {
-            Set<String> keys = new LinkedHashSet<>(translation.getKeys(true));
-            ConfigurationSection defaults = translation.getDefaultSection();
-            if (defaults != null) {
-                keys.addAll(defaults.getKeys(true));
-            }
-            for (String key : keys) {
-                Object value = translation.get(key);
-                if (!(value instanceof ConfigurationSection)) {
-                    root.set(key, value);
-                }
-            }
+            copyLeaves(translation, root);
         }
         return root;
+    }
+
+    private static void copyLeaves(ConfigurationSection from, ConfigurationSection to) {
+        Set<String> keys = new LinkedHashSet<>(from.getKeys(true));
+        ConfigurationSection defaults = from.getDefaultSection();
+        if (defaults != null) {
+            keys.addAll(defaults.getKeys(true));
+        }
+        for (String key : keys) {
+            Object value = from.get(key);
+            if (value != null && !(value instanceof ConfigurationSection)) {
+                to.set(key, value);
+            }
+        }
     }
 
     private static ConfigurationSection translation(JavaPlugin plugin, Language language) {

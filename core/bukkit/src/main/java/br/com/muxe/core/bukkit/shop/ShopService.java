@@ -3,11 +3,6 @@ package br.com.muxe.core.bukkit.shop;
 import br.com.muxe.core.bukkit.menu.MenuButton;
 import br.com.muxe.core.bukkit.menu.MenuHolder;
 import br.com.muxe.core.bukkit.prompt.ChatPrompts;
-import br.com.muxe.core.bukkit.text.ChatLines;
-import br.com.muxe.core.bukkit.text.MessageCatalog;
-import br.com.muxe.core.common.cooldown.CooldownFormat;
-import br.com.muxe.core.common.cooldown.SpamDecision;
-import br.com.muxe.core.common.cooldown.SpamGuard;
 import br.com.muxe.core.bukkit.shop.catalog.ShopCatalog;
 import br.com.muxe.core.bukkit.shop.catalog.ShopCategory;
 import br.com.muxe.core.bukkit.shop.catalog.ShopProduct;
@@ -16,6 +11,12 @@ import br.com.muxe.core.bukkit.shop.checkout.LoadingRing;
 import br.com.muxe.core.bukkit.shop.checkout.Purchase;
 import br.com.muxe.core.bukkit.shop.menu.ShopMenus;
 import br.com.muxe.core.bukkit.shop.menu.ShopNavigator;
+import br.com.muxe.core.bukkit.text.ChatLines;
+import br.com.muxe.core.bukkit.text.MessageCatalog;
+import br.com.muxe.core.common.cooldown.CooldownFormat;
+import br.com.muxe.core.common.cooldown.SpamDecision;
+import br.com.muxe.core.common.cooldown.SpamGuard;
+import br.com.muxe.core.common.language.domain.Localized;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +28,7 @@ import org.bukkit.scheduler.BukkitTask;
 public final class ShopService implements ShopNavigator {
 
     private final Plugin plugin;
-    private final ShopMenus menus;
+    private final Localized<ShopMenus> menus;
     private final CheckoutSettings checkout;
     private final MessageCatalog messages;
     private final ChatPrompts prompts;
@@ -36,17 +37,21 @@ public final class ShopService implements ShopNavigator {
     private final Map<UUID, BukkitTask> loading = new ConcurrentHashMap<>();
 
     public ShopService(Plugin plugin, ShopSettings settings, MessageCatalog messages, ChatPrompts prompts, SpamGuard spam, Supplier<String> promotedProduct) {
+        this(plugin, Localized.same(settings), messages, prompts, spam, promotedProduct);
+    }
+
+    public ShopService(Plugin plugin, Localized<ShopSettings> settings, MessageCatalog messages, ChatPrompts prompts, SpamGuard spam, Supplier<String> promotedProduct) {
         this.plugin = plugin;
         this.promotedProduct = promotedProduct;
-        this.menus = new ShopMenus(settings.catalog(), settings.checkout());
-        this.checkout = settings.checkout();
+        this.menus = settings.map(own -> new ShopMenus(own.catalog(), own.checkout()));
+        this.checkout = settings.standard().checkout();
         this.messages = messages;
         this.prompts = prompts;
         this.spam = spam;
     }
 
     public ShopCatalog catalog() {
-        return menus.catalog();
+        return menus.standard().catalog();
     }
 
     public void open(Player player) {
@@ -56,7 +61,7 @@ public final class ShopService implements ShopNavigator {
     public void openPromotion(Player player) {
         SpamDecision decision = spam.use(player.getUniqueId());
         if (!decision.allowed()) {
-            player.sendMessage(messages.get("spam-cooldown", "seconds", CooldownFormat.seconds(decision.remaining())));
+            player.sendMessage(messages.get(player, "spam-cooldown", "seconds", CooldownFormat.seconds(decision.remaining())));
             return;
         }
         catalog().featurable(promotedProduct.get()).ifPresentOrElse(product -> page(player, product), () -> open(player));
@@ -64,35 +69,39 @@ public final class ShopService implements ShopNavigator {
 
     @Override
     public void category(Player player, ShopCategory category) {
-        menus.category(category, player.getName(), this).open(player);
+        ShopMenus own = menus(player);
+        own.category(own.catalog().category(category.id()).orElse(category), player.getName(), this).open(player);
     }
 
     @Override
     public void page(Player player, ShopProduct product) {
-        menus.page(product, this).open(player);
+        ShopMenus own = menus(player);
+        own.page(own.catalog().product(product.id()).orElse(product), this).open(player);
     }
 
     @Override
     public void method(Player player, Purchase purchase) {
-        menus.method(purchase, this).open(player);
+        ShopMenus own = menus(player);
+        own.method(localized(own, purchase), this).open(player);
     }
 
     @Override
     public void supporter(Player player, Purchase purchase) {
-        menus.supporter(purchase, this).open(player);
+        ShopMenus own = menus(player);
+        own.supporter(localized(own, purchase), this).open(player);
     }
 
     @Override
     public void useCode(Player player, Purchase purchase) {
         player.closeInventory();
-        messages.lines("shop-code-ask").forEach(player::sendMessage);
+        messages.lines(player, "shop-code-ask").forEach(player::sendMessage);
         prompts.ask(player, checkout.codeTimeout(),
             code -> {
-                player.sendMessage(messages.get("shop-code-accepted", "code", code));
+                player.sendMessage(messages.get(player, "shop-code-accepted", "code", code));
                 startLoading(player);
             },
-            () -> player.sendMessage(messages.get("shop-code-cancelled")),
-            () -> player.sendMessage(messages.get("shop-code-expired")));
+            () -> player.sendMessage(messages.get(player, "shop-code-cancelled")),
+            () -> player.sendMessage(messages.get(player, "shop-code-expired")));
     }
 
     @Override
@@ -108,7 +117,9 @@ public final class ShopService implements ShopNavigator {
     private void startLoading(Player player) {
         UUID id = player.getUniqueId();
         cancelLoading(id);
-        MenuHolder holder = menus.loading(0, closed -> cancelLoading(closed.getUniqueId())).open(player);
+        ShopMenus own = menus(player);
+        CheckoutSettings panes = own.checkout();
+        MenuHolder holder = own.loading(0, closed -> cancelLoading(closed.getUniqueId())).open(player);
         long steps = LoadingRing.steps(checkout.durationTicks(), checkout.stepTicks());
         long[] step = {0};
         BukkitTask task = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
@@ -123,7 +134,7 @@ public final class ShopService implements ShopNavigator {
             }
             int lit = LoadingRing.litSlot(step[0]);
             for (int slot : LoadingRing.SLOTS) {
-                holder.set(slot, MenuButton.of(slot == lit ? checkout.litPane() : checkout.dimPane()));
+                holder.set(slot, MenuButton.of(slot == lit ? panes.litPane() : panes.dimPane()));
             }
         }, checkout.stepTicks(), checkout.stepTicks());
         loading.put(id, task);
@@ -132,7 +143,15 @@ public final class ShopService implements ShopNavigator {
     private void finish(Player player) {
         cancelLoading(player.getUniqueId());
         player.closeInventory();
-        ChatLines.send(player, messages.lines("shop-payment"), checkout.chatCenter(), checkout.paymentUrl());
+        ChatLines.send(player, messages.lines(player, "shop-payment"), checkout.chatCenter(), checkout.paymentUrl());
+    }
+
+    private ShopMenus menus(Player player) {
+        return menus.in(messages.language(player));
+    }
+
+    private static Purchase localized(ShopMenus own, Purchase purchase) {
+        return new Purchase(own.catalog().product(purchase.product().id()).orElse(purchase.product()), purchase.fromPage());
     }
 
     private void cancelLoading(UUID id) {
