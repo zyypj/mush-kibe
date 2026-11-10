@@ -638,6 +638,8 @@ Comandos e consultas em `br.com.muxe.minigame.bedwars.stats`: `RecordMatchComman
 
 Se o Muxe-Core não estiver habilitado, o plugin se desabilita.
 
+Se um erro deixar o jogador no mundo padrão plano de um servidor de partidas, ele volta para o lobby de BedWars com `Ocorreu um erro e você foi enviado de volta ao lobby. Suas estatísticas não foram afetadas.`, e a partida não grava estatística nenhuma dele (veja [jogadores presos](../../architecture/minigame-api/README.pt-BR.md#jogadores-presos)).
+
 ## Limitações conhecidas
 
 - MEGA e PILARES ainda não são modos, então os NPCs deles não abrem nada.

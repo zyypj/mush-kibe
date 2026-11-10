@@ -250,13 +250,25 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
     }
 
     public void leave(UUID id) {
+        depart(id, runtime -> runtime.quit(id));
+    }
+
+    public void rescue(UUID id) {
+        depart(id, runtime -> runtime.rescue(id));
+    }
+
+    public boolean inOpenMatch(UUID id) {
+        return of(id).filter(runtime -> !runtime.isClosed()).isPresent();
+    }
+
+    private void depart(UUID id, Consumer<MatchRuntime<S>> how) {
         String code = byPlayer.get(id);
         MatchRuntime<S> runtime = code == null ? null : rooms.get(code);
         if (runtime == null) {
             byPlayer.remove(id);
             return;
         }
-        runtime.quit(id);
+        how.accept(runtime);
         boolean keep = runtime.match().player(id).map(Participant::state).filter(state -> state == Participant.State.DISCONNECTED).isPresent();
         if (!keep) {
             byPlayer.remove(id);

@@ -1050,6 +1050,7 @@ messages:
   build-action-bar: "&aBuild mode enabled"
   connect-failed: "&cWe couldn't send you right now. Try again in a moment."
   nothing-to-return: "&cYou don't have any match to return to."
+  rescued-to-lobby: "&cSomething went wrong and you were sent back to the lobby. Your statistics were not affected."
   party-usage:
     - "&6Usage &a/party&6:"
     - "&e/party <players> - &bInvite to a party"

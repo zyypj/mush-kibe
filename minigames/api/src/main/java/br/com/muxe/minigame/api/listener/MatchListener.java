@@ -6,6 +6,7 @@ import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.minigame.api.match.Match;
 import br.com.muxe.minigame.api.match.MatchPhase;
 import br.com.muxe.minigame.api.match.Participant;
+import br.com.muxe.minigame.api.rescue.bukkit.StrandedRescue;
 import br.com.muxe.minigame.api.runtime.MatchRules;
 import br.com.muxe.minigame.api.runtime.MatchRuntime;
 import br.com.muxe.minigame.api.runtime.MatchService;
@@ -14,8 +15,10 @@ import br.com.muxe.minigame.api.runtime.Playing;
 import br.com.muxe.minigame.api.settings.MatchSettings;
 import br.com.muxe.minigame.api.settings.SpectatorHotbar;
 import br.com.muxe.minigame.api.spectator.Spectating;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -50,6 +53,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -64,14 +68,17 @@ public final class MatchListener<S extends MatchState> implements Listener {
     private final GameHandlers<S> handlers;
     private final MatchSettings settings;
     private final MatchRules rules;
+    private final StrandedRescue rescue;
+    private final Map<UUID, Location> diedAt = new HashMap<>();
 
-    public MatchListener(Plugin plugin, MuxeCore core, MatchService<?, S> matches, GameHandlers<S> handlers) {
+    public MatchListener(Plugin plugin, MuxeCore core, MatchService<?, S> matches, GameHandlers<S> handlers, StrandedRescue rescue) {
         this.plugin = plugin;
         this.core = core;
         this.matches = matches;
         this.handlers = handlers;
         this.settings = matches.environment().settings();
         this.rules = matches.environment().rules();
+        this.rescue = rescue;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -88,13 +95,20 @@ public final class MatchListener<S extends MatchState> implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
+        diedAt.remove(event.getPlayer().getUniqueId());
         matches.leave(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldChange(PlayerChangedWorldEvent event) {
-        if (!matches.isMatchWorld(event.getPlayer().getLocation()) && matches.isMatchWorld(event.getFrom().getSpawnLocation())) {
-            matches.leave(event.getPlayer().getUniqueId());
+        Player player = event.getPlayer();
+        if (matches.isMatchWorld(player.getLocation()) || !matches.isMatchWorld(event.getFrom().getSpawnLocation())) {
+            return;
+        }
+        if (matches.inOpenMatch(player.getUniqueId())) {
+            rescue.rescue(player);
+        } else {
+            matches.leave(player.getUniqueId());
         }
     }
 
@@ -266,13 +280,22 @@ public final class MatchListener<S extends MatchState> implements Listener {
             event.setDeathMessage(null);
             event.getDrops().clear();
             event.setKeepInventory(true);
-            Location diedAt = player.getLocation();
+            Location place = player.getLocation();
+            diedAt.put(player.getUniqueId(), place);
             plugin.getServer().getScheduler().runTask(plugin, () -> {
                 player.spigot().respawn();
-                player.teleport(diedAt);
+                player.teleport(place);
                 runtime.die(player.getUniqueId(), false);
             });
         });
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onRespawn(PlayerRespawnEvent event) {
+        Location place = diedAt.remove(event.getPlayer().getUniqueId());
+        if (place != null && matches.isMatchWorld(place)) {
+            event.setRespawnLocation(place);
+        }
     }
 
     @EventHandler(ignoreCancelled = true)

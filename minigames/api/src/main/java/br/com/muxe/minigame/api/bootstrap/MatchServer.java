@@ -16,6 +16,7 @@ import br.com.muxe.minigame.api.match.MatchArena;
 import br.com.muxe.minigame.api.matchmaking.MatchConnector;
 import br.com.muxe.minigame.api.network.MatchPackets;
 import br.com.muxe.minigame.api.network.RoomPublisher;
+import br.com.muxe.minigame.api.rescue.bukkit.StrandedRescue;
 import br.com.muxe.minigame.api.runtime.MatchEnvironment;
 import br.com.muxe.minigame.api.runtime.MatchEvents;
 import br.com.muxe.minigame.api.runtime.MatchService;
@@ -56,10 +57,11 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
     private final MatchService<A, S> service;
     private final RoomPublisher publisher;
     private final MatchTicker ticker;
+    private final StrandedRescue rescue;
     private final ModeNames modeNames;
 
     private MatchServer(JavaPlugin plugin, MuxeCore core, MessageCatalog messages, Commands commands, MatchPackets packets, MatchWorld world,
-                        MatchService<A, S> service, RoomPublisher publisher, MatchTicker ticker, ModeNames modeNames) {
+                        MatchService<A, S> service, RoomPublisher publisher, MatchTicker ticker, StrandedRescue rescue, ModeNames modeNames) {
         this.modeNames = modeNames;
         this.plugin = plugin;
         this.core = core;
@@ -70,6 +72,7 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
         this.service = service;
         this.publisher = publisher;
         this.ticker = ticker;
+        this.rescue = rescue;
     }
 
     static <A extends MatchArena, S extends MatchState> MatchServer<A, S> start(JavaPlugin plugin, MuxeCore core, List<GameMode> modes, MessageCatalog messages,
@@ -109,10 +112,11 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
             return accepted;
         });
         MatchTicker ticker = MatchTicker.start(plugin, service);
+        StrandedRescue rescue = StrandedRescue.start(plugin, core, service, settings.lobbyGroup());
         engine.track(service::activeMatches, () -> catalog.all().size());
         RoomPublisher publisher = new RoomPublisher(plugin, core, service, packets, List.of(settings.lobbyGroup(), game));
         publisher.start();
-        return new MatchServer<>(plugin, core, messages, commands, packets, world, service, publisher, ticker, modeNames);
+        return new MatchServer<>(plugin, core, messages, commands, packets, world, service, publisher, ticker, rescue, modeNames);
     }
 
     public MatchService<A, S> service() {
@@ -153,7 +157,7 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
     }
 
     public void listen(GameHandlers<S> handlers) {
-        plugin.getServer().getPluginManager().registerEvents(new MatchListener<>(plugin, core, service, handlers), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new MatchListener<>(plugin, core, service, handlers, rescue), plugin);
         commands.register(new GlobalChatCommand(service));
     }
 
@@ -173,6 +177,7 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
     void stop() {
         publisher.stop();
         ticker.stop();
+        rescue.stop();
         service.stop();
         core.nameTags().clearOverride();
         world.stop();

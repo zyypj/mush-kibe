@@ -2126,6 +2126,7 @@ messages:
   language-name-en: "Inglês"
   connect-failed: "&cNão foi possível enviar você agora. Tente novamente em instantes."
   nothing-to-return: "&cVocê não tem nenhuma partida para retornar."
+  rescued-to-lobby: "&cOcorreu um erro e você foi enviado de volta ao lobby. Suas estatísticas não foram afetadas."
   party-usage:
     - "&6Uso &a/party&6:"
     - "&e/party <jogadores> - &bConvidar para party"

@@ -244,6 +244,58 @@ class MatchRuntimeTest {
     }
 
     @Test
+    void playersTeleportedOutOfAClosedMatchAreNotCountedAsLeaving() {
+        MatchRuntime<RecordingState> runtime = started(MatchRules.defaults("mxt"));
+
+        runtime.close();
+        stage.present.remove(red);
+        runtime.quit(red);
+
+        assertThat(runtime.state().deaths).isEmpty();
+        assertThat(runtime.state().calls).doesNotContain("ended");
+        assertThat(runtime.match().player(red).orElseThrow().state()).isNotEqualTo(State.ELIMINATED);
+    }
+
+    @Test
+    void aPlayerRescuedFromAnErrorLeavesWithoutStatsAndWithoutCreditingAnyone() {
+        MatchRuntime<RecordingState> runtime = started(MatchRules.defaults("mxt"));
+        runtime.match().credit().hit(red, blue, clock.instant());
+
+        stage.present.remove(red);
+        runtime.rescue(red);
+
+        assertThat(runtime.match().ranked(red)).isFalse();
+        assertThat(runtime.match().ranked(blue)).isTrue();
+        assertThat(runtime.match().player(blue).orElseThrow().finalKills()).isZero();
+        assertThat(runtime.state().deaths.getFirst().killer()).isEmpty();
+    }
+
+    @Test
+    void aPlayerRescuedWhileTheTeamRespawnsCanStillComeBackButStaysUnranked() {
+        MatchRuntime<RecordingState> runtime = started(RESPAWNING);
+
+        stage.present.remove(red);
+        runtime.rescue(red);
+
+        assertThat(runtime.match().player(red).orElseThrow().state()).isEqualTo(State.DISCONNECTED);
+        assertThat(runtime.canReturn(red, clock.instant())).isTrue();
+        assertThat(runtime.match().ranked(red)).isFalse();
+    }
+
+    @Test
+    void aPlayerRescuedBeforeTheStartJustLeavesTheRoom() {
+        MatchRuntime<RecordingState> runtime = runtime(RESPAWNING);
+        join(runtime, red, "red");
+        join(runtime, blue, "blue");
+
+        stage.present.remove(red);
+        runtime.rescue(red);
+
+        assertThat(runtime.match().players()).extracting(Participant::id).containsExactly(blue);
+        assertThat(runtime.match().unranked()).isEmpty();
+    }
+
+    @Test
     void leavingTheWaitingRoomTellsTheOthersAndCancelsTheCountdown() {
         MatchRuntime<RecordingState> runtime = runtime(RESPAWNING);
         join(runtime, red, "red");

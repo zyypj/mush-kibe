@@ -105,6 +105,20 @@ A team either respawns or not (`MatchTeam.respawns`). `MatchRules.respawning()` 
 - Leaving while the team respawns keeps the seat for `timings.rejoin-seconds` and stores `match:return:<player>` so `/retornar` works. Arriving again puts the player back as a spectator who respawns after `timings.respawn-seconds` (`reconnected`).
 - Leaving while the team does not respawn is a final death credited to the last hitter.
 - Not returning in time eliminates the player.
+- Once a match is closed, nobody leaving it counts as leaving: closing teleports the players out of the match world, and that is not a death, an elimination or the end of the match.
+
+### Stranded players
+
+On a match server the default world (`level-name`, usually a flat `world`) is only where players stand for an instant: on arrival, before the match takes them, and when a closed match teleports them out on their way to the lobby. A player who stays there because something went wrong is rescued by `StrandedRescue`:
+
+- A player who leaves the match world while their match is still open is rescued at once. That happens only by mistake, for example a teleport by another plugin.
+- Any player outside the match world for 5 seconds (`StrandedPlayers.GRACE`) is rescued. For example: no arena for the mode, an arena that failed to load, or a match that crashed and was closed. If the player is still there, the rescue is tried again every 15 seconds (`StrandedPlayers.RETRY`).
+- A rescue removes the player from their match without any statistics (`MatchService.rescue`):
+  - During the match the player is unranked (`Match.unrank`), so the end of the match records nothing for them: no game, loss, streak reset, deaths or XP.
+  - Nobody is credited for their departure.
+  - With the bed alive the seat is kept as when leaving, and `/retornar` still works.
+- The player is told `rescued-to-lobby` (core messages) and sent to `lobby-group`.
+- A player who dies for real in a match (for example with `/kill`) respawns where they died, never at the default world spawn.
 
 ### Parties
 
@@ -268,10 +282,11 @@ BedWars keeps `bedwars.rooms`, `bedwars.join_request` and `bedwars.join_reply`.
 ## Tests
 
 - `MatchTest`, `ChatViewTest`, `TeamStatusTest`, `KillCreditTest`, `TimelineTest`, `RankingTest`: the match rules.
-- `MatchRuntimeTest`: the whole lifecycle with a fake `Stage` (joining, countdown, start, deaths in place and in the void, respawns, final kills, breaking blocks, leaving, returning, timeouts, the end and closing).
+- `MatchRuntimeTest`: the whole lifecycle with a fake `Stage` (joining, countdown, start, deaths in place and in the void, respawns, final kills, breaking blocks, leaving, returning, timeouts, the end and closing, leaving a closed match, rescues without statistics).
 - `CustomRoomsTest`, `KnockbackPageTest`: private rooms, the 30-second countdown, pause and immediate start (`MatchRuntime.startNow`), team choices and spectators, reshaping and renaming, the restart after the end, closing when the leader leaves and the party sync.
 - `MatchKnockbackTest`: the knockback profile of the mode given on joining, dropped on leaving and changed for the whole room.
-- `MatchServiceTest`: arriving, reservations, returning, chat, staff commands, idle matches and switching modes.
+- `MatchServiceTest`: arriving, reservations, returning, chat, staff commands, idle matches, switching modes and rescues.
+- `StrandedPlayersTest`: the 5-second grace and the 15-second retry of stranded players.
 - `CosmeticDefaultsTest`, `CosmeticMenuSettingsTest`, `LifetimeTallyTest` and the tests of every scene animation, aura and trail: the cosmetics.
 - `PartyMatchTest`, `PartyCheckTest`, `JoinRoomRequestTest`: party seats, teams, the split warning, gathering and spectators.
 - `ArenaSchemaTest`, `MatchmakerTest`, `ReservationsTest`, `JoinNoticesTest`, `TitleSweepTest`, `TitleRunsTest`, `SpectatorTargetsTest`, `BukkitStageTest`.

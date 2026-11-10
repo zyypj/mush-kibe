@@ -105,6 +105,20 @@ Um time renasce ou não (`MatchTeam.respawns`). `MatchRules.respawning()` faz os
 - Sair enquanto o time renasce guarda a vaga por `timings.rejoin-seconds` e grava `match:return:<jogador>` para o `/retornar` funcionar. Ao chegar de novo, o jogador volta como espectador e renasce depois de `timings.respawn-seconds` (`reconnected`).
 - Sair quando o time não renasce é morte final, creditada a quem bateu por último.
 - Não voltar a tempo elimina o jogador.
+- Depois que a partida fecha, ninguém que sai dela conta como saída: o fechamento teleporta os jogadores para fora do mundo da partida, e isso não é morte, eliminação nem fim de partida.
+
+### Jogadores presos
+
+Num servidor de partidas, o mundo padrão (`level-name`, normalmente um `world` plano) é só onde o jogador fica por um instante: ao chegar, antes de a partida pegá-lo, e quando uma partida fechada o teleporta para fora a caminho do lobby. O `StrandedRescue` resgata quem fica lá porque algo deu errado:
+
+- Quem sai do mundo da partida enquanto a partida ainda está aberta é resgatado na hora. Isso só acontece por erro, como o teleporte de outro plugin.
+- Quem fica 5 segundos fora do mundo da partida (`StrandedPlayers.GRACE`) é resgatado. Por exemplo: nenhuma arena para o modo, uma arena que falhou ao carregar ou uma partida que quebrou e foi fechada. Se o jogador continua lá, o resgate é tentado de novo a cada 15 segundos (`StrandedPlayers.RETRY`).
+- O resgate tira o jogador da partida sem nenhuma estatística (`MatchService.rescue`):
+  - Durante o jogo, o jogador deixa de ser ranqueado (`Match.unrank`), então o fim da partida não grava nada dele: nem partida, derrota, sequência zerada, mortes ou XP.
+  - Ninguém recebe crédito pela saída dele.
+  - Com a cama de pé, a vaga fica guardada como numa saída comum, e o `/retornar` continua funcionando.
+- O jogador recebe `rescued-to-lobby` (mensagens do core) e é mandado para o `lobby-group`.
+- Quem morre de verdade numa partida (por exemplo com `/kill`) renasce onde morreu, nunca no spawn do mundo padrão.
 
 ### Parties
 
@@ -268,10 +282,11 @@ O BedWars mantém `bedwars.rooms`, `bedwars.join_request` e `bedwars.join_reply`
 ## Testes
 
 - `MatchTest`, `ChatViewTest`, `TeamStatusTest`, `KillCreditTest`, `TimelineTest`, `RankingTest`: as regras da partida.
-- `MatchRuntimeTest`: o ciclo inteiro com uma `Stage` falsa (entrada, contagem, início, mortes no lugar e no void, renascimento, kills finais, quebra de blocos, saída, volta, tempo esgotado, o fim e o fechamento).
+- `MatchRuntimeTest`: o ciclo inteiro com uma `Stage` falsa (entrada, contagem, início, mortes no lugar e no void, renascimento, kills finais, quebra de blocos, saída, volta, tempo esgotado, o fim e o fechamento, saída de partida fechada, resgates sem estatística).
 - `CustomRoomsTest`, `KnockbackPageTest`: salas privadas, a contagem de 30 segundos, pausa e início imediato (`MatchRuntime.startNow`), escolha de time e espectadores, reformatar e renomear, o reinício depois do fim, o fechamento quando o líder sai e a sincronia com a party.
 - `MatchKnockbackTest`: o perfil de knockback do modo dado na entrada, tirado na saída e trocado para a sala toda.
-- `MatchServiceTest`: chegada, reservas, volta, chat, comandos da staff, partidas vazias e troca de modo.
+- `MatchServiceTest`: chegada, reservas, volta, chat, comandos da staff, partidas vazias, troca de modo e resgates.
+- `StrandedPlayersTest`: a espera de 5 segundos e a nova tentativa a cada 15 segundos para jogadores presos.
 - `CosmeticDefaultsTest`, `CosmeticMenuSettingsTest`, `LifetimeTallyTest` e os testes de cada animação de cena, aura e rastro: os cosméticos.
 - `PartyMatchTest`, `PartyCheckTest`, `JoinRoomRequestTest`: vagas da party, times, o aviso de party dividida, o teleporte e os espectadores.
 - `ArenaSchemaTest`, `MatchmakerTest`, `ReservationsTest`, `JoinNoticesTest`, `TitleSweepTest`, `TitleRunsTest`, `SpectatorTargetsTest`, `BukkitStageTest`.

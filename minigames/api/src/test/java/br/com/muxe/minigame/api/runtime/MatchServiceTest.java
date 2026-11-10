@@ -101,6 +101,24 @@ class MatchServiceTest {
     }
 
     @Test
+    void aRescuedPlayerLeavesTheMatchUnrankedAndAClosedMatchIsNoLongerOpen() {
+        arrive(red, "red");
+        arrive(blue, "blue");
+        seconds(10);
+        MatchRuntime<RecordingState> runtime = service.of(red).orElseThrow();
+        assertThat(service.inOpenMatch(red)).isTrue();
+
+        stage.present.remove(red);
+        service.rescue(red);
+
+        assertThat(runtime.match().ranked(red)).isFalse();
+        assertThat(runtime.match().player(red).orElseThrow().state()).isEqualTo(State.DISCONNECTED);
+        runtime.close();
+        assertThat(service.inOpenMatch(blue)).isFalse();
+        assertThat(service.inOpenMatch(UUID.randomUUID())).isFalse();
+    }
+
+    @Test
     void chatGoesToTheMatchAndShoutingIsRemembered() {
         arrive(red, "red");
         arrive(blue, "blue");

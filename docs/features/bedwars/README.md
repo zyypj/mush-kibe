@@ -638,6 +638,8 @@ Commands and queries in `br.com.muxe.minigame.bedwars.stats`: `RecordMatchComman
 
 If Muxe-Core is not enabled, the plugin disables itself.
 
+If an error leaves a player in the flat default world of a match server, they are sent back to the BedWars lobby with `Ocorreu um erro e você foi enviado de volta ao lobby. Suas estatísticas não foram afetadas.`, and the match records no statistics for them (see [stranded players](../../architecture/minigame-api/README.md#stranded-players)).
+
 ## Known limitations
 
 - MEGA and PILARES are not modes yet, so their NPCs open nothing.

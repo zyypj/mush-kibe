@@ -261,6 +261,20 @@ public final class MatchRuntime<S extends MatchState> {
     }
 
     public void quit(UUID id) {
+        quit(id, true);
+    }
+
+    public void rescue(UUID id) {
+        if (match.phase() == MatchPhase.PLAYING && match.player(id).isPresent()) {
+            match.unrank(List.of(id));
+        }
+        quit(id, false);
+    }
+
+    private void quit(UUID id, boolean creditKiller) {
+        if (closed) {
+            return;
+        }
         if (watchers.remove(id)) {
             forget(id);
             return;
@@ -284,7 +298,7 @@ public final class MatchRuntime<S extends MatchState> {
                     match.disconnected(quitter, now.plusSeconds(settings.timings().rejoinSeconds()));
                     rememberReturn(id);
                 } else {
-                    Optional<Participant> killer = match.killer(quitter, now, true);
+                    Optional<Participant> killer = creditKiller ? match.killer(quitter, now, true) : Optional.empty();
                     match.eliminate(quitter);
                     killer.ifPresent(credited -> {
                         match.assists(quitter, credited, true, now);
