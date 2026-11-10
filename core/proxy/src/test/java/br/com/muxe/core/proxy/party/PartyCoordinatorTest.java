@@ -100,9 +100,18 @@ class PartyCoordinatorTest {
 
         assertThat(lobbyNotices).singleElement().satisfies(notice -> {
             assertThat(notice.key()).isEqualTo("party-player-not-found");
-            assertThat(notice.value("name")).hasValue("ninguem");
+            assertThat(notice.value("names")).hasValue("ninguem");
         });
         assertThat(bedwarsNotices).isEmpty();
+    }
+
+    @Test
+    void everyNameNotFoundIsListedInOneMessageAfterTheInvites() {
+        act(TADEU, PartyAction.INVITE, "ninguem", "tadeudobw", "_mmike_");
+
+        assertThat(lobbyNotices).extracting(PartyNotice::key).containsExactly("party-invite-sent", "party-player-not-found");
+        assertThat(lobbyNotices.getLast().value("names")).hasValue("ninguem, _mmike_");
+        assertThat(bedwarsNotices).extracting(PartyNotice::key).containsExactly("party-invite");
     }
 
     @Test

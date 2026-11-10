@@ -256,6 +256,13 @@ class PartyCommandsTest {
     }
 
     @Test
+    void playersNotFoundAreListedAsInTheReference() {
+        PartyNotice missing = PartyNotice.of(List.of(id(tadeu)), "party-player-not-found", "names", "_mmike_");
+
+        assertThat(client.texts().lines(missing)).containsExactly("§cJogadores: _mmike_ não foi encontrado ou está com o convite de party desativado.");
+    }
+
+    @Test
     void rawPartyChatIsShownAsItCame() {
         client.deliver(PartyNotice.raw(List.of(id(dobw)), "§d[PARTY] §7tadeu: §f&aoi"));
 

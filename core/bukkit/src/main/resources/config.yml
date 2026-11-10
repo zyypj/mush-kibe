@@ -2083,7 +2083,7 @@ messages:
   party-summoned: "&d[PARTY] {player} &elevou a party para a sala dele."
   party-invite-expired-sender: "&eO convite de party para {player} &eexpirou."
   party-invite-expired: "&eO convite de party de {player} &eexpirou."
-  party-player-not-found: "&cO jogador &f{name} &cnão está online."
+  party-player-not-found: "&cJogadores: {names} não foi encontrado ou está com o convite de party desativado."
   party-not-in-party: "&cVocê não está em uma party."
   party-already-in-party: "&cVocê já está em uma party."
   party-not-leader: "&cApenas o líder da party pode fazer isso."

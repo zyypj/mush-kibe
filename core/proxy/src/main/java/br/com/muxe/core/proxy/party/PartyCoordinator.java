@@ -59,7 +59,7 @@ public final class PartyCoordinator {
         List<PartyOutcome> outcomes = new ArrayList<>();
         synchronized (book) {
             switch (packet.action()) {
-                case INVITE -> packet.arguments().forEach(name -> outcomes.add(invite(actor, name)));
+                case INVITE -> outcomes.addAll(invite(actor, packet.arguments()));
                 case ACCEPT -> outcomes.add(book.accept(actor, packet.argument(), clock.instant()));
                 case LEAVE -> outcomes.add(book.leave(actor));
                 case DISBAND -> outcomes.add(book.disband(actor));
@@ -105,12 +105,21 @@ public final class PartyCoordinator {
         bus.publish(PacketTarget.broadcast(), new OnlinePlayersPacket(network.onlineNames())).exceptionally(this::logged);
     }
 
-    private PartyOutcome invite(PartyPlayer actor, String name) {
-        Optional<PartyPlayer> target = network.online(name);
-        if (target.isEmpty()) {
-            return PartyOutcome.refused(actor.id(), "party-player-not-found", "name", name);
+    private List<PartyOutcome> invite(PartyPlayer actor, List<String> names) {
+        List<PartyOutcome> outcomes = new ArrayList<>();
+        List<String> missing = new ArrayList<>();
+        for (String name : names) {
+            Optional<PartyPlayer> target = network.online(name);
+            if (target.isEmpty()) {
+                missing.add(name);
+            } else {
+                outcomes.add(book.invite(actor, target.get(), clock.instant()));
+            }
         }
-        return book.invite(actor, target.get(), clock.instant());
+        if (!missing.isEmpty()) {
+            outcomes.add(PartyOutcome.refused(actor.id(), "party-player-not-found", "names", String.join(", ", missing)));
+        }
+        return outcomes;
     }
 
     private void sync(PacketContext<PartySyncRequest> context) {
