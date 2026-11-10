@@ -86,7 +86,7 @@ BedWars `config.yml`: `shop.categories.<id>.custom-items` and `upgrades.custom-l
 
 | Id | Target | Policy | Purpose |
 |---|---|---|---|
-| `custom_room.catalog` | group `lobby` | volatile, 30 s | Every 10 s from each game server: the game, its option schema (YAML in chunks), its modes and ready arenas. |
+| `custom_room.catalog` | groups `lobby` and the game's `lobby-group` (BedWars: `bedwars-lobby`) | volatile, 30 s | Every 10 s from each game server: the game, its option schema (YAML in chunks), its modes and ready arenas. |
 | `custom_room.create_request` | one game server | 5 s | Leader, game, mode, maps, options and online party members. |
 | `custom_room.create_reply` | the lobby | 5 s | Whether the room was created and its code. |
 

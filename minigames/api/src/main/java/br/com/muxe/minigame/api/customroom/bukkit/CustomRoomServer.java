@@ -25,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,6 +50,7 @@ public final class CustomRoomServer<S extends MatchState> implements Listener {
     private final HotbarItem teamItem;
     private final HotbarItem menuItem;
     private final CustomRooms<S> rooms;
+    private final List<String> catalogGroups;
     private final TeamMenu<S> teamMenu;
     private final RoomMenu<S> roomMenu;
     private String parsedText = "";
@@ -65,6 +67,7 @@ public final class CustomRoomServer<S extends MatchState> implements Listener {
         this.settings = kit.settings();
         this.teamItem = HotbarItem.from(settings.section("hotbar.team"));
         this.menuItem = HotbarItem.from(settings.section("hotbar.room-menu"));
+        this.catalogGroups = catalogGroups(settings.text("lobby-group", "lobby"), lobbyGroup);
         RoomPort port = new RoomPort() {
             @Override
             public Optional<PartySnapshot> party(UUID player) {
@@ -102,6 +105,10 @@ public final class CustomRoomServer<S extends MatchState> implements Listener {
         this.rooms = new CustomRooms<>(matches, port, core.messages(), this::waitingItems, settings.codeSuffix());
         this.teamMenu = new TeamMenu<>(settings, rooms, core.messages());
         this.roomMenu = new RoomMenu<>(kit, rooms, matches);
+    }
+
+    public static List<String> catalogGroups(String networkLobby, String gameLobby) {
+        return Stream.of(networkLobby, gameLobby).filter(group -> group != null && !group.isBlank()).distinct().toList();
     }
 
     public CustomRooms<S> rooms() {
@@ -188,10 +195,11 @@ public final class CustomRoomServer<S extends MatchState> implements Listener {
         List<CustomRoomCatalogPacket.Arena> arenas = matches.arenas().stream()
             .map(arena -> new CustomRoomCatalogPacket.Arena(arena.mode(), arena.name(), arena.displayName())).toList();
         CustomRoomCatalogPacket packet = new CustomRoomCatalogPacket(core.identity().id(), game, CustomRoomCatalogPacket.chunks(text), modes, arenas);
-        String group = settings.text("lobby-group", "lobby");
-        core.packets().publish(PacketTarget.group(group), packet).exceptionally(error -> {
-            plugin.getLogger().log(Level.FINE, "Could not publish the custom room catalog", error);
-            return null;
-        });
+        for (String group : catalogGroups) {
+            core.packets().publish(PacketTarget.group(group), packet).exceptionally(error -> {
+                plugin.getLogger().log(Level.FINE, "Could not publish the custom room catalog to " + group, error);
+                return null;
+            });
+        }
     }
 }

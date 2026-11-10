@@ -86,7 +86,7 @@ Mensagens (`messages` do Muxe-Core): `custom-room-creating`, `custom-room-sendin
 
 | Id | Destino | Política | Para quê |
 |---|---|---|---|
-| `custom_room.catalog` | grupo `lobby` | volátil, 30 s | A cada 10 s de cada servidor de jogo: o jogo, o esquema das opções (YAML em pedaços), os modos e as arenas prontas. |
+| `custom_room.catalog` | grupos `lobby` e o `lobby-group` do jogo (BedWars: `bedwars-lobby`) | volátil, 30 s | A cada 10 s de cada servidor de jogo: o jogo, o esquema das opções (YAML em pedaços), os modos e as arenas prontas. |
 | `custom_room.create_request` | um servidor de jogo | 5 s | Líder, jogo, modo, mapas, opções e membros online da party. |
 | `custom_room.create_reply` | o lobby | 5 s | Se a sala foi criada e o código. |
 
