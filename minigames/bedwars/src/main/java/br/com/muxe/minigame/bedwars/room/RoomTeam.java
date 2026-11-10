@@ -32,6 +32,7 @@ public final class RoomTeam {
         FORGE,
         HEAL_POOL,
         TRAP_BLINDNESS,
-        TRAP_FATIGUE
+        TRAP_FATIGUE,
+        BED_PROTECTION
     }
 }

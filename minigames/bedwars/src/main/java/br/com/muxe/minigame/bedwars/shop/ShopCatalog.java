@@ -41,7 +41,7 @@ public record ShopCatalog(
         ConfigurationSection categorySection = section(shop, "categories");
         for (String id : categorySection.getKeys(false)) {
             ConfigurationSection category = section(categorySection, id);
-            categories.put(id, new Category(id, category.getString("name", id), category.getStringList("items")));
+            categories.put(id, new Category(id, category.getString("name", id), category.getStringList("items"), category.getStringList("custom-items")));
         }
         Map<String, ShopItem> items = new LinkedHashMap<>();
         ConfigurationSection itemSection = section(shop, "items");
@@ -116,7 +116,7 @@ public record ShopCatalog(
             section.getString("editor-name", tiers.getFirst().name()),
             section.contains("editor-description") ? section.getStringList("editor-description") : description);
         return new ShopItem(id, type, section.getInt("data", 0), section.getInt("amount", 1), section.getInt("tier", 0),
-            description, enchantments, section.getBoolean("unbreakable", false), tiers, potion, editorLook);
+            description, enchantments, section.getBoolean("unbreakable", false), tiers, potion, editorLook, section.getBoolean("enabled", true));
     }
 
     private static Currency currency(Map<String, Currency> currencies, String id) {
@@ -162,7 +162,7 @@ public record ShopCatalog(
     }
 
     public record ShopItem(String id, Type type, int data, int amount, int armorTier, List<String> description,
-                           Map<String, Integer> enchantments, boolean unbreakable, List<Tier> tiers, Potion potion, Editor editor) {
+                           Map<String, Integer> enchantments, boolean unbreakable, List<Tier> tiers, Potion potion, Editor editor, boolean enabled) {
 
         public ShopItem {
             description = List.copyOf(description);
@@ -184,10 +184,17 @@ public record ShopCatalog(
     public record Tab(int slot, String category, Material material, String name) {
     }
 
-    public record Category(String id, String name, List<String> items) {
+    public record Category(String id, String name, List<String> items, List<String> customItems) {
 
         public Category {
             items = List.copyOf(items);
+            customItems = List.copyOf(customItems);
+        }
+
+        public List<String> withCustom() {
+            List<String> all = new ArrayList<>(items);
+            all.addAll(customItems);
+            return List.copyOf(all);
         }
     }
 

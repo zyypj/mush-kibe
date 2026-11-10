@@ -109,7 +109,8 @@ public final class ShopService {
             menu.button(PANE_FIRST + column, ItemBuilder.of(Material.STAINED_GLASS_PANE, column == openColumn ? PANE_GREEN : PANE_GRAY).name(" "));
         }
         QuickBuy layout = quickBuys.of(player.getUniqueId());
-        List<Optional<String>> ids = quickBuy ? positions(layout) : category.items().stream().map(Optional::of).toList();
+        List<String> listed = runtime.state().rules().custom() ? category.withCustom() : category.items();
+        List<Optional<String>> ids = quickBuy ? positions(layout) : listed.stream().map(Optional::of).toList();
         for (int index = 0; index < ids.size() && index < ITEM_SLOTS.size(); index++) {
             Optional<ShopItem> entry = ids.get(index).map(shop.items()::get);
             if (entry.isEmpty()) {
@@ -205,7 +206,7 @@ public final class ShopService {
         RoomTeam team = runtime.state().room().team(found.get().team());
         Menu.Builder menu = Menu.builder(upgrades.title()).rows(UPGRADE_ROWS);
         CustomShop custom = runtime.state().shop(shop.currencies());
-        for (Entry base : upgrades.entries()) {
+        for (Entry base : runtime.state().rules().custom() ? upgrades.withCustom() : upgrades.entries()) {
             Optional<Entry> priced = custom.upgrade(base);
             if (priced.isEmpty()) {
                 continue;

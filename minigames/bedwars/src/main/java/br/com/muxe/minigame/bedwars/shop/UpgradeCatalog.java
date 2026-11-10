@@ -10,11 +10,33 @@ import java.util.Objects;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
-public record UpgradeCatalog(String title, Texts texts, List<Entry> entries) {
+public record UpgradeCatalog(String title, Texts texts, List<Entry> entries, List<Entry> customEntries) {
+
+    public UpgradeCatalog {
+        entries = List.copyOf(entries);
+        customEntries = List.copyOf(customEntries);
+    }
+
+    public List<Entry> withCustom() {
+        List<Entry> all = new ArrayList<>(entries);
+        all.addAll(customEntries);
+        return List.copyOf(all);
+    }
 
     public static UpgradeCatalog from(ConfigurationSection section) {
+        List<Entry> entries = entries(Objects.requireNonNull(section.getConfigurationSection("list"), "Missing upgrades.list"));
+        ConfigurationSection custom = section.getConfigurationSection("custom-list");
+        List<Entry> customEntries = custom == null ? List.of() : entries(custom);
+        return new UpgradeCatalog(section.getString("title", "Melhorias do Time"), new Texts(
+            section.getString("tier-bought"), section.getString("tier-missing"), section.getString("price"),
+            section.getString("diamond-one"), section.getString("diamond-many"), section.getString("cannot-afford"),
+            section.getString("can-afford"), section.getString("maxed"), section.getString("name-unaffordable"),
+            section.getString("name-affordable"), section.getString("name-maxed")
+        ), entries, customEntries);
+    }
+
+    private static List<Entry> entries(ConfigurationSection list) {
         List<Entry> entries = new ArrayList<>();
-        ConfigurationSection list = Objects.requireNonNull(section.getConfigurationSection("list"), "Missing upgrades.list");
         for (String id : list.getKeys(false)) {
             ConfigurationSection entry = Objects.requireNonNull(list.getConfigurationSection(id));
             List<Tier> tiers = new ArrayList<>();
@@ -31,29 +53,31 @@ public record UpgradeCatalog(String title, Texts texts, List<Entry> entries) {
                 entry.getBoolean("single", false),
                 entry.getStringList("description"),
                 tiers,
-                List.of()
+                List.of(),
+                entry.getBoolean("enabled", true)
             ));
         }
-        return new UpgradeCatalog(section.getString("title", "Melhorias do Time"), new Texts(
-            section.getString("tier-bought"), section.getString("tier-missing"), section.getString("price"),
-            section.getString("diamond-one"), section.getString("diamond-many"), section.getString("cannot-afford"),
-            section.getString("can-afford"), section.getString("maxed"), section.getString("name-unaffordable"),
-            section.getString("name-affordable"), section.getString("name-maxed")
-        ), entries);
+        return entries;
     }
 
     public record Texts(String bought, String missing, String price, String diamondOne, String diamondMany, String cannotAfford,
                         String canAfford, String maxed, String nameUnaffordable, String nameAffordable, String nameMaxed) {
     }
 
+    public static final int LINE_WIDTH = 40;
+
     public record Tier(String label, String extra, int price) {
+
+        public String full() {
+            return extra == null ? label : label + " " + extra.replaceAll("^(&[0-9a-fk-or])+", "");
+        }
     }
 
     public record Cost(Material material, String text) {
     }
 
     public record Entry(String id, int slot, Material material, String name, Upgrade upgrade, boolean single, List<String> description, List<Tier> tiers,
-                        List<Cost> costs) {
+                        List<Cost> costs, boolean enabled) {
 
         public Entry {
             description = List.copyOf(description);
@@ -65,14 +89,36 @@ public record UpgradeCatalog(String title, Texts texts, List<Entry> entries) {
             List<Tier> changed = new ArrayList<>();
             for (int index = 0; index < tiers.size(); index++) {
                 Tier tier = tiers.get(index);
-                String label = tier.label();
-                if (!single) {
-                    int comma = label.lastIndexOf(',');
-                    label = (comma < 0 ? label : label.substring(0, comma)) + ", " + changedCosts.get(index).text();
+                if (single) {
+                    changed.add(new Tier(tier.label(), tier.extra(), prices.get(index)));
+                    continue;
                 }
-                changed.add(new Tier(label, single ? tier.extra() : null, prices.get(index)));
+                String full = tier.full();
+                int comma = full.lastIndexOf(',');
+                List<String> lines = wrap((comma < 0 ? full : full.substring(0, comma)) + ", " + changedCosts.get(index).text());
+                changed.add(new Tier(lines.getFirst(), lines.size() > 1 ? lines.get(1) : null, prices.get(index)));
             }
-            return new Entry(id, slot, material, name, upgrade, single, description, changed, changedCosts);
+            return new Entry(id, slot, material, name, upgrade, single, description, changed, changedCosts, enabled);
+        }
+
+        public static List<String> wrap(String line) {
+            if (visible(line) <= LINE_WIDTH) {
+                return List.of(line);
+            }
+            int split = -1;
+            for (int index = line.indexOf(','); index >= 0; index = line.indexOf(',', index + 1)) {
+                if (visible(line.substring(0, index + 1)) <= LINE_WIDTH) {
+                    split = index;
+                }
+            }
+            if (split < 0) {
+                return List.of(line);
+            }
+            return List.of(line.substring(0, split + 1), "&7" + line.substring(split + 1).trim());
+        }
+
+        private static int visible(String text) {
+            return text.replaceAll("&[0-9a-fk-or]", "").length();
         }
 
         public Material currency(int level) {

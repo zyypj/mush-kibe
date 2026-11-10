@@ -62,7 +62,7 @@ public final class BedWarsRoomSchema {
         List<Entry> entries = new ArrayList<>();
         Set<String> seen = new LinkedHashSet<>();
         for (ShopCatalog.Category category : shop.categories().values()) {
-            for (String id : category.items()) {
+            for (String id : category.withCustom()) {
                 ShopItem item = shop.items().get(id);
                 if (item == null || !seen.add(id)) {
                     continue;
@@ -80,7 +80,7 @@ public final class BedWarsRoomSchema {
     }
 
     public static String levelLabel(String label) {
-        String text = label == null ? "" : label;
+        String text = label == null ? "" : label.replaceAll("&[0-9a-fk-or]", "");
         int start = text.indexOf(": ");
         int end = text.lastIndexOf(',');
         if (start < 0) {
@@ -136,6 +136,7 @@ public final class BedWarsRoomSchema {
                 item.set("description", entry.item().description());
                 item.set("price", entry.tier().price());
                 item.set("currency", entry.tier().currency().id());
+                item.set("enabled", entry.item().enabled());
             }
             ConfigurationSection free = list.createSection("free");
             free.set("type", "free");
@@ -152,7 +153,7 @@ public final class BedWarsRoomSchema {
         section.set("back-slot", LIST_BACK);
         section.set("back-to", "options");
         ConfigurationSection list = section.createSection("entries");
-        List<UpgradeCatalog.Entry> entries = upgrades.entries();
+        List<UpgradeCatalog.Entry> entries = upgrades.withCustom();
         for (int index = 0; index < entries.size() && index < LIST_SLOTS.size(); index++) {
             UpgradeCatalog.Entry entry = entries.get(index);
             ConfigurationSection item = list.createSection(entry.id());
@@ -162,11 +163,11 @@ public final class BedWarsRoomSchema {
             item.set("material", entry.material().name());
             item.set("name", entry.name());
             item.set("description", entry.description());
-            item.set("enabled", true);
+            item.set("enabled", entry.enabled());
             ConfigurationSection levels = item.createSection("levels");
             for (int level = 0; level < entry.tiers().size(); level++) {
                 ConfigurationSection tier = levels.createSection(String.valueOf(level + 1));
-                tier.set("label", levelLabel(entry.tiers().get(level).label()));
+                tier.set("label", levelLabel(entry.tiers().get(level).full()));
                 tier.set("price", entry.tiers().get(level).price());
                 tier.set("currency", "diamond");
             }

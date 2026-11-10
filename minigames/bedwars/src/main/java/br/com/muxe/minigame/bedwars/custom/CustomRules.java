@@ -52,7 +52,11 @@ public record CustomRules(RoomOptions options, boolean custom) {
     }
 
     public boolean sells(String key) {
-        return options.flag("shop." + key + ".enabled", true);
+        return sells(key, true);
+    }
+
+    public boolean sells(String key, boolean base) {
+        return options.flag("shop." + key + ".enabled", base);
     }
 
     public int price(String key, int base) {

@@ -26,6 +26,7 @@ import br.com.muxe.minigame.bedwars.arena.BedWarsArena.TeamBase;
 import br.com.muxe.minigame.bedwars.arena.BedWarsArena;
 import br.com.muxe.minigame.bedwars.custom.CustomRules;
 import br.com.muxe.minigame.bedwars.custom.CustomShop;
+import br.com.muxe.minigame.bedwars.game.BedDefense;
 import br.com.muxe.minigame.bedwars.game.BedWarsEvent;
 import br.com.muxe.minigame.bedwars.game.ChestAccess;
 import br.com.muxe.minigame.bedwars.game.ChestDeposits;
@@ -115,6 +116,7 @@ public final class BedWarsMatch implements MatchState {
     private List<Block> islandChests = List.of();
     private CustomRules rules = CustomRules.NONE;
     private CustomShop customShop;
+    private final Map<TeamColor, Set<BedDefense.Pos>> defenses = new HashMap<>();
     private Timeline<BedWarsEvent> timeline;
     private int skipped;
     private MissionTracker missions;
@@ -516,6 +518,42 @@ public final class BedWarsMatch implements MatchState {
             TeamBase base = room.arena().teams().get(team.color());
             forges.forgeLevel(team.color(), level, base.iron().isEmpty() ? null : runtime.location(base.iron().getFirst()));
         }
+        if (upgrade == RoomTeam.Upgrade.BED_PROTECTION) {
+            defendBed(team.color(), level);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void defendBed(TeamColor color, int level) {
+        if (!room.bedAlive(color)) {
+            return;
+        }
+        Block marked = runtime.location(room.arena().teams().get(color).bed()).getBlock();
+        List<BedDefense.Pos> bed = new ArrayList<>();
+        bed.add(new BedDefense.Pos(marked.getX(), marked.getY(), marked.getZ()));
+        if (marked.getType() == Material.BED_BLOCK) {
+            for (BlockFace side : SIDES) {
+                Block next = marked.getRelative(side);
+                if (next.getType() == Material.BED_BLOCK) {
+                    bed.add(new BedDefense.Pos(next.getX(), next.getY(), next.getZ()));
+                }
+            }
+        }
+        Set<BedDefense.Pos> built = defenses.computeIfAbsent(color, ignored -> new HashSet<>());
+        BedDefense.plan(bed, level).forEach((pos, layer) -> {
+            Block block = runtime.world().getBlockAt(pos.x(), pos.y(), pos.z());
+            if (block.getType() != Material.AIR && !built.contains(pos)) {
+                return;
+            }
+            switch (layer) {
+                case WOOD -> block.setType(Material.WOOD, false);
+                case WOOL -> block.setTypeIdAndData(Material.WOOL.getId(), (byte) color.woolData(), false);
+                case GLASS -> block.setTypeIdAndData(Material.STAINED_GLASS.getId(), (byte) color.woolData(), false);
+                case END_STONE -> block.setType(Material.ENDER_STONE, false);
+            }
+            match.placed(pos.x(), pos.y(), pos.z());
+            built.add(pos);
+        });
     }
 
     public int chatLevel(UUID id) {

@@ -15,6 +15,8 @@ import org.bukkit.Material;
 
 public final class CustomShop {
 
+    public static final String FREE = "&aGrátis";
+
     private final CustomRules rules;
     private final Map<String, Currency> currencies;
     private final Map<String, Integer> purchases = new HashMap<>();
@@ -26,10 +28,10 @@ public final class CustomShop {
 
     public Optional<Tier> tier(ShopItem item, Tier tier) {
         if (!rules.custom()) {
-            return Optional.of(tier);
+            return item.enabled() ? Optional.of(tier) : Optional.empty();
         }
         String key = BedWarsRoomSchema.key(item, Math.max(0, item.tiers().indexOf(tier)));
-        if (!rules.sells(key)) {
+        if (!rules.sells(key, item.enabled())) {
             return Optional.empty();
         }
         Currency currency = Optional.ofNullable(currencies.get(rules.currency(key, tier.currency().id()))).orElse(tier.currency());
@@ -38,9 +40,9 @@ public final class CustomShop {
 
     public Optional<UpgradeCatalog.Entry> upgrade(UpgradeCatalog.Entry entry) {
         if (!rules.custom()) {
-            return Optional.of(entry);
+            return entry.enabled() ? Optional.of(entry) : Optional.empty();
         }
-        if (!rules.upgrades(entry.id(), true)) {
+        if (!rules.upgrades(entry.id(), entry.enabled())) {
             return Optional.empty();
         }
         List<Integer> prices = new ArrayList<>();
@@ -50,7 +52,7 @@ public final class CustomShop {
             Currency currency = Optional.ofNullable(currencies.get(rules.upgradeCurrency(entry.id(), level, "diamond")))
                 .orElseGet(() -> new Currency("diamond", Material.DIAMOND, "Diamante", "Diamantes", "&b"));
             prices.add(price);
-            costs.add(new Cost(currency.material(), currency.color() + price + " " + currency.name(price)));
+            costs.add(new Cost(currency.material(), price == 0 ? FREE : currency.color() + price + " " + currency.name(price)));
         }
         return Optional.of(entry.priced(prices, costs));
     }

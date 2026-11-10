@@ -1519,6 +1519,8 @@ shop:
         - pedra-do-fim
         - escada
         - madeira
+      custom-items:
+        - obsidian
     combate:
       name: "Combate"
       items:
@@ -1568,6 +1570,15 @@ shop:
         - ovo-das-pontes
         - rastreador
         - estilingue
+      custom-items:
+        - troca-congelante
+        - ponte-de-gelo
+        - para-quedas
+        - rebobinar
+        - spider
+        - loja-portatil
+        - bau-do-fim
+        - ressurreicao
   items:
     la:
       type: wool
@@ -1941,6 +1952,90 @@ shop:
       currency: gold
       description:
         - "&7Dê um leve impulso."
+    obsidian:
+      type: block
+      material: OBSIDIAN
+      amount: 4
+      name: "Obsidian"
+      price: 4
+      currency: emerald
+      enabled: false
+      description:
+        - "&7Proteção extrema para a sua cama."
+    troca-congelante:
+      type: special
+      material: BARRIER
+      name: "Troca Congelante"
+      price: 2
+      currency: emerald
+      enabled: false
+      description:
+        - "&7Troque de lugar com o inimigo."
+    ponte-de-gelo:
+      type: special
+      material: BARRIER
+      name: "Ponte de Gelo"
+      price: 7
+      currency: gold
+      enabled: false
+      description:
+        - "&7Construa uma ponte de gelo."
+    para-quedas:
+      type: special
+      material: BARRIER
+      name: "Para-quedas"
+      price: 5
+      currency: gold
+      enabled: false
+      description:
+        - "&7Crie uma plataforma para se salvar."
+    rebobinar:
+      type: special
+      material: BARRIER
+      name: "Rebobinar"
+      price: 10
+      currency: gold
+      enabled: false
+      description:
+        - "&7Dê um salto temporal."
+    spider:
+      type: special
+      material: BARRIER
+      name: "Spider"
+      price: 4
+      currency: gold
+      enabled: false
+      description:
+        - "&7Lance teias contra seus inimigos."
+    loja-portatil:
+      type: special
+      material: BARRIER
+      name: "Loja Portátil"
+      price: 5
+      currency: gold
+      enabled: false
+      description:
+        - "&7Compre a hora que quiser onde quiser!"
+        - "&7(Uso único)"
+    bau-do-fim:
+      type: special
+      material: BARRIER
+      name: "Baú do Fim"
+      price: 3
+      currency: gold
+      enabled: false
+      description:
+        - "&7Acesse seus itens onde estiver!"
+        - "&7(Uso único)"
+    ressurreicao:
+      type: special
+      material: BARRIER
+      name: "Ressurreição"
+      price: 4
+      currency: emerald
+      enabled: false
+      description:
+        - "&7Reviva um jogador morto de seu time."
 
 upgrades:
   title: "Melhorias do Time"
@@ -2056,6 +2151,26 @@ upgrades:
         - label: "Nível 2: Fadiga I por 10 segundos,"
           extra: "&7&b2 Diamantes"
           price: 2
+
+  custom-list:
+    protecao-cama:
+      slot: 19
+      material: BED
+      name: "Proteção da Cama"
+      upgrade: BED_PROTECTION
+      enabled: false
+      description:
+        - "&7Melhore a proteção da"
+        - "&7sua cama."
+      tiers:
+        - label: "Nível 1: Madeira, Lã, Vidro, &b2 Diamantes"
+          price: 2
+        - label: "Nível 2: Madeira, Lã, Pedra do Fim,"
+          extra: "&7&b4 Diamantes"
+          price: 4
+        - label: "Nível 3: Madeira, Lã, Pedra do Fim,"
+          extra: "&7Vidro, &b6 Diamantes"
+          price: 6
 
 cosmetics:
   category: bedwars-cama
