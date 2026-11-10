@@ -2042,6 +2042,12 @@ messages:
   build-already-off: "&cVocê não está no modo construção."
   build-not-allowed: "&cVocê não pode entrar no modo construção agora."
   build-action-bar: "&aModo construção ativado"
+  language-usage: "&eUso: /idioma <português|inglês>. Idioma atual: &f{language}&e."
+  language-changed: "&aIdioma alterado para &f{language}&a."
+  language-already: "&cVocê já está usando o idioma &f{language}&c."
+  language-failed: "&cNão foi possível alterar o idioma agora. Tente novamente em instantes."
+  language-name-pt-br: "Português"
+  language-name-en: "Inglês"
   connect-failed: "&cNão foi possível enviar você agora. Tente novamente em instantes."
   nothing-to-return: "&cVocê não tem nenhuma partida para retornar."
   party-usage:

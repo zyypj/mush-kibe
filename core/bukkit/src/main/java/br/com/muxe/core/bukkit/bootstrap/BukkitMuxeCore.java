@@ -4,6 +4,8 @@ import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.combat.knockback.KnockbackService;
 import br.com.muxe.core.bukkit.customroom.CustomRoomKit;
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
+import br.com.muxe.core.bukkit.language.PlayerLanguages;
 import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.party.Parties;
 import br.com.muxe.core.bukkit.permission.PermissionService;
@@ -32,6 +34,8 @@ final class BukkitMuxeCore implements MuxeCore {
     private final Executor mainThread;
     private final NetworkGateway network;
     private final MessageCatalog messages;
+    private final PlayerLanguages languages;
+    private final LocalizedConfig texts;
     private final BuildMode buildMode;
     private final PermissionService permissions;
     private final Parties parties;
@@ -40,16 +44,28 @@ final class BukkitMuxeCore implements MuxeCore {
     private final NameTags nameTags = new NameTags();
     private final SidebarOverrides sidebars = new SidebarOverrides();
 
-    BukkitMuxeCore(CoreRuntime runtime, Executor mainThread, NetworkGateway network, MessageCatalog messages, BuildMode buildMode, PermissionService permissions,
-                  Parties parties, KnockbackService knockback) {
+    BukkitMuxeCore(CoreRuntime runtime, Executor mainThread, NetworkGateway network, MessageCatalog messages, PlayerLanguages languages, LocalizedConfig texts,
+                  BuildMode buildMode, PermissionService permissions, Parties parties, KnockbackService knockback) {
         this.runtime = runtime;
         this.mainThread = mainThread;
         this.network = network;
         this.messages = messages;
+        this.languages = languages;
+        this.texts = texts;
         this.buildMode = buildMode;
         this.permissions = permissions;
         this.parties = parties;
         this.knockback = knockback;
+    }
+
+    @Override
+    public PlayerLanguages languages() {
+        return languages;
+    }
+
+    @Override
+    public LocalizedConfig texts() {
+        return texts;
     }
 
     @Override

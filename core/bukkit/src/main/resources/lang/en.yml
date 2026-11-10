@@ -1,0 +1,7 @@
+messages:
+  language-usage: "&eUsage: /language <portuguese|english>. Current language: &f{language}&e."
+  language-changed: "&aLanguage changed to &f{language}&a."
+  language-already: "&cYou are already using &f{language}&c."
+  language-failed: "&cThe language could not be changed right now. Try again in a moment."
+  language-name-pt-br: "Portuguese"
+  language-name-en: "English"

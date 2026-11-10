@@ -25,6 +25,9 @@ import br.com.muxe.core.bukkit.config.edit.PluginConfigStore;
 import br.com.muxe.core.bukkit.greeting.GreetingSettings;
 import br.com.muxe.core.bukkit.greeting.JoinGreeting;
 import br.com.muxe.core.bukkit.greeting.LeftoverTitleCleaner;
+import br.com.muxe.core.bukkit.language.LanguageCommand;
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
+import br.com.muxe.core.bukkit.language.PlayerLanguages;
 import br.com.muxe.core.bukkit.menu.MenuAnimator;
 import br.com.muxe.core.bukkit.menu.MenuListener;
 import br.com.muxe.core.bukkit.monitor.BukkitServerLoad;
@@ -76,8 +79,11 @@ public final class CoreBukkitBootstrap {
         BukkitServerLoad load = new BukkitServerLoad(plugin.getServer().getMaxPlayers());
         runtime = CoreRuntime.start(settings, new PlatformHooks(plugin.getLogger(), new BukkitMainThreadGuard(), load));
 
-        MessageCatalog messages = MessageCatalog.from(config.getConfigurationSection("messages"));
         Executor mainThread = new BukkitMainThreadExecutor(plugin);
+        PlayerLanguages languages = new PlayerLanguages(runtime.commands(), runtime.queries(), runtime.packets(), mainThread, plugin.getLogger());
+        plugin.getServer().getPluginManager().registerEvents(languages, plugin);
+        LocalizedConfig texts = LocalizedConfig.load(plugin);
+        MessageCatalog messages = MessageCatalog.from(texts, "messages").speaking(languages);
         NetworkGateway network = new NetworkGateway(runtime.packets());
         BuildSettings buildSettings = BuildSettings.from(config.getConfigurationSection("build-mode"));
         BuildMode buildMode = new BuildMode(
@@ -94,7 +100,7 @@ public final class CoreBukkitBootstrap {
         permissions = PermissionService.start(plugin, permissionSync, settings.server().group(), runtime.clock());
         PartyClient parties = PartyFeatures.client(plugin, runtime, mainThread, messages);
         KnockbackService knockback = new KnockbackService(KnockbackProfiles.from(DefaultedSections.of(config, "knockback")));
-        BukkitMuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages, buildMode, permissions, parties, knockback);
+        BukkitMuxeCore core = new BukkitMuxeCore(runtime, mainThread, network, messages, languages, texts, buildMode, permissions, parties, knockback);
         plugin.getServer().getServicesManager().register(MuxeCore.class, core, plugin, ServicePriority.Normal);
 
         plugin.getServer().getScheduler().runTaskTimer(plugin, new TickMonitor(load, runtime.metrics()), 1L, 1L);
@@ -114,7 +120,8 @@ public final class CoreBukkitBootstrap {
         Commands commands = Commands.of(plugin, messages);
         ConfigPathSuggestions.register(commands, configEditor);
         commands.register(new MuxeAdminCommand(core, JoinTraffic.start(plugin, runtime.metrics())), new LobbyCommand(core, lobbyGroup), new BuildCommand(buildMode, messages),
-            new ReturnCommand(core, new MatchReturns(core.store())), new CoreConfigCommand(configEditor, new ConfigReplies(messages)));
+            new ReturnCommand(core, new MatchReturns(core.store())), new CoreConfigCommand(configEditor, new ConfigReplies(messages)),
+            new LanguageCommand(languages, messages, mainThread));
         ranks = RankFeatures.start(plugin, core, config, commands);
         PartyFeatures.start(plugin, core, parties, commands);
         features = PlacedFeatures.start(plugin, core, config, commands);
