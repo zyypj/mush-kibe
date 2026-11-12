@@ -2096,6 +2096,23 @@ knockback:
       use-rotation: false
       click-limiter: "normal"
 
+scheduled-games:
+  mega:
+    game: bedwars
+    mode: mega
+    command: megabw
+    lobby-group: bedwars-lobby
+    announcement: mega-announce
+    time-zone: America/Sao_Paulo
+    weekdays:
+      - "19:00"
+    weekends:
+      - "15:00"
+      - "17:00"
+      - "19:00"
+    window-minutes: 15
+    announce-every-seconds: 60
+
 messages:
   no-permission: "&cVocê não possui permissão para usar este comando."
   unknown-command: "&cComando não encontrado."
@@ -2127,6 +2144,9 @@ messages:
   connect-failed: "&cNão foi possível enviar você agora. Tente novamente em instantes."
   nothing-to-return: "&cVocê não tem nenhuma partida para retornar."
   rescued-to-lobby: "&cOcorreu um erro e você foi enviado de volta ao lobby. Suas estatísticas não foram afetadas."
+  mega-announce: "&b&lMEGA BED WARS &eestá aberto! Use &b/megabw &epara jogar."
+  scheduled-game-hover: "&eClique para jogar!"
+  scheduled-game-none: "&cNenhuma sala foi encontrada."
   party-usage:
     - "&6Uso &a/party&6:"
     - "&e/party <jogadores> - &bConvidar para party"

@@ -714,6 +714,24 @@ kit.presets().open(player, presetTarget);
 - **Predefinições**: `SavePresetCommand`, `DeletePresetCommand`, `ListPresetsQuery` e `FindPresetQuery` sobre `core.custom_room_presets`.
 - **Lobby**: `CustomRoomLobby` e `/salacustom` rodam nos lobbies; `CatalogDirectory` guarda os catálogos que os servidores de jogo publicam.
 
+## Jogos com horário
+
+Pacote `br.com.muxe.core.bukkit.scheduledgame` e `br.com.muxe.core.common.schedule.WeeklySchedule`. Um jogo com horário é um modo de jogo que só abre em horários definidos; hoje o [Mega](../../features/bedwars/README.pt-BR.md#mega) do BedWars.
+
+```java
+ScheduledGames games = MuxeCore.get().scheduledGames();
+games.allowsNewRoom("bedwars", "mega");
+games.playHere("mega", player -> connector.join(player, "mega", Optional.empty()));
+MuxeCore.get().scheduledPlay().play(player, "mega");
+```
+
+- **`scheduled-games.<id>`** no `config.yml` do core: `game`, `mode`, `command`, `lobby-group`, `announcement` (uma chave de mensagem), `time-zone`, `weekdays` e `weekends` (listas `HH:mm`), `window-minutes` (15) e `announce-every-seconds` (60).
+- **`WeeklySchedule`** (`core:common`, testado sem servidor) diz se um instante cai numa janela: um horário de dia útil ou de fim de semana mais a duração da janela, inclusive passando da meia-noite.
+- **`ScheduledGames`**: `isOpen`, `allowsNewRoom(game, mode)` (sempre verdadeiro para um modo sem horário), `roomsOpen(id)` e `hasRooms(id)` (uma marca de 15 s no `MuxeCore.store()` de que há sala esperando), `rememberJoin` e `takeJoin` (o jogo em que entrar quando o jogador chegar, 60 s), `playHere` (como um servidor do jogo entra na hora) e `dueAnnouncements`.
+- **`ScheduledPlay`** roda o comando: um servidor que registrou `playHere` entra na hora; qualquer outro manda o jogador para o grupo de lobby do jogo guardando a entrada, se o horário está aberto ou há sala esperando; senão diz `scheduled-game-none`.
+- **`ScheduledAnnouncer`** manda o aviso uma vez a cada `announce-every-seconds` para os jogadores do próprio servidor enquanto o horário está aberto, clicável para rodar o comando (hover `scheduled-game-hover`). Cada servidor avisa os próprios jogadores, então nenhum servidor precisa combinar com os outros.
+- **`/megabw`** (`MegaBedWarsCommand`) joga o jogo com horário `mega`.
+
 ## Comandos
 
 Os comandos são classes anotadas registradas com `Commands`; veja [Comandos](../commands/README.pt-BR.md).

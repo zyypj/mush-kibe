@@ -709,6 +709,24 @@ kit.presets().open(player, presetTarget);
 - **Presets**: `SavePresetCommand`, `DeletePresetCommand`, `ListPresetsQuery` and `FindPresetQuery` over `core.custom_room_presets`.
 - **Lobby**: `CustomRoomLobby` and `/salacustom` run on lobby servers; `CatalogDirectory` keeps the catalogs the game servers publish.
 
+## Scheduled games
+
+Package `br.com.muxe.core.bukkit.scheduledgame` and `br.com.muxe.core.common.schedule.WeeklySchedule`. A scheduled game is a game mode that only opens at set times; today the BedWars [Mega](../../features/bedwars/README.md#mega).
+
+```java
+ScheduledGames games = MuxeCore.get().scheduledGames();
+games.allowsNewRoom("bedwars", "mega");
+games.playHere("mega", player -> connector.join(player, "mega", Optional.empty()));
+MuxeCore.get().scheduledPlay().play(player, "mega");
+```
+
+- **`scheduled-games.<id>`** in the core `config.yml`: `game`, `mode`, `command`, `lobby-group`, `announcement` (a message key), `time-zone`, `weekdays` and `weekends` (`HH:mm` lists), `window-minutes` (15) and `announce-every-seconds` (60).
+- **`WeeklySchedule`** (`core:common`, tested without a server) says whether an instant falls in a window: a weekday or weekend time plus the window length, also across midnight.
+- **`ScheduledGames`**: `isOpen`, `allowsNewRoom(game, mode)` (always true for a mode with no schedule), `roomsOpen(id)` and `hasRooms(id)` (a 15 s mark in `MuxeCore.store()` that a room is waiting), `rememberJoin` and `takeJoin` (the game to join when the player arrives, 60 s), `playHere` (how a server of the game joins on the spot) and `dueAnnouncements`.
+- **`ScheduledPlay`** runs the command: a server that registered `playHere` joins on the spot; any other server sends the player to the game's lobby group remembering the join, if the schedule is open or a room is waiting; otherwise it says `scheduled-game-none`.
+- **`ScheduledAnnouncer`** sends the announcement once per `announce-every-seconds` to the players of its own server while the schedule is open, clickable to run the command (hover `scheduled-game-hover`). Every server announces to its own players, so no server has to coordinate.
+- **`/megabw`** (`MegaBedWarsCommand`) plays the `mega` scheduled game.
+
 ## Commands
 
 Commands are annotated classes registered with `Commands`; see [Commands](../commands/README.md).

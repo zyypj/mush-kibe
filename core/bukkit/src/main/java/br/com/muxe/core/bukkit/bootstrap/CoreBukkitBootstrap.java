@@ -27,9 +27,9 @@ import br.com.muxe.core.bukkit.greeting.JoinGreeting;
 import br.com.muxe.core.bukkit.greeting.LeftoverTitleCleaner;
 import br.com.muxe.core.bukkit.language.LanguageCommand;
 import br.com.muxe.core.bukkit.language.LocalizedConfig;
+import br.com.muxe.core.bukkit.language.PlayerLanguages;
 import br.com.muxe.core.bukkit.language.menu.LanguageMenu;
 import br.com.muxe.core.bukkit.language.menu.LanguageMenuSettings;
-import br.com.muxe.core.bukkit.language.PlayerLanguages;
 import br.com.muxe.core.bukkit.menu.MenuAnimator;
 import br.com.muxe.core.bukkit.menu.MenuHolder;
 import br.com.muxe.core.bukkit.menu.MenuListener;
@@ -39,6 +39,11 @@ import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.nms.JoinTraffic;
 import br.com.muxe.core.bukkit.party.PartyClient;
 import br.com.muxe.core.bukkit.permission.PermissionService;
+import br.com.muxe.core.bukkit.scheduledgame.MegaBedWarsCommand;
+import br.com.muxe.core.bukkit.scheduledgame.ScheduledAnnouncer;
+import br.com.muxe.core.bukkit.scheduledgame.ScheduledGame;
+import br.com.muxe.core.bukkit.scheduledgame.ScheduledGames;
+import br.com.muxe.core.bukkit.scheduledgame.ScheduledPlay;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.bukkit.text.Title;
 import br.com.muxe.core.bukkit.thread.BukkitMainThreadExecutor;
@@ -130,6 +135,12 @@ public final class CoreBukkitBootstrap {
         PartyFeatures.start(plugin, core, parties, commands);
         features = PlacedFeatures.start(plugin, core, config, commands);
         core.customRooms(CustomRoomFeatures.kit(plugin, core, config));
+        ScheduledGames scheduledGames = new ScheduledGames(ScheduledGame.from(DefaultedSections.of(config, "scheduled-games")), runtime.clock(), runtime.store());
+        ScheduledPlay scheduledPlay = new ScheduledPlay(scheduledGames, network, runtime.executors().io(), mainThread, messages);
+        core.scheduledGames(scheduledGames, scheduledPlay);
+        commands.register(new MegaBedWarsCommand(scheduledPlay));
+        plugin.getServer().getScheduler().runTaskTimer(plugin, new ScheduledAnnouncer(scheduledGames, plugin.getServer()::getOnlinePlayers, messages),
+            ScheduledAnnouncer.PERIOD_TICKS, ScheduledAnnouncer.PERIOD_TICKS);
         HotbarFeatures.start(plugin, core, config, features, commands);
         CommandMapRegistrar.commandMap(plugin.getServer())
             .ifPresent(map -> {

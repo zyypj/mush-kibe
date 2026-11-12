@@ -9,6 +9,8 @@ import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.party.Parties;
 import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.permission.display.NameTags;
+import br.com.muxe.core.bukkit.scheduledgame.ScheduledGames;
+import br.com.muxe.core.bukkit.scheduledgame.ScheduledPlay;
 import br.com.muxe.core.bukkit.scoreboard.SidebarOverrides;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cqrs.command.CommandBus;
@@ -89,4 +91,8 @@ public interface MuxeCore {
     KnockbackService knockback();
 
     CustomRoomKit customRooms();
+
+    ScheduledGames scheduledGames();
+
+    ScheduledPlay scheduledPlay();
 }
