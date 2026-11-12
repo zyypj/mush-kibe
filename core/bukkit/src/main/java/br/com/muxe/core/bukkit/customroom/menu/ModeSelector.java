@@ -63,15 +63,22 @@ public final class ModeSelector {
         if (modes != null) {
             for (String mode : modes.getKeys(false)) {
                 ConfigurationSection entry = modes.getConfigurationSection(mode);
+                String submenu = entry.getString("menu", "");
                 menu.button(entry.getInt("slot"), ItemBuilder.from(entry).lore(translate(lore)), context -> {
-                    if (choice.available().test(game, mode)) {
+                    if (!submenu.isBlank()) {
+                        openModes(context.player(), submenu, choice);
+                    } else if (choice.available().test(game, mode)) {
                         choice.chosen().accept(new Chosen(context.player(), game, mode, Colors.strip(entry.getString("name", mode)), modeIcon(entry)));
                     }
                 });
             }
         }
         int back = section.getInt("back-slot", -1);
-        if (back >= 0) {
+        String parent = section.getString("parent", "");
+        if (back >= 0 && !parent.isBlank()) {
+            String parentTitle = settings.section("mode-menus." + parent).getString("title", "Selecionar modo");
+            menu.button(back, backButton(settings, parentTitle), context -> openModes(context.player(), parent, choice));
+        } else if (back >= 0) {
             menu.button(back, backButton(settings, settings.section("selector").getString("title", "Selecionar modo")), context -> open(context.player(), choice));
         }
         menu.build().open(player);

@@ -785,6 +785,35 @@ custom-room:
           name: "&aBed Wars Mega"
         temporary:
           name: "&aTemporary modes"
+    bedwars-temporary:
+      title: "Select mode (Temporary modes)"
+      modes:
+        boost-solo:
+          name: "&aBed Wars Boost Solo"
+        boost-duplas:
+          name: "&aBed Wars Boost Doubles"
+        hardcore-solo:
+          name: "&aBed Wars Hardcore Solo"
+        hardcore-quartetos:
+          name: "&aBed Wars Hardcore Squads"
+        infection-solo:
+          name: "&aBed Wars Infection Solo"
+        infection-duplas:
+          name: "&aBed Wars Infection Doubles"
+        hook-solo:
+          name: "&aBed Wars Hook Solo"
+        hook-duplas:
+          name: "&aBed Wars Hook Doubles"
+        classico-solo:
+          name: "&aBed Wars Classic Solo"
+        classico-duplas:
+          name: "&aBed Wars Classic Doubles"
+        classico-trios:
+          name: "&aBed Wars Classic Trios"
+        classico-quartetos:
+          name: "&aBed Wars Classic Squads"
+        pilares:
+          name: "&aBed Wars Pillars"
     duels:
       title: "Select mode (Duels)"
       modes:

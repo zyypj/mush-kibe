@@ -1364,6 +1364,73 @@ custom-room:
           slot: 22
           material: SLIME_BALL
           name: "&aModos temporários"
+          menu: bedwars-temporary
+    bedwars-temporary:
+      title: "Selecionar modo (Modos temporários)"
+      rows: 4
+      back-slot: 30
+      game: bedwars
+      parent: bedwars
+      modes:
+        boost-solo:
+          slot: 10
+          material: FIREBALL
+          name: "&aBed Wars Boost Solo"
+        boost-duplas:
+          slot: 11
+          material: FIREBALL
+          amount: 2
+          name: "&aBed Wars Boost Duplas"
+        hardcore-solo:
+          slot: 12
+          material: REDSTONE
+          name: "&aBed Wars Hardcore Solo"
+        hardcore-quartetos:
+          slot: 13
+          material: REDSTONE
+          amount: 4
+          name: "&aBed Wars Hardcore Quartetos"
+        infection-solo:
+          slot: 14
+          material: ROTTEN_FLESH
+          name: "&aBed Wars Infection Solo"
+        infection-duplas:
+          slot: 15
+          material: ROTTEN_FLESH
+          amount: 2
+          name: "&aBed Wars Infection Duplas"
+        hook-solo:
+          slot: 16
+          material: LEASH
+          name: "&aBed Wars Hook Solo"
+        hook-duplas:
+          slot: 19
+          material: LEASH
+          amount: 2
+          name: "&aBed Wars Hook Duplas"
+        classico-solo:
+          slot: 20
+          material: WATCH
+          name: "&aBed Wars Clássico Solo"
+        classico-duplas:
+          slot: 21
+          material: WATCH
+          amount: 2
+          name: "&aBed Wars Clássico Duplas"
+        classico-trios:
+          slot: 22
+          material: WATCH
+          amount: 3
+          name: "&aBed Wars Clássico Trios"
+        classico-quartetos:
+          slot: 23
+          material: WATCH
+          amount: 4
+          name: "&aBed Wars Clássico Quartetos"
+        pilares:
+          slot: 24
+          material: BEDROCK
+          name: "&aBed Wars Pilares"
     duels:
       title: "Selecionar modo (Duels)"
       rows: 5
