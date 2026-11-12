@@ -21,10 +21,10 @@ class BedWarsSchemaTest {
     private final ArenaSchema schema = BedWarsSchema.from(loaded, modes);
 
     @Test
-    void theTenModesHaveTheLimitsOfTheSpec() {
+    void theElevenModesHaveTheLimitsOfTheSpec() {
         assertThat(loaded).extracting(mode -> mode.id() + " " + mode.minPlayers() + "-" + mode.maxPlayers() + " x" + mode.teamSize()).containsExactly(
             "solo 6-8 x1", "duplas 8-16 x2", "trios 6-12 x3", "quartetos 8-16 x4",
-            "1v1 2-2 x1", "2v2 4-4 x2", "3v3 6-6 x3", "4v4 8-8 x4", "4s 8-8 x4", "mega 20-80 x10"
+            "1v1 2-2 x1", "2v2 4-4 x2", "3v3 6-6 x3", "4v4 8-8 x4", "4s 8-8 x4", "mega 20-80 x10", "pilares 4-8 x1"
         );
     }
 
@@ -47,6 +47,8 @@ class BedWarsSchemaTest {
             "spawn", "cama", "loja", "melhorias", "ferro", "ouro");
         assertThat(schema.steps("4s")).extracting(SetupStep::id).contains("loja-extra", "melhorias-extra", "ferro-extra", "ouro-extra");
         assertThat(schema.steps("solo")).filteredOn(SetupStep::perTeam).extracting(SetupStep::id).containsExactly("spawn", "cama", "loja", "melhorias", "ferro", "ouro");
+        assertThat(schema.steps("pilares")).filteredOn(SetupStep::perTeam).extracting(SetupStep::id).containsExactly("spawn", "cama");
+        assertThat(schema.teams("pilares")).isEqualTo(TeamRule.chosen(8));
     }
 
     @Test

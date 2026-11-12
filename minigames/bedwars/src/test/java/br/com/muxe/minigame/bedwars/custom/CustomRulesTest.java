@@ -1,6 +1,7 @@
 package br.com.muxe.minigame.bedwars.custom;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 import br.com.muxe.core.common.customroom.domain.RoomOptions;
 import br.com.muxe.minigame.api.timeline.Timeline;
@@ -56,8 +57,21 @@ class CustomRulesTest {
 
     @Test
     void theDefaultIntervalsRebuildTheSameTimeline() {
-        assertThat(CustomRules.intervals(BASE)).containsExactly(360, 360, 360, 360, 360, 600, 120);
+        assertThat(CustomRules.intervals(BASE)).containsExactly(entry("diamond-2", 360), entry("emerald-2", 360), entry("diamond-3", 360),
+            entry("emerald-3", 360), entry("beds-destroyed", 360), entry("dragons", 600), entry("game-end", 120));
         assertThat(rules(Map.of()).timeline(BASE).entries()).isEqualTo(BASE.entries());
+    }
+
+    @Test
+    void aModeWithOnlyItsBedsAndEndEventsKeepsTheirOwnKeys() {
+        Timeline<BedWarsEvent> pilares = RoomFixtures.SETTINGS.timeline("pilares");
+
+        assertThat(pilares.entries()).extracting(entry -> entry.event().kind() + " " + entry.at())
+            .containsExactly("BEDS_DESTROYED 300", "GAME_END 600");
+        assertThat(CustomRules.intervals(pilares)).containsExactly(entry("beds-destroyed", 300), entry("game-end", 300));
+        assertThat(rules(Map.of("events.beds-destroyed.seconds", "120", "events.diamond-2.seconds", "5")).timeline(pilares).entries())
+            .extracting(Entry::at).containsExactly(120, 420);
+        assertThat(RoomFixtures.SETTINGS.timeline("solo")).isSameAs(BASE);
     }
 
     @Test

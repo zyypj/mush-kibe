@@ -8,7 +8,9 @@ import br.com.muxe.minigame.bedwars.game.BedWarsEvent;
 import br.com.muxe.minigame.bedwars.game.GeneratorTimer.Rate;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public record CustomRules(RoomOptions options, boolean custom) {
@@ -117,9 +119,8 @@ public record CustomRules(RoomOptions options, boolean custom) {
         List<Entry<BedWarsEvent>> changed = new ArrayList<>();
         int previousBase = 0;
         int previous = 0;
-        for (int index = 0; index < ordered.size(); index++) {
-            Entry<BedWarsEvent> entry = ordered.get(index);
-            String key = index < EVENT_KEYS.size() ? EVENT_KEYS.get(index) : "event-" + index;
+        for (Entry<BedWarsEvent> entry : ordered) {
+            String key = key(entry.event());
             int interval = Math.max(0, options.integer("events." + key + ".seconds", entry.at() - previousBase));
             previousBase = entry.at();
             previous += interval;
@@ -130,14 +131,24 @@ public record CustomRules(RoomOptions options, boolean custom) {
         return new Timeline<>(changed);
     }
 
-    public static List<Integer> intervals(Timeline<BedWarsEvent> base) {
-        List<Integer> intervals = new ArrayList<>();
+    public static Map<String, Integer> intervals(Timeline<BedWarsEvent> base) {
+        Map<String, Integer> intervals = new LinkedHashMap<>();
         int previous = 0;
         for (Entry<BedWarsEvent> entry : base.entries()) {
-            intervals.add(entry.at() - previous);
+            intervals.put(key(entry.event()), entry.at() - previous);
             previous = entry.at();
         }
         return intervals;
+    }
+
+    public static String key(BedWarsEvent event) {
+        return switch (event.kind()) {
+            case DIAMOND_TIER -> "diamond-" + event.tier();
+            case EMERALD_TIER -> "emerald-" + event.tier();
+            case BEDS_DESTROYED -> "beds-destroyed";
+            case DRAGONS -> "dragons";
+            case GAME_END -> "game-end";
+        };
     }
 
     private Optional<Integer> amount(String key) {

@@ -203,6 +203,16 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
             playing.state().breakBed(event.getPlayer(), block);
             return;
         }
+        BedWarsMatch state = playing.state();
+        if (state.isTowerBlock(block)) {
+            state.forgetTowerBlock(block);
+            if (state.randomItems()) {
+                event.setCancelled(true);
+                block.setType(Material.AIR, false);
+                playing.runtime().match().unplaced(block.getX(), block.getY(), block.getZ());
+                return;
+            }
+        }
         if (Foliage.isFoliage(block.getType()) && !playing.runtime().match().wasPlaced(block.getX(), block.getY(), block.getZ())) {
             event.setCancelled(true);
             clearFoliage(block);

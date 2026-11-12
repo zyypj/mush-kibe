@@ -8,6 +8,7 @@ import br.com.muxe.minigame.api.timeline.Timeline;
 import br.com.muxe.minigame.bedwars.game.BedWarsEvent.Kind;
 import br.com.muxe.minigame.bedwars.game.BedWarsEvent;
 import br.com.muxe.minigame.bedwars.game.GeneratorTimer.Rate;
+import br.com.muxe.minigame.bedwars.game.RandomItems;
 import br.com.muxe.minigame.bedwars.game.XpRewards;
 import br.com.muxe.minigame.bedwars.item.ItemNames;
 import br.com.muxe.minigame.engine.mode.GameMode;
@@ -23,6 +24,8 @@ public record BedWarsSettings(
     Timings timings,
     Forges forges,
     Timeline<BedWarsEvent> timeline,
+    Map<String, Timeline<BedWarsEvent>> modeTimelines,
+    RandomItems randomItems,
     XpRewards xp,
     Holograms holograms,
     MatchSounds sounds,
@@ -46,11 +49,37 @@ public record BedWarsSettings(
             Timings.from(section(config, "timings")),
             forges,
             timeline(forges, section(config, "events"), names),
+            modeTimelines(section(config, "events").getConfigurationSection("modes"), names),
+            RandomItems.from(config.getConfigurationSection("random-items")),
             XpRewards.from(section(config, "xp-rewards")),
             Holograms.from(section(config, "holograms")),
             MatchSounds.from(config.getConfigurationSection("sounds")),
             ItemNames.from(config.getConfigurationSection("item-names"))
         );
+    }
+
+    public Timeline<BedWarsEvent> timeline(String mode) {
+        return modeTimelines.getOrDefault(mode, timeline);
+    }
+
+    private static Map<String, Timeline<BedWarsEvent>> modeTimelines(ConfigurationSection modes, Localized<ConfigurationSection> names) {
+        Map<String, Timeline<BedWarsEvent>> timelines = new LinkedHashMap<>();
+        if (modes == null) {
+            return timelines;
+        }
+        for (String mode : modes.getKeys(false)) {
+            ConfigurationSection events = section(modes, mode);
+            List<Entry<BedWarsEvent>> list = new ArrayList<>();
+            if (events.contains("beds-destroyed")) {
+                list.add(new Entry<>(new BedWarsEvent(Kind.BEDS_DESTROYED, 0), events.getInt("beds-destroyed"), name(names, "beds-destroyed", "")));
+            }
+            if (events.contains("dragons")) {
+                list.add(new Entry<>(new BedWarsEvent(Kind.DRAGONS, 0), events.getInt("dragons"), name(names, "dragons", "")));
+            }
+            list.add(new Entry<>(new BedWarsEvent(Kind.GAME_END, 0), events.getInt("game-end"), name(names, "game-end", "")));
+            timelines.put(mode, new Timeline<>(list));
+        }
+        return timelines;
     }
 
     public static String roman(int tier) {

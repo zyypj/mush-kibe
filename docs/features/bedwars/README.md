@@ -10,7 +10,7 @@ BedWars for the Muxe network. Lives in `minigames:bedwars` (`Muxe-BedWars`) and 
 
 ## How it works
 
-The plugin loads its ten modes, gives staff the [arena setup](../../architecture/game-engine/README.md#arena-setup) and runs the matches of the server, many at once, each in its own [cell](../../decisions/0009-own-map-format-and-match-cells.md) of the match world. The match lifecycle, joining and leaving, deaths, respawns, spectators, the scoreboard, titles, chat and matchmaking come from the [minigame API](../../architecture/minigame-api/README.md); BedWars adds the beds, forges, shop, upgrades, traps and its other rules on top (`BedWarsGame`, `BedWarsMatch`, `BedWarsHandlers`).
+The plugin loads its eleven modes, gives staff the [arena setup](../../architecture/game-engine/README.md#arena-setup) and runs the matches of the server, many at once, each in its own [cell](../../decisions/0009-own-map-format-and-match-cells.md) of the match world. The match lifecycle, joining and leaving, deaths, respawns, spectators, the scoreboard, titles, chat and matchmaking come from the [minigame API](../../architecture/minigame-api/README.md); BedWars adds the beds, forges, shop, upgrades, traps and its other rules on top (`BedWarsGame`, `BedWarsMatch`, `BedWarsHandlers`).
 
 ### Modes
 
@@ -26,6 +26,16 @@ The plugin loads its ten modes, gives staff the [arena setup](../../architecture
 | 4v4 | 8 | 8 | 4 | Azul, Vermelho |
 | 4s | 8 | 8 | 4 | Azul, Vermelho, on a map with two more islands for resources and NPCs |
 | Mega | 20 | 80 | 10 | 8 of the 9 colours, chosen in the setup; only on [schedule](#mega) |
+| Pilares | 4 | 8 | 1 | 8 of the 9 colours, chosen in the setup; random items, see [Pilares](#pilares) |
+
+### Pilares
+
+- **Mode:** a temporary mode for 8 players, one per team (`pilares`, minimum 4), team colours chosen in the setup. Arenas are named `pilares_<map>` and need only the general steps and each team's `spawn` and `cama` (`islands: false`): no shop, upgrades or forges.
+- **Start:** every player spawns on the team bed with nothing, no sword or armour, and also respawns with nothing. There is no build protection around the spawn, so players build their pillars from the bed.
+- **Items:** every 5 s each player alive gets a random item straight into the inventory, with `random.pop`. Half the time it is a BedWars shop item, delivered as the shop delivers it (team wool, tools by tier, Torre Compacta...), never one still coming soon; otherwise a common game item, 1 to 4 of it (1 if it does not stack). Bedrock, barrier, command blocks, spawner, spawn eggs, portals, dragon egg, chest and bed never come. The action bar counts down `NOVO ITEM EM: 4,8s` with the underlined part shrinking like the slingshot's (`messages.random-item-label`, `random-items` in the configuration).
+- **Events:** the beds are destroyed at 5:00 and the game ends at 10:00 (`events.modes.pilares`). In a custom room the `Sem Camas` and `Fim do Jogo` times count from the previous event, as for the other modes.
+- **Torre Compacta:** breaking a block of a compact tower drops nothing.
+- **Access:** the PILARES NPC of the lobby opens the mode like the others, and `Modos temporários` of the custom room lists it.
 
 ### Mega
 
@@ -428,7 +438,7 @@ A player who leaves with the bed already destroyed counts as a final death (or a
 
 The BedWars lobby (`bedwars-lobby` group) runs Muxe-Lobby plus this plugin in lobby mode. The main game selector, game NPCs and `/jogar bedwars` lead there.
 
-- **Mode NPCs**: SOLO, DUPLAS, TRIOS and QUARTETOS open their mode menu; 1V1/2V2/3V3/4V4/4S opens the duels menu; MEGA does the same as `/megabw` (see [Mega](#mega)); PILARES opens nothing yet. `{players} jogando` counts the players in the rooms of their modes on every BedWars server. The two top lines of PILARES change between white and pink every 0.5 s.
+- **Mode NPCs**: SOLO, DUPLAS, TRIOS and QUARTETOS open their mode menu; 1V1/2V2/3V3/4V4/4S opens the duels menu; MEGA does the same as `/megabw` (see [Mega](#mega)); PILARES opens its mode menu. `{players} jogando` counts the players in the rooms of their modes on every BedWars server. The two top lines of PILARES change between white and pink every 0.5 s.
 - **Mode menu** (`Bed Wars Solo`...): `Bed Wars (Solo)` shows the players of the mode and the top 3 of the daily winstreak, and sends the player to a match; `Selecionar mapa` opens the map menu for players with `muxe.bedwars.map-select` (VIPs) and answers `map-vip-only` to the others; `Treino: Ponte` answers `coming-soon`. The duel modes also have `Voltar`, back to the duels menu.
 - **Level**: the XP bar shows the BedWars level as the XP level and the progress to the next level as the bar, loaded on join and refreshed every 30 seconds.
 - **Map menu** (`Bed Wars 1v1 (1/1)`): the maps of the mode found on the BedWars servers, favourites first, each group in alphabetical order. Left click asks for a room on that map; right click adds or removes the favourite. `Mapa favorito aleatório` joins a random favourite, `Pesquisar` filters by name typed in the chat (accents ignored), and the arrows change page.
@@ -622,7 +632,9 @@ Commands and queries in `br.com.muxe.minigame.bedwars.stats`: `RecordMatchComman
 ## Acceptance criteria
 
 - [x] Modes are loaded from configuration (engine tests).
-- [x] The ten modes have the limits and teams of the spec (`BedWarsSchemaTest`).
+- [x] The eleven modes have the limits and teams of the spec (`BedWarsSchemaTest`).
+- [x] Pilares needs only spawns and beds, draws its items as described and has its own events, keyed by kind in custom rooms (`BedWarsSchemaTest`, `RandomItemsTest`, `CustomRulesTest`); the compact tower is the recorded one in every direction (`CompactTowerTest`).
+- [ ] Pilares and the compact tower checked in game.
 - [x] The Mega forge drops the recorded 5x5 groups facing the spawn, with its own rates (`ForgeLayoutTest`, `ModeForgesTest`); its schedule, announcement and `/megabw` follow the rules above (`WeeklyScheduleTest`, `ScheduledGamesTest`, `ScheduledJoinsTest`, `MatchServiceTest`).
 - [ ] Mega checked in game, with a full map set up.
 - [x] An arena can be set up in game, with a checklist of what is missing (engine tests).
@@ -655,7 +667,7 @@ If an error leaves a player in the flat default world of a match server, they ar
 
 ## Known limitations
 
-- PILARES is not a mode yet, so its NPC opens nothing.
+- In a custom room of Pilares the `Eventos` page still lists every BedWars event with the default times of the other modes; only `Sem Camas` and `Fim do Jogo` change a Pilares match.
 - The bow of the trail preview kit glows instead of carrying Infinity I (enchantments cannot be read from the configuration without a server in the tests); the arrow it shoots is given back by the refill instead.
 - A player who reaches a BedWars server without a reservation still joins a room of `default-mode`.
 - The lobby only knows the rooms of servers that published in the last 10 seconds; the room list of a server that stops is forgotten after that.

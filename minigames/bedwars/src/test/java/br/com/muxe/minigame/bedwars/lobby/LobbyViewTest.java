@@ -49,7 +49,8 @@ class LobbyViewTest {
         assertThat(npcs.get(4).players()).containsExactly("1v1", "2v2", "3v3", "4v4", "4s");
         assertThat(npcs.get(5).action()).isEqualTo("mega");
         assertThat(npcs.get(5).players()).containsExactly("mega");
-        assertThat(npcs.get(6).action()).isEqualTo("nenhuma");
+        assertThat(npcs.get(6).action()).isEqualTo("pilares");
+        assertThat(npcs.get(6).players()).containsExactly("pilares");
         assertThat(stats.spot().x()).isEqualTo(22.5);
         assertThat(BOARDS).extracting(TopBoardSettings::category).containsExactly(TopCategory.FINAL_KILLS, TopCategory.WINS, TopCategory.WINSTREAK, TopCategory.LEVEL);
         assertThat(BOARDS.getLast().periods()).containsExactly(StatsPeriod.TOTAL, StatsPeriod.MONTHLY, StatsPeriod.WEEKLY);

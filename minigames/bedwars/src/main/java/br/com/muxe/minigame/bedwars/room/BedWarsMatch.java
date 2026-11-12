@@ -8,6 +8,7 @@ import br.com.muxe.core.bukkit.hologram.TextHolograms;
 import br.com.muxe.core.bukkit.mission.tracker.MissionTracker;
 import br.com.muxe.core.bukkit.nms.PacketHologramTransport;
 import br.com.muxe.core.bukkit.npc.Npc;
+import br.com.muxe.core.bukkit.text.ActionBar;
 import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.language.domain.Localized;
@@ -37,6 +38,8 @@ import br.com.muxe.minigame.bedwars.game.Cooldowns;
 import br.com.muxe.minigame.bedwars.game.ForgeHeights;
 import br.com.muxe.minigame.bedwars.game.ForgeLayout;
 import br.com.muxe.minigame.bedwars.game.Levels;
+import br.com.muxe.minigame.bedwars.game.RandomItems;
+import br.com.muxe.minigame.bedwars.game.Slingshot;
 import br.com.muxe.minigame.bedwars.level.LevelBar;
 import br.com.muxe.minigame.bedwars.lobby.LevelChat;
 import br.com.muxe.minigame.bedwars.mission.MissionRules;
@@ -90,6 +93,7 @@ public final class BedWarsMatch implements MatchState {
     public static final String GAME = "bedwars";
 
     private static final int RESEND_EVERY = 3;
+    private static final long RANDOM_ITEM_BAR_TICKS = 2L;
     private static final Map<Material, String> LOOT = new LinkedHashMap<>();
     private static final int BED_SEARCH = 2;
     private static final double CHEST_LABEL_RANGE = 48;
@@ -139,7 +143,7 @@ public final class BedWarsMatch implements MatchState {
         this.match = runtime.match();
         this.room = new Room(match, arena);
         this.forges = new RoomForges(services.plugin(), services.localized(), services.languages(), services.displays());
-        this.timeline = settings.timeline();
+        this.timeline = settings.timeline(match.mode().id());
         this.announcer = new KillAnnouncer(services.messageSets(), id -> services.killMessages().of(id, match.code(), ThreadLocalRandom.current()), tally);
     }
 
@@ -192,7 +196,7 @@ public final class BedWarsMatch implements MatchState {
     public void starting() {
         rules = CustomRules.of(runtime.control().options());
         customShop = null;
-        timeline = rules.timeline(settings.timeline());
+        timeline = rules.timeline(settings.timeline(match.mode().id()));
         skipped = 0;
         forges.rules(rules);
         missions = null;
@@ -208,8 +212,9 @@ public final class BedWarsMatch implements MatchState {
                 layout(point, base.spawn())));
             base.gold().forEach(point -> forges.island(color, runtime.location(point), Material.GOLD_INGOT, settings.forges().gold(match.mode().id())));
             boolean teams = match.mode().teamSize() > 1;
-            spawnNpc(color, "loja", base.shop(), services.localized().map(texts -> teams ? texts.holograms().shopTeam() : texts.holograms().shop()));
-            spawnNpc(color, "melhorias", base.upgrades(), services.localized().map(texts -> teams ? texts.holograms().upgradesTeam() : texts.holograms().upgrades()));
+            base.shop().ifPresent(point -> spawnNpc(color, "loja", point, services.localized().map(texts -> teams ? texts.holograms().shopTeam() : texts.holograms().shop())));
+            base.upgrades().ifPresent(point -> spawnNpc(color, "melhorias", point,
+                services.localized().map(texts -> teams ? texts.holograms().upgradesTeam() : texts.holograms().upgrades())));
         }
         arena.diamonds().forEach(point -> forges.shared(runtime.location(point), Material.DIAMOND));
         arena.emeralds().forEach(point -> forges.shared(runtime.location(point), Material.EMERALD));
@@ -234,7 +239,9 @@ public final class BedWarsMatch implements MatchState {
     @Override
     public void spawned(Participant participant) {
         runtime.player(participant.id()).ifPresent(player -> {
-            Kits.spawnKit(player, room.player(participant.id()), room.team(participant.team()), services.settings(participant.id()).items());
+            if (!randomItems()) {
+                Kits.spawnKit(player, room.player(participant.id()), room.team(participant.team()), services.settings(participant.id()).items());
+            }
             if (rules.creative()) {
                 player.setGameMode(GameMode.CREATIVE);
             }
@@ -244,6 +251,57 @@ public final class BedWarsMatch implements MatchState {
     @Override
     public void started() {
         findIslandChests();
+        if (randomItems()) {
+            startRandomItems();
+        }
+    }
+
+    public boolean randomItems() {
+        return settings.randomItems().in(match.mode().id());
+    }
+
+    private void startRandomItems() {
+        RandomItems items = settings.randomItems();
+        Instant[] next = {core.clock().instant().plus(items.every())};
+        BukkitTask[] task = new BukkitTask[1];
+        task[0] = services.plugin().getServer().getScheduler().runTaskTimer(services.plugin(), () -> {
+            if (match.phase() != MatchPhase.PLAYING) {
+                task[0].cancel();
+                towers.remove(task[0]);
+                return;
+            }
+            Instant now = core.clock().instant();
+            if (!now.isBefore(next[0])) {
+                next[0] = now.plus(items.every());
+                giveRandomItems(items);
+            }
+            Duration left = Duration.between(now, next[0]);
+            for (Participant participant : match.players()) {
+                if (participant.isAlive()) {
+                    runtime.player(participant.id()).ifPresent(player -> ActionBar.send(player, Slingshot.actionBar(messages.get(player, "random-item-label"),
+                        messages.get(player, "decimal-separator"), left, items.every())));
+                }
+            }
+        }, RANDOM_ITEM_BAR_TICKS, RANDOM_ITEM_BAR_TICKS);
+        towers.add(task[0]);
+    }
+
+    private void giveRandomItems(RandomItems items) {
+        List<String> shopItems = services.gifts().items();
+        for (Participant participant : match.players()) {
+            if (!participant.isAlive()) {
+                continue;
+            }
+            runtime.player(participant.id()).ifPresent(player -> {
+                RandomItems.Draw draw = items.draw(ThreadLocalRandom.current(), shopItems);
+                boolean fromShop = draw instanceof RandomItems.ShopDraw shop && services.gifts().give(player, runtime, shop.itemId());
+                if (!fromShop) {
+                    RandomItems.GameDraw game = draw instanceof RandomItems.GameDraw found ? found : items.game(ThreadLocalRandom.current());
+                    player.getInventory().addItem(new ItemStack(game.material(), game.amount()));
+                }
+                player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1f, 1f);
+            });
+        }
     }
 
     @Override
@@ -468,12 +526,12 @@ public final class BedWarsMatch implements MatchState {
         if (arena.buildLimit().isPresent() && at.getBlockY() > arena.buildLimit().getAsInt()) {
             return false;
         }
-        int spawn = settings.timings().spawnRadius();
+        int spawn = randomItems() ? -1 : settings.timings().spawnRadius();
         int npc = settings.timings().npcRadius();
         int generator = settings.timings().generatorRadius();
         int island = settings.forges().fiveByFive(match.mode().id()) ? Math.max(generator, ForgeLayout.FIVE_BY_FIVE_RADIUS) : generator;
         for (TeamBase base : arena.teams().values()) {
-            if (near(at, base.spawn(), spawn, -2, 5) || near(at, base.shop(), npc, -1, 4) || near(at, base.upgrades(), npc, -1, 4)) {
+            if (near(at, base.spawn(), spawn, -2, 5) || base.shop().filter(point -> near(at, point, npc, -1, 4)).isPresent() || base.upgrades().filter(point -> near(at, point, npc, -1, 4)).isPresent()) {
                 return false;
             }
             for (Point point : base.iron()) {

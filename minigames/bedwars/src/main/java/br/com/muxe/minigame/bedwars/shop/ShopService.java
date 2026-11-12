@@ -355,6 +355,31 @@ public final class ShopService {
         MatchSounds.play(sounds.bought(), player);
     }
 
+    public List<String> giftable() {
+        ShopCatalog shop = shops.standard();
+        return shop.sellable().stream()
+            .map(shop.items()::get)
+            .filter(item -> item != null && item.enabled() && (item.type() != ShopCatalog.Type.SPECIAL || BUYABLE_SPECIALS.contains(item.id())))
+            .map(ShopItem::id)
+            .toList();
+    }
+
+    public boolean gift(Player player, MatchRuntime<BedWarsMatch> runtime, String itemId) {
+        Optional<Participant> participant = runtime.match().player(player.getUniqueId());
+        ShopCatalog shop = shop(player);
+        ShopItem item = shop.items().get(itemId);
+        if (participant.isEmpty() || participant.get().team() == null || item == null) {
+            return false;
+        }
+        RoomPlayer roomPlayer = runtime.state().room().player(participant.get().id());
+        Optional<Offer> offer = offer(runtime, item, roomPlayer, shop);
+        if (offer.isEmpty() || offer.get().alreadyHad() || offer.get().state() == Offer.State.MAXED) {
+            return false;
+        }
+        give(player, roomPlayer, runtime.state().room().team(participant.get().team()), item, offer.get(), offer.get().boughtName(shop.texts()));
+        return true;
+    }
+
     private void give(Player player, RoomPlayer roomPlayer, RoomTeam team, ShopItem item, Offer offer, String bought) {
         PlayerInventory inventory = player.getInventory();
         Tier tier = offer.tier();

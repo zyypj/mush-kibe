@@ -96,7 +96,9 @@ public final class Room {
     public Area area() {
         List<Point> points = new ArrayList<>();
         for (TeamBase base : arena.teams().values()) {
-            points.addAll(List.of(base.spawn(), base.bed(), base.shop(), base.upgrades()));
+            points.addAll(List.of(base.spawn(), base.bed()));
+            base.shop().ifPresent(points::add);
+            base.upgrades().ifPresent(points::add);
             points.addAll(base.iron());
             points.addAll(base.gold());
         }

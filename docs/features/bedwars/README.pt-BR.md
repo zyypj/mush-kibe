@@ -10,7 +10,7 @@ BedWars para a rede Muxe. Fica no `minigames:bedwars` (`Muxe-BedWars`) e roda no
 
 ## Como funciona
 
-O plugin carrega os dez modos, dá à staff o [setup de arenas](../../architecture/game-engine/README.pt-BR.md#setup-de-arenas) e roda as partidas do servidor, várias ao mesmo tempo, cada uma na própria [célula](../../decisions/0009-own-map-format-and-match-cells.pt-BR.md) do mundo das partidas. O ciclo de vida da partida, entrada e saída, mortes, renascimento, espectadores, o placar, títulos, chat e matchmaking vêm da [API de minigames](../../architecture/minigame-api/README.pt-BR.md); o BedWars acrescenta as camas, forjas, loja, melhorias, armadilhas e as outras regras dele por cima (`BedWarsGame`, `BedWarsMatch`, `BedWarsHandlers`).
+O plugin carrega os onze modos, dá à staff o [setup de arenas](../../architecture/game-engine/README.pt-BR.md#setup-de-arenas) e roda as partidas do servidor, várias ao mesmo tempo, cada uma na própria [célula](../../decisions/0009-own-map-format-and-match-cells.pt-BR.md) do mundo das partidas. O ciclo de vida da partida, entrada e saída, mortes, renascimento, espectadores, o placar, títulos, chat e matchmaking vêm da [API de minigames](../../architecture/minigame-api/README.pt-BR.md); o BedWars acrescenta as camas, forjas, loja, melhorias, armadilhas e as outras regras dele por cima (`BedWarsGame`, `BedWarsMatch`, `BedWarsHandlers`).
 
 ### Modos
 
@@ -26,6 +26,16 @@ O plugin carrega os dez modos, dá à staff o [setup de arenas](../../architectu
 | 4v4 | 8 | 8 | 4 | Azul, Vermelho |
 | 4s | 8 | 8 | 4 | Azul, Vermelho, num mapa com mais duas ilhas de recursos e NPCs |
 | Mega | 20 | 80 | 10 | 8 das 9 cores, escolhidas no setup; só no [horário](#mega) |
+| Pilares | 4 | 8 | 1 | 8 das 9 cores, escolhidas no setup; itens aleatórios, veja [Pilares](#pilares) |
+
+### Pilares
+
+- **Modo:** um modo temporário para 8 jogadores, um por time (`pilares`, mínimo 4), cores dos times escolhidas no setup. As arenas se chamam `pilares_<mapa>` e só precisam das etapas gerais e do `spawn` e da `cama` de cada time (`islands: false`): sem loja, melhorias ou forjas.
+- **Início:** todo jogador nasce na cama do time sem nada, sem espada nem armadura, e também renasce sem nada. Não há proteção de construção em volta do spawn, então os jogadores constroem os pilares a partir da cama.
+- **Itens:** a cada 5 s cada jogador vivo recebe um item aleatório direto no inventário, com `random.pop`. Metade das vezes é um item da loja do BedWars, entregue como a loja entrega (lã do time, ferramentas por nível, Torre Compacta...), nunca um que ainda chega em breve; senão, um item comum do jogo, de 1 a 4 (1 se não empilha). Bedrock, barreira, blocos de comando, spawner, ovos de spawn, portais, ovo do dragão, baú e cama nunca vêm. A action bar conta `NOVO ITEM EM: 4,8s` com a parte sublinhada encolhendo como a do estilingue (`messages.random-item-label`, `random-items` na configuração).
+- **Eventos:** as camas são destruídas aos 5:00 e o jogo acaba aos 10:00 (`events.modes.pilares`). Numa sala custom, os tempos de `Sem Camas` e `Fim do Jogo` contam a partir do evento anterior, como nos outros modos.
+- **Torre Compacta:** quebrar um bloco de uma torre compacta não dropa nada.
+- **Acesso:** o NPC PILARES do lobby abre o modo como os outros, e os `Modos temporários` da sala custom o listam.
 
 ### Mega
 
@@ -428,7 +438,7 @@ Um jogador que sai com a cama já destruída conta como morte final (ou kill fin
 
 O lobby do BedWars (grupo `bedwars-lobby`) roda o Muxe-Lobby e este plugin no modo lobby. O seletor de jogo principal, os NPCs de jogo e o `/jogar bedwars` levam para lá.
 
-- **NPCs de modo**: SOLO, DUPLAS, TRIOS e QUARTETOS abrem o menu do modo; 1V1/2V2/3V3/4V4/4S abre o menu de duelos; MEGA faz o mesmo que o `/megabw` (veja [Mega](#mega)); PILARES ainda não abre nada. `{players} jogando` conta os jogadores nas salas dos seus modos em todos os servidores de BedWars. As duas linhas de cima do PILARES trocam entre branco e rosa a cada 0,5 s.
+- **NPCs de modo**: SOLO, DUPLAS, TRIOS e QUARTETOS abrem o menu do modo; 1V1/2V2/3V3/4V4/4S abre o menu de duelos; MEGA faz o mesmo que o `/megabw` (veja [Mega](#mega)); PILARES abre o menu do modo. `{players} jogando` conta os jogadores nas salas dos seus modos em todos os servidores de BedWars. As duas linhas de cima do PILARES trocam entre branco e rosa a cada 0,5 s.
 - **Menu do modo** (`Bed Wars Solo`...): `Bed Wars (Solo)` mostra os jogadores do modo e o top 3 do winstreak diário, e manda o jogador para uma partida; `Selecionar mapa` abre o menu de mapas para quem tem `muxe.bedwars.map-select` (VIPs) e responde `map-vip-only` para os outros; `Treino: Ponte` responde `coming-soon`. Os modos de duelo também têm `Voltar`, para o menu de duelos.
 - **Nível**: a barra de XP mostra o nível do BedWars como nível de XP e o progresso até o próximo nível como a barra, carregados ao entrar e atualizados a cada 30 segundos.
 - **Menu de mapas** (`Bed Wars 1v1 (1/1)`): os mapas do modo encontrados nos servidores de BedWars, favoritos primeiro, cada grupo em ordem alfabética. Botão esquerdo pede uma sala naquele mapa; botão direito adiciona ou remove o favorito. `Mapa favorito aleatório` entra num favorito aleatório, `Pesquisar` filtra pelo nome digitado no chat (sem diferenciar acentos) e as setas trocam de página.
@@ -622,7 +632,9 @@ Comandos e consultas em `br.com.muxe.minigame.bedwars.stats`: `RecordMatchComman
 ## Critérios de aceitação
 
 - [x] Os modos são carregados da configuração (testes do motor).
-- [x] Os dez modos têm os limites e os times da especificação (`BedWarsSchemaTest`).
+- [x] Os onze modos têm os limites e os times da especificação (`BedWarsSchemaTest`).
+- [x] O Pilares só precisa de spawns e camas, sorteia os itens como descrito e tem os próprios eventos, associados pelo tipo nas salas custom (`BedWarsSchemaTest`, `RandomItemsTest`, `CustomRulesTest`); a torre compacta é a gravada em todas as direções (`CompactTowerTest`).
+- [ ] Pilares e torre compacta conferidos no jogo.
 - [x] A forja do Mega solta os grupos 5x5 gravados, virada para o spawn, com as próprias taxas (`ForgeLayoutTest`, `ModeForgesTest`); o horário, o aviso e o `/megabw` seguem as regras acima (`WeeklyScheduleTest`, `ScheduledGamesTest`, `ScheduledJoinsTest`, `MatchServiceTest`).
 - [ ] Mega conferido no jogo, com um mapa completo montado.
 - [x] Uma arena pode ser configurada no jogo, com uma checklist do que falta (testes do motor).
@@ -655,7 +667,7 @@ Se um erro deixar o jogador no mundo padrão plano de um servidor de partidas, e
 
 ## Limitações conhecidas
 
-- PILARES ainda não é um modo, então o NPC dele não abre nada.
+- Numa sala custom do Pilares, a página `Eventos` ainda lista todos os eventos do BedWars com os tempos padrão dos outros modos; só `Sem Camas` e `Fim do Jogo` mudam uma partida de Pilares.
 - O arco do kit da prévia de rastro brilha em vez de ter Infinidade I (encantamentos não podem ser lidos da configuração sem servidor nos testes); a flecha que ele atira volta pelo reabastecimento.
 - Quem chega a um servidor de BedWars sem reserva ainda entra numa sala do `default-mode`.
 - O lobby só conhece as salas dos servidores que publicaram nos últimos 10 segundos; a lista de um servidor que para é esquecida depois disso.

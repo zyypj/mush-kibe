@@ -75,6 +75,12 @@ modes:
     min-players: 20
     max-players: 80
     team-size: 10
+  pilares:
+    display-name: Pilares
+    min-players: 4
+    max-players: 8
+    team-size: 1
+    islands: false
 
 lobby-group: bedwars-lobby
 default-mode: solo
@@ -714,6 +720,29 @@ events:
     beds-destroyed: "Camas destruídas"
     dragons: "Morte súbita"
     game-end: "Fim de jogo"
+  modes:
+    pilares:
+      beds-destroyed: 300
+      game-end: 600
+
+random-items:
+  modes:
+    - pilares
+  every-seconds: 5
+  shop-chance: 0.5
+  max-amount: 4
+  excluded:
+    - BEDROCK
+    - BARRIER
+    - COMMAND
+    - COMMAND_MINECART
+    - MOB_SPAWNER
+    - MONSTER_EGG
+    - MONSTER_EGGS
+    - ENDER_PORTAL_FRAME
+    - DRAGON_EGG
+    - CHEST
+    - BED
 
 levels:
   badges:
@@ -1138,6 +1167,7 @@ messages:
   result-nobody: "<center>&7Ninguém"
   coming-soon: "&cEste item chega em breve."
   tower-cooldown: "&cAguarde {time}s para colocar outra torre."
+  random-item-label: "NOVO ITEM EM:"
   unknown-mode: "&cModo inválido. Modos: &f{modes}&c."
   forced-start: "&aA partida vai começar."
   cannot-force-start: "&cVocê não está numa sala de espera."
@@ -3736,7 +3766,7 @@ lobby:
         - "&b&lMEGA"
         - "&e{players} jogando"
     pilares:
-      action: nenhuma
+      action: pilares
       location:
         world: lobby
         x: 0.5
@@ -3746,6 +3776,8 @@ lobby:
       skin:
         value: "ewogICJ0aW1lc3RhbXAiIDogMTc4NTAyMjMwOTQyOSwKICAicHJvZmlsZUlkIiA6ICJhNWM5MmJlODg5MGY0NDU0OTdkNGEwOTM2Yjg1NDc5OSIsCiAgInByb2ZpbGVOYW1lIiA6ICJDbG93ZGVyVGVjaCIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jMWViMjVkNTdkMWUwNjExZjE2OGZlMjIwYmE2ZjBiMTE4M2ZkMWQ0ZGZhYzQ5ZTYwY2Y4OTAwNGFhMzUwZTk4IiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0="
         signature: "FoyCuXYBgHoAdCdbZaDMFMmWARIxiL0f4L4vG3Jyj4om3o8rhKRS2KlUw11vAH/PqJfs1QAlcOlqfvbapiAyD9uBDJL0hM9p+PhjMQOWzonY5af/Nh49fhozjCEu+LCNOvjIN/kNGN+Oomyuae2x08Ak3LKfIdjbbGvuM4nOQzrrf//KxNOc5rH1xX0cM/YpqhQuC/hNIc6MsFc5KaJ5jxDpHcqsG7og7ncc4dL6slwjQtMbYuGOpcBoF+iXaQw3pdSDdFbItg77oV3V9fqDwfMacrQaYCUCHC1Q8OmFmsub3cs2svlWR2JJoneBoOZkNUfEGdfmTyXtbvvuIwcGMzxJYtI/Nm77cNXXz3lJm8CBRaVFxO2XGghr0z/rr6rfK3JowoExkd0Sc3ZMjSzhxrV0yZTm4jdfUwZ9h6pnGe8rgKn75QA/5r8lJtRqtS7xxwHO6z9iAuxslPPDA5lfWwsDute4EOrEesx0UT/mCMWOt+snozaxSJ5sfx+j5HlIcD3l+SdS73CHcivxjlfrKQ5hMi/c/NqJZEwF5IKKpE7kJ+48iThu+zdPc5M5UgDmQ453jwob2E7biXoqtRt4CYCV2up0Q6LutnI975oMsbuNXCcV5Rl1edqgVsDEO0Wgbh/GFm5LwxhtIevDLrv/sYSnQkYOhOh1svc3GM3PAr4="
+      players:
+        - "pilares"
       lines:
         - "{blink}&lNOVO MODO"
         - "{blink}&lTEMPORARIO!"

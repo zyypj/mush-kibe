@@ -38,7 +38,8 @@ public record BedWarsServices(
     KillMessages killMessages,
     BedBreakHandler bedBreaks,
     LevelUps levelUps,
-    LevelBadges levelBadges
+    LevelBadges levelBadges,
+    ShopGifts gifts
 ) {
 
     public BedWarsSettings settings() {

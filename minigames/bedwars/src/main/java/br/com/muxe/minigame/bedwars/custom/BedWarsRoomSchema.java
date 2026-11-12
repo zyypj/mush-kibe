@@ -14,6 +14,7 @@ import br.com.muxe.minigame.bedwars.shop.UpgradeCatalog;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import org.bukkit.configuration.ConfigurationSection;
@@ -126,11 +127,11 @@ public final class BedWarsRoomSchema {
         if (entries == null) {
             return;
         }
-        List<Integer> intervals = CustomRules.intervals(timeline);
-        for (int index = 0; index < CustomRules.EVENT_KEYS.size() && index < intervals.size(); index++) {
-            ConfigurationSection entry = entries.getConfigurationSection(CustomRules.EVENT_KEYS.get(index));
-            if (entry != null) {
-                entry.set("default", intervals.get(index));
+        Map<String, Integer> intervals = CustomRules.intervals(timeline);
+        for (String key : CustomRules.EVENT_KEYS) {
+            ConfigurationSection entry = entries.getConfigurationSection(key);
+            if (entry != null && intervals.containsKey(key)) {
+                entry.set("default", intervals.get(key));
             }
         }
     }

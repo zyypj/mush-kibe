@@ -40,10 +40,14 @@ public final class BedWarsSchema {
 
     public static ArenaSchema from(List<GameMode> modes, ConfigurationSection section) {
         Set<String> extraIslands = new HashSet<>();
+        Set<String> islands = new HashSet<>();
         for (GameMode mode : modes) {
             ConfigurationSection modeSection = section.getConfigurationSection(mode.id());
             if (modeSection != null && modeSection.getBoolean("extra-islands", false)) {
                 extraIslands.add(mode.id());
+            }
+            if (modeSection == null || modeSection.getBoolean("islands", true)) {
+                islands.add(mode.id());
             }
         }
         return ArenaSchema.builder(modes)
@@ -52,7 +56,8 @@ public final class BedWarsSchema {
             .voidHeight()
             .step(BUILD_LIMIT, DIAMOND, EMERALD)
             .teamSpawn()
-            .step(BED, SHOP, UPGRADES, IRON, GOLD)
+            .step(BED)
+            .stepsFor(islands, SHOP, UPGRADES, IRON, GOLD)
             .stepsFor(extraIslands, EXTRA_SHOP, EXTRA_UPGRADES, EXTRA_IRON, EXTRA_GOLD)
             .linked(new LinkedBlock(BED, Set.of(BED_MATERIAL), BED_SEARCH_RADIUS))
             .fixedTeams(section)

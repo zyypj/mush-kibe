@@ -29,6 +29,7 @@ import br.com.muxe.minigame.api.cosmetic.trail.TrailTask;
 import br.com.muxe.minigame.api.match.MatchPhase;
 import br.com.muxe.minigame.api.matchmaking.MatchConnector;
 import br.com.muxe.minigame.api.matchmaking.ScheduledJoins;
+import br.com.muxe.minigame.api.runtime.MatchRuntime;
 import br.com.muxe.minigame.api.runtime.MatchService;
 import br.com.muxe.minigame.api.settings.MatchSettings;
 import br.com.muxe.minigame.api.view.EndTitles;
@@ -63,6 +64,7 @@ import br.com.muxe.minigame.bedwars.quickbuy.domain.QuickBuy;
 import br.com.muxe.minigame.bedwars.room.BedWarsGame;
 import br.com.muxe.minigame.bedwars.room.BedWarsMatch;
 import br.com.muxe.minigame.bedwars.room.BedWarsServices;
+import br.com.muxe.minigame.bedwars.room.ShopGifts;
 import br.com.muxe.minigame.bedwars.settings.BedWarsSettings;
 import br.com.muxe.minigame.bedwars.shop.QuickBuyEditor;
 import br.com.muxe.minigame.bedwars.shop.QuickBuys;
@@ -91,6 +93,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class BedWarsBootstrap {
@@ -181,9 +184,10 @@ public final class BedWarsBootstrap {
             (viewer, npc) -> Optional.ofNullable(npcLines.get(npc.id())).map(lines -> lines.in(core.languages().of(viewer))).orElse(List.of()));
         displays = DisplayService.start(plugin);
         LevelBadges badges = LevelBadges.from(config.getConfigurationSection("levels"));
+        ShopGifts gifts = new ShopGifts();
         BedWarsServices services = new BedWarsServices(plugin, core, settings, core.languages(), messages, npcs, npcLines, displays, missions,
             MissionRules.from(config.getConfigurationSection("missions")), preferences, cosmetics.messageSets(), cosmetics.killMessages(), cosmetics.bedBreaks(),
-            new LevelUps(messages.text("level-up"), badges::of, core.languages()), badges);
+            new LevelUps(messages.text("level-up"), badges::of, core.languages()), badges, gifts);
         MatchServer<BedWarsArena, BedWarsMatch> server = minigame.matches(new BedWarsGame(services, teamColors::preferred), cosmetics);
         MatchService<BedWarsArena, BedWarsMatch> rooms = server.service();
         Localized<UpgradeCatalog> upgrades = texts.map(root -> UpgradeCatalog.from(section(root, "upgrades")));
@@ -203,6 +207,17 @@ public final class BedWarsBootstrap {
             hotbarEditor,
             cosmetics.woods()
         );
+        gifts.use(new ShopGifts.Source() {
+            @Override
+            public List<String> items() {
+                return shop.giftable();
+            }
+
+            @Override
+            public boolean give(Player player, MatchRuntime<BedWarsMatch> runtime, String itemId) {
+                return shop.gift(player, runtime, itemId);
+            }
+        });
         npcs.onClick((player, npc) -> rooms.of(player.getUniqueId()).ifPresent(runtime -> {
             if (!runtime.state().hasNpc(npc.id()) || runtime.match().phase() != MatchPhase.PLAYING || runtime.isSpectator(player.getUniqueId())) {
                 return;

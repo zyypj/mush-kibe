@@ -8,6 +8,7 @@ import br.com.muxe.minigame.engine.team.TeamColor;
 import br.com.muxe.minigame.engine.world.map.MapTemplate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 public record BedWarsArena(
@@ -45,8 +46,8 @@ public record BedWarsArena(
             color,
             arena.point(BedWarsSchema.SPAWN, color),
             arena.point(BedWarsSchema.BED, color),
-            arena.point(BedWarsSchema.SHOP, color),
-            arena.point(BedWarsSchema.UPGRADES, color),
+            arena.points(BedWarsSchema.SHOP, color).stream().findFirst(),
+            arena.points(BedWarsSchema.UPGRADES, color).stream().findFirst(),
             arena.points(BedWarsSchema.IRON, color),
             arena.points(BedWarsSchema.GOLD, color)
         ));
@@ -70,6 +71,6 @@ public record BedWarsArena(
         );
     }
 
-    public record TeamBase(TeamColor color, Point spawn, Point bed, Point shop, Point upgrades, List<Point> iron, List<Point> gold) {
+    public record TeamBase(TeamColor color, Point spawn, Point bed, Optional<Point> shop, Optional<Point> upgrades, List<Point> iron, List<Point> gold) {
     }
 }
