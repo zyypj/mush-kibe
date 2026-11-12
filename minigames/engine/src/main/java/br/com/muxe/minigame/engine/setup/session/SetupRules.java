@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public final class SetupRules {
 
-    public static final double VOID_Y = 0;
+    public static final double VOID_Y = -60;
 
     private SetupRules() {
     }

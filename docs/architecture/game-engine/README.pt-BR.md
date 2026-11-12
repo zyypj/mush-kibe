@@ -72,7 +72,7 @@ Cada jogo descreve o que uma arena precisa num `SetupSchema`, e a engine dá a t
 2. Senão (sem mapa, ou com um mapa salvo vazio), se a pasta do servidor tem uma pasta de mundo chamada `<nome>`, ela é convertida para o formato de mapa da Muxe na hora, guardada e carregada.
 3. Senão, um mundo vazio é criado, e o jogador chega em `0 60 0` para construir ou colar o mapa.
 
-O mundo de setup é um mundo `muxe_setup_<nome>`, editado no criativo e voando. Vários membros da staff podem editá-lo juntos. `SetupService.onEnter` e `onLeave` rodam quando um jogador começa e para de editar; um jogo pode usá-los, por exemplo, para colocar a staff no modo construção num lobby. Cair abaixo do Y 0 leva o editor de volta ao início do mundo de setup em vez de tirá-lo dele, e o chat fica dentro de cada setup: os editores só ouvem os editores da mesma arena, e quem está fora de um setup não os ouve.
+O mundo de setup é um mundo `muxe_setup_<nome>`, editado no criativo e voando. Vários membros da staff podem editá-lo juntos. `SetupService.onEnter` e `onLeave` rodam quando um jogador começa e para de editar; um jogo pode usá-los, por exemplo, para colocar a staff no modo construção num lobby. Os editores podem descer abaixo do Y 0; cair abaixo do Y -60 leva o editor de volta ao início do mundo de setup em vez de tirá-lo dele, e o chat fica dentro de cada setup: os editores só ouvem os editores da mesma arena, e quem está fora de um setup não os ouve.
 
 | Comando | O que faz |
 |---|---|

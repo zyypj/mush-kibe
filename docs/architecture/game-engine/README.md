@@ -72,7 +72,7 @@ Each game describes what an arena needs in a `SetupSchema`, and the engine gives
 2. Otherwise (no map, or one saved empty), if the server folder has a world folder named `<name>`, it is converted to the Muxe map format right away, stored and loaded.
 3. Otherwise an empty world is created, and the player arrives at `0 60 0` to build or paste the map.
 
-The setup world is a `muxe_setup_<name>` world, edited in creative and flying. Several staff members may edit it together. `SetupService.onEnter` and `onLeave` run when a player starts and stops editing; a game can use them, for example, to put staff in build mode on a lobby. Falling below Y 0 brings the editor back to the start of the setup world instead of leaving it, and chat stays inside each setup: editors only hear the editors of the same arena, and players outside a setup do not hear them.
+The setup world is a `muxe_setup_<name>` world, edited in creative and flying. Several staff members may edit it together. `SetupService.onEnter` and `onLeave` run when a player starts and stops editing; a game can use them, for example, to put staff in build mode on a lobby. Editors may go below Y 0; falling below Y -60 brings the editor back to the start of the setup world instead of leaving it, and chat stays inside each setup: editors only hear the editors of the same arena, and players outside a setup do not hear them.
 
 | Command | What it does |
 |---|---|

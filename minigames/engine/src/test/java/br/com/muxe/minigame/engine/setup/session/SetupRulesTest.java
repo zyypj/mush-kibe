@@ -20,8 +20,10 @@ class SetupRulesTest {
     }
 
     @Test
-    void onlyFallingBelowTheWorldCountsAsTheVoid() {
-        assertThat(SetupRules.fellIntoVoid(-0.5)).isTrue();
-        assertThat(SetupRules.fellIntoVoid(0)).isFalse();
+    void editorsMayGoBelowZeroAndOnlyFallingPastMinusSixtyCountsAsTheVoid() {
+        assertThat(SetupRules.fellIntoVoid(-0.5)).isFalse();
+        assertThat(SetupRules.fellIntoVoid(-59.5)).isFalse();
+        assertThat(SetupRules.fellIntoVoid(-60)).isFalse();
+        assertThat(SetupRules.fellIntoVoid(-60.5)).isTrue();
     }
 }
