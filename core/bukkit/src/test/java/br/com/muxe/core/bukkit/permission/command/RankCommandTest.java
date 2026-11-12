@@ -108,9 +108,13 @@ class RankCommandTest {
 
         assertThat(staff.messages()).first().isEqualTo("§6§lCARGOS §8» §7do maior para o menor");
         assertThat(staff.messages()).contains(
-            "§8• §cAdmin §8(admin) §7peso §f150 §8- §7herda §5Mod+",
+            "§8• §4Admin §8(admin) §7peso §f150 §8- §7herda §5Mod+",
+            "§8• §5Mod §8(mod) §7peso §f130 §8- §7herda §5Trial",
+            "§8• §5Trial §8(trial) §7peso §f126 §8- §7herda §9Helper",
+            "§8• §9Helper §8(helper) §7peso §f124 §8- §7herda §2Builder",
+            "§8• §2Builder §8(builder) §7peso §f122 §8- §7herda §3Partner+",
             "§8• §7Membro §8(membro) §7peso §f0 §8- §7herda §7nenhum",
-            "§8• §fdoacao§8: §7Membro §8→ §aVIP §8→ §9MVP §8→ §6Pro §8→ §dUltra §8→ §dUltra§6+",
+            "§8• §fdoacao§8: §7Membro §8→ §aVIP §8→ §9MVP §8→ §6Pro §8→ §dUltra §8→ §5Ultra§6+",
             "§6§lCARGO §8» §9MVP §8(mvp)",
             "§7Peso: §f20",
             "§7Tag: §9MVP §8(no chat: §9§lMVP §9Steve§8)",

@@ -35,7 +35,7 @@ class PermissionModelTest {
 
         assertThat(vip.display()).isEqualTo("&aVIP");
         assertThat(vip.formatName("tadeu")).isEqualTo("&a&lVIP &atadeu");
-        assertThat(PermissionFixtures.DATA.tag("partner+").orElseThrow().chatPrefix()).isEqualTo("&1&lPARTNER+ ");
+        assertThat(PermissionFixtures.DATA.tag("partner+").orElseThrow().chatPrefix()).isEqualTo("&3&lPARTNER+ ");
         assertThat(membro.formatName("tadeu")).isEqualTo("&7tadeu");
         assertThat(vip.permission()).isEqualTo("muxe.tag.vip");
         assertThatThrownBy(() -> new Tag("x", "X", "&z", 0, Optional.empty(), true)).isInstanceOf(IllegalArgumentException.class);
@@ -80,7 +80,7 @@ class PermissionModelTest {
     @Test
     void theSeededDataFollowsTheHierarchy() {
         assertThat(PermissionRules.check(PermissionFixtures.DATA)).isEmpty();
-        assertThat(PermissionFixtures.DATA.tagsByWeight()).extracting(Tag::id).startsWith("admin", "mod+", "mod", "partner+", "partner", "ferias-2", "ferias");
+        assertThat(PermissionFixtures.DATA.tagsByWeight()).extracting(Tag::id).startsWith("admin", "mod+", "mod", "trial", "helper", "builder", "partner+", "partner", "yt", "stream", "champion", "beta", "nitro");
         assertThat(PermissionFixtures.DATA.groupsByWeight()).extracting(Group::id).endsWith("vip", "membro");
     }
 

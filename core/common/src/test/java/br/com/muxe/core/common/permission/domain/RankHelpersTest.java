@@ -78,7 +78,9 @@ class RankHelpersTest {
         assertThat(move(TrackMove.promote(DONATION, user(), NOW))).isEqualTo(new TrackMove(Optional.empty(), Optional.of("vip")));
         assertThat(move(TrackMove.promote(DONATION, user(PermissionNode.group("vip", Optional.empty(), NOW)), NOW)))
             .isEqualTo(new TrackMove(Optional.of("vip"), Optional.of("mvp")));
-        assertThat(move(TrackMove.promote(STAFF, user(), NOW))).isEqualTo(new TrackMove(Optional.empty(), Optional.of("mod")));
+        assertThat(move(TrackMove.promote(STAFF, user(), NOW))).isEqualTo(new TrackMove(Optional.empty(), Optional.of("builder")));
+        assertThat(move(TrackMove.promote(STAFF, user(PermissionNode.group("trial", Optional.empty(), NOW)), NOW)))
+            .isEqualTo(new TrackMove(Optional.of("trial"), Optional.of("mod")));
         assertThat(TrackMove.promote(DONATION, user(PermissionNode.group("ultra+", Optional.empty(), NOW)), NOW).isFailure()).isTrue();
     }
 
@@ -89,7 +91,9 @@ class RankHelpersTest {
         assertThat(move(TrackMove.demote(DONATION, user(PermissionNode.group("vip", Optional.empty(), NOW)), NOW)))
             .isEqualTo(new TrackMove(Optional.of("vip"), Optional.empty()));
         assertThat(move(TrackMove.demote(STAFF, user(PermissionNode.group("mod", Optional.empty(), NOW)), NOW)))
-            .isEqualTo(new TrackMove(Optional.of("mod"), Optional.empty()));
+            .isEqualTo(new TrackMove(Optional.of("mod"), Optional.of("trial")));
+        assertThat(move(TrackMove.demote(STAFF, user(PermissionNode.group("builder", Optional.empty(), NOW)), NOW)))
+            .isEqualTo(new TrackMove(Optional.of("builder"), Optional.empty()));
         assertThat(TrackMove.demote(DONATION, user(), NOW).isFailure()).isTrue();
     }
 

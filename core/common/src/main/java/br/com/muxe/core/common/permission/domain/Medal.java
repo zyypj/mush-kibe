@@ -8,7 +8,10 @@ public record Medal(String id, String name, String symbol, String color, int wei
 
     public static final String PERMISSION_PREFIX = "muxe.medal.";
 
+    public static final int MAX_SYMBOL_LENGTH = 32;
+
     private static final Pattern COLOR = Pattern.compile("&[0-9a-f]");
+    private static final Pattern FORMAT = Pattern.compile("(?i)&[0-9a-fk-or]");
 
     public Medal {
         PermissionIds.require(id);
@@ -17,8 +20,9 @@ public record Medal(String id, String name, String symbol, String color, int wei
             throw new IllegalArgumentException("A medal name has 1 to 48 characters, got: " + name);
         }
         Objects.requireNonNull(symbol, "symbol");
-        if (symbol.isBlank() || symbol.codePointCount(0, symbol.length()) > 4) {
-            throw new IllegalArgumentException("A medal symbol has 1 to 4 characters, got: " + symbol);
+        String visible = FORMAT.matcher(symbol).replaceAll("");
+        if (visible.isBlank() || visible.codePointCount(0, visible.length()) > 4 || symbol.length() > MAX_SYMBOL_LENGTH) {
+            throw new IllegalArgumentException("A medal symbol shows 1 to 4 characters and may carry & codes, got: " + symbol);
         }
         color = Objects.requireNonNull(color, "color").toLowerCase(Locale.ROOT);
         if (!COLOR.matcher(color).matches()) {

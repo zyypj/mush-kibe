@@ -76,16 +76,22 @@ class PostgresPermissionRepositoryIntegrationTest {
 
         assertThat(data.tags().keySet()).containsExactlyInAnyOrderElementsOf(PermissionFixtures.DATA.tags().keySet());
         assertThat(data.groups().keySet()).containsExactlyInAnyOrderElementsOf(PermissionFixtures.RANKS);
-        assertThat(data.group("mod").orElseThrow().parents()).containsExactly("partner+");
+        assertThat(data.group("mod").orElseThrow().parents()).containsExactly("trial");
+        assertThat(data.group("trial").orElseThrow().parents()).containsExactly("helper");
+        assertThat(data.group("helper").orElseThrow().parents()).containsExactly("builder");
+        assertThat(data.group("builder").orElseThrow().parents()).containsExactly("partner+");
+        assertThat(data.track("staff").orElseThrow().groups()).containsExactly("builder", "helper", "trial", "mod", "mod+", "admin");
+        assertThat(data.tag("admin").orElseThrow().chatPrefix()).isEqualTo("&4&lADMIN ");
+        assertThat(data.tag("mod+").orElseThrow().chatPrefix()).isEqualTo("&5&lMOD&5+ ");
         assertThat(data.group("mod").orElseThrow().nodes()).extracting(PermissionNode::key).contains("muxe.account.others", "muxe.account.staff");
         assertThat(data.tag("membro").orElseThrow().formatName("tadeu")).isEqualTo("&7tadeu");
-        assertThat(data.tag("partner+").orElseThrow().chatPrefix()).isEqualTo("&1&lPARTNER+ ");
+        assertThat(data.tag("partner+").orElseThrow().chatPrefix()).isEqualTo("&3&lPARTNER+ ");
         assertThat(data.track("doacao").orElseThrow().groups()).containsExactly("membro", "vip", "mvp", "pro", "ultra", "ultra+");
         assertThat(data.group("ultra+").orElseThrow().parents()).containsExactly("ultra");
         assertThat(data.group("ultra+").orElseThrow().nodes()).extracting(PermissionNode::key).contains("muxe.party.open");
         assertThat(data.group("partner").orElseThrow().parents()).containsExactly("ultra+");
-        assertThat(data.tag("ultra+").orElseThrow().chatPrefix()).isEqualTo("&d&lULTRA&6+ ");
-        assertThat(data.tag("ultra+").orElseThrow().display()).isEqualTo("&dUltra&6+");
+        assertThat(data.tag("ultra+").orElseThrow().chatPrefix()).isEqualTo("&5&lULTRA&6+ ");
+        assertThat(data.tag("ultra+").orElseThrow().display()).isEqualTo("&5Ultra&6+");
         assertThat(PermissionRules.check(data)).isEmpty();
     }
 
@@ -152,8 +158,12 @@ class PostgresPermissionRepositoryIntegrationTest {
         UUID player = UUID.randomUUID();
 
         assertThat(data.medals().keySet()).containsExactlyInAnyOrderElementsOf(PermissionFixtures.DATA.medals().keySet());
-        assertThat(data.medal("feiticeiro-aprendiz").orElseThrow().symbol()).isEqualTo("⊰⊱");
-        assertThat(data.medal("casa-de-gengibre").orElseThrow().symbol()).isEqualTo("۩");
+        assertThat(data.medal("feiticeiro-aprendiz").orElseThrow().symbol()).isEqualTo("&l⊰⊱");
+        assertThat(data.medal("feiticeiro-mestre").orElseThrow().symbol()).isEqualTo("&l⊰&e✰&d&l⊱");
+        assertThat(data.medal("ar").orElseThrow().symbol()).isEqualTo("氣");
+        assertThat(data.medalsByWeight()).containsExactlyElementsOf(PermissionFixtures.DATA.medalsByWeight());
+        assertThat(data.tagsByWeight()).containsExactlyElementsOf(PermissionFixtures.DATA.tagsByWeight());
+        assertThat(data.medal("casa-de-gengibre").orElseThrow().symbol()).isEqualTo("&l۩");
         assertThat(data.group("vip").orElseThrow().nodes()).extracting(PermissionNode::key).contains("muxe.medal.carinha", "muxe.medal.toxico", "muxe.medal.yin-yang", PermissionFixtures.LOBBY_FLY, PermissionFixtures.AFK_BYPASS);
 
         transactions.inTransaction("test.medal", () -> {

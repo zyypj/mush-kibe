@@ -45,7 +45,7 @@ class EditorApiTest {
 
         JsonArray groups = body.getAsJsonArray("groups");
         assertThat(groups.get(0).getAsJsonObject().get("id").getAsString()).isEqualTo("admin");
-        assertThat(ids(groups)).hasSize(11).contains("membro", "vip", "ultra+", "mod+");
+        assertThat(ids(groups)).hasSize(14).contains("membro", "vip", "ultra+", "builder", "helper", "trial", "mod+");
         JsonObject vip = find(groups, "vip");
         assertThat(vip.get("tag").getAsString()).isEqualTo("vip");
         assertThat(vip.getAsJsonArray("nodes").get(0).getAsJsonObject().get("key").getAsString()).isEqualTo("group.membro");
@@ -58,7 +58,8 @@ class EditorApiTest {
     void theDataListsMedalsByWeightWithTheirDisplay() {
         JsonArray medals = fixture.get("/api/data", token).body().getAsJsonObject().getAsJsonArray("medals");
 
-        assertThat(medals).hasSize(31);
+        assertThat(medals).hasSize(87);
+        assertThat(find(medals, "feiticeiro-mestre").get("display").getAsString()).isEqualTo("&d&l⊰&e✰&d&l⊱");
         assertThat(ids(medals).subList(0, 3)).containsExactly("toxico", "yin-yang", "musico");
         JsonObject cafe = find(medals, "cafe");
         assertThat(cafe.get("name").getAsString()).isEqualTo("Café");

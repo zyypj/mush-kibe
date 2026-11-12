@@ -134,7 +134,7 @@ class TagCommandTest {
         assertThat(kit.framework.complete(tadeu.player(), "tag ")).containsExactly("membro", "mvp", "vip");
         assertThat(kit.framework.complete(staff.player(), "tag d")).containsExactly("dar");
         assertThat(kit.framework.complete(staff.player(), "tag dar A")).containsExactly("Ana");
-        assertThat(kit.framework.complete(staff.player(), "tag dar Ana n")).containsExactly("natal");
+        assertThat(kit.framework.complete(staff.player(), "tag dar Ana n")).containsExactly("natal", "nitro");
         assertThat(kit.framework.complete(staff.player(), "tag dar Ana natal 3")).containsExactly("30d", "365d");
     }
 

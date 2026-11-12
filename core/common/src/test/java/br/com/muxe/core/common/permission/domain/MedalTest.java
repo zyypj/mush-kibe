@@ -31,18 +31,40 @@ class MedalTest {
         assertThat(cafe.display()).isEqualTo("&e☕");
         assertThat(cafe.chatPrefix()).isEqualTo("&e☕ ");
         assertThat(cafe.permission()).isEqualTo("muxe.medal.cafe");
-        assertThat(PermissionFixtures.DATA.medal("feiticeiro-aprendiz").orElseThrow().symbol()).isEqualTo("⊰⊱");
+        assertThat(PermissionFixtures.DATA.medal("feiticeiro-aprendiz").orElseThrow().display()).isEqualTo("&a&l⊰⊱");
         assertThatThrownBy(() -> new Medal("x", "X", "", "&a", 1)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new Medal("x", "X", "abcde", "&a", 1)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new Medal("x", "X", "☕", "&z", 1)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
+    void aSymbolMayCarryBoldAndColorsButShowsOneToFourCharacters() {
+        Medal amador = PermissionFixtures.DATA.medal("feiticeiro-amador").orElseThrow();
+
+        assertThat(amador.display()).isEqualTo("&a&l⊰&e✰&a&l⊱");
+        assertThat(amador.chatPrefix()).isEqualTo("&a&l⊰&e✰&a&l⊱ ");
+        assertThat(PermissionFixtures.DATA.medal("muxe").orElseThrow().display()).isEqualTo("&b&lM");
+        assertThat(new Medal("x", "X", "&l&e✰&a&l✰&b✰&c✰", "&a", 1).symbol()).isEqualTo("&l&e✰&a&l✰&b✰&c✰");
+        assertThatThrownBy(() -> new Medal("x", "X", "&l✰✰✰✰✰", "&a", 1)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new Medal("x", "X", "&l&e", "&a", 1)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new Medal("x", "X", "&l&e&l&e&l&e&l&e&l&e&l&e&l&e&l&e✰", "&a", 1)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void theNetworkNameIsNeverUsedAndTheRenamedMedalsSayMuxe() {
+        assertThat(PermissionFixtures.DATA.medalsByWeight()).extracting(Medal::name).noneMatch(name -> name.toLowerCase().contains("mush"));
+        assertThat(PermissionFixtures.DATA.medal("mega-muxe").orElseThrow().name()).isEqualTo("Mega Muxe");
+        assertThat(PermissionFixtures.DATA.medal("muxe-league").orElseThrow().name()).isEqualTo("Muxe League");
+        assertThat(PermissionFixtures.DATA.medal("aniversario-do-muxe-2022").orElseThrow().name()).isEqualTo("Aniversario do Muxe 2022");
+    }
+
+    @Test
     void theListFollowsTheOrderOfTheMedalsAndHasTheShopOnes() {
         assertThat(PermissionFixtures.DATA.medalsByWeight()).extracting(Medal::symbol)
-            .startsWith("☣", "☯", "♫", "⚡", "✌", "❤", "☕", "ツ", "✝", "✽", "∅", "۩", "⚠", "⚛", "℧", "☃", "✴", "⊰⊱", "۞", "✶")
-            .contains("火", "水", "気", "✯", "☘", "回", "✈", "✆", "✿", "⚔", "⚜")
-            .hasSize(31);
+            .startsWith("☣", "☯", "♫", "&l⚡", "✌", "❤", "☕", "&lツ", "&l✝", "✽", "∅", "&l۩", "&l⚠", "⚛", "℧", "☃", "&l✷", "&l⊰⊱", "&l۞", "✶")
+            .contains("火", "水", "氣", "✯", "&l☘", "回", "✈", "✆", "✿", "⚔", "⚜")
+            .endsWith("✪", "✹", "&l✷", "➊", "&lK")
+            .hasSize(87);
     }
 
     @Test
@@ -52,7 +74,7 @@ class MedalTest {
         assertThat(resolve(user(PermissionNode.group("ultra", Optional.empty(), NOW))).medals()).extracting(Medal::id)
             .containsExactly("toxico", "yin-yang", "musico", "flash", "paz-e-amor", "amor", "cafe", "carinha");
         assertThat(resolve(user()).medals()).isEmpty();
-        assertThat(resolve(user(PermissionNode.group("admin", Optional.empty(), NOW))).medals()).hasSize(31);
+        assertThat(resolve(user(PermissionNode.group("admin", Optional.empty(), NOW))).medals()).hasSize(87);
     }
 
     @Test

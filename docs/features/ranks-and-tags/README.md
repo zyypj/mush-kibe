@@ -27,14 +27,17 @@ Ranks are groups. Each rank inherits the one below it, so a higher rank has ever
 | `mvp` | 20 | `&9MVP` | `vip` |
 | `pro` | 30 | `&6Pro` | `mvp` |
 | `ultra` | 40 | `&dUltra` | `pro` |
-| `ultra+` | 45 | `&dUltra&6+` (chat `&d&lULTRA&6+ `) | `ultra` |
+| `ultra+` | 50 | `&5Ultra&6+` (chat `&5&lULTRA&6+ `) | `ultra` |
 | `partner` | 110 | `&bPartner` | `ultra+` |
-| `partner+` | 120 | `&1Partner+` | `partner` |
-| `mod` | 130 | `&5Mod` | `partner+` |
-| `mod+` | 140 | `&5Mod+` | `mod` |
-| `admin` | 150 | `&cAdmin` | `mod+`, plus `*` |
+| `partner+` | 120 | `&3Partner+` | `partner` |
+| `builder` | 122 | `&2Builder` | `partner+` |
+| `helper` | 124 | `&9Helper` | `builder` |
+| `trial` | 126 | `&5Trial` | `helper` |
+| `mod` | 130 | `&5Mod` | `trial` |
+| `mod+` | 140 | `&5Mod+` (chat `&5&lMOD&5+ `) | `mod` |
+| `admin` | 150 | `&4Admin` | `mod+`, plus `*` |
 
-Tracks list ranks in order for `/cargo promover` and `/cargo rebaixar`: `doacao` (`membro`, `vip`, `mvp`, `pro`, `ultra`, `ultra+`) and `staff` (`mod`, `mod+`, `admin`).
+Tracks list ranks in order for `/cargo promover` and `/cargo rebaixar`: `doacao` (`membro`, `vip`, `mvp`, `pro`, `ultra`, `ultra+`) and `staff` (`builder`, `helper`, `trial`, `mod`, `mod+`, `admin`).
 
 A rank is a node `group.<id>` on the player. Nodes have a value (`true` or `false`), optional contexts (`server=<server group>`, `world=<world>`), an optional expiry and the dates they were added and last updated. A node with contexts only applies where every context matches.
 
@@ -43,7 +46,7 @@ A rank is a node `group.<id>` on the player. Nodes have a value (`true` or `fals
 A tag has a name, a color, a weight and a prefix. Its display is the color and the name (`&aVIP`); its chat prefix is the color, bold, the name in capitals and a space (`&a&lVIP `). `membro` has an empty prefix, so a member's name is just gray (`&7tadeu`).
 
 - **Rank tags** come with their rank: holding `vip` (or anything above it) gives the `vip` tag.
-- **Decorative tags** give no permission; they are only something to show: `2021` to `2026` (`&b`), `beta` (`&1`), `enderlore` (`&5`), `carnaval` (`&6`), `natal` (`&c`), `ferias` (`&a`) and `ferias-2` (`&2`). A player owns one through the node `muxe.tag.<id>`, given with `/tag dar`.
+- **Decorative tags** give no permission; they are only something to show. From the lowest weight: `blade` (`&e`), `master` (`&6`), `enderlore` (`&5`), `ferias` (`&a`), `ferias-2` (`&2`), `ferias-3` (`&9`), `carnaval` (`&6`), `natal` (`&c`), `2017` to `2026` (`&b`), `nitro` (`&d`), `beta` (`&1`), `champion` (`&6`), `stream` (`&b`) and `yt` (`&b`). Their weights place them among the rank tags in this order: Membro, Blade, Master, VIP, MVP, Pro, Ultra, Enderlore, Ferias (three), Carnaval, Natal, Ultra+, 2017 to 2026, Nitro, Beta, Champion, Stream, YT, Partner, Partner+, Builder, Helper, Trial, Mod, Mod+, Admin. A player owns one through the node `muxe.tag.<id>`, given with `/tag dar`.
 
 The tag a player shows is, in order: the tag they picked with `/tag` (if they still own it), the tag of their highest rank, or their highest tag.
 
@@ -83,41 +86,97 @@ Clique para selecionar!
 
 ### Medals
 
-A medal is a symbol in a color (`&e☕`) with a name (`Café`) and a weight. A player owns a medal through the permission `muxe.medal.<id>`, given to a rank or to the player; Admin owns every medal through `*`. Nobody shows a medal until they pick one: there is no default medal.
+A medal is a symbol in a color (`&e☕`) with a name (`Café`) and a weight. The symbol shows 1 to 4 characters and may carry `&` codes, such as bold (`&6&l✷`) or a second color (`&a&l⊰&e✰&a&l⊱`), up to 32 characters in all. A player owns a medal through the permission `muxe.medal.<id>`, given to a rank or to the player; Admin owns every medal through `*`. Nobody shows a medal until they pick one: there is no default medal.
 
 | Id | Medal | Weight | Owned by |
 |---|---|---|---|
 | `toxico` | `&a☣` Tóxico | 10 | VIP and above |
 | `yin-yang` | `&f☯` Yin Yang | 20 | VIP and above |
 | `musico` | `&5♫` Músico | 30 | Ultra and above |
-| `flash` | `&6⚡` Flash | 40 | Ultra and above |
+| `flash` | `&6&l⚡` Flash | 40 | Ultra and above |
 | `paz-e-amor` | `&c✌` Paz e Amor | 50 | Ultra and above |
 | `amor` | `&4❤` Amor | 60 | Ultra and above |
 | `cafe` | `&e☕` Café | 70 | Ultra and above |
-| `carinha` | `&6ツ` Carinha | 80 | VIP and above |
-| `halloween` | `&4✝` Halloween | 90 | given individually |
+| `carinha` | `&6&lツ` Carinha | 80 | VIP and above |
+| `halloween` | `&4&l✝` Halloween | 90 | given individually |
 | `natal` | `&b✽` Natal | 100 | given individually |
 | `cacador-de-bruxas` | `&2∅` Caçador de Bruxas | 110 | given individually |
-| `casa-de-gengibre` | `&6۩` Casa de Gengibre | 120 | given individually |
-| `alerta` | `&e⚠` Alerta | 130 | given individually |
+| `casa-de-gengibre` | `&6&l۩` Casa de Gengibre | 120 | given individually |
+| `alerta` | `&e&l⚠` Alerta | 130 | given individually |
 | `atomo` | `&b⚛` Átomo | 140 | given individually |
 | `anel` | `&6℧` Anel | 150 | given individually |
 | `boneco-de-neve` | `&f☃` Boneco de Neve | 160 | given individually |
-| `carnaval` | `&6✴` Carnaval | 170 | given individually |
-| `feiticeiro-aprendiz` | `&a⊰⊱` Feiticeiro Aprendiz | 180 | given individually |
-| `biscoito-de-gengibre` | `&6۞` Biscoito de Gengibre | 190 | given individually |
+| `carnaval` | `&6&l✷` Carnaval | 170 | given individually |
+| `feiticeiro-aprendiz` | `&a&l⊰⊱` Feiticeiro Aprendiz | 180 | given individually |
+| `biscoito-de-gengibre` | `&6&l۞` Biscoito de Gengibre | 190 | given individually |
 | `liga-prata` | `&f✶` Liga Prata (Bed Wars Champions) | 200 | given individually |
 | `fogo` | `&c火` Fogo | 210 | given individually |
 | `agua` | `&b水` Água | 220 | given individually |
-| `ar` | `&f気` Ar | 230 | given individually |
+| `ar` | `&f氣` Ar | 230 | given individually |
 | `estrela` | `&e✯` Estrela | 240 | given individually |
-| `sortudo` | `&2☘` Sortudo | 250 | given individually |
+| `sortudo` | `&2&l☘` Sortudo | 250 | given individually |
 | `carta` | `&f回` Carta | 260 | given individually |
 | `modo-aviao` | `&b✈` Modo Avião | 270 | given individually |
 | `celular` | `&a✆` Celular | 280 | given individually |
 | `flor` | `&d✿` Flor | 290 | given individually |
 | `briga-de-espadas` | `&7⚔` Briga de Espadas | 300 | given individually |
 | `imperial` | `&6⚜` Imperial | 310 | given individually |
+| `quartel-quell-1` | `&6✪` Quartel Quell 1 | 320 | given individually |
+| `quartel-quell-2` | `&6➣` Quartel Quell 2 | 330 | given individually |
+| `quartel-quell-3` | `&6✵` Quartel Quell 3 | 340 | given individually |
+| `general-season-3` | `&4❂` General Season 3 | 350 | given individually |
+| `master` | `&4❂` Master | 360 | given individually |
+| `errado` | `&c&l✖` Errado | 370 | given individually |
+| `cxc` | `&c&l✠` Cxc | 380 | given individually |
+| `nitro` | `&0&l✦` Nitro | 390 | given individually |
+| `bgs` | `&3&l➤` BGS | 400 | given individually |
+| `top` | `&b❁` Top | 410 | given individually |
+| `arzim` | `&d✵` Arzim | 420 | given individually |
+| `aluno` | `&5✏` Aluno | 430 | given individually |
+| `muxe` | `&b&lM` Muxe | 440 | given individually |
+| `wg` | `&b&lW` WG | 450 | given individually |
+| `general` | `&4✫` General | 460 | given individually |
+| `grammy` | `&6♪` Grammy | 470 | given individually |
+| `promotor-de-eventos` | `&5❃` Promotor de Eventos | 480 | given individually |
+| `staff` | `&1✷` Staff | 490 | given individually |
+| `helper` | `&9✤` Helper | 500 | given individually |
+| `mod` | `&b✥` Mod | 510 | given individually |
+| `ajudante-de-papai-noel` | `&6❀` Ajudante de Papai Noel | 520 | given individually |
+| `mega-muxe` | `&4✹` Mega Muxe | 530 | given individually |
+| `correto` | `&a&l✓` Correto | 540 | given individually |
+| `aniversario-do-muxe-2022` | `&c❣` Aniversario do Muxe 2022 | 550 | given individually |
+| `yt` | `&b&l✩` YT | 560 | given individually |
+| `liga-diamante` | `&d✫` Liga Diamante (Bed Wars Champions) | 570 | given individually |
+| `partner` | `&b&l✧` Partner | 580 | given individually |
+| `nivel-100` | `&6&l✩` Nivel 100 | 590 | given individually |
+| `aniversario-do-muxe-2023` | `&e✺` Aniversario do Muxe 2023 | 600 | given individually |
+| `pix` | `&3❖` Pix | 610 | given individually |
+| `feiticeiro` | `&c✲` Feiticeiro | 620 | given individually |
+| `estacio` | `&b✏` Estacio | 630 | given individually |
+| `ruby` | `&c✦` Ruby | 640 | given individually |
+| `grana` | `&a&l$` Grana | 650 | given individually |
+| `catapato` | `&e✕` CataPato | 660 | given individually |
+| `floco-de-neve` | `&f❅` Floco de Neve | 670 | given individually |
+| `show-de-fogos-2024` | `&c✺` Show de Fogos 2024 | 680 | given individually |
+| `mod+` | `&5❤` Mod+ | 690 | given individually |
+| `muxe-league` | `&6❂` Muxe League | 700 | given individually |
+| `clan-clash` | `&6✽` Clan Clash | 710 | given individually |
+| `feiticeiro-amador` | `&a&l⊰&e✰&a&l⊱` Feiticeiro Amador | 720 | given individually |
+| `feiticeiro-mestre` | `&d&l⊰&e✰&d&l⊱` Feiticeiro Mestre | 730 | given individually |
+| `show-de-fogos-2025` | `&a✺` Show de Fogos 2025 | 740 | given individually |
+| `top-cyan` | `&3❁` Top Cyan | 750 | given individually |
+| `top-dark-blue` | `&1❁` Top Dark Blue | 760 | given individually |
+| `top-red` | `&4❁` Top Red | 770 | given individually |
+| `gamescom` | `&f۞` Gamescom | 780 | given individually |
+| `desenhista` | `&6✎` Desenhista | 790 | given individually |
+| `ajudante-da-nasco` | `&6⚝` Ajudante da Nascó | 800 | given individually |
+| `clan-clash-2` | `&6✟` Clan Clash 2 | 810 | given individually |
+| `show-de-fogos-2026` | `&6✺` Show de Fogos 2026 | 820 | given individually |
+| `liga-mestre` | `&4✪` Liga Mestre (Bed Wars Champions) | 830 | given individually |
+| `liga-platina` | `&3✹` Liga Platina (Bed Wars Champions) | 840 | given individually |
+| `liga-ouro` | `&6&l✷` Liga Ouro (Bed Wars Champions) | 850 | given individually |
+| `satturnni` | `&6➊` Satturnni | 860 | given individually |
+| `kindome` | `&5&lK` Kindome | 870 | given individually |
 
 - VIP, MVP and Pro own 3 medals (`carinha`, `toxico`, `yin-yang`); Ultra and every rank above own 8. Seasonal and shop medals belong to no rank: staff give them one by one with `/medalha dar`. Buying a shop pack that lists medals does not give them yet.
 
@@ -298,11 +357,11 @@ All in `messages` of `plugins/Muxe-Core/config.yml`:
 | `core.perm_user_nodes` | Nodes of each player: `player_id` and the same columns. Indexed by `permission`. |
 | `core.perm_tracks` | `id`, `groups` (array in order). |
 | `core.player_tags` | The tag each player selected. |
-| `core.perm_medals` | `id`, `name`, `symbol`, `color`, `weight`. |
+| `core.perm_medals` | `id`, `name`, `symbol` (up to 32 characters, `&` codes included), `color`, `weight`. |
 | `core.player_medals` | The medal each player selected (`player_id`, `medal_id`, `updated_at`). |
 | `core.perm_actions` | Every change: `at`, `actor`, `description`. |
 
-Created by the core migration `V8__create_permissions.sql`, which also seeds the ranks, tags and tracks above. `V10__seed_staff_permissions.sql` gives `mod` (and, by inheritance, every rank above) `muxe.account.others` and `muxe.account.staff`. `V11__create_medals.sql` creates the medal tables, seeds the 31 medals and gives `vip` and `ultra` their medals. `V12__grant_lobby_fly_to_vip.sql` gives `vip` (and every rank above) `muxe.lobby.fly`, the lobby's `/fly`. `V17__grant_afk_bypass_to_vip.sql` gives `vip` (and every rank above) `muxe.afk.bypass`, so VIPs are never sent to the [AFK server](../afk/README.md). `V18__create_ultra_plus.sql` creates the `ultra+` rank and tag between `ultra` and `partner` (which now inherits it), adds it to the end of `doacao` and gives it `muxe.party.open`. Read with `LoadPermissionDataQuery` and `FindPermissionUserQuery`; changed with `ApplyPermissionChangesCommand`, `AddUserNodeCommand`, `RemoveUserNodeCommand`, `SelectTagCommand` and `SelectMedalCommand`.
+Created by the core migration `V8__create_permissions.sql`, which also seeds the ranks, tags and tracks above. `V10__seed_staff_permissions.sql` gives `mod` (and, by inheritance, every rank above) `muxe.account.others` and `muxe.account.staff`. `V11__create_medals.sql` creates the medal tables, seeds the 31 medals and gives `vip` and `ultra` their medals. `V12__grant_lobby_fly_to_vip.sql` gives `vip` (and every rank above) `muxe.lobby.fly`, the lobby's `/fly`. `V17__grant_afk_bypass_to_vip.sql` gives `vip` (and every rank above) `muxe.afk.bypass`, so VIPs are never sent to the [AFK server](../afk/README.md). `V18__create_ultra_plus.sql` creates the `ultra+` rank and tag between `ultra` and `partner` (which now inherits it), adds it to the end of `doacao` and gives it `muxe.party.open`. Read with `LoadPermissionDataQuery` and `FindPermissionUserQuery`; changed with `ApplyPermissionChangesCommand`, `AddUserNodeCommand`, `RemoveUserNodeCommand`, `SelectTagCommand` and `SelectMedalCommand`. `V21__add_tags_medals_and_staff_ranks.sql` adds the `builder`, `helper` and `trial` ranks between `partner+` and `mod` (now `mod` inherits `trial`) and at the start of the `staff` track, adds the tags `blade`, `master`, `ferias-3`, `2017` to `2020`, `nitro`, `champion`, `stream` and `yt`, reorders the tag weights (`ultra+` goes to 50), turns Admin `&4`, Partner+ `&3` and Ultra+ `&5`, writes the `+` of Mod+ without bold, widens the medal symbol to 32 characters, adds 56 medals given individually (87 in all) and updates the symbols of 10 existing ones.
 
 ## Metrics
 

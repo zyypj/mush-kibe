@@ -45,9 +45,9 @@ class MedalCommandTest {
         List<MedalChoice> choices = list.choices(kit.resolved(uuid("tadeu")).orElseThrow().medals(), kit.display(uuid("tadeu")), "tadeu");
         BaseComponent[] message = list.components(choices);
 
-        assertThat(choices).extracting(MedalChoice::label).containsExactly("§7Nenhuma", "§a☣", "§f☯", "§5♫", "§6⚡", "§c✌", "§4❤", "§e☕", "§6ツ");
+        assertThat(choices).extracting(MedalChoice::label).containsExactly("§7Nenhuma", "§a☣", "§f☯", "§5♫", "§6§l⚡", "§c✌", "§4❤", "§e☕", "§6§lツ");
         assertThat(TextComponent.toLegacyText(message)).isEqualTo(
-            "§aMedalhas disponíveis: §7Nenhuma§f, §a☣§f, §f☯§f, §5♫§f, §6⚡§f, §c✌§f, §4❤§f, §e☕§f, §6ツ");
+            "§aMedalhas disponíveis: §7Nenhuma§f, §a☣§f, §f☯§f, §5♫§f, §6§l⚡§f, §c✌§f, §4❤§f, §e☕§f, §6§lツ");
         assertThat(choices.get(7).hover()).containsExactly(
             "§eCafé", " ", "§fPrévia:", "§e☕ §5§lENDERLORE §5tadeu: §fOlá!", " ", "§eClique para selecionar!");
         assertThat(choices.getFirst().hover()).containsExactly(
@@ -200,8 +200,8 @@ class MedalCommandTest {
         assertThat(kit.framework.complete(tadeu.player(), "medalha ")).containsExactly("carinha", "nenhuma", "toxico", "yin-yang");
         assertThat(kit.framework.complete(staff.player(), "medalha d")).containsExactly("dar");
         assertThat(kit.framework.complete(staff.player(), "medalha dar A")).containsExactly("Ana");
-        assertThat(kit.framework.complete(staff.player(), "medalha dar Ana ca")).containsExactly("cacador-de-bruxas", "cafe", "carinha", "carnaval", "carta", "casa-de-gengibre");
-        assertThat(kit.framework.complete(staff.player(), "medalha remover Ana fl")).containsExactly("flash", "flor");
+        assertThat(kit.framework.complete(staff.player(), "medalha dar Ana ca")).containsExactly("cacador-de-bruxas", "cafe", "carinha", "carnaval", "carta", "casa-de-gengibre", "catapato");
+        assertThat(kit.framework.complete(staff.player(), "medalha remover Ana fl")).containsExactly("flash", "floco-de-neve", "flor");
         assertThat(kit.framework.complete(staff.player(), "medalha dar Ana cafe 3")).containsExactly("30d", "365d");
     }
 

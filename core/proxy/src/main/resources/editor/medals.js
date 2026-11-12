@@ -13,8 +13,8 @@ function validName(name) {
 }
 
 function validSymbol(symbol) {
-  const length = Array.from(symbol).length;
-  return symbol.trim().length > 0 && length >= 1 && length <= 4;
+  const length = Array.from(symbol.replace(/&[0-9a-fk-or]/gi, "")).length;
+  return symbol.trim().length > 0 && symbol.length <= 32 && length >= 1 && length <= 4;
 }
 
 function isActive(node) {
@@ -116,7 +116,7 @@ function readMedal(fields) {
     return null;
   }
   if (!validSymbol(symbol)) {
-    toast("O símbolo tem de 1 a 4 caracteres", "bad");
+    toast("O símbolo mostra de 1 a 4 caracteres", "bad");
     return null;
   }
   const weight = Number.parseInt(fields.weight.value, 10);
@@ -132,7 +132,7 @@ export async function createMedalDialog(nav) {
   const draft = { id: "", name: "Medalha", symbol: "✦", color: "&e", weight: heaviest + 10 };
   const id = el("input", { type: "text", class: "mono", placeholder: "ex.: coroa" });
   const name = el("input", { type: "text", placeholder: "ex.: Coroa", maxlength: "48" });
-  const symbol = el("input", { type: "text", class: "mono", placeholder: "ex.: ♔", maxlength: "8" });
+  const symbol = el("input", { type: "text", class: "mono", placeholder: "ex.: ♔", maxlength: "32" });
   const weight = el("input", { type: "number", value: String(draft.weight) });
   const previewBox = el("div");
   const colorBox = el("div");
@@ -150,7 +150,7 @@ export async function createMedalDialog(nav) {
   refresh();
   const body = el("div", { class: "stack" },
     el("div", { class: "grid-2" }, field("Id", id, "Minúsculas, números, _ - +"), field("Nome", name)),
-    el("div", { class: "grid-2" }, field("Símbolo", symbol, "1 a 4 caracteres, ex.: ☕ ou ⊰⊱"), field("Peso", weight, "Menor peso aparece primeiro no /medalha")),
+    el("div", { class: "grid-2" }, field("Símbolo", symbol, "1 a 4 caracteres visíveis, aceita &l e cores, ex.: ☕ ou &l⊰&e✰&a&l⊱"), field("Peso", weight, "Menor peso aparece primeiro no /medalha")),
     field("Cor", colorBox),
     previewBox);
   const created = await modal("Nova medalha", body, [
@@ -223,10 +223,10 @@ function detailsCard(medal, nav) {
     medal.name = name.value.trim();
     notify();
   });
-  const symbol = el("input", { type: "text", class: "mono", value: medal.symbol, maxlength: "8" });
+  const symbol = el("input", { type: "text", class: "mono", value: medal.symbol, maxlength: "32" });
   symbol.addEventListener("change", () => {
     if (!validSymbol(symbol.value.trim())) {
-      toast("O símbolo tem de 1 a 4 caracteres", "bad");
+      toast("O símbolo mostra de 1 a 4 caracteres", "bad");
       symbol.value = medal.symbol;
       return;
     }
@@ -254,7 +254,7 @@ function detailsCard(medal, nav) {
     el("div", { class: "spacer-8" }),
     el("div", { class: "grid-3" },
       field("Nome", name),
-      field("Símbolo", symbol, "1 a 4 caracteres"),
+      field("Símbolo", symbol, "1 a 4 caracteres visíveis, aceita &l e cores"),
       field("Peso", weight, "Menor peso aparece primeiro")),
     el("div", { class: "spacer-8" }),
     field("Cor", swatches(medal.color, "Cor da medalha", (color) => {
