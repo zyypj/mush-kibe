@@ -66,7 +66,7 @@ The tag a player shows is, in order: the tag they picked with `/tag` (if they st
 
 ### `/tag`
 
-- `/tag` lists the tags the player owns in one chat line, from the lowest weight to the highest:
+- `/tag` lists the tags the player owns in one chat line (more lines when the list does not fit in one 1.8 chat message, about 30,000 characters of JSON with the hovers), from the lowest weight to the highest:
 
 ```text
 Suas tags: Membro, VIP, MVP, Pro, Ultra, Enderlore, Carnaval, Natal
@@ -182,7 +182,7 @@ A medal is a symbol in a color (`&e☕`) with a name (`Café`) and a weight. The
 
 ### `/medalha`
 
-- `/medalha` (or `/medalhas`, `/medal`, or the `Medalhas` button of the profile menu) lists, in one chat line, `Nenhuma` and then every medal the player owns, from the lowest weight to the highest:
+- `/medalha` (or `/medalhas`, `/medal`, or the `Medalhas` button of the profile menu) lists, in one chat line (more when it does not fit in one 1.8 chat message, as with `/tag`), `Nenhuma` and then every medal the player owns, from the lowest weight to the highest:
 
 ```text
 Medalhas disponíveis: Nenhuma, ☣, ☯, ♫, ⚡, ✌, ❤, ☕, ツ

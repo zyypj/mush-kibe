@@ -61,7 +61,10 @@ class TagCommandTest {
         kit.online("tadeu", PermissionNode.group("ultra", Optional.empty(), NOW), PermissionNode.permanent("muxe.tag.natal", true, NOW));
 
         List<TagChoice> choices = list.choices(kit.resolved(RankTestKit.uuid("tadeu")).orElseThrow().tags(), "tadeu", Optional.empty());
-        BaseComponent[] message = list.components(choices);
+        List<BaseComponent[]> lines = list.lines(choices);
+        BaseComponent[] message = lines.getFirst();
+
+        assertThat(lines).hasSize(1);
 
         assertThat(choices).extracting(TagChoice::label).containsExactly("§7Membro", "§aVIP", "§9MVP", "§6Pro", "§dUltra", "§cNatal");
         assertThat(choices.get(1).hover()).containsExactly("§fPrévia:", "§a§lVIP §atadeu: §fOlá!", " ", "§eClique para selecionar!");

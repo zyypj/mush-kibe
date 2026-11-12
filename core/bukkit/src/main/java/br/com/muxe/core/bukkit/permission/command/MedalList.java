@@ -43,15 +43,15 @@ public final class MedalList {
 
     public void send(Player player, List<Medal> usable, RankDisplay current) {
         Language language = messages.language(player);
-        player.spigot().sendMessage(components(language, choices(language, usable, current, player.getName())));
+        lines(language, choices(language, usable, current, player.getName())).forEach(player.spigot()::sendMessage);
     }
 
-    public BaseComponent[] components(List<MedalChoice> choices) {
-        return components(Language.DEFAULT, choices);
+    public List<BaseComponent[]> lines(List<MedalChoice> choices) {
+        return lines(Language.DEFAULT, choices);
     }
 
-    public BaseComponent[] components(Language language, List<MedalChoice> choices) {
-        return ChoiceLine.components(messages.get(language, "medal-list-header"), messages.get(language, "medal-list-separator"), choices);
+    public List<BaseComponent[]> lines(Language language, List<MedalChoice> choices) {
+        return ChoiceLine.lines(messages.get(language, "medal-list-header"), messages.get(language, "medal-list-separator"), choices);
     }
 
     private List<String> hover(Language language, String key, RankDisplay display, String player, String name) {

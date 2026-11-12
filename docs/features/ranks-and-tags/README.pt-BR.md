@@ -66,7 +66,7 @@ A tag que um jogador mostra é, nesta ordem: a que ele escolheu com `/tag` (se a
 
 ### `/tag`
 
-- `/tag` lista as tags que o jogador tem numa linha do chat, do menor peso para o maior:
+- `/tag` lista as tags que o jogador tem numa linha do chat (mais linhas quando a lista não cabe numa mensagem de chat do 1.8, cerca de 30.000 caracteres de JSON com os hovers), do menor peso para o maior:
 
 ```text
 Suas tags: Membro, VIP, MVP, Pro, Ultra, Enderlore, Carnaval, Natal
@@ -182,7 +182,7 @@ Uma medalha é um símbolo numa cor (`&e☕`) com um nome (`Café`) e um peso. O
 
 ### `/medalha`
 
-- `/medalha` (ou `/medalhas`, `/medal`, ou o botão `Medalhas` do menu de perfil) lista, numa linha do chat, `Nenhuma` e depois todas as medalhas que o jogador tem, do menor peso para o maior:
+- `/medalha` (ou `/medalhas`, `/medal`, ou o botão `Medalhas` do menu de perfil) lista, numa linha do chat (mais quando não cabe numa mensagem de chat do 1.8, como no `/tag`), `Nenhuma` e depois todas as medalhas que o jogador tem, do menor peso para o maior:
 
 ```text
 Medalhas disponíveis: Nenhuma, ☣, ☯, ♫, ⚡, ✌, ❤, ☕, ツ

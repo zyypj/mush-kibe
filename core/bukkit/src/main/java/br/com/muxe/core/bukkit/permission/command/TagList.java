@@ -34,14 +34,14 @@ public final class TagList {
             player.sendMessage(messages.get(language, "tag-none"));
             return;
         }
-        player.spigot().sendMessage(components(language, choices));
+        lines(language, choices).forEach(player.spigot()::sendMessage);
     }
 
-    public BaseComponent[] components(List<TagChoice> choices) {
-        return components(Language.DEFAULT, choices);
+    public List<BaseComponent[]> lines(List<TagChoice> choices) {
+        return lines(Language.DEFAULT, choices);
     }
 
-    public BaseComponent[] components(Language language, List<TagChoice> choices) {
-        return ChoiceLine.components(messages.get(language, "tag-list-header"), messages.get(language, "tag-list-separator"), choices);
+    public List<BaseComponent[]> lines(Language language, List<TagChoice> choices) {
+        return ChoiceLine.lines(messages.get(language, "tag-list-header"), messages.get(language, "tag-list-separator"), choices);
     }
 }

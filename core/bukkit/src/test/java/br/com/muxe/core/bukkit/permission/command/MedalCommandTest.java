@@ -17,6 +17,7 @@ import java.util.Optional;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,12 +39,32 @@ class MedalCommandTest {
     }
 
     @Test
+    void everyMedalOfTheAdminIsListedInChatMessagesTheClientCanRead() {
+        kit.online("chefe", PermissionNode.group("admin", Optional.empty(), NOW));
+
+        List<MedalChoice> choices = list.choices(kit.resolved(uuid("chefe")).orElseThrow().medals(), kit.display(uuid("chefe")), "chefe");
+        List<BaseComponent[]> lines = list.lines(choices);
+
+        assertThat(choices).hasSize(88);
+        assertThat(lines.stream().mapToInt(line -> ComponentSerializer.toString(line).length()).sum()).isGreaterThan(ChoiceLine.MAX_JSON_LENGTH);
+        assertThat(lines).hasSizeGreaterThan(1).allSatisfy(line ->
+            assertThat(ComponentSerializer.toString(line).length()).isLessThanOrEqualTo(ChoiceLine.MAX_JSON_LENGTH));
+        assertThat(TextComponent.toLegacyText(lines.getFirst())).startsWith("§aMedalhas disponíveis: §7Nenhuma");
+        assertThat(lines.subList(1, lines.size())).allSatisfy(line -> assertThat(TextComponent.toLegacyText(line)).doesNotContain("Medalhas disponíveis"));
+        assertThat(lines.stream().flatMap(line -> clicks(line).stream()).toList())
+            .containsExactlyElementsOf(choices.stream().map(MedalChoice::command).toList());
+    }
+
+    @Test
     void theListStartsWithNoneThenTheUsableMedalsByWeightEachWithAPreviewAndAClick() {
         kit.online("tadeu", PermissionNode.group("ultra", Optional.empty(), NOW), PermissionNode.permanent("muxe.tag.enderlore", true, NOW));
         kit.sync.selectTag(uuid("tadeu"), Optional.of("enderlore")).join();
 
         List<MedalChoice> choices = list.choices(kit.resolved(uuid("tadeu")).orElseThrow().medals(), kit.display(uuid("tadeu")), "tadeu");
-        BaseComponent[] message = list.components(choices);
+        List<BaseComponent[]> lines = list.lines(choices);
+        BaseComponent[] message = lines.getFirst();
+
+        assertThat(lines).hasSize(1);
 
         assertThat(choices).extracting(MedalChoice::label).containsExactly("§7Nenhuma", "§a☣", "§f☯", "§5♫", "§6§l⚡", "§c✌", "§4❤", "§e☕", "§6§lツ");
         assertThat(TextComponent.toLegacyText(message)).isEqualTo(
