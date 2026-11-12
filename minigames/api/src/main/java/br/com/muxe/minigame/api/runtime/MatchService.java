@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -60,6 +61,7 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
     private final Set<String> hidden = ConcurrentHashMap.newKeySet();
     private volatile Map<UUID, ChatView> chat = Map.of();
     private volatile int activeMatches;
+    private volatile Predicate<String> opensRooms = mode -> true;
 
     public MatchService(Minigame<A, S> minigame, List<GameMode> modes, ArenaCatalog catalog, Cells cells, Function<Match, Stage> stages,
                         MatchEnvironment environment, BiConsumer<UUID, String> tell, Logger logger) {
@@ -72,6 +74,10 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
         this.tell = tell;
         this.logger = logger;
         this.codes = new RoomCodes(environment.random());
+    }
+
+    public void openRoomsOnlyWhen(Predicate<String> rule) {
+        this.opensRooms = rule;
     }
 
     public Minigame<A, S> minigame() {
@@ -440,7 +446,7 @@ public final class MatchService<A extends MatchArena, S extends MatchState> impl
 
     private Optional<MatchRuntime<S>> create(String mode, Optional<String> wanted) {
         GameMode gameMode = modes.get(mode);
-        if (gameMode == null) {
+        if (gameMode == null || !opensRooms.test(mode)) {
             return Optional.empty();
         }
         List<LoadedArena> arenas = catalog.ofMode(mode).stream().filter(loaded -> wanted.map(loaded.name()::equals).orElse(true)).toList();

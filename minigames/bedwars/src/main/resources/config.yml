@@ -70,6 +70,11 @@ modes:
     fixed-teams:
       - azul
       - vermelho
+  mega:
+    display-name: Mega
+    min-players: 20
+    max-players: 80
+    team-size: 10
 
 lobby-group: bedwars-lobby
 default-mode: solo
@@ -657,6 +662,17 @@ forges:
       delay: 10.0
       amount: 1
       spawn-limit: 10
+  modes:
+    mega:
+      layout: 5x5
+      iron:
+        delay: 1.9
+        amount: 6
+        spawn-limit: 150
+      gold:
+        delay: 1.5
+        amount: 1
+        spawn-limit: 30
   diamond:
     tierI:
       delay: 30.0
@@ -3699,7 +3715,7 @@ lobby:
         - "&b&l1V1/2V2/3V3/4V4/4S"
         - "&e{players} jogando"
     mega:
-      action: nenhuma
+      action: mega
       location:
         world: lobby
         x: 0.5
@@ -3709,13 +3725,15 @@ lobby:
       skin:
         value: "ewogICJ0aW1lc3RhbXAiIDogMTcwOTA1Nzg0MDAyOCwKICAicHJvZmlsZUlkIiA6ICI1ODAxMTliZDA5OGU0ODgyODM1YjE4YjQ0MTk4NGVlOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJWaXRpbWlzbW8iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDc2OTA4MWQ0MjUzZDI2ZTA4NjVkYzI3NGE1NDU2YTNhZWZhM2FmZmQ2ZTExOWU3MTI1ZGYwOThlYjFiM2FiMSIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9"
         signature: "n6zumOMkpBa54YRBiPydDJhZKyjlUPwx59rhV+9ryHI++B8qZx++ilmQmybk1qRJyt/a3Kyl4g5SUi9k06o0aFhO4kQMWQqpLWSgNY5lTZEPfXYw+i8K8hLyTBzp1ChpJG7O9U6cyHqYORI5MkGeSS1rmhB0HdKJCD8rfYMHFaKd1kJlE57l3BxoO10d/DnmxwAdFmcAgiOiPPYYbZUz/TTOgZvU3yEf6x6pfWEkcdyE2bDwTwPptbg5i1Gw4FqOg9kewWmvLvGsJlotkIUE/oCiyU72eTnq5iCGqUzxRb8zBrG7xKCjMJaOh9lxdFjohkp6EOK9KLlAzVJongXQ9sZas2W0Q0M4pROxZYWqIU8Km7pOa6IsbdyXOAZDeM3BLNuAoJLKQnL5PwN9JrQDMlaM8EVTzARJ7PCQBYMJj+4Hm5UuqEPRCEGf1NK3y8cQr9eOGQU1lr+ZycopY+RUTXkg/uVIOyMlvfpE+hBrecEqDiiOxMSYg3DzyRXrngeoqcnHCOh8BjDYz96vm6LZUKuLDmTD+BHS6l3CHDZWCfjSmrDfNF+7Lwue7JJY+17W3S+P+l5RmuoHvtmnjX9PQlX5H6IN6GFQ4SQN/qWvyKhoSWS9Ve9xHlwr2vOmpBz1Ao1vfBVhoPGQY2g+HAJdLt8mG4VbyCOuUb+aM4XShsg="
+      players:
+        - "mega"
       lines:
         - "&eSegunda a Sexta:"
         - "&a19h"
         - "&eFinal de semana:"
         - "&a15h 17h 19h"
         - "&b&lMEGA"
-        - "&e... jogando"
+        - "&e{players} jogando"
     pilares:
       action: nenhuma
       location:

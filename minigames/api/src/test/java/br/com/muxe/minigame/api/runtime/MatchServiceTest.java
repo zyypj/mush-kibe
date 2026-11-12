@@ -119,6 +119,20 @@ class MatchServiceTest {
     }
 
     @Test
+    void aModeOutsideItsTimeOpensNoNewRoomButItsWaitingRoomStillFills() {
+        service.openRoomsOnlyWhen(mode -> false);
+
+        assertThat(service.reserve(red, "1v1", Optional.empty(), Optional.empty())).isEmpty();
+
+        service.openRoomsOnlyWhen(mode -> true);
+        Optional<Reserved> opened = service.reserve(red, "1v1", Optional.empty(), Optional.empty());
+        service.openRoomsOnlyWhen(mode -> false);
+
+        assertThat(opened).isPresent();
+        assertThat(service.reserve(blue, "1v1", Optional.empty(), Optional.empty())).map(Reserved::code).contains(opened.get().code());
+    }
+
+    @Test
     void chatGoesToTheMatchAndShoutingIsRemembered() {
         arrive(red, "red");
         arrive(blue, "blue");

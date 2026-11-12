@@ -10,7 +10,7 @@ BedWars para a rede Muxe. Fica no `minigames:bedwars` (`Muxe-BedWars`) e roda no
 
 ## Como funciona
 
-O plugin carrega os nove modos, dá à staff o [setup de arenas](../../architecture/game-engine/README.pt-BR.md#setup-de-arenas) e roda as partidas do servidor, várias ao mesmo tempo, cada uma na própria [célula](../../decisions/0009-own-map-format-and-match-cells.pt-BR.md) do mundo das partidas. O ciclo de vida da partida, entrada e saída, mortes, renascimento, espectadores, o placar, títulos, chat e matchmaking vêm da [API de minigames](../../architecture/minigame-api/README.pt-BR.md); o BedWars acrescenta as camas, forjas, loja, melhorias, armadilhas e as outras regras dele por cima (`BedWarsGame`, `BedWarsMatch`, `BedWarsHandlers`).
+O plugin carrega os dez modos, dá à staff o [setup de arenas](../../architecture/game-engine/README.pt-BR.md#setup-de-arenas) e roda as partidas do servidor, várias ao mesmo tempo, cada uma na própria [célula](../../decisions/0009-own-map-format-and-match-cells.pt-BR.md) do mundo das partidas. O ciclo de vida da partida, entrada e saída, mortes, renascimento, espectadores, o placar, títulos, chat e matchmaking vêm da [API de minigames](../../architecture/minigame-api/README.pt-BR.md); o BedWars acrescenta as camas, forjas, loja, melhorias, armadilhas e as outras regras dele por cima (`BedWarsGame`, `BedWarsMatch`, `BedWarsHandlers`).
 
 ### Modos
 
@@ -25,6 +25,15 @@ O plugin carrega os nove modos, dá à staff o [setup de arenas](../../architect
 | 3v3 | 6 | 6 | 3 | Azul, Vermelho |
 | 4v4 | 8 | 8 | 4 | Azul, Vermelho |
 | 4s | 8 | 8 | 4 | Azul, Vermelho, num mapa com mais duas ilhas de recursos e NPCs |
+| Mega | 20 | 80 | 10 | 8 das 9 cores, escolhidas no setup; só no [horário](#mega) |
+
+### Mega
+
+- **Modo:** 80 jogadores em 8 times de 10 (`mega`, mínimo 20), cores dos times escolhidas no setup, contagem normal (30 s no mínimo, 10 s lotado). As arenas se chamam `mega_<mapa>`.
+- **Forja 5x5:** toda forja de ilha do Mega é a área 5x5 em volta do ponto `ferro`, virada para o spawn do time, sem procurar chão de laje. O ferro cai 6 lingotes a cada 1,9 s (a cada 2 s, porque as forjas contam em quartos de segundo), cada um numa célula diferente, passando por 24 células em 4 grupos fixos de 6, como na gravação da referência; o ouro cai 1 lingote a cada 1,5 s no ponto `ouro`, que é a célula do centro. Itens na mesma célula se juntam numa pilha só. Nada pode ser construído a até 2 blocos da forja. A melhoria de forja acelera como nos outros modos, e os companheiros a até 2 blocos continuam recebendo uma cópia do que é coletado (`forges.modes.mega`).
+- **Horário:** o Mega só abre de segunda a sexta às 19:00 e no sábado e domingo às 15:00, 17:00 e 19:00 (America/Sao_Paulo), por 15 minutos (`scheduled-games.mega` no `config.yml` do Muxe-Core). Enquanto está aberto, todo servidor diz `&b&lMEGA BED WARS &eestá aberto! Use &b/megabw &epara jogar.` uma vez por minuto, clicável para rodar `/megabw`.
+- **`/megabw`** (qualquer servidor) e o NPC MEGA do lobby: num servidor de BedWars o jogador vai direto para uma sala do Mega (a mais cheia, ou uma nova enquanto o horário está aberto). Em qualquer outro servidor o jogador é mandado para o lobby do BedWars, que o coloca numa sala ao chegar. Fora do horário ainda dá para entrar numa sala esperando jogadores; sem nenhuma, o jogador recebe `&cNenhuma sala foi encontrada.`.
+- **Salas:** um servidor de partidas só abre sala nova do Mega enquanto o horário está aberto; salas custom do Mega podem ser abertas a qualquer hora. A cada 2 segundos, um servidor de partidas com sala do Mega com vaga marca isso no `MuxeCore.store()` (`scheduled-game:rooms:mega`, 15 s), para os outros servidores saberem que há sala esperando.
 
 ### Setup de arenas
 
@@ -418,7 +427,7 @@ Um jogador que sai com a cama já destruída conta como morte final (ou kill fin
 
 O lobby do BedWars (grupo `bedwars-lobby`) roda o Muxe-Lobby e este plugin no modo lobby. O seletor de jogo principal, os NPCs de jogo e o `/jogar bedwars` levam para lá.
 
-- **NPCs de modo**: SOLO, DUPLAS, TRIOS e QUARTETOS abrem o menu do modo; 1V1/2V2/3V3/4V4/4S abre o menu de duelos; MEGA e PILARES ainda não abrem nada. `{players} jogando` conta os jogadores nas salas dos seus modos em todos os servidores de BedWars. As duas linhas de cima do PILARES trocam entre branco e rosa a cada 0,5 s.
+- **NPCs de modo**: SOLO, DUPLAS, TRIOS e QUARTETOS abrem o menu do modo; 1V1/2V2/3V3/4V4/4S abre o menu de duelos; MEGA faz o mesmo que o `/megabw` (veja [Mega](#mega)); PILARES ainda não abre nada. `{players} jogando` conta os jogadores nas salas dos seus modos em todos os servidores de BedWars. As duas linhas de cima do PILARES trocam entre branco e rosa a cada 0,5 s.
 - **Menu do modo** (`Bed Wars Solo`...): `Bed Wars (Solo)` mostra os jogadores do modo e o top 3 do winstreak diário, e manda o jogador para uma partida; `Selecionar mapa` abre o menu de mapas para quem tem `muxe.bedwars.map-select` (VIPs) e responde `map-vip-only` para os outros; `Treino: Ponte` responde `coming-soon`. Os modos de duelo também têm `Voltar`, para o menu de duelos.
 - **Nível**: a barra de XP mostra o nível do BedWars como nível de XP e o progresso até o próximo nível como a barra, carregados ao entrar e atualizados a cada 30 segundos.
 - **Menu de mapas** (`Bed Wars 1v1 (1/1)`): os mapas do modo encontrados nos servidores de BedWars, favoritos primeiro, cada grupo em ordem alfabética. Botão esquerdo pede uma sala naquele mapa; botão direito adiciona ou remove o favorito. `Mapa favorito aleatório` entra num favorito aleatório, `Pesquisar` filtra pelo nome digitado no chat (sem diferenciar acentos) e as setas trocam de página.
@@ -466,6 +475,7 @@ O Percevejo agora pode ser comprado: arremessada, a bola de neve faz surgir uma 
 |---|---|---|
 | `/arena ...` | `muxe.minigame.setup` | Cria e configura arenas, só no lobby do BedWars. Veja o [setup de arenas](../../architecture/game-engine/README.pt-BR.md#setup-de-arenas). |
 | `/bedwars entrar <modo>` (`/bw`) | nenhuma | Leva o jogador para uma sala desse modo, enquanto espera. |
+| `/megabw` | nenhuma | Entra numa sala do Mega enquanto está aberto, de qualquer servidor (comando do Muxe-Core). Veja [Mega](#mega). |
 | `/g <mensagem>` | nenhuma | Fala com todos da sala, com `&6[G]` antes da mensagem. Nas partidas com time o chat normal chega só ao time. |
 | `/bedwars iniciar` | `muxe.bedwars.admin` | Começa a contagem em 10 segundos sem o mínimo de jogadores, para testes, mostrando o título `10 segundos` na hora (uma contagem que já corre com mais de 10 segundos é encurtada). Uma partida iniciada assim com um time só continua até esse time ser eliminado; com dois times ou mais ela acaba como sempre, quando sobra um time. |
 | `/bedwars finalizar` | `muxe.bedwars.admin` | Encerra na hora a partida em andamento, para testes, como uma partida de verdade termina: o time que sobrou vence (o único jogador de uma partida forçada também), com o resultado, os tops, o resumo das missões, o XP e as estatísticas de sempre; com vários times de pé é empate. |
@@ -515,7 +525,7 @@ O Percevejo agora pode ser comprado: arremessada, a bola de neve faz surgir uma 
 | `tnt-timer.*` | `{color}{seconds}s`, 2 casas, 24 blocos, a cada tick | Formato, altura, distância, frequência, limites e cores do temporizador da TNT. |
 | `item-names.*` | `IRON_INGOT: Barra de Ferro`... | Nome em português de cada item entregue numa partida. |
 | `sounds.*` | `CLICK`, `NOTE_PLING` (tom 2), `ZOMBIE_UNFECT` (tom 2), `NOTE_PLING`, `LEVEL_UP` (tom 2), `VILLAGER_NO`, `CHEST_OPEN`, `CHICKEN_EGG_POP` (tom 1,5), `ENDERDRAGON_GROWL`, `WITHER_DEATH`, `NOTE_PLING` (tom 2) duas vezes, `ZOMBIE_UNFECT` (tom 2), `EXPLODE`, `ENDERDRAGON_GROWL`, `FIREWORK_LAUNCH` | `countdown`, `match-start`, `died`, `bought`, `upgrade`, `cannot-afford`, `ender-chest`, `deposited`, `bed-destroyed`, `bed-lost`, `kill`, `final-kill`, `eliminated`, `team-eliminated`, `match-end` e `match-end-firework`, cada um com `sound`, `volume` e `pitch`. Um som vazio não toca nada. |
-| `forges.*` | os valores da especificação | Ferro, ouro e esmeralda da ilha, e os três níveis de diamante e esmeralda com o segundo de início. `stack-items: false` mantém separados os itens de células diferentes; `split-radius` (2) é a distância em que os companheiros dividem ferro e ouro. |
+| `forges.*` | os valores da especificação | Ferro, ouro e esmeralda da ilha, e os três níveis de diamante e esmeralda com o segundo de início. `stack-items: false` mantém separados os itens de células diferentes; `split-radius` (2) é a distância em que os companheiros dividem ferro e ouro. `modes.<modo>` troca o ferro e o ouro da ilha de um modo (`layout: 5x5` liga a forja 5x5); o Mega usa isso. |
 | `events.*` | 1800, 2400, 2520 | Segundos dos eventos de camas destruídas, morte súbita e fim de jogo, e os nomes deles no placar. |
 | `xp-rewards.*` | 10, 5, 250, 100, 12, 60 | XP por minuto, por companheiro, vitória, cama, kill e kill final. |
 | `hotbar.waiting.*` | esmeralda e cama | Itens da sala de espera. |
@@ -611,7 +621,9 @@ Comandos e consultas em `br.com.muxe.minigame.bedwars.stats`: `RecordMatchComman
 ## Critérios de aceitação
 
 - [x] Os modos são carregados da configuração (testes do motor).
-- [x] Os nove modos têm os limites e os times da especificação (`BedWarsSchemaTest`).
+- [x] Os dez modos têm os limites e os times da especificação (`BedWarsSchemaTest`).
+- [x] A forja do Mega solta os grupos 5x5 gravados, virada para o spawn, com as próprias taxas (`ForgeLayoutTest`, `ModeForgesTest`); o horário, o aviso e o `/megabw` seguem as regras acima (`WeeklyScheduleTest`, `ScheduledGamesTest`, `ScheduledJoinsTest`, `MatchServiceTest`).
+- [ ] Mega conferido no jogo, com um mapa completo montado.
 - [x] Uma arena pode ser configurada no jogo, com uma checklist do que falta (testes do motor).
 - [x] Placares, indicadores dos times e as regras de forja, linha do tempo, kills, níveis, XP e ranking seguem a especificação (`RoomTest`, `GameRulesTest`, `GeneratorTimerTest`, e os testes da API de minigames `MatchTest`, `MatchRuntimeTest`, `KillCreditTest`, `TimelineTest`, `RankingTest`).
 - [x] Nomes e lores da loja e das melhorias seguem os exports (`ShopCatalogTest`, `UpgradeCatalogTest`).
@@ -642,7 +654,7 @@ Se um erro deixar o jogador no mundo padrão plano de um servidor de partidas, e
 
 ## Limitações conhecidas
 
-- MEGA e PILARES ainda não são modos, então os NPCs deles não abrem nada.
+- PILARES ainda não é um modo, então o NPC dele não abre nada.
 - O arco do kit da prévia de rastro brilha em vez de ter Infinidade I (encantamentos não podem ser lidos da configuração sem servidor nos testes); a flecha que ele atira volta pelo reabastecimento.
 - Quem chega a um servidor de BedWars sem reserva ainda entra numa sala do `default-mode`.
 - O lobby só conhece as salas dos servidores que publicaram nos últimos 10 segundos; a lista de um servidor que para é esquecida depois disso.

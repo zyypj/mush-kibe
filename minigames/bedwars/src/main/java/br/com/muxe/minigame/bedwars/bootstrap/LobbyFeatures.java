@@ -4,6 +4,7 @@ import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.mission.menu.MissionMenus;
 import br.com.muxe.core.bukkit.npc.NpcLabelLayout;
+import br.com.muxe.core.bukkit.scheduledgame.ScheduledGame;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.language.domain.Language;
 import br.com.muxe.core.common.language.domain.Localized;
@@ -65,7 +66,7 @@ public final class LobbyFeatures {
             colors, badges, messages);
         LobbyNpcs npcs = new LobbyNpcs(plugin, texts.map(root -> LobbyNpc.from(section(root, "lobby.npcs"))), NpcLabelLayout.from(lobby.getConfigurationSection("npc-labels")),
             lobby.getStringList("blink-colors"), texts.map(root -> StatsNpcSettings.from(section(root, "lobby.stats-npc"))), core.languages(), connector.directory(), stats,
-            badges, (player, action) -> act(player, action, menus, schema, missions));
+            badges, (player, action) -> act(core, player, action, menus, schema, missions));
         npcs.start();
         TopBoards boards = new TopBoards(plugin, texts.map(root -> TopBoardSettings.from(section(root, "lobby.tops.boards"))), topTexts, tops, colors, badges,
             menus::modeTitle, menus::openTopModes, texts.map(root -> TopSelectorSettings.from(root.getConfigurationSection("lobby.tops.selector"))),
@@ -87,8 +88,11 @@ public final class LobbyFeatures {
         boards.stop();
     }
 
-    private static void act(Player player, String action, LobbyMenus menus, ArenaSchema schema, MissionMenus missions) {
-        if (MISSIONS_ACTION.equals(action)) {
+    private static void act(MuxeCore core, Player player, String action, LobbyMenus menus, ArenaSchema schema, MissionMenus missions) {
+        Optional<ScheduledGame> scheduled = core.scheduledGames().of(BedWarsBootstrap.GAME, action);
+        if (scheduled.isPresent()) {
+            core.scheduledPlay().play(player, scheduled.get().id());
+        } else if (MISSIONS_ACTION.equals(action)) {
             missions.open(player, Optional.empty());
         } else if (DUELS_ACTION.equals(action)) {
             menus.openDuels(player);

@@ -10,11 +10,11 @@ import br.com.muxe.core.bukkit.config.edit.ConfigEditor;
 import br.com.muxe.core.bukkit.config.edit.ConfigReloads;
 import br.com.muxe.core.bukkit.config.edit.PluginConfigStore;
 import br.com.muxe.core.bukkit.display.DisplayService;
+import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.mission.config.MissionConfig;
 import br.com.muxe.core.bukkit.mission.menu.MissionMenus;
 import br.com.muxe.core.bukkit.npc.NpcLabelLayout;
 import br.com.muxe.core.bukkit.npc.NpcService;
-import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.prompt.AnvilPrompts;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.combat.knockback.KnockbackProfile;
@@ -27,6 +27,8 @@ import br.com.muxe.minigame.api.bootstrap.MinigameBootstrap;
 import br.com.muxe.minigame.api.cosmetic.aura.AuraTask;
 import br.com.muxe.minigame.api.cosmetic.trail.TrailTask;
 import br.com.muxe.minigame.api.match.MatchPhase;
+import br.com.muxe.minigame.api.matchmaking.MatchConnector;
+import br.com.muxe.minigame.api.matchmaking.ScheduledJoins;
 import br.com.muxe.minigame.api.runtime.MatchService;
 import br.com.muxe.minigame.api.settings.MatchSettings;
 import br.com.muxe.minigame.api.view.EndTitles;
@@ -166,7 +168,9 @@ public final class BedWarsBootstrap {
         plugin.getServer().getOnlinePlayers().forEach(player -> teamColors.load(player.getUniqueId()));
         cosmetics.onTeamColor(new FavouriteColorMenu(texts.map(root -> FavouriteColorMenuSettings.from(section(root, "favourite-color"))), teamColors, messages));
         if (lobby) {
-            lobbyFeatures = LobbyFeatures.start(plugin, core, texts, messages, schema, minigame.modeNames(), missionMenus, preferences, minigame.connector());
+            MatchConnector connector = minigame.connector();
+            lobbyFeatures = LobbyFeatures.start(plugin, core, texts, messages, schema, minigame.modeNames(), missionMenus, preferences, connector);
+            ScheduledJoins.register(plugin, core, GAME, connector, true);
             minigame.setup(schema);
             plugin.getLogger().info("BedWars ready in lobby mode");
             return minigame.engine();
@@ -205,7 +209,9 @@ public final class BedWarsBootstrap {
             }
             shop.open(player, runtime, npc.id().contains("-melhorias"));
         }));
-        LobbyMenus playAgain = PlayAgain.menus(plugin, core, texts, messages, schema, minigame.modeNames(), server.playAgainConnector());
+        MatchConnector again = server.playAgainConnector();
+        LobbyMenus playAgain = PlayAgain.menus(plugin, core, texts, messages, schema, minigame.modeNames(), again);
+        ScheduledJoins.register(plugin, core, GAME, again, false);
         bedbugs = new Bedbugs(plugin, rooms, core.clock());
         bedbugs.start();
         TntTimers tntTimers = TntTimers.start(plugin, texts.map(root -> TntTimerSettings.from(section(root, "tnt-timer"))), core.languages(), preferences);

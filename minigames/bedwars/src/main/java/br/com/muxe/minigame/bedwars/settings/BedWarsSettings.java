@@ -10,9 +10,13 @@ import br.com.muxe.minigame.bedwars.game.BedWarsEvent;
 import br.com.muxe.minigame.bedwars.game.GeneratorTimer.Rate;
 import br.com.muxe.minigame.bedwars.game.XpRewards;
 import br.com.muxe.minigame.bedwars.item.ItemNames;
+import br.com.muxe.minigame.engine.mode.GameMode;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.bukkit.configuration.ConfigurationSection;
 
 public record BedWarsSettings(
@@ -95,11 +99,14 @@ public record BedWarsSettings(
     }
 
     public record Forges(boolean stackItems, double splitRadius, double ironDelay, int ironPerPlayer, int ironMax, int ironLimit,
-                         Rate gold, Rate islandEmerald, List<Tier> diamond, List<Tier> emerald) {
+                         Rate gold, Rate islandEmerald, List<Tier> diamond, List<Tier> emerald, Map<String, ModeIsland> modes) {
+
+        public static final String FIVE_BY_FIVE = "5x5";
 
         public Forges {
             diamond = List.copyOf(diamond);
             emerald = List.copyOf(emerald);
+            modes = Map.copyOf(modes);
         }
 
         static Forges from(ConfigurationSection section) {
@@ -115,12 +122,42 @@ public record BedWarsSettings(
                 rate(section(island, "gold")),
                 rate(section(island, "emerald")),
                 tiers(section(section, "diamond")),
-                tiers(section(section, "emerald"))
+                tiers(section(section, "emerald")),
+                modes(section.getConfigurationSection("modes"))
             );
         }
 
         public Rate iron(int teamSize) {
             return new Rate(ironDelay, Math.max(1, Math.min(ironMax, ironPerPlayer * teamSize)), ironLimit);
+        }
+
+        public Rate iron(GameMode mode) {
+            return island(mode.id()).map(ModeIsland::iron).orElseGet(() -> iron(mode.teamSize()));
+        }
+
+        public Rate gold(String mode) {
+            return island(mode).map(ModeIsland::gold).orElse(gold);
+        }
+
+        public boolean fiveByFive(String mode) {
+            return island(mode).map(ModeIsland::fiveByFive).orElse(false);
+        }
+
+        public Optional<ModeIsland> island(String mode) {
+            return Optional.ofNullable(modes.get(mode));
+        }
+
+        private static Map<String, ModeIsland> modes(ConfigurationSection section) {
+            Map<String, ModeIsland> modes = new LinkedHashMap<>();
+            if (section == null) {
+                return modes;
+            }
+            for (String mode : section.getKeys(false)) {
+                ConfigurationSection island = section(section, mode);
+                modes.put(mode, new ModeIsland(rate(section(island, "iron")), rate(section(island, "gold")),
+                    FIVE_BY_FIVE.equals(island.getString("layout", ""))));
+            }
+            return modes;
         }
 
         private static Rate rate(ConfigurationSection section) {
@@ -140,6 +177,9 @@ public record BedWarsSettings(
             }
             return tiers;
         }
+    }
+
+    public record ModeIsland(Rate iron, Rate gold, boolean fiveByFive) {
     }
 
     public record Holograms(List<String> shop, List<String> shopTeam, List<String> upgrades, List<String> upgradesTeam, List<String> diamond, List<String> emerald) {

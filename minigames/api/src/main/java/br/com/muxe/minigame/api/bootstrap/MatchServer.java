@@ -14,6 +14,7 @@ import br.com.muxe.minigame.api.listener.GameHandlers;
 import br.com.muxe.minigame.api.listener.MatchListener;
 import br.com.muxe.minigame.api.match.MatchArena;
 import br.com.muxe.minigame.api.matchmaking.MatchConnector;
+import br.com.muxe.minigame.api.matchmaking.ScheduledJoins;
 import br.com.muxe.minigame.api.network.MatchPackets;
 import br.com.muxe.minigame.api.network.RoomPublisher;
 import br.com.muxe.minigame.api.rescue.bukkit.StrandedRescue;
@@ -111,10 +112,13 @@ public final class MatchServer<A extends MatchArena, S extends MatchState> {
             accepted.forEach(member -> Optional.ofNullable(Bukkit.getPlayer(member)).ifPresent(player -> arriveAgain(service, player)));
             return accepted;
         });
+        service.openRoomsOnlyWhen(mode -> core.scheduledGames().allowsNewRoom(game, mode));
         MatchTicker ticker = MatchTicker.start(plugin, service);
         StrandedRescue rescue = StrandedRescue.start(plugin, core, service, settings.lobbyGroup());
         engine.track(service::activeMatches, () -> catalog.all().size());
         RoomPublisher publisher = new RoomPublisher(plugin, core, service, packets, List.of(settings.lobbyGroup(), game));
+        publisher.onPublish(packet -> ScheduledJoins.waiting(core.scheduledGames(), game, packet.rooms())
+            .forEach(id -> CompletableFuture.runAsync(() -> core.scheduledGames().roomsOpen(id), core.async())));
         publisher.start();
         return new MatchServer<>(plugin, core, messages, commands, packets, world, service, publisher, ticker, rescue, modeNames);
     }

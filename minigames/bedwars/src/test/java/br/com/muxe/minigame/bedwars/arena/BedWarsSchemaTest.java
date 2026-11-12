@@ -21,10 +21,10 @@ class BedWarsSchemaTest {
     private final ArenaSchema schema = BedWarsSchema.from(loaded, modes);
 
     @Test
-    void theNineModesHaveTheLimitsOfTheSpec() {
+    void theTenModesHaveTheLimitsOfTheSpec() {
         assertThat(loaded).extracting(mode -> mode.id() + " " + mode.minPlayers() + "-" + mode.maxPlayers() + " x" + mode.teamSize()).containsExactly(
             "solo 6-8 x1", "duplas 8-16 x2", "trios 6-12 x3", "quartetos 8-16 x4",
-            "1v1 2-2 x1", "2v2 4-4 x2", "3v3 6-6 x3", "4v4 8-8 x4", "4s 8-8 x4"
+            "1v1 2-2 x1", "2v2 4-4 x2", "3v3 6-6 x3", "4v4 8-8 x4", "4s 8-8 x4", "mega 20-80 x10"
         );
     }
 
@@ -32,6 +32,7 @@ class BedWarsSchemaTest {
     void soloAndDoublesChooseEightColoursAndTheOthersHaveFixedTeams() {
         assertThat(schema.teams("solo")).isEqualTo(TeamRule.chosen(8));
         assertThat(schema.teams("duplas")).isEqualTo(TeamRule.chosen(8));
+        assertThat(schema.teams("mega")).isEqualTo(TeamRule.chosen(8));
         assertThat(schema.teams("trios").fixed()).containsExactly(TeamColor.AZUL, TeamColor.VERMELHO, TeamColor.VERDE, TeamColor.AMARELO);
         assertThat(schema.teams("quartetos").fixed()).hasSize(4);
         for (String mode : List.of("1v1", "2v2", "3v3", "4v4", "4s")) {

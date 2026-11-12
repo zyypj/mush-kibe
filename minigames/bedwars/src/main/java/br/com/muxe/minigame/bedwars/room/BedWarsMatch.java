@@ -196,9 +196,9 @@ public final class BedWarsMatch implements MatchState {
         BedWarsArena arena = room.arena();
         for (TeamColor color : room.islands()) {
             TeamBase base = arena.teams().get(color);
-            base.iron().forEach(point -> forges.island(color, runtime.location(point), Material.IRON_INGOT, settings.forges().iron(match.mode().teamSize()),
+            base.iron().forEach(point -> forges.island(color, runtime.location(point), Material.IRON_INGOT, settings.forges().iron(match.mode()),
                 layout(point, base.spawn())));
-            base.gold().forEach(point -> forges.island(color, runtime.location(point), Material.GOLD_INGOT, settings.forges().gold()));
+            base.gold().forEach(point -> forges.island(color, runtime.location(point), Material.GOLD_INGOT, settings.forges().gold(match.mode().id())));
             boolean teams = match.mode().teamSize() > 1;
             spawnNpc(color, "loja", base.shop(), services.localized().map(texts -> teams ? texts.holograms().shopTeam() : texts.holograms().shop()));
             spawnNpc(color, "melhorias", base.upgrades(), services.localized().map(texts -> teams ? texts.holograms().upgradesTeam() : texts.holograms().upgrades()));
@@ -461,17 +461,18 @@ public final class BedWarsMatch implements MatchState {
         int spawn = settings.timings().spawnRadius();
         int npc = settings.timings().npcRadius();
         int generator = settings.timings().generatorRadius();
+        int island = settings.forges().fiveByFive(match.mode().id()) ? Math.max(generator, ForgeLayout.FIVE_BY_FIVE_RADIUS) : generator;
         for (TeamBase base : arena.teams().values()) {
             if (near(at, base.spawn(), spawn, -2, 5) || near(at, base.shop(), npc, -1, 4) || near(at, base.upgrades(), npc, -1, 4)) {
                 return false;
             }
             for (Point point : base.iron()) {
-                if (near(at, point, generator, -2, 5)) {
+                if (near(at, point, island, -2, 5)) {
                     return false;
                 }
             }
             for (Point point : base.gold()) {
-                if (near(at, point, generator, -2, 5)) {
+                if (near(at, point, island, -2, 5)) {
                     return false;
                 }
             }
@@ -858,6 +859,9 @@ public final class BedWarsMatch implements MatchState {
     }
 
     private ForgeLayout layout(Point forge, Point spawn) {
+        if (settings.forges().fiveByFive(match.mode().id())) {
+            return ForgeLayout.fiveByFive(spawn.x() - forge.x(), spawn.z() - forge.z());
+        }
         Block reference = runtime.location(forge).getBlock();
         ForgeLayout layout = ForgeLayout.detect(new ForgeLayout.Blocks() {
             @Override

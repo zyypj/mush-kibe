@@ -2057,7 +2057,7 @@ lobby:
         - "&eWeekends:"
         - "&a3 PM 5 PM 7 PM"
         - "&b&lMEGA"
-        - "&e... playing"
+        - "&e{players} playing"
     pilares:
       lines:
         - "{blink}&lNEW LIMITED"

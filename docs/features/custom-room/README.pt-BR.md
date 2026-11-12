@@ -15,7 +15,7 @@ Uma sala privada que um líder de party Ultra+ cria para a sua party, com todas 
 **Criar uma sala (lobby).**
 
 1. `Sala customizada (/salacustom)` no `Selecionar jogo` (slot 35) ou `/salacustom`. Quem não tem `muxe.customroom.create` (Ultra+) recebe a loja do Ultra+. Um membro de party que não é o líder recebe `custom-room-not-leader`.
-2. `Selecionar modo` lista os jogos da referência (Bed Wars, Duels, Sky Wars, CTF, Party, Block Party, Murder, Build Battle, Quick Builders, Hide and Seek, Nascó Mandou, Spleef). Bed Wars abre `Selecionar modo (Bed Wars)` e Duels abre `Selecionar modo (Duels)`; os outros não fazem nada. Um modo só funciona quando algum servidor de jogo o publica (hoje os modos do BedWars); Mega, `Modos temporários` e todos os modos de Duels não fazem nada.
+2. `Selecionar modo` lista os jogos da referência (Bed Wars, Duels, Sky Wars, CTF, Party, Block Party, Murder, Build Battle, Quick Builders, Hide and Seek, Nascó Mandou, Spleef). Bed Wars abre `Selecionar modo (Bed Wars)` e Duels abre `Selecionar modo (Duels)`; os outros não fazem nada. Um modo só funciona quando algum servidor de jogo o publica (hoje os modos do BedWars); `Modos temporários` e todos os modos de Duels não fazem nada. O Mega funciona a qualquer hora numa sala custom.
 3. `Criando sala...`: o modo (`Clique para trocar de jogo.`), `Mapas`, `Opções`, `Criar sala`, `Voltar` e `Predefinições`.
 4. `Criar sala` diz `Criando sala...`, pede uma sala a um servidor do jogo (`custom_room.create_request`) e, quando ele responde, diz `Enviando para <código>...` e manda o líder e os membros online da party para lá.
 

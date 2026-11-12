@@ -14,6 +14,13 @@ public record ForgeLayout(Shape shape, Facing facing, List<Cell> ironCells) {
         new Cell(-1, 0), new Cell(1, 0), new Cell(0, 0), new Cell(0, 1),
         new Cell(1, 0), new Cell(0, 1), new Cell(-1, 0), new Cell(0, 1)
     );
+    private static final List<Cell> FIVE_BY_FIVE_DROPS = List.of(
+        new Cell(0, 0), new Cell(1, 2), new Cell(2, 2), new Cell(0, -2), new Cell(1, 0), new Cell(1, -2),
+        new Cell(2, 0), new Cell(1, -1), new Cell(2, 1), new Cell(2, -2), new Cell(2, -1), new Cell(-2, 1),
+        new Cell(-2, 2), new Cell(-1, 2), new Cell(-2, -1), new Cell(-2, 0), new Cell(-1, 0), new Cell(0, 2),
+        new Cell(-1, 1), new Cell(-2, -2), new Cell(0, 1), new Cell(-1, -2), new Cell(-1, -1), new Cell(0, -1)
+    );
+    public static final int FIVE_BY_FIVE_RADIUS = 2;
     private static final ForgeLayout SINGLE = new ForgeLayout(Shape.SINGLE, Facing.SOUTH, List.of(new Cell(0, 0)));
 
     public ForgeLayout {
@@ -22,6 +29,11 @@ public record ForgeLayout(Shape shape, Facing facing, List<Cell> ironCells) {
 
     public static ForgeLayout single() {
         return SINGLE;
+    }
+
+    public static ForgeLayout fiveByFive(double towardX, double towardZ) {
+        Facing facing = Facing.closest(towardX, towardZ);
+        return new ForgeLayout(Shape.FIVE_BY_FIVE, facing, toWorld(FIVE_BY_FIVE_DROPS, facing));
     }
 
     public static ForgeLayout detect(Blocks blocks, double towardX, double towardZ) {
@@ -80,6 +92,7 @@ public record ForgeLayout(Shape shape, Facing facing, List<Cell> ironCells) {
     }
 
     public enum Shape {
+        FIVE_BY_FIVE,
         THREE_BY_THREE,
         TWO_BY_THREE,
         SINGLE
