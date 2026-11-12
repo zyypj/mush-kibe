@@ -626,6 +626,7 @@ messages:
   result-rank-3: "<center>&c3rd {player} &7- {score}"
   result-nobody: "<center>&7Nobody"
   coming-soon: "&cThis item is coming soon."
+  tower-cooldown: "&cWait {time}s to place another tower."
   unknown-mode: "&cInvalid mode. Modes: &f{modes}&c."
   forced-start: "&aThe game is about to start."
   cannot-force-start: "&cYou are not in a waiting room."

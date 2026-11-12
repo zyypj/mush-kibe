@@ -13,6 +13,7 @@ import br.com.muxe.minigame.api.runtime.MatchRuntime;
 import br.com.muxe.minigame.api.runtime.Playing;
 import br.com.muxe.minigame.bedwars.game.Activity;
 import br.com.muxe.minigame.bedwars.game.ChestDeposits;
+import br.com.muxe.minigame.bedwars.game.Cooldowns;
 import br.com.muxe.minigame.bedwars.custom.CustomRules;
 import br.com.muxe.minigame.bedwars.game.ExplosionKnockback.Source;
 import br.com.muxe.minigame.bedwars.game.ExplosionKnockback;
@@ -159,6 +160,11 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
             player.sendMessage(messages.get(player, "cannot-place"));
             return;
         }
+        if (block.getType() == Material.CHEST) {
+            event.setCancelled(true);
+            placeTower(player, state, block);
+            return;
+        }
         if (block.getType() == Material.TNT) {
             block.setType(Material.AIR, false);
             TNTPrimed tnt = block.getWorld().spawn(block.getLocation().add(0.5, 0, 0.5), TNTPrimed.class);
@@ -172,6 +178,21 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         if (block.getType() == Material.ENDER_STONE) {
             state.endStonePlaced(player, block);
         }
+    }
+
+    private void placeTower(Player player, BedWarsMatch state, Block anchor) {
+        Optional<Duration> wait = state.towerCooldown(player.getUniqueId());
+        if (wait.isPresent()) {
+            player.sendMessage(messages.get(player, "tower-cooldown", "time", Cooldowns.seconds(wait.get(), messages.get(player, "decimal-separator"))));
+            return;
+        }
+        ItemStack hand = player.getItemInHand();
+        if (hand.getAmount() > 1) {
+            hand.setAmount(hand.getAmount() - 1);
+        } else {
+            player.setItemInHand(null);
+        }
+        state.buildTower(player, anchor);
     }
 
     @Override

@@ -1137,6 +1137,7 @@ messages:
   result-rank-3: "<center>&c3º {player} &7- {score}"
   result-nobody: "<center>&7Ninguém"
   coming-soon: "&cEste item chega em breve."
+  tower-cooldown: "&cAguarde {time}s para colocar outra torre."
   unknown-mode: "&cModo inválido. Modos: &f{modes}&c."
   forced-start: "&aA partida vai começar."
   cannot-force-start: "&cVocê não está numa sala de espera."

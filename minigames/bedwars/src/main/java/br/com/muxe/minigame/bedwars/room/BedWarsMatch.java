@@ -32,6 +32,8 @@ import br.com.muxe.minigame.bedwars.game.BedDefense;
 import br.com.muxe.minigame.bedwars.game.BedWarsEvent;
 import br.com.muxe.minigame.bedwars.game.ChestAccess;
 import br.com.muxe.minigame.bedwars.game.ChestDeposits;
+import br.com.muxe.minigame.bedwars.game.CompactTower;
+import br.com.muxe.minigame.bedwars.game.Cooldowns;
 import br.com.muxe.minigame.bedwars.game.ForgeHeights;
 import br.com.muxe.minigame.bedwars.game.ForgeLayout;
 import br.com.muxe.minigame.bedwars.game.Levels;
@@ -47,6 +49,7 @@ import br.com.muxe.minigame.bedwars.stats.domain.MatchOutcome;
 import br.com.muxe.minigame.engine.setup.Point;
 import br.com.muxe.minigame.engine.setup.TeamPicker;
 import br.com.muxe.minigame.engine.team.TeamColor;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -66,6 +69,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -78,6 +82,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 public final class BedWarsMatch implements MatchState {
@@ -121,6 +126,9 @@ public final class BedWarsMatch implements MatchState {
     private Timeline<BedWarsEvent> timeline;
     private int skipped;
     private MissionTracker missions;
+    private final Cooldowns towerCooldowns = new Cooldowns(CompactTower.COOLDOWN);
+    private final Set<Long> towerBlocks = new HashSet<>();
+    private final List<BukkitTask> towers = new ArrayList<>();
 
     public BedWarsMatch(MatchRuntime<BedWarsMatch> runtime, BedWarsServices services, BedWarsArena arena) {
         this.runtime = runtime;
@@ -316,6 +324,8 @@ public final class BedWarsMatch implements MatchState {
 
     @Override
     public void closed() {
+        towers.forEach(BukkitTask::cancel);
+        towers.clear();
         npcs.forEach(services.npcs()::remove);
         npcs.clear();
         forges.clear();
@@ -488,6 +498,55 @@ public final class BedWarsMatch implements MatchState {
             }
         }
         return true;
+    }
+
+    public Optional<Duration> towerCooldown(UUID player) {
+        return towerCooldowns.remaining(player, core.clock().instant());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void buildTower(Player player, Block anchor) {
+        Participant participant = match.player(player.getUniqueId()).orElseThrow();
+        TeamColor color = participant.team();
+        towerCooldowns.start(player.getUniqueId(), core.clock().instant());
+        ForgeLayout.Facing facing = CompactTower.facing(player.getLocation().getYaw());
+        byte ladder = CompactTower.ladderData(facing);
+        World world = anchor.getWorld();
+        int[] tick = {0};
+        BukkitTask[] task = new BukkitTask[1];
+        task[0] = services.plugin().getServer().getScheduler().runTaskTimer(services.plugin(), () -> {
+            for (CompactTower.Placed placed : CompactTower.at(tick[0], anchor.getX(), anchor.getY(), anchor.getZ(), facing)) {
+                Block block = world.getBlockAt(placed.x(), placed.y(), placed.z());
+                if (block.getType() != Material.AIR || !mayPlace(block.getLocation())) {
+                    continue;
+                }
+                if (placed.ladder()) {
+                    block.setTypeIdAndData(Material.LADDER.getId(), ladder, false);
+                } else {
+                    block.setTypeIdAndData(Material.WOOL.getId(), (byte) color.woolData(), false);
+                }
+                match.placed(placed.x(), placed.y(), placed.z());
+                towerBlocks.add(towerKey(placed.x(), placed.y(), placed.z()));
+                world.playSound(block.getLocation(), Sound.CHICKEN_EGG_POP, 1f, CompactTower.SOUND_PITCH);
+            }
+            if (++tick[0] > CompactTower.LAST_TICK) {
+                task[0].cancel();
+                towers.remove(task[0]);
+            }
+        }, 0L, 1L);
+        towers.add(task[0]);
+    }
+
+    public boolean isTowerBlock(Block block) {
+        return towerBlocks.contains(towerKey(block.getX(), block.getY(), block.getZ()));
+    }
+
+    public void forgetTowerBlock(Block block) {
+        towerBlocks.remove(towerKey(block.getX(), block.getY(), block.getZ()));
+    }
+
+    private static long towerKey(int x, int y, int z) {
+        return ((long) x & 0x3FFFFFF) << 38 | ((long) z & 0x3FFFFFF) << 12 | (y & 0xFFF);
     }
 
     public boolean hasNpc(String npcId) {

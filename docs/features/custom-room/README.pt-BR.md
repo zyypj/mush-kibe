@@ -138,5 +138,5 @@ Nenhuma.
 
 - Só modos do BedWars podem ser criados; os outros jogos e modos dos menus aparecem e não fazem nada.
 - `Carregar mapa externo` não faz nada.
-- Troca Congelante, Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil, Baú do Fim, Ressurreição, Torre Compacta, Ovo das Pontes e Rastreador respondem "em breve". Os limites padrão da referência desses itens não estão marcados.
+- Troca Congelante, Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil, Baú do Fim, Ressurreição, Ovo das Pontes e Rastreador respondem "em breve". Os limites padrão da referência desses itens não estão marcados.
 - O limitador de cliques do knockback pula empurrões que vêm cedo demais depois do último; os ticks de cada nível são um palpite (`knockback.click-limiter-ticks`).

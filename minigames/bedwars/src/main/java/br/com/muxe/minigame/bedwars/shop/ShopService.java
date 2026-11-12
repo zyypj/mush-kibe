@@ -12,6 +12,7 @@ import br.com.muxe.minigame.api.runtime.MatchRuntime;
 import br.com.muxe.minigame.api.settings.HotbarItem;
 import br.com.muxe.minigame.bedwars.cosmetic.wood.WoodChoice;
 import br.com.muxe.minigame.bedwars.cosmetic.wood.WoodTypes;
+import br.com.muxe.minigame.bedwars.game.CompactTower;
 import br.com.muxe.minigame.bedwars.game.Slingshot;
 import br.com.muxe.minigame.bedwars.hotbar.HotbarDelivery;
 import br.com.muxe.minigame.bedwars.hotbar.menu.HotbarEditor;
@@ -47,7 +48,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 
 public final class ShopService {
 
-    public static final Set<String> BUYABLE_SPECIALS = Set.of(Bedbugs.ITEM_ID, Slingshot.ITEM_ID);
+    public static final Set<String> BUYABLE_SPECIALS = Set.of(Bedbugs.ITEM_ID, Slingshot.ITEM_ID, CompactTower.ITEM_ID);
 
     public static final int ROOM_MENU_SLOT = 45;
     public static final List<Integer> ITEM_SLOTS = List.of(19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43);

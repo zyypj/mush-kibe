@@ -138,5 +138,5 @@ None.
 
 - Only BedWars modes can be created; the other games and modes of the menus appear and do nothing.
 - `Carregar mapa externo` does nothing.
-- Troca Congelante, Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil, Baú do Fim, Ressurreição, Torre Compacta, Ovo das Pontes and Rastreador answer "em breve". The reference's default limits of these items are not set.
+- Troca Congelante, Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil, Baú do Fim, Ressurreição, Ovo das Pontes and Rastreador answer "em breve". The reference's default limits of these items are not set.
 - The click limiter of the knockback skips pushes that come too soon after the last one; its tick counts are a guess (`knockback.click-limiter-ticks`).

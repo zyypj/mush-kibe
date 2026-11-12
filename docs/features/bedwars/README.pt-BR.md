@@ -144,7 +144,8 @@ O NPC da loja abre os menus dos exports: Compra Rápida (o layout do export) e a
   - `Removendo do slot #N...` (4 linhas) lista as entradas do slot a partir do slot 10. Clicar em uma remove e salva; o menu continua aberto enquanto sobrarem entradas e volta ao editor quando a última sai.
   - **Regra de colocação:** quando uma compra entrega um item, os slots são vistos do #1 ao #9; o primeiro slot que lista o item ou uma categoria dele e está vazio, ou tem uma pilha do mesmo item com espaço para a compra inteira, recebe o item. Se não houver nenhum, o item é adicionado como antes. Armadura não é afetada. A regra é `HotbarPlacement` em `br.com.muxe.minigame.bedwars.hotbar.domain`; `HotbarDelivery` aplica no inventário. A checagem de "inventário cheio" da compra não mudou.
   - Entradas que a loja não vende mais são descartadas quando o layout é carregado.
-- Ainda não funcionam: os itens especiais Golem de Ferro, Leite Mágico, Torre Compacta, Ovo das Pontes, e Rastreador, que avisam que chegam em breve e não cobram nada.
+- **Torre Compacta** (baú, 16 ferros): colocá-la monta, em cerca de 1 s, a torre gravada da referência na frente do jogador: 104 lãs na cor do time e 6 escadas, um piso de 7 de largura com ameias no topo, a entrada virada para o jogador e a escada na parede do fundo, em qualquer uma das quatro direções em que ele olhe. Cada bloco toca `mob.chicken.plop` (tom 1,49), só entra onde há ar e fora das áreas protegidas, e conta como colocado por jogador. O jogador espera 15 s entre torres; tentar antes diz `&cAguarde {time}s para colocar outra torre.` (`messages.tower-cooldown`) e mantém o item (`CompactTower`, `Cooldowns`).
+- Ainda não funcionam: os itens especiais Golem de Ferro, Leite Mágico, Ovo das Pontes, e Rastreador, que avisam que chegam em breve e não cobram nada.
 
 ### Melhorias do time
 

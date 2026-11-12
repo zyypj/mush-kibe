@@ -144,7 +144,8 @@ The shop NPC opens the menus of the exports: Compra Rápida (the exported layout
   - `Removendo do slot #N...` (4 rows) lists the entries of the slot from slot 10. Clicking one removes it and saves; the menu stays open while entries remain and returns to the editor when the last one is gone.
   - **Placement rule:** when a purchase delivers an item, the slots are checked from #1 to #9; the first slot that lists the item or a category it belongs to and is empty, or holds a stack of the same item with room for the whole purchase, receives it. If there is none, the item is added as before. Armour is not affected. The rule is `HotbarPlacement` in `br.com.muxe.minigame.bedwars.hotbar.domain`; `HotbarDelivery` applies it to the inventory. The "inventory is full" check of a purchase is unchanged.
   - Entries the shop no longer sells are dropped when the layout is loaded.
-- Not working yet: the special items Golem de Ferro, Leite Mágico, Torre Compacta, Ovo das Pontes, and Rastreador, which say they are coming soon and charge nothing.
+- **Torre Compacta** (chest, 16 iron): placing it builds, over about 1 s, the recorded tower of the reference in front of the player: 104 wool in the team colour and 6 ladders, a 7-wide floor with battlements on top, the entrance facing the player and the ladder on the far wall, in any of the four directions the player looks. Each block plays `mob.chicken.plop` (pitch 1.49), goes only where there is air and outside the protected areas, and counts as placed by a player. A player waits 15 s between towers; trying sooner says `&cAguarde {time}s para colocar outra torre.` (`messages.tower-cooldown`) and keeps the item (`CompactTower`, `Cooldowns`).
+- Not working yet: the special items Golem de Ferro, Leite Mágico, Ovo das Pontes, and Rastreador, which say they are coming soon and charge nothing.
 
 ### Team upgrades
 
