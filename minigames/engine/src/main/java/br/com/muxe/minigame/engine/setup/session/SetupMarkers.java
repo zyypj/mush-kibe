@@ -47,7 +47,27 @@ final class SetupMarkers {
                 }
             }
         }
-        return markers;
+        return stacked(markers);
+    }
+
+    private static List<Marker> stacked(List<Marker> markers) {
+        Map<List<Integer>, Double> ceilings = new HashMap<>();
+        List<Marker> stacked = new ArrayList<>(markers.size());
+        for (Marker marker : markers) {
+            Point point = marker.point();
+            List<Integer> block = List.of(point.blockX(), point.blockY(), point.blockZ());
+            double top = point.y() + marker.height();
+            Double ceiling = ceilings.get(block);
+            double lowest = ceiling == null ? top : ceiling + marker.lines().size() * TextHolograms.DEFAULT_LINE_SPACING;
+            if (lowest > top) {
+                stacked.add(new Marker(point, marker.lines(), lowest - point.y()));
+                top = lowest;
+            } else {
+                stacked.add(marker);
+            }
+            ceilings.put(block, ceiling == null ? top : Math.max(ceiling, top));
+        }
+        return stacked;
     }
 
     void show(Player viewer, World world, List<Marker> markers) {

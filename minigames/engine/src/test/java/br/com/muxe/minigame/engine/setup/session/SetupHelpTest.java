@@ -1,7 +1,9 @@
 package br.com.muxe.minigame.engine.setup.session;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
+import br.com.muxe.core.bukkit.hologram.TextHolograms;
 import br.com.muxe.core.bukkit.text.ChatButton;
 import br.com.muxe.core.bukkit.text.ChatButton.Action;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
@@ -148,6 +150,25 @@ class SetupHelpTest {
             List.of("&e&lÁREA", "&7Pos 2")
         );
         assertThat(markers.getFirst().height()).isEqualTo(SetupMarkers.height(StepKind.BLOCK));
+    }
+
+    @Test
+    void hologramsOfPointsInTheSameBlockAreStackedInsteadOfOverlapping() {
+        ArenaDraft draft = ArenaDraft.create("1v1_slip", "1v1", schema);
+        draft.set(BED, TeamColor.AZUL, Point.block(1, 70, 1));
+        draft.set(IRON, TeamColor.AZUL, Point.block(4, 70, 4));
+        draft.set(IRON, TeamColor.VERMELHO, Point.block(1, 70, 1));
+        draft.set(IRON, TeamColor.VERMELHO, Point.block(1, 70, 1));
+
+        List<Marker> markers = SetupMarkers.markers(schema, draft, help);
+        double line = TextHolograms.DEFAULT_LINE_SPACING;
+        double center = SetupMarkers.height(StepKind.CENTER);
+
+        assertThat(markers).extracting(marker -> marker.lines().getFirst()).containsExactly("&c&lCAMA", "&f&lFERRO #1", "&f&lFERRO #1", "&f&lFERRO #2");
+        assertThat(markers.get(0).height()).isEqualTo(SetupMarkers.height(StepKind.BLOCK));
+        assertThat(markers.get(1).height()).isEqualTo(center);
+        assertThat(markers.get(2).height()).isEqualTo(center);
+        assertThat(markers.get(3).height()).isCloseTo(center + 2 * line, within(1e-9));
     }
 
     private static List<String> plainLines(List<List<ChatButton>> lines) {

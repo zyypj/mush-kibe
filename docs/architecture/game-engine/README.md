@@ -63,7 +63,7 @@ Each game describes what an arena needs in a `SetupSchema`, and the engine gives
 | `ArenaStore` | Where arenas and maps live. `FileArenaStore` keeps `arenas/<name>.yml` and `maps/<name>.mxw` in the plugin folder; `DatabaseArenaStore(game, commands, queries)` keeps both in PostgreSQL (`core.arenas`, through `SaveArenaCommand`, `FindArenaQuery` and `ListArenasQuery`), so every server of the game reads the same arenas. `saveDefinition` saves the points and keeps the stored map. |
 | `ArenaSavedPacket` | `minigame.arena_saved` (game, name): sent after `/arena salvar` so the game servers reload that arena. |
 | `TeamPicker` | Picks the team whose anchor point is nearest to a position, and the nearest free block that no other team owns (both halves of a bed count as owned). |
-| `SetupService` | Opens setup worlds, applies the commands, shows the holograms and the action bar, and saves. |
+| `SetupService` | Opens setup worlds, applies the commands, shows the holograms and the action bar, and saves. Holograms of points in the same block are stacked, one above the other, instead of overlapping. |
 | `TeamColor` | The nine team colours: Azul `&9`, Amarelo `&e`, Ciano `&b`, Cinza `&8`, Vermelho `&c`, Rosa `&d`, Verde `&a`, Branco `&f`, Laranja `&6`, each with its wool and leather colour. |
 
 `/arena criar <name> [mode]` opens an arena:

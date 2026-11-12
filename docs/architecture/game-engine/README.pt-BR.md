@@ -63,7 +63,7 @@ Cada jogo descreve o que uma arena precisa num `SetupSchema`, e a engine dá a t
 | `ArenaStore` | Onde as arenas e os mapas ficam. `FileArenaStore` guarda `arenas/<nome>.yml` e `maps/<nome>.mxw` na pasta do plugin; `DatabaseArenaStore(game, commands, queries)` guarda os dois no PostgreSQL (`core.arenas`, pelo `SaveArenaCommand`, `FindArenaQuery` e `ListArenasQuery`), então todo servidor do jogo lê as mesmas arenas. `saveDefinition` salva os pontos e mantém o mapa guardado. |
 | `ArenaSavedPacket` | `minigame.arena_saved` (jogo, nome): enviado depois do `/arena salvar` para os servidores de jogo recarregarem aquela arena. |
 | `TeamPicker` | Escolhe o time com o ponto âncora mais perto de uma posição, e o bloco livre mais perto que nenhum outro time usa (as duas metades de uma cama contam como usadas). |
-| `SetupService` | Abre os mundos de setup, aplica os comandos, mostra os hologramas e a action bar, e salva. |
+| `SetupService` | Abre os mundos de setup, aplica os comandos, mostra os hologramas e a action bar, e salva. Hologramas de pontos no mesmo bloco ficam empilhados, um em cima do outro, em vez de sobrepostos. |
 | `TeamColor` | As nove cores de time: Azul `&9`, Amarelo `&e`, Ciano `&b`, Cinza `&8`, Vermelho `&c`, Rosa `&d`, Verde `&a`, Branco `&f`, Laranja `&6`, cada uma com a cor da lã e do couro. |
 
 `/arena criar <nome> [modo]` abre uma arena:
