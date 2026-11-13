@@ -51,6 +51,7 @@ import br.com.muxe.minigame.bedwars.invisibility.InvisiblePlayers;
 import br.com.muxe.minigame.bedwars.listener.ActivityListener;
 import br.com.muxe.minigame.bedwars.listener.BedWarsHandlers;
 import br.com.muxe.minigame.bedwars.listener.Bedbugs;
+import br.com.muxe.minigame.bedwars.listener.SpecialProjectiles;
 import br.com.muxe.minigame.bedwars.listener.ChestListener;
 import br.com.muxe.minigame.bedwars.lobby.format.LevelBadges;
 import br.com.muxe.minigame.bedwars.lobby.menu.LobbyMenus;
@@ -233,10 +234,11 @@ public final class BedWarsBootstrap {
         Activity activity = new Activity();
         Slingshot slingshot = new Slingshot();
         BedWarsHandlers handlers = new BedWarsHandlers(plugin, core, settings, messages, bedbugs, preferences, tntTimers, activity, slingshot,
-            cosmetics::openMenu, playAgain::openMode);
+            cosmetics::openMenu, playAgain::openMode, (player, runtime) -> shop.open(player, runtime, false));
         server.listen(handlers);
         core.languages().onChange(player -> rooms.of(player.getUniqueId()).ifPresent(runtime -> runtime.state().languageChanged(player.getUniqueId())));
         plugin.getServer().getPluginManager().registerEvents(new ChestListener(rooms, handlers), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new SpecialProjectiles(rooms), plugin);
         plugin.getServer().getPluginManager().registerEvents(new ActivityListener(activity, slingshot, core.clock()), plugin);
         InvisiblePlayers.start(plugin, rooms);
         auras = AuraTask.start(plugin, rooms, cosmetics.auras());

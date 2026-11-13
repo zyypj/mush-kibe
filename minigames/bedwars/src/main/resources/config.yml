@@ -1182,6 +1182,10 @@ messages:
   hotbar-slot-full: "&cEste slot da hotbar já tem o máximo de entradas."
   trap-triggered: "&c&lARMADILHA! &cUm inimigo ativou uma armadilha da sua ilha."
   slingshot-label: "ESTILINGUE:"
+  spider-label: "SPIDER:"
+  rewind-label: "REBOBINAR:"
+  parachute-label: "PARA-QUEDAS:"
+  parachute-on-ground: "&cUse o para-quedas enquanto estiver caindo."
   slingshot-item: "&cEstilingue"
   decimal-separator: ","
   cosmetic-selected: "&aVocê selecionou &f{name}&a."
@@ -2107,7 +2111,7 @@ shop:
         - "&7Troque de lugar com o inimigo."
     ponte-de-gelo:
       type: special
-      material: BARRIER
+      material: ICE
       name: "Ponte de Gelo"
       price: 7
       currency: gold
@@ -2116,7 +2120,7 @@ shop:
         - "&7Construa uma ponte de gelo."
     para-quedas:
       type: special
-      material: BARRIER
+      material: DAYLIGHT_DETECTOR
       name: "Para-quedas"
       price: 5
       currency: gold
@@ -2125,7 +2129,7 @@ shop:
         - "&7Crie uma plataforma para se salvar."
     rebobinar:
       type: special
-      material: BARRIER
+      material: HOPPER
       name: "Rebobinar"
       price: 10
       currency: gold
@@ -2134,7 +2138,7 @@ shop:
         - "&7Dê um salto temporal."
     spider:
       type: special
-      material: BARRIER
+      material: BLAZE_ROD
       name: "Spider"
       price: 4
       currency: gold
@@ -2143,7 +2147,7 @@ shop:
         - "&7Lance teias contra seus inimigos."
     loja-portatil:
       type: special
-      material: BARRIER
+      material: BOOK
       name: "Loja Portátil"
       price: 5
       currency: gold
@@ -2153,7 +2157,7 @@ shop:
         - "&7(Uso único)"
     bau-do-fim:
       type: special
-      material: BARRIER
+      material: ENDER_CHEST
       name: "Baú do Fim"
       price: 3
       currency: gold

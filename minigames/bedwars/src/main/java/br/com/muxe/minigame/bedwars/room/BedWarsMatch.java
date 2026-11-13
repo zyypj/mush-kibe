@@ -133,6 +133,7 @@ public final class BedWarsMatch implements MatchState {
     private final Cooldowns towerCooldowns = new Cooldowns(CompactTower.COOLDOWN);
     private final Set<Long> towerBlocks = new HashSet<>();
     private final List<BukkitTask> towers = new ArrayList<>();
+    private final SpecialItems specials;
 
     public BedWarsMatch(MatchRuntime<BedWarsMatch> runtime, BedWarsServices services, BedWarsArena arena) {
         this.runtime = runtime;
@@ -145,6 +146,7 @@ public final class BedWarsMatch implements MatchState {
         this.forges = new RoomForges(services.plugin(), services.localized(), services.languages(), services.displays());
         this.timeline = settings.timeline(match.mode().id());
         this.announcer = new KillAnnouncer(services.messageSets(), id -> services.killMessages().of(id, match.code(), ThreadLocalRandom.current()), tally);
+        this.specials = new SpecialItems(services.plugin(), core.clock(), match, runtime::player, this::mayPlace);
     }
 
     public Room room() {
@@ -157,6 +159,10 @@ public final class BedWarsMatch implements MatchState {
 
     public RoomForges forges() {
         return forges;
+    }
+
+    public SpecialItems specials() {
+        return specials;
     }
 
     public CustomRules rules() {
@@ -251,6 +257,7 @@ public final class BedWarsMatch implements MatchState {
     @Override
     public void started() {
         findIslandChests();
+        specials.start();
         if (randomItems()) {
             startRandomItems();
         }
@@ -384,6 +391,7 @@ public final class BedWarsMatch implements MatchState {
     public void closed() {
         towers.forEach(BukkitTask::cancel);
         towers.clear();
+        specials.close();
         npcs.forEach(services.npcs()::remove);
         npcs.clear();
         forges.clear();

@@ -18,11 +18,15 @@ import br.com.muxe.minigame.bedwars.custom.CustomRules;
 import br.com.muxe.minigame.bedwars.game.ExplosionKnockback.Source;
 import br.com.muxe.minigame.bedwars.game.ExplosionKnockback;
 import br.com.muxe.minigame.bedwars.game.Foliage;
+import br.com.muxe.minigame.bedwars.game.Parachute;
+import br.com.muxe.minigame.bedwars.game.Rewind;
 import br.com.muxe.minigame.bedwars.game.Slingshot;
+import br.com.muxe.minigame.bedwars.game.SpiderWeb;
 import br.com.muxe.minigame.bedwars.item.ItemNames;
 import br.com.muxe.minigame.bedwars.preferences.PlayerPreferences;
 import br.com.muxe.minigame.bedwars.room.BedWarsMatch;
 import br.com.muxe.minigame.bedwars.room.ForgePickup;
+import br.com.muxe.minigame.bedwars.room.SpecialItems;
 import br.com.muxe.minigame.bedwars.settings.BedWarsSettings;
 import br.com.muxe.minigame.bedwars.settings.MatchSounds;
 import br.com.muxe.minigame.bedwars.tnt.TntTimers;
@@ -36,6 +40,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
@@ -44,6 +49,7 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Item;
@@ -65,7 +71,7 @@ import org.bukkit.util.Vector;
 
 public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
 
-    private static final long SLINGSHOT_BAR_TICKS = 2L;
+    private static final long COOLDOWN_BAR_TICKS = 2L;
 
     private final Plugin plugin;
     private final MuxeCore core;
@@ -79,10 +85,12 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
     private final Slingshot slingshot;
     private final Consumer<Player> openMenu;
     private final BiConsumer<Player, String> playAgain;
+    private final BiConsumer<Player, MatchRuntime<BedWarsMatch>> openShop;
     private final Map<UUID, UUID> explosives = new HashMap<>();
 
     public BedWarsHandlers(Plugin plugin, MuxeCore core, Localized<BedWarsSettings> localized, MessageCatalog messages, Bedbugs bedbugs, PlayerPreferences preferences,
-                           TntTimers tntTimers, Activity activity, Slingshot slingshot, Consumer<Player> openMenu, BiConsumer<Player, String> playAgain) {
+                           TntTimers tntTimers, Activity activity, Slingshot slingshot, Consumer<Player> openMenu, BiConsumer<Player, String> playAgain,
+                           BiConsumer<Player, MatchRuntime<BedWarsMatch>> openShop) {
         this.plugin = plugin;
         this.core = core;
         this.settings = localized.standard();
@@ -95,6 +103,7 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         this.slingshot = slingshot;
         this.openMenu = openMenu;
         this.playAgain = playAgain;
+        this.openShop = openShop;
     }
 
     @Override
@@ -147,7 +156,62 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         } else if (rightClick && item.getType() == Material.MAGMA_CREAM) {
             event.setCancelled(true);
             sling(player, state);
+        } else if (rightClick && special(playing, player, item.getType())) {
+            event.setCancelled(true);
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    private boolean special(Playing<BedWarsMatch> playing, Player player, Material type) {
+        BedWarsMatch state = playing.state();
+        SpecialItems specials = state.specials();
+        UUID id = player.getUniqueId();
+        switch (type) {
+            case ICE -> {
+                consumeOne(player);
+                specials.iceBridge(player);
+            }
+            case EGG -> {
+                consumeOne(player);
+                specials.bridgeEgg(player.launchProjectile(Egg.class), playing.participant().team());
+            }
+            case BLAZE_ROD -> {
+                if (specials.spiderCooldown(id).isEmpty()) {
+                    consumeOne(player);
+                    specials.shootSpider(player);
+                    cooldownBar(player, "spider-label", () -> specials.spiderCooldown(id), SpiderWeb.COOLDOWN);
+                }
+            }
+            case HOPPER -> {
+                if (specials.rewindCooldown(id).isEmpty() && specials.rewind(player)) {
+                    consumeOne(player);
+                    cooldownBar(player, "rewind-label", () -> specials.rewindCooldown(id), Rewind.COOLDOWN);
+                }
+            }
+            case DAYLIGHT_DETECTOR -> {
+                if (player.isOnGround()) {
+                    player.sendMessage(messages.get(player, "parachute-on-ground"));
+                } else if (specials.parachuteCooldown(id).isEmpty()) {
+                    consumeOne(player);
+                    specials.parachute(player, playing.participant().team());
+                    cooldownBar(player, "parachute-label", () -> specials.parachuteCooldown(id), Parachute.COOLDOWN);
+                }
+            }
+            case BOOK -> {
+                consumeOne(player);
+                player.playSound(player.getLocation(), Sound.DRINK, 1f, 2f);
+                openShop.accept(player, playing.runtime());
+            }
+            case ENDER_CHEST -> {
+                consumeOne(player);
+                player.playSound(player.getLocation(), Sound.CHEST_OPEN, 1f, 2f);
+                player.openInventory(state.enderChest(player));
+            }
+            default -> {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -204,6 +268,13 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
             return;
         }
         BedWarsMatch state = playing.state();
+        if (state.specials().isTemporary(block)) {
+            state.specials().forgetTemporary(block);
+            event.setCancelled(true);
+            block.setType(Material.AIR, false);
+            playing.runtime().match().unplaced(block.getX(), block.getY(), block.getZ());
+            return;
+        }
         if (state.isTowerBlock(block)) {
             state.forgetTowerBlock(block);
             if (state.randomItems()) {
@@ -387,19 +458,23 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
                 }
             }, (long) index * Slingshot.SOUND_GAP_TICKS);
         }
-        String label = messages.get(player, "slingshot-label");
+        cooldownBar(player, "slingshot-label", () -> slingshot.remaining(player.getUniqueId(), core.clock().instant()), cooldown);
+    }
+
+    private void cooldownBar(Player player, String labelKey, Supplier<Optional<Duration>> remaining, Duration cooldown) {
+        String label = messages.get(player, labelKey);
         String decimalSeparator = messages.get(player, "decimal-separator");
         new BukkitRunnable() {
             @Override
             public void run() {
-                Optional<Duration> left = slingshot.remaining(player.getUniqueId(), core.clock().instant());
+                Optional<Duration> left = remaining.get();
                 if (!player.isOnline() || left.isEmpty()) {
                     cancel();
                     return;
                 }
                 ActionBar.send(player, Slingshot.actionBar(label, decimalSeparator, left.get(), cooldown));
             }
-        }.runTaskTimer(plugin, 0L, SLINGSHOT_BAR_TICKS);
+        }.runTaskTimer(plugin, 0L, COOLDOWN_BAR_TICKS);
     }
 
     private ItemNames names(Player player) {

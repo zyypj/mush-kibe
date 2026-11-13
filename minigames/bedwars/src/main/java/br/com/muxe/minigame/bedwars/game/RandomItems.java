@@ -25,6 +25,9 @@ public record RandomItems(Set<String> modes, Duration every, double shopChance, 
         Material.DOUBLE_STONE_SLAB2, Material.SPRUCE_DOOR, Material.BIRCH_DOOR, Material.JUNGLE_DOOR, Material.ACACIA_DOOR, Material.DARK_OAK_DOOR
     );
 
+    public static final Set<Material> SPECIAL_ITEMS = EnumSet.of(Material.ICE, Material.EGG, Material.BLAZE_ROD, Material.HOPPER, Material.DAYLIGHT_DETECTOR,
+        Material.BOOK, Material.ENDER_CHEST);
+
     public RandomItems {
         modes = Set.copyOf(modes);
         excluded = excluded.isEmpty() ? Set.of() : Set.copyOf(EnumSet.copyOf(excluded));
@@ -57,7 +60,7 @@ public record RandomItems(Set<String> modes, Duration every, double shopChance, 
     }
 
     public List<Material> pool() {
-        return Arrays.stream(Material.values()).filter(material -> !NOT_ITEMS.contains(material) && !excluded.contains(material)).toList();
+        return Arrays.stream(Material.values()).filter(material -> !NOT_ITEMS.contains(material) && !SPECIAL_ITEMS.contains(material) && !excluded.contains(material)).toList();
     }
 
     public Draw draw(RandomGenerator random, List<String> shopItems) {

@@ -35,6 +35,12 @@ class RandomItemsTest {
     }
 
     @Test
+    void theMaterialsOfTheSpecialItemsNeverComeAsGameItemsSoTheyAlwaysComeFromTheShop() {
+        assertThat(items.pool()).doesNotContain(Material.ICE, Material.EGG, Material.BLAZE_ROD, Material.HOPPER, Material.DAYLIGHT_DETECTOR, Material.BOOK,
+            Material.ENDER_CHEST);
+    }
+
+    @Test
     void aGameItemComesOneToFourAtATimeAndAlwaysAloneWhenItDoesNotStack() {
         Random random = new Random(7);
         List<GameDraw> draws = IntStream.range(0, 2000).mapToObj(index -> items.game(random)).toList();

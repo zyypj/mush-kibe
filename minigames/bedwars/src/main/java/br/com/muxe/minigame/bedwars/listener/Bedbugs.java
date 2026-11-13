@@ -4,6 +4,7 @@ import br.com.muxe.minigame.api.match.MatchPhase;
 import br.com.muxe.minigame.api.match.Participant;
 import br.com.muxe.minigame.api.runtime.MatchRuntime;
 import br.com.muxe.minigame.api.runtime.Matches;
+import br.com.muxe.minigame.bedwars.game.SpiderWeb;
 import br.com.muxe.minigame.engine.team.TeamColor;
 import java.time.Clock;
 import java.time.Duration;
@@ -66,7 +67,7 @@ public final class Bedbugs implements Listener {
 
     @EventHandler
     public void onHit(ProjectileHitEvent event) {
-        if (!(event.getEntity() instanceof Snowball snowball) || !(snowball.getShooter() instanceof Player owner)) {
+        if (!(event.getEntity() instanceof Snowball snowball) || snowball.hasMetadata(SpiderWeb.SNOWBALL_TAG) || !(snowball.getShooter() instanceof Player owner)) {
             return;
         }
         Optional<? extends MatchRuntime<?>> found = rooms.of(owner.getUniqueId());

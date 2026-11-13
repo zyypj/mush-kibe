@@ -47,7 +47,7 @@ Uma sala privada que um líder de party Ultra+ cria para a sua party, com todas 
 - A contagem começa em 30 segundos quando chega o segundo jogador e para se a sala voltar a ter um só.
 - Quando a partida acaba, a sala volta para a espera com o mesmo código e as mesmas opções (`A sala foi reiniciada.`), e a contagem recomeça.
 - **Proteção da Cama** monta uma pirâmide em volta da cama do time (ou do ovo do dragão) quando comprada: o nível I põe madeira encostada na cama, lã do time em volta e vidro da cor do time por fora; o nível II usa pedra do fim no lugar do vidro; o nível III acrescenta uma camada de vidro por fora da pedra do fim. Cada camada fica um bloco mais longe da cama (contando pelos eixos), da altura da cama para cima. Só ar e blocos do nível anterior são trocados, e todo bloco pode ser quebrado como um bloco colocado. Quando ativada, ela fica no slot 19 de `Melhorias do Time`, que passa de 3 para 4 linhas.
-- **Itens só da sala custom**: a Obsidian funciona (desligada por padrão). Troca Congelante, Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil, Baú do Fim e Ressurreição aparecem com o texto, o preço e a moeda da referência, começam desligados e respondem "em breve" na compra; estão anotados no `pendencias.txt`.
+- **Itens só da sala custom**: a Obsidian funciona (desligada por padrão). Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil e Baú do Fim funcionam como descrito no [BedWars](../bedwars/README.pt-BR.md) e começam desligados. Troca Congelante e Ressurreição aparecem com o texto, o preço e a moeda da referência, começam desligados e respondem "em breve" na compra; estão anotados no `pendencias.txt`.
 
 **Party.** Quem entra na party do líder (convidado ou pelo `/party abrir`) é puxado para a sala; quem sai da party vai para o lobby. A sala fecha (`A sala foi fechada.`, todos para o lobby) quando o líder sai da sala ou do servidor, ou deixa de liderar a party.
 
@@ -138,5 +138,5 @@ Nenhuma.
 
 - Só modos do BedWars podem ser criados; os outros jogos e modos dos menus aparecem e não fazem nada.
 - `Carregar mapa externo` não faz nada.
-- Troca Congelante, Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil, Baú do Fim, Ressurreição, Ovo das Pontes e Rastreador respondem "em breve". Os limites padrão da referência desses itens não estão marcados.
+- Troca Congelante, Ressurreição e Rastreador respondem "em breve". Os limites padrão da referência desses itens não estão marcados.
 - O limitador de cliques do knockback pula empurrões que vêm cedo demais depois do último; os ticks de cada nível são um palpite (`knockback.click-limiter-ticks`).
