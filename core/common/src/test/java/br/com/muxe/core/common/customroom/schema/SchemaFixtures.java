@@ -40,6 +40,7 @@ final class SchemaFixtures {
     static final ShopItem WOOL = new ShopItem(10, "la", Icon.of("WOOL").withAmount(16), "Lã", List.of("&7Ótimo para fazer pontes."), 4, "iron", true);
     static final ShopItem STONE_SWORD = new ShopItem(19, "espada-pedra", Icon.of("STONE_SWORD"), "Espada de Pedra", List.of(), 10, "iron", true);
     static final ShopItem FROZEN_SWAP = new ShopItem(20, "troca-congelante", Icon.of("BARRIER"), "Troca Congelante", List.of(), 2, "emerald", false);
+    static final ShopItem ICE_BRIDGE = new ShopItem(21, "ponte-de-gelo", Icon.of("ICE"), "Ponte de Gelo", List.of("&7Construa uma ponte de gelo."), 7, "gold", false);
     static final Upgrade ARMOR = new Upgrade(11, "reforco", Icon.of("IRON_CHESTPLATE"), "Reforço na Armadura",
         List.of("&7O seu time ganha Proteção em todas", "&7as peças armaduras."),
         List.of(new Level("Proteção I", 2, "diamond"), new Level("Proteção II", 4, "diamond"), new Level("Proteção III", 8, "diamond"),

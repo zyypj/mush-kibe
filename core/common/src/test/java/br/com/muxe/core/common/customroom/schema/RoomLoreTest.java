@@ -119,6 +119,17 @@ class RoomLoreTest {
     }
 
     @Test
+    void aDisabledShopItemShowsABarrierAndAnEnabledOneItsOwnIcon() {
+        RoomOptions enabled = new RoomOptions(Map.of("shop.troca-congelante.enabled", "true"));
+
+        assertThat(lore.entry(SchemaFixtures.WOOL, new RoomOptions(Map.of("shop.la.enabled", "false"))).icon().material()).isEqualTo("BARRIER");
+        assertThat(lore.entry(SchemaFixtures.WOOL, RoomOptions.EMPTY).icon().material()).isEqualTo("WOOL");
+        assertThat(lore.entry(SchemaFixtures.ICE_BRIDGE, RoomOptions.EMPTY).icon().material()).isEqualTo("BARRIER");
+        assertThat(lore.entry(SchemaFixtures.ICE_BRIDGE, new RoomOptions(Map.of("shop.ponte-de-gelo.enabled", "true"))).icon().material()).isEqualTo("ICE");
+        assertThat(lore.entry(SchemaFixtures.FROZEN_SWAP, enabled).lore()).contains("&7Status: &aAtivado*");
+    }
+
+    @Test
     void aDisabledUpgradeShowsABarrierAndAnEnabledOneItsOwnIcon() {
         RoomOptions disabled = new RoomOptions(Map.of("upgrades.reforco.enabled", "false"));
 

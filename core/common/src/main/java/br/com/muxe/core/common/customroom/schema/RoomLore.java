@@ -208,7 +208,8 @@ public final class RoomLore {
         lore.add(texts.get("limit", "limit", limit(state.limitType(), state.limit()) + mark(state.limitChanged())));
         lore.add(texts.get("blank"));
         lore.add(texts.get("click-change"));
-        return new Shown(entry.icon().withGlow(state.changed()), "&a" + entry.name(), lore);
+        Icon icon = state.enabled() ? entry.icon() : DISABLED_ICON;
+        return new Shown(icon.withGlow(state.changed()), "&a" + entry.name(), lore);
     }
 
     private Shown upgrade(Upgrade entry, RoomOptions options) {
