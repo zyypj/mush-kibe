@@ -223,6 +223,19 @@ class CustomRoomsTest {
     }
 
     @Test
+    void everyOptionChangeReachesTheMatchRightAwaySoItCanApplyItDuringTheGame() {
+        String code = create();
+        arrive(leader);
+        CustomRoom room = rooms.room(code).orElseThrow();
+
+        rooms.changeOptions(room, new RoomOptions(Map.of("items.slingshot-cooldown", "2")));
+        rooms.changeOptions(room, new RoomOptions(Map.of("items.slingshot-cooldown", "3")));
+
+        assertThat(runtime(code).state().calls).containsSubsequence("options changed", "options changed");
+        assertThat(room.options().get("items.slingshot-cooldown")).contains("3");
+    }
+
+    @Test
     void theRoomGoesBackToItsCountdownAfterTheMatchEnds() {
         String code = create();
         arrive(leader);

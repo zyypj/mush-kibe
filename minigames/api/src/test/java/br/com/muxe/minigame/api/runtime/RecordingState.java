@@ -51,6 +51,11 @@ public final class RecordingState implements MatchState {
     }
 
     @Override
+    public void optionsChanged() {
+        calls.add("options changed");
+    }
+
+    @Override
     public void closed() {
         calls.add("closed");
     }

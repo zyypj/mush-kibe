@@ -194,17 +194,28 @@ public final class BedWarsMatch implements MatchState {
     }
 
     @Override
+    public void optionsChanged() {
+        if (match.phase() == MatchPhase.PLAYING) {
+            readRules();
+        }
+    }
+
+    private void readRules() {
+        rules = CustomRules.of(runtime.control().options());
+        customShop = null;
+        timeline = rules.timeline(settings.timeline(match.mode().id()));
+        forges.rules(rules);
+    }
+
+    @Override
     public void fastTick() {
         forges.cycle();
     }
 
     @Override
     public void starting() {
-        rules = CustomRules.of(runtime.control().options());
-        customShop = null;
-        timeline = rules.timeline(settings.timeline(match.mode().id()));
+        readRules();
         skipped = 0;
-        forges.rules(rules);
         missions = null;
         if (!rules.custom()) {
             missions = new MissionTracker(core, GAME, services.missions(), "room " + match.code(), services.plugin().getLogger());
