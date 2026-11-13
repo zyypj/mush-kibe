@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
 import br.com.muxe.core.bukkit.cosmetic.animation.Area;
-import br.com.muxe.core.bukkit.cosmetic.animation.Ground;
 import br.com.muxe.core.bukkit.cosmetic.animation.Scene;
 import br.com.muxe.core.bukkit.cosmetic.animation.Stage.BlockChange;
 import br.com.muxe.core.bukkit.cosmetic.animation.Timeline;
@@ -360,28 +359,18 @@ class DesertVictoryTest {
     }
 
     @Test
-    void theOasisSitsTenBlocksAheadOfTheWinnerHalfOnTheIslandHalfOverTheVoid() {
-        Ground.Solid island = (x, y, z) -> Math.abs(x) <= 5 && Math.abs(z) <= 5 && y < 64;
-
-        assertThat(DesertVictory.oasisCentre(island, 0, 64, 0, new Vec(0, 0, 1))).hasValueSatisfying(centre -> assertThat(centre).containsExactly(0, 10));
-        assertThat(DesertVictory.oasisCentre(island, 0, 64, 0, new Vec(-1, 0, 0))).hasValueSatisfying(centre -> assertThat(centre).containsExactly(-10, 0));
+    void theOasisAlwaysRisesTenBlocksWhereTheWinnerLooksEvenInsideABuilding() {
+        assertThat(DesertVictory.oasisCentre(0, 0, new Vec(0, 0, 1), List.of())).containsExactly(0, 10);
+        assertThat(DesertVictory.oasisCentre(0, 0, new Vec(-1, 0, 0), List.of())).containsExactly(-10, 0);
+        assertThat(DesertVictory.oasisCentre(5, -3, new Vec(1, 0, 1), List.of())).containsExactly(12, 4);
     }
 
     @Test
-    void whenABuildingStandsAheadTheOasisTurnsToTheSide() {
-        Ground.Solid island = (x, y, z) -> Math.abs(x) <= 40 && Math.abs(z) <= 40 && y < 64 || Math.abs(x) <= 6 && z >= 4 && z <= 45 && y < 80;
+    void aSecondOasisGoesFurtherAlongTheLookInsteadOfOverlappingTheFirst() {
+        List<int[]> first = List.<int[]>of(new int[] {0, 10});
 
-        Optional<int[]> centre = DesertVictory.oasisCentre(island, 0, 64, 0, new Vec(0, 0, 1));
-
-        assertThat(centre).isPresent();
-        assertThat(Math.abs(centre.get()[0])).isGreaterThanOrEqualTo(15);
-        assertThat(DesertVictory.oasisClear(island, centre.get()[0], 64, centre.get()[1])).isTrue();
-    }
-
-    @Test
-    void withNoRoomAroundTheOasisStaysStraightAhead() {
-        assertThat(DesertVictory.oasisCentre((x, y, z) -> true, 0, 64, 0, new Vec(0, 0, 1))).isEmpty();
-        assertThat(DesertVictory.oasisAhead(0, 0, new Vec(0, 0, 1))).containsExactly(0, 10);
+        assertThat(DesertVictory.oasisCentre(0, 0, new Vec(0, 0, 1), first)).containsExactly(0, 28);
+        assertThat(DesertVictory.oasisCentre(60, 0, new Vec(1, 0, 0), first)).containsExactly(70, 0);
     }
 
     @Test

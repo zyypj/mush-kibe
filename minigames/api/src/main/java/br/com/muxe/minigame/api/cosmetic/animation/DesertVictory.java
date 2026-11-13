@@ -1,7 +1,6 @@
 package br.com.muxe.minigame.api.cosmetic.animation;
 
 import br.com.muxe.core.bukkit.cosmetic.animation.Area;
-import br.com.muxe.core.bukkit.cosmetic.animation.Ground;
 import br.com.muxe.core.bukkit.cosmetic.animation.Scene;
 import br.com.muxe.core.bukkit.cosmetic.animation.SceneAnimation;
 import br.com.muxe.core.bukkit.cosmetic.animation.Stage.Actor;
@@ -16,12 +15,10 @@ import br.com.muxe.core.bukkit.cosmetic.animation.Vec;
 import br.com.muxe.minigame.api.cosmetic.animation.DesertRules.Patches;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.random.RandomGenerator;
@@ -88,8 +85,6 @@ public final class DesertVictory implements SceneAnimation {
     static final int POND_RINGS = 3;
     static final int OASIS_MIN_DISTANCE = 10;
     static final int OASIS_SEARCH = 48;
-    static final int OASIS_ABOVE = 12;
-    static final int[] OASIS_TURNS = {0, 20, -20, 40, -40, 60, -60, 90, -90, 120, -120, 150, -150, 180};
     static final int OASIS_START_TICK = 22;
     static final int FOUNTAIN_FIRST = 40;
     static final int FOUNTAIN_LAST_NUGGET = 190;
@@ -203,8 +198,7 @@ public final class DesertVictory implements SceneAnimation {
     }
 
     private static int[] scheduleOasis(Stage stage, Timeline timeline, RandomGenerator random, Drops drops, int originX, int originY, int originZ, Vec facing, List<int[]> others) {
-        Ground.Solid taken = (x, y, z) -> stage.solid(x, y, z) || others.stream().anyMatch(other -> Math.hypot(x - other[0], z - other[1]) < Oasis.RADIUS + 1);
-        int[] centre = oasisCentre(taken, originX, originY, originZ, facing).orElseGet(() -> oasisAhead(originX, originZ, facing));
+        int[] centre = oasisCentre(originX, originZ, facing, others);
         Oasis oasis = new Oasis(centre[0], originY, centre[1], random);
         for (int ring = 0; ring <= Oasis.RADIUS; ring++) {
             int current = ring;
@@ -227,55 +221,20 @@ public final class DesertVictory implements SceneAnimation {
         return centre;
     }
 
-    static Optional<int[]> oasisCentre(Ground.Solid solid, int originX, int originY, int originZ, Vec facing) {
-        Map<Long, Boolean> blocked = new HashMap<>();
+    static int[] oasisCentre(int originX, int originZ, Vec facing, List<int[]> others) {
         double heading = Math.atan2(facing.z(), facing.x());
-        for (int turn : OASIS_TURNS) {
-            double angle = heading + Math.toRadians(turn);
-            for (int distance = OASIS_MIN_DISTANCE; distance <= OASIS_SEARCH; distance++) {
-                int centreX = originX + (int) Math.round(Math.cos(angle) * distance);
-                int centreZ = originZ + (int) Math.round(Math.sin(angle) * distance);
-                if (oasisClear(solid, centreX, originY, centreZ, blocked)) {
-                    return Optional.of(new int[] {centreX, centreZ});
-                }
+        int[] first = ahead(originX, originZ, heading, OASIS_MIN_DISTANCE);
+        for (int distance = OASIS_MIN_DISTANCE; distance <= OASIS_SEARCH; distance++) {
+            int[] centre = ahead(originX, originZ, heading, distance);
+            if (others.stream().noneMatch(other -> Math.hypot(centre[0] - other[0], centre[1] - other[1]) < 2 * (Oasis.RADIUS + 1))) {
+                return centre;
             }
         }
-        return Optional.empty();
+        return first;
     }
 
-    static int[] oasisAhead(int originX, int originZ, Vec facing) {
-        double heading = Math.atan2(facing.z(), facing.x());
-        return new int[] {originX + (int) Math.round(Math.cos(heading) * OASIS_MIN_DISTANCE), originZ + (int) Math.round(Math.sin(heading) * OASIS_MIN_DISTANCE)};
-    }
-
-    static boolean oasisClear(Ground.Solid solid, int centreX, int originY, int centreZ) {
-        return oasisClear(solid, centreX, originY, centreZ, new HashMap<>());
-    }
-
-    private static boolean oasisClear(Ground.Solid solid, int centreX, int originY, int centreZ, Map<Long, Boolean> blocked) {
-        for (int dx = -Oasis.RADIUS; dx <= Oasis.RADIUS; dx++) {
-            for (int dz = -Oasis.RADIUS; dz <= Oasis.RADIUS; dz++) {
-                if (Math.hypot(dx, dz) >= Oasis.RADIUS + 1) {
-                    continue;
-                }
-                int x = centreX + dx;
-                int z = centreZ + dz;
-                boolean taken = blocked.computeIfAbsent((long) x << 32 | (z & 0xFFFFFFFFL), key -> columnTaken(solid, x, originY, z));
-                if (taken) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private static boolean columnTaken(Ground.Solid solid, int x, int originY, int z) {
-        for (int y = originY; y <= originY + OASIS_ABOVE; y++) {
-            if (solid.at(x, y, z)) {
-                return true;
-            }
-        }
-        return false;
+    private static int[] ahead(int originX, int originZ, double heading, int distance) {
+        return new int[] {originX + (int) Math.round(Math.cos(heading) * distance), originZ + (int) Math.round(Math.sin(heading) * distance)};
     }
 
     private static void buildRing(Stage stage, Oasis oasis, int ring) {
