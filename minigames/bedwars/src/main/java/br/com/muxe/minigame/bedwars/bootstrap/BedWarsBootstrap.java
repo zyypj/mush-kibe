@@ -51,6 +51,7 @@ import br.com.muxe.minigame.bedwars.invisibility.InvisiblePlayers;
 import br.com.muxe.minigame.bedwars.listener.ActivityListener;
 import br.com.muxe.minigame.bedwars.listener.BedWarsHandlers;
 import br.com.muxe.minigame.bedwars.listener.Bedbugs;
+import br.com.muxe.minigame.bedwars.listener.LaunchFalls;
 import br.com.muxe.minigame.bedwars.listener.SpecialProjectiles;
 import br.com.muxe.minigame.bedwars.listener.ChestListener;
 import br.com.muxe.minigame.bedwars.lobby.format.LevelBadges;
@@ -239,6 +240,7 @@ public final class BedWarsBootstrap {
         core.languages().onChange(player -> rooms.of(player.getUniqueId()).ifPresent(runtime -> runtime.state().languageChanged(player.getUniqueId())));
         plugin.getServer().getPluginManager().registerEvents(new ChestListener(rooms, handlers), plugin);
         plugin.getServer().getPluginManager().registerEvents(new SpecialProjectiles(rooms), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new LaunchFalls(plugin, rooms, core.clock()), plugin);
         plugin.getServer().getPluginManager().registerEvents(new ActivityListener(activity, slingshot, core.clock()), plugin);
         InvisiblePlayers.start(plugin, rooms);
         auras = AuraTask.start(plugin, rooms, cosmetics.auras());

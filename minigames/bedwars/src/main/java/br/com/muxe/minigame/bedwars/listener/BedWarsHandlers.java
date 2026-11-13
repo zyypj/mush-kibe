@@ -449,6 +449,7 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         Vector look = player.getLocation().getDirection();
         Vec push = Slingshot.push(new Vec(look.getX(), look.getY(), look.getZ()));
         player.setVelocity(new Vector(push.x(), push.y(), push.z()));
+        LaunchFalls.mark(plugin, player, core.clock().instant());
         player.getWorld().playEffect(player.getLocation(), Effect.STEP_SOUND, Slingshot.SLIME_BLOCK_ID);
         for (int index = 0; index < Slingshot.SOUND_PITCHES.size(); index++) {
             float pitch = Slingshot.SOUND_PITCHES.get(index);

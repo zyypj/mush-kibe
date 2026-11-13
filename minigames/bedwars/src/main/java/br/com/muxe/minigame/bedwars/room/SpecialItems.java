@@ -11,6 +11,7 @@ import br.com.muxe.minigame.bedwars.game.IceBridge;
 import br.com.muxe.minigame.bedwars.game.Parachute;
 import br.com.muxe.minigame.bedwars.game.Rewind;
 import br.com.muxe.minigame.bedwars.game.SpiderWeb;
+import br.com.muxe.minigame.bedwars.listener.LaunchFalls;
 import br.com.muxe.minigame.engine.team.TeamColor;
 import java.time.Clock;
 import java.time.Duration;
@@ -294,6 +295,7 @@ public final class SpecialItems {
 
     private void launch(Player player) {
         player.setVelocity(new Vector(0, Parachute.LAUNCH, 0));
+        LaunchFalls.mark(plugin, player, clock.instant());
         player.getWorld().playSound(player.getLocation(), Sound.FIREWORK_LAUNCH, Parachute.SOUND_VOLUME, Parachute.LAUNCH_PITCH);
     }
 
