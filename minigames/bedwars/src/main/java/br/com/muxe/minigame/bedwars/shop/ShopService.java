@@ -111,8 +111,13 @@ public final class ShopService {
         String title = quickBuy ? shop.quickBuyTitle() : shop.categoryTitle().replace("{category}", category.name());
         Menu.Builder menu = Menu.builder(title).rows(SHOP_ROWS);
         int openColumn = 0;
+        QuickBuy layout = quickBuys.of(player.getUniqueId());
+        boolean custom = runtime.state().rules().custom();
         for (Tab tab : shop.tabs()) {
             boolean current = tab.category().equals(categoryId);
+            if (tab.hiddenWhenEmpty() && !current && offered(player, runtime, roomPlayer, shop, layout, tab.category(), custom).isEmpty()) {
+                continue;
+            }
             if (current) {
                 openColumn = tab.slot();
             }
@@ -126,8 +131,24 @@ public final class ShopService {
             runtime.control().menuItem(player.getUniqueId()).ifPresent(item -> menu.button(ROOM_MENU_SLOT, roomMenuIcon(item),
                 context -> runtime.control().openMenu(context.player().getUniqueId())));
         }
-        QuickBuy layout = quickBuys.of(player.getUniqueId());
-        List<Optional<String>> ids = quickBuy ? positions(layout) : listed(shop, categoryId, runtime.state().rules().custom()).stream().map(Optional::of).toList();
+        if (!quickBuy && category.centered()) {
+            List<Offered> offered = offered(player, runtime, roomPlayer, shop, layout, categoryId, custom);
+            List<Integer> slots = ShopLayout.centered(offered.size());
+            for (int index = 0; index < slots.size(); index++) {
+                ShopItem item = offered.get(index).item();
+                menu.button(slots.get(index), offered.get(index).icon(), context -> {
+                    if (context.isShiftClick()) {
+                        editQuickBuy(context.player(), runtime, item, categoryId);
+                        return;
+                    }
+                    buy(context, runtime, item);
+                    openShop(context.player(), runtime, categoryId);
+                });
+            }
+            menu.build().open(player);
+            return;
+        }
+        List<Optional<String>> ids = quickBuy ? positions(layout) : listed(shop, categoryId, custom).stream().map(Optional::of).toList();
         for (int index = 0; index < ids.size() && index < ITEM_SLOTS.size(); index++) {
             Optional<ShopItem> entry = ids.get(index).map(shop.items()::get);
             if (entry.isEmpty()) {
@@ -158,6 +179,21 @@ public final class ShopService {
                 context -> hotbarEditor.openFromShop(context.player(), viewer -> openShop(viewer, runtime, ShopCatalog.QUICK_BUY)));
         }
         menu.build().open(player);
+    }
+
+    private List<Offered> offered(Player player, MatchRuntime<BedWarsMatch> runtime, Participant roomPlayer, ShopCatalog shop, QuickBuy layout, String categoryId,
+                                  boolean custom) {
+        List<Offered> offered = new ArrayList<>();
+        for (String id : listed(shop, categoryId, custom)) {
+            ShopItem item = shop.items().get(id);
+            if (item != null) {
+                icon(player, runtime, roomPlayer, item, layout, shop).ifPresent(icon -> offered.add(new Offered(item, icon)));
+            }
+        }
+        return offered;
+    }
+
+    private record Offered(ShopItem item, ItemBuilder icon) {
     }
 
     private void editQuickBuy(Player player, MatchRuntime<BedWarsMatch> runtime, ShopItem item, String categoryId) {

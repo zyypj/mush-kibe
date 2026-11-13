@@ -35,13 +35,15 @@ public record ShopCatalog(
         }
         List<Tab> tabs = new ArrayList<>();
         for (Map<?, ?> tab : shop.getMapList("tabs")) {
-            tabs.add(new Tab(((Number) tab.get("slot")).intValue(), String.valueOf(tab.get("category")), material(String.valueOf(tab.get("material"))), String.valueOf(tab.get("name"))));
+            tabs.add(new Tab(((Number) tab.get("slot")).intValue(), String.valueOf(tab.get("category")), material(String.valueOf(tab.get("material"))), String.valueOf(tab.get("name")),
+                Boolean.TRUE.equals(tab.get("hidden-when-empty"))));
         }
         Map<String, Category> categories = new LinkedHashMap<>();
         ConfigurationSection categorySection = section(shop, "categories");
         for (String id : categorySection.getKeys(false)) {
             ConfigurationSection category = section(categorySection, id);
-            categories.put(id, new Category(id, category.getString("name", id), category.getStringList("items"), category.getStringList("custom-items")));
+            categories.put(id, new Category(id, category.getString("name", id), category.getStringList("items"), category.getStringList("custom-items"),
+                category.getBoolean("centered", false)));
         }
         Map<String, ShopItem> items = new LinkedHashMap<>();
         ConfigurationSection itemSection = section(shop, "items");
@@ -181,10 +183,10 @@ public record ShopCatalog(
         }
     }
 
-    public record Tab(int slot, String category, Material material, String name) {
+    public record Tab(int slot, String category, Material material, String name, boolean hiddenWhenEmpty) {
     }
 
-    public record Category(String id, String name, List<String> items, List<String> customItems) {
+    public record Category(String id, String name, List<String> items, List<String> customItems, boolean centered) {
 
         public Category {
             items = List.copyOf(items);

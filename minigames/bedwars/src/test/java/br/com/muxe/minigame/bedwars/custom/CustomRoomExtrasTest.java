@@ -59,8 +59,10 @@ class CustomRoomExtrasTest {
         CustomShop on = new CustomShop(CustomRules.of(Optional.of(new RoomOptions(Map.of("shop.troca-congelante.enabled", "true")))));
 
         assertThat(SHOP.categories().get("utilidades").items()).doesNotContain("troca-congelante");
-        assertThat(SHOP.categories().get("utilidades").customItems()).containsExactly("troca-congelante", "ponte-de-gelo", "para-quedas", "rebobinar", "spider",
-            "loja-portatil", "bau-do-fim", "ressurreicao");
+        assertThat(SHOP.categories().get("utilidades").customItems()).containsExactly("troca-congelante", "ressurreicao");
+        assertThat(SHOP.categories().get("rotativos").items()).isEmpty();
+        assertThat(SHOP.categories().get("rotativos").customItems()).containsExactly("ponte-de-gelo", "para-quedas", "rebobinar", "spider", "loja-portatil",
+            "bau-do-fim");
         assertThat(ordinary.tier(swap, swap.tiers().getFirst(), SHOP.currencies())).isEmpty();
         assertThat(ordinary.tier(obsidian, obsidian.tiers().getFirst(), SHOP.currencies())).isEmpty();
         assertThat(on.tier(swap, swap.tiers().getFirst(), SHOP.currencies())).isPresent();

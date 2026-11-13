@@ -819,6 +819,7 @@ shop:
     - name: "&aBows"
     - name: "&aPotions"
     - name: "&aUtility"
+    - name: "&aRotating"
   currencies:
     iron:
       one: "Iron"
@@ -982,6 +983,8 @@ shop:
       name: "Potions"
     utilidades:
       name: "Utility"
+    rotativos:
+      name: "Rotating"
   items:
     la:
       name: "Wool"

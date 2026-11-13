@@ -7,6 +7,7 @@ import br.com.muxe.minigame.bedwars.room.RoomPlayer;
 import br.com.muxe.minigame.bedwars.shop.Offer.State;
 import br.com.muxe.minigame.bedwars.shop.ShopCatalog.ShopItem;
 import java.util.UUID;
+import org.bukkit.Material;
 import org.junit.jupiter.api.Test;
 
 class ShopCatalogTest {
@@ -18,7 +19,20 @@ class ShopCatalogTest {
     void theQuickBuyKeepsTheExportedOrderAndEveryCategoryHasItsItems() {
         assertThat(catalog.quickBuy()).hasSize(21).startsWith("argila", "armadura-ferro", "tnt").endsWith("leite", "ovo-das-pontes");
         assertThat(catalog.categories().get("blocos").items()).containsExactly("la", "argila", "vidro", "pedra-do-fim", "escada", "madeira");
-        assertThat(catalog.tabs()).extracting(ShopCatalog.Tab::slot).containsExactly(0, 1, 2, 3, 4, 5, 6, 7);
+        assertThat(catalog.tabs()).extracting(ShopCatalog.Tab::slot).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8);
+    }
+
+    @Test
+    void theRotatingTabIsANetherStarThatHidesWhileNoneOfItsItemsIsOnAndItsItemsAreCentred() {
+        ShopCatalog.Tab rotating = catalog.tabs().getLast();
+
+        assertThat(rotating.category()).isEqualTo("rotativos");
+        assertThat(rotating.material()).isEqualTo(Material.NETHER_STAR);
+        assertThat(rotating.hiddenWhenEmpty()).isTrue();
+        assertThat(catalog.tabs().subList(0, 8)).noneMatch(ShopCatalog.Tab::hiddenWhenEmpty);
+        assertThat(catalog.categories().get("rotativos").name()).isEqualTo("Rotativos");
+        assertThat(catalog.categories().get("rotativos").centered()).isTrue();
+        assertThat(catalog.categories().get("utilidades").centered()).isFalse();
     }
 
     @Test

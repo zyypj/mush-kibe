@@ -139,7 +139,7 @@ Uma cor que a arena não tem, ou um jogador cuja preferência não pôde ser car
 
 ### Loja
 
-O NPC da loja abre os menus dos exports: Compra Rápida (o layout do export) e as sete categorias, com a aba da categoria aberta marcada por um vidro verde.
+O NPC da loja abre os menus dos exports: Compra Rápida (o layout do export) e as sete categorias, com a aba da categoria aberta marcada por um vidro verde. Uma oitava aba, `Rotativos` (estrela do nether, slot 8), só aparece enquanto algum item dela estiver ativo, o que só a sala custom consegue: Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil e Baú do Fim. A página dela lista os itens ativos centralizados, linha por linha; um número par numa linha deixa o slot do meio vazio para os dois lados ficarem iguais (`hidden-when-empty` numa aba, `centered` numa categoria, `ShopLayout`).
 
 - Um item custa ferro, ouro ou esmeraldas, tirados primeiro do inventário, depois do `Baú do Fim` do jogador e depois dos baús da ilha do time, então 5 ouros na mão e 7 no baú compram uma armadura de 12 ouros. As melhorias custam diamantes dos mesmos lugares e também do inventário dos companheiros vivos; nenhum outro recurso é dividido. O nome fica vermelho quando nem tudo isso basta, com `Você não tem <recurso> o suficiente.`
 - Tentar comprar o que o jogador já tem e não pode comprar de novo (armadura já vestida, a tesoura, uma ferramenta no último nível) diz `Você já tem este item.` (`messages.already-have`). Blocos, espadas e os outros itens podem ser comprados de novo.

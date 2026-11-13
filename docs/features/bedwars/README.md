@@ -139,7 +139,7 @@ A colour the arena does not have, or a player whose preference could not be load
 
 ### Shop
 
-The shop NPC opens the menus of the exports: Compra Rápida (the exported layout) and the seven categories, with the tab of the open category marked by a green pane.
+The shop NPC opens the menus of the exports: Compra Rápida (the exported layout) and the seven categories, with the tab of the open category marked by a green pane. An eighth tab, `Rotativos` (nether star, slot 8), shows only while one of its items is on, which only a custom room can do: Ponte de Gelo, Para-quedas, Rebobinar, Spider, Loja Portátil and Baú do Fim. Its page lists the items that are on centred, row by row; an even number in a row leaves the middle slot empty so both sides match (`hidden-when-empty` on a tab, `centered` on a category, `ShopLayout`).
 
 - An item costs iron, gold or emeralds, taken first from the inventory, then from the player's `Baú do Fim` and then from the team's island chests, so 5 gold in hand and 7 in the chest buy a 12 gold armour. Upgrades cost diamonds from the same places plus the inventories of the teammates alive; no other resource is shared. The name is red when not even all of that is enough, with `Você não tem <recurso> o suficiente.`
 - Trying to buy what the player already has and cannot buy again (armour already worn, the shears, a tool at its last tier) says `Você já tem este item.` (`messages.already-have`). Blocks, swords and the other items can be bought again.

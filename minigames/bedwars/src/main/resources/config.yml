@@ -1625,6 +1625,11 @@ shop:
       category: utilidades
       material: TNT
       name: "&aUtilidades"
+    - slot: 8
+      category: rotativos
+      material: NETHER_STAR
+      name: "&aRotativos"
+      hidden-when-empty: true
   quick-buy:
     - argila
     - armadura-ferro
@@ -1710,13 +1715,17 @@ shop:
         - estilingue
       custom-items:
         - troca-congelante
+        - ressurreicao
+    rotativos:
+      name: "Rotativos"
+      centered: true
+      custom-items:
         - ponte-de-gelo
         - para-quedas
         - rebobinar
         - spider
         - loja-portatil
         - bau-do-fim
-        - ressurreicao
   items:
     la:
       type: wool
