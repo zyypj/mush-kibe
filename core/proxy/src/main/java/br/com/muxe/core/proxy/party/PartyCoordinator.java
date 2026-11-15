@@ -25,10 +25,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class PartyCoordinator {
+
+    public static final String INVITES_OFF = "party-invites-off";
 
     private final PacketBus bus;
     private final PartyBook book;
@@ -37,8 +40,15 @@ public final class PartyCoordinator {
     private final Clock clock;
     private final Duration gatherTimeout;
     private final Logger logger;
+    private final Predicate<UUID> acceptsInvites;
 
     public PartyCoordinator(PacketBus bus, PartyBook book, PlayerDisplays displays, PartyNetwork network, Clock clock, Duration gatherTimeout, Logger logger) {
+        this(bus, book, displays, network, clock, gatherTimeout, logger, player -> true);
+    }
+
+    public PartyCoordinator(PacketBus bus, PartyBook book, PlayerDisplays displays, PartyNetwork network, Clock clock, Duration gatherTimeout, Logger logger,
+                            Predicate<UUID> acceptsInvites) {
+        this.acceptsInvites = acceptsInvites;
         this.bus = bus;
         this.book = book;
         this.displays = displays;
@@ -112,6 +122,8 @@ public final class PartyCoordinator {
             Optional<PartyPlayer> target = network.online(name);
             if (target.isEmpty()) {
                 missing.add(name);
+            } else if (!actor.id().equals(target.get().id()) && !acceptsInvites.test(target.get().id())) {
+                outcomes.add(PartyOutcome.refused(actor.id(), INVITES_OFF, "player", target.get().name()));
             } else {
                 outcomes.add(book.invite(actor, target.get(), clock.instant()));
             }

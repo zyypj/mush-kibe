@@ -61,7 +61,7 @@ Rank: Ultra (29d 23h)
 
 - The first login comes from the player's [account](../accounts/README.md) and is formatted with `first-login.format` in `first-login.time-zone`. When the account cannot be read, `first-login.unknown` (`-`) is shown.
 - Credits show `default-credits` until a wallet exists.
-- Buttons: `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin`, `Nick (/nick)` and `Menu do Ultra+`. `Nick` opens the shop on the Ultra+ category; `Medalhas` closes the menu and runs `/medalha`, which sends the [medal list](../ranks-and-tags/README.md#medalha) in the chat; `Ver estatísticas` opens the [statistics](../statistics/README.md) with `Voltar` back to the profile; the others do nothing yet, because their menus do not exist.
+- Buttons: `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin`, `Nick (/nick)` and `Menu do Ultra+`. `Nick` opens the shop on the Ultra+ category; `Medalhas` closes the menu and runs `/medalha`, which sends the [medal list](../ranks-and-tags/README.md#medalha) in the chat; `Ver estatísticas` opens the [statistics](../statistics/README.md) and `Preferências` the [preferences](../preferences/README.md), both with `Voltar` back to the profile; the others do nothing yet, because their menus do not exist.
 
 ### Lobby selector
 
@@ -237,7 +237,7 @@ The profile reads the account with `FindAccountQuery`.
 ## Known limitations
 
 - The cosmetics item does nothing yet.
-- The profile buttons `Amigos`, `Preferências`, `Sua skin` and `Menu do Ultra+` do nothing yet.
+- The profile buttons `Amigos`, `Sua skin` and `Menu do Ultra+` do nothing yet.
 - There is no friend system, so "Only friends" hides everyone.
 - There are no credits yet: the profile shows `default-credits`.
 - `{players}` in the game selector is read when the menu opens and does not refresh while it is open.

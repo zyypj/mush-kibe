@@ -41,6 +41,7 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 - [Social media heads](features/social-heads/README.md): a player head that cycles through the network's social media and sends the link on click, shared by the server group.
 - [Credits and cosmetics](features/credits/README.md): the credit balance, `/creditos`, and owned and selected cosmetics that games build their catalogs on.
 - [Missions](features/missions/README.md): daily and weekly missions shared by every game, completed live, with a credit path.
+- [Preferences](features/preferences/README.md): the `Preferências` menu of `Meu perfil`: chat, `/lobby` confirmation, invites and privacy.
 - [Statistics](features/statistics/README.md): a player's statistics in every game, from `Meu perfil` or `/stats`, on any server.
 - [Parkour](features/parkour/README.md): a timed lobby parkour with checkpoints, items to restart or go back, and a personal record per map, shared by the server group.
 - [Shop](features/shop/README.md): `/loja`, the checkout menus, cash registers and the network promotion.

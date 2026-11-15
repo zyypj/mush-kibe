@@ -20,7 +20,7 @@ Um menu com as estatísticas de um jogador em todos os jogos, aberto pelo `Meu p
 
 | Comando | Apelidos | Descrição |
 |---|---|---|
-| `/stats [jogador]` | `/estatisticas` | Abre as estatísticas do jogador, ou as suas. Um nome que ninguém usou responde `messages.statistics-not-found`. |
+| `/stats [jogador]` | `/estatisticas` | Abre as estatísticas do jogador, ou as suas. Um nome que ninguém usou responde `messages.statistics-not-found`; um jogador que desativou `Visibilidade de estatísticas` nas [preferências](../preferences/README.pt-BR.md) responde `messages.statistics-hidden`. |
 
 ## Permissões
 

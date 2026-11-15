@@ -9,6 +9,7 @@ import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.party.Parties;
 import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.permission.display.NameTags;
+import br.com.muxe.core.bukkit.preference.PreferenceService;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledGames;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledPlay;
 import br.com.muxe.core.bukkit.scoreboard.SidebarOverrides;
@@ -98,4 +99,6 @@ public interface MuxeCore {
     ScheduledPlay scheduledPlay();
 
     StatsMenus statistics();
+
+    PreferenceService preferences();
 }

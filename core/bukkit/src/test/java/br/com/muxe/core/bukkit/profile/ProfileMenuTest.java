@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 import org.bukkit.Material;
@@ -115,7 +116,7 @@ class ProfileMenuTest {
     }
 
     @Test
-    void theStatisticsButtonOpensTheStatisticsWithAWayBackToTheProfile() {
+    void theStatisticsAndPreferencesButtonsOpenTheirMenusWithAWayBackToTheProfile() {
         List<String> calls = new ArrayList<>();
         Player player = (Player) Proxy.newProxyInstance(Player.class.getClassLoader(), new Class<?>[] {Player.class}, (proxy, method, args) -> {
             if (method.getName().equals("getName")) {
@@ -125,13 +126,17 @@ class ProfileMenuTest {
         });
         ProfileMenu linked = new ProfileMenu(Localized.same(settings), LanguageLookup.DEFAULT, MenuFixtures.actions(network, MenuFixtures.servers()),
             new SimpleQueryBus(Runnable::run, List.of()), ranks, Runnable::run, Logger.getLogger("test"),
-            Optional.of((viewer, back) -> calls.add("statistics of " + viewer.getName() + (back == null ? "" : " with back"))));
+            Map.of(ProfileMenu.STATISTICS, (viewer, back) -> calls.add("statistics of " + viewer.getName() + (back == null ? "" : " with back")),
+                ProfileMenu.PREFERENCES, (viewer, back) -> calls.add("preferences of " + viewer.getName() + (back == null ? "" : " with back"))));
 
         MenuButton statistics = linked.menu(head(Optional.empty())).button(30).orElseThrow();
         statistics.click().click(new ClickContext(player, ClickType.LEFT, 30, null));
+        MenuButton preferences = linked.menu(head(Optional.empty())).button(31).orElseThrow();
+        preferences.click().click(new ClickContext(player, ClickType.LEFT, 31, null));
 
         assertThat(statistics.icon().name()).isEqualTo("§aVer estatísticas");
-        assertThat(calls).containsExactly("statistics of tadeu with back");
+        assertThat(preferences.icon().name()).isEqualTo("§aPreferências");
+        assertThat(calls).containsExactly("statistics of tadeu with back", "preferences of tadeu with back");
     }
 
     private ProfileHead head(Optional<Instant> firstSeenAt) {

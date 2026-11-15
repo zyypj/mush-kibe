@@ -12,6 +12,7 @@ import br.com.muxe.core.common.language.domain.Language;
 import br.com.muxe.core.common.language.domain.LanguageLookup;
 import br.com.muxe.core.common.language.domain.Localized;
 import java.time.Instant;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
@@ -23,6 +24,7 @@ import org.bukkit.entity.Player;
 public final class ProfileMenu {
 
     public static final String STATISTICS = "statistics";
+    public static final String PREFERENCES = "preferences";
 
     private final Localized<ProfileSettings> settings;
     private final LanguageLookup languages;
@@ -31,7 +33,7 @@ public final class ProfileMenu {
     private final PlayerRanks ranks;
     private final Executor mainThread;
     private final Logger logger;
-    private final Optional<BiConsumer<Player, Consumer<Player>>> statistics;
+    private final Map<String, BiConsumer<Player, Consumer<Player>>> links;
 
     public ProfileMenu(ProfileSettings settings, ButtonActions actions, QueryBus queries, PlayerRanks ranks, Executor mainThread, Logger logger) {
         this(Localized.same(settings), LanguageLookup.DEFAULT, actions, queries, ranks, mainThread, logger);
@@ -39,12 +41,12 @@ public final class ProfileMenu {
 
     public ProfileMenu(Localized<ProfileSettings> settings, LanguageLookup languages, ButtonActions actions, QueryBus queries, PlayerRanks ranks, Executor mainThread,
                        Logger logger) {
-        this(settings, languages, actions, queries, ranks, mainThread, logger, Optional.empty());
+        this(settings, languages, actions, queries, ranks, mainThread, logger, Map.of());
     }
 
     public ProfileMenu(Localized<ProfileSettings> settings, LanguageLookup languages, ButtonActions actions, QueryBus queries, PlayerRanks ranks, Executor mainThread,
-                       Logger logger, Optional<BiConsumer<Player, Consumer<Player>>> statistics) {
-        this.statistics = statistics;
+                       Logger logger, Map<String, BiConsumer<Player, Consumer<Player>>> links) {
+        this.links = Map.copyOf(links);
         this.settings = settings;
         this.languages = languages;
         this.actions = actions;
@@ -88,8 +90,9 @@ public final class ProfileMenu {
         }
         builder.button(head.slot(), icon, context -> actions.run(context, head));
         for (ConfiguredButton button : settings.buttons()) {
-            if (button.id().equals(STATISTICS) && statistics.isPresent()) {
-                builder.button(button.slot(), button.item(), context -> statistics.get().accept(context.player(), this::open));
+            BiConsumer<Player, Consumer<Player>> link = links.get(button.id());
+            if (link != null) {
+                builder.button(button.slot(), button.item(), context -> link.accept(context.player(), this::open));
             } else {
                 builder.button(button.slot(), button.item(), context -> actions.run(context, button));
             }

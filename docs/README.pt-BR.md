@@ -41,6 +41,7 @@ Tudo sobre a Muxe está documentado aqui, em inglês e português. As regras de 
 - [Cabeças de redes sociais](features/social-heads/README.pt-BR.md): uma cabeça de jogador que passa pelas redes sociais da rede e envia o link no clique, compartilhada pelo grupo de servidores.
 - [Créditos e cosméticos](features/credits/README.pt-BR.md): o saldo de créditos, o `/creditos` e os cosméticos possuídos e selecionados que os jogos usam nos seus catálogos.
 - [Missões](features/missions/README.pt-BR.md): missões diárias e semanais compartilhadas por todos os jogos, completadas na hora, com caminho dos créditos.
+- [Preferências](features/preferences/README.pt-BR.md): o menu `Preferências` do `Meu perfil`: chat, confirmação do `/lobby`, convites e privacidade.
 - [Estatísticas](features/statistics/README.pt-BR.md): as estatísticas de um jogador em todos os jogos, pelo `Meu perfil` ou pelo `/stats`, em qualquer servidor.
 - [Parkour](features/parkour/README.pt-BR.md): um parkour cronometrado no lobby, com checkpoints, itens para reiniciar ou voltar, e um recorde pessoal por mapa, compartilhado pelo grupo de servidores.
 - [Loja](features/shop/README.pt-BR.md): `/loja`, os menus de compra, as caixas registradoras e a promoção da rede.

@@ -13,6 +13,7 @@ import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.party.Parties;
 import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.permission.display.NameTags;
+import br.com.muxe.core.bukkit.preference.PreferenceService;
 import br.com.muxe.core.bukkit.scoreboard.SidebarOverrides;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cqrs.command.CommandBus;
@@ -46,6 +47,7 @@ final class BukkitMuxeCore implements MuxeCore {
     private CustomRoomKit customRooms;
     private ScheduledGames scheduledGames;
     private StatsMenus statistics;
+    private PreferenceService preferences;
     private ScheduledPlay scheduledPlay;
     private final NameTags nameTags = new NameTags();
     private final SidebarOverrides sidebars = new SidebarOverrides();
@@ -106,6 +108,15 @@ final class BukkitMuxeCore implements MuxeCore {
     @Override
     public StatsMenus statistics() {
         return statistics;
+    }
+
+    @Override
+    public PreferenceService preferences() {
+        return preferences;
+    }
+
+    void preferences(PreferenceService service) {
+        this.preferences = service;
     }
 
     void statistics(StatsMenus menus) {

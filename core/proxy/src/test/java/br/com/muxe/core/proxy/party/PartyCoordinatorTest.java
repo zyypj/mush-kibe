@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -49,13 +51,14 @@ class PartyCoordinatorTest {
     private final List<PartyNotice> lobbyNotices = new CopyOnWriteArrayList<>();
     private final List<PartyNotice> bedwarsNotices = new CopyOnWriteArrayList<>();
     private final List<Object> broadcasts = new CopyOnWriteArrayList<>();
+    private final Set<UUID> refusingInvites = ConcurrentHashMap.newKeySet();
     private PartyCoordinator parties;
 
     @BeforeEach
     void setUp() {
         PlayerDisplays displays = new PlayerDisplays();
         parties = new PartyCoordinator(proxy.bus(), new PartyBook(PartyRules.DEFAULT, displays::of), displays, players, network.clock(),
-            Duration.ofSeconds(1), Logger.getLogger("test"));
+            Duration.ofSeconds(1), Logger.getLogger("test"), player -> !refusingInvites.contains(player));
         parties.register();
         lobby.bus().subscribe(PartyNoticePacket.TYPE, context -> lobbyNotices.add(context.packet().notice()));
         bedwars.bus().subscribe(PartyNoticePacket.TYPE, context -> bedwarsNotices.add(context.packet().notice()));
@@ -82,6 +85,19 @@ class PartyCoordinatorTest {
         assertThat(bedwarsNotices).extracting(PartyNotice::key).containsExactly("party-invite");
         assertThat(bedwarsNotices.getFirst().recipients()).containsExactly(DOBW.id());
         assertThat(broadcasts).hasAtLeastOneElementOfType(PartyUpdatedPacket.class);
+    }
+
+    @Test
+    void aPlayerWhoTurnedPartyInvitesOffIsNotInvitedAndTheActorIsTold() {
+        refusingInvites.add(DOBW.id());
+
+        act(TADEU, PartyAction.INVITE, "tadeudobw");
+
+        assertThat(lobbyNotices).singleElement().satisfies(notice -> {
+            assertThat(notice.key()).isEqualTo(PartyCoordinator.INVITES_OFF);
+            assertThat(notice.value("player")).hasValue("tadeudobw");
+        });
+        assertThat(bedwarsNotices).isEmpty();
     }
 
     @Test

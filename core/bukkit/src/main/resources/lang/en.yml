@@ -487,6 +487,113 @@ menus:
             - "&a"
             - "&b"
           close: "&dΩ&5]"
+  preferences:
+    title: "Preferences"
+    tab-selected:
+      - " "
+      - "&aSelected."
+    tab-unselected:
+      - " "
+      - "&eClick to select."
+    value: "&7Value: {value}"
+    enabled: "&aOn"
+    disabled: "&cOff"
+    click-enable: "&eClick to turn on."
+    click-disable: "&eClick to turn off."
+    name-on: "&a{name}"
+    name-off: "&7{name}"
+    option-selected: "&a- {option}&7 (Selected)"
+    option-other: "&7- {option}"
+    click-cycle: "&eClick to change to {option}."
+    options:
+      public:
+        name: "&aPublic"
+      limited:
+        name: "&eLimited"
+      friends:
+        name: "&bFriends"
+      "off":
+        name: "&cOff"
+    back:
+      item:
+        name: "&aBack"
+        lore:
+          - "&7To My profile"
+    tabs:
+      geral:
+        item:
+          name: "&aGeneral"
+        entries:
+          chat:
+            item:
+              name: "Chat"
+              lore:
+                - "&7Show the general chat."
+          confirm-lobby:
+            item:
+              name: "Confirm going back to the lobby"
+          tag-format:
+            item:
+              name: "&aTag format"
+              lore:
+                - "&7Change the format of the tag"
+                - "&7you see."
+                - "&7"
+                - "&7Exclusive to &d&lULTRA&6+"
+                - " "
+                - "&eClick to view more."
+      social:
+        item:
+          name: "&aSocial"
+        entries:
+          private-messages:
+            item:
+              name: "Private messages"
+              lore:
+                - "&7Sets who can send you"
+                - "&7private messages."
+          party-invites:
+            item:
+              name: "Party invites"
+              lore:
+                - "&7Lets you receive party"
+                - "&7invites."
+          clan-invites:
+            item:
+              name: "Clan invites"
+              lore:
+                - "&7Lets you receive clan"
+                - "&7invites."
+          friend-requests:
+            item:
+              name: "Friend requests"
+              lore:
+                - "&7Lets you receive friend"
+                - "&7requests."
+      privacidade:
+        item:
+          name: "&aPrivacy"
+        entries:
+          stats-visible:
+            item:
+              name: "Statistics visibility"
+              lore:
+                - "&7Lets other players see"
+                - "&7your statistics"
+                - "&7with /stats"
+          site-discord:
+            item:
+              name: "Website: Show Discord"
+              lore:
+                - "&7Shows your linked Discord"
+                - "&7on our website."
+          site-freeze-stats:
+            item:
+              name: "Website: Freeze statistics"
+              lore:
+                - "&7Freeze your statistics"
+                - "&7in the API while you are"
+                - "&7online."
   profile:
     title: "My profile"
     first-login:
@@ -1621,6 +1728,10 @@ messages:
   credits-taken: "&aYou removed &d{amount} credits &afrom &f{player}&a. Balance: &d{balance}&a."
   credits-not-enough: "&f{player} &cdoesn't have enough credits."
   credits-invalid-amount: "&cThe amount must be from 1 to {max}."
+  preferences-soon: "&cComing soon."
+  lobby-confirm: "&eType &f/lobby &eagain to go back to the lobby."
+  statistics-hidden: "&f{player} &chas made their statistics private."
+  party-invites-off: "&f{player} &cdoes not accept party invites."
   statistics-soon: "&cComing soon."
   statistics-not-found: "&cThe player &f{player} &chas never joined the server."
   account:

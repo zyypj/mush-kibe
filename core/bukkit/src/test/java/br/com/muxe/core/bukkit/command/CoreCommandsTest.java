@@ -6,6 +6,7 @@ import br.com.muxe.core.bukkit.command.framework.FakeSender;
 import br.com.muxe.core.bukkit.command.framework.TestCommands;
 import br.com.muxe.core.bukkit.command.framework.argument.ArgumentTypes;
 import br.com.muxe.core.bukkit.command.framework.completion.SuggestionRegistry;
+import br.com.muxe.core.bukkit.preference.LobbyConfirmations;
 import br.com.muxe.core.bukkit.shop.ShopFixtures;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.placement.domain.HologramPlacement;
@@ -45,7 +46,7 @@ class CoreCommandsTest {
             new ParkourCommand(null, MESSAGES, null),
             new ShopCommand(Optional.empty(), null, MESSAGES, null),
             new BuildCommand(null, MESSAGES),
-            new LobbyCommand(null, "lobby"),
+            new LobbyCommand(null, "lobby", null, new LobbyConfirmations()),
             new ReturnCommand(null, null),
             new MuxeAdminCommand(null)
         );

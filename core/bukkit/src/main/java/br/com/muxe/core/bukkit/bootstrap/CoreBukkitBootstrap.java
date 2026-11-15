@@ -39,6 +39,10 @@ import br.com.muxe.core.bukkit.network.NetworkGateway;
 import br.com.muxe.core.bukkit.nms.JoinTraffic;
 import br.com.muxe.core.bukkit.party.PartyClient;
 import br.com.muxe.core.bukkit.permission.PermissionService;
+import br.com.muxe.core.bukkit.preference.LobbyConfirmations;
+import br.com.muxe.core.bukkit.preference.PreferenceService;
+import br.com.muxe.core.bukkit.preference.PreferencesMenu;
+import br.com.muxe.core.bukkit.preference.PreferencesSettings;
 import br.com.muxe.core.bukkit.scheduledgame.MegaBedWarsCommand;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledAnnouncer;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledGame;
@@ -131,8 +135,12 @@ public final class CoreBukkitBootstrap {
         ConfigEditor configEditor = new ConfigEditor(new PluginConfigStore(plugin, runtime.executors().io()), reloads);
         String lobbyGroup = config.getString("network.lobby-group", "lobby");
         Commands commands = Commands.of(plugin, messages);
+        PreferenceService preferences = new PreferenceService(core.commands(), core.queries(), plugin.getLogger());
+        plugin.getServer().getPluginManager().registerEvents(preferences, plugin);
+        core.preferences(preferences);
+        LobbyConfirmations lobbyConfirmations = new LobbyConfirmations();
         ConfigPathSuggestions.register(commands, configEditor);
-        commands.register(new MuxeAdminCommand(core, JoinTraffic.start(plugin, runtime.metrics())), new LobbyCommand(core, lobbyGroup), new BuildCommand(buildMode, messages),
+        commands.register(new MuxeAdminCommand(core, JoinTraffic.start(plugin, runtime.metrics())), new LobbyCommand(core, lobbyGroup, preferences, lobbyConfirmations), new BuildCommand(buildMode, messages),
             new ReturnCommand(core, new MatchReturns(core.store())), new CoreConfigCommand(configEditor, new ConfigReplies(messages)),
             new LanguageCommand(languages, messages, new LanguageMenu(texts.map(section -> LanguageMenuSettings.from(section.getConfigurationSection("language-menu")))), mainThread));
         ranks = RankFeatures.start(plugin, core, config, commands);
@@ -148,8 +156,10 @@ public final class CoreBukkitBootstrap {
         StatsMenus statistics = new StatsMenus(texts.map(section -> StatsSettings.from(Objects.requireNonNull(section.getConfigurationSection("menus.statistics"),
             "Missing configuration section menus.statistics"))), messages, core.queries(), mainThread, plugin.getLogger());
         core.statistics(statistics);
-        commands.register(new StatsCommand(statistics, core.queries(), mainThread, messages));
-        HotbarFeatures.start(plugin, core, config, features, commands);
+        commands.register(new StatsCommand(statistics, preferences, core.queries(), mainThread, messages));
+        PreferencesMenu preferencesMenu = new PreferencesMenu(texts.map(section -> PreferencesSettings.from(Objects.requireNonNull(
+            section.getConfigurationSection("menus.preferences"), "Missing configuration section menus.preferences"))), preferences, messages);
+        HotbarFeatures.start(plugin, core, config, features, commands, preferencesMenu);
         CommandMapRegistrar.commandMap(plugin.getServer())
             .ifPresent(map -> {
                 new PermissionMessages(plugin, map, messages.get("no-permission")).start();

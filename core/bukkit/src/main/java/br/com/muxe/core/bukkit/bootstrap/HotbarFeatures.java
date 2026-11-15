@@ -10,6 +10,7 @@ import br.com.muxe.core.bukkit.hotbar.HotbarSettings;
 import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.language.PlayerLanguages;
 import br.com.muxe.core.bukkit.menu.button.ButtonActions;
+import br.com.muxe.core.bukkit.preference.PreferencesMenu;
 import br.com.muxe.core.bukkit.profile.ProfileMenu;
 import br.com.muxe.core.bukkit.profile.ProfileSettings;
 import br.com.muxe.core.bukkit.selector.game.GameSelectorMenu;
@@ -20,6 +21,7 @@ import br.com.muxe.core.bukkit.stats.Target;
 import br.com.muxe.core.bukkit.visibility.VisibilityService;
 import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.visibility.domain.FriendDirectory;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.bukkit.configuration.ConfigurationSection;
@@ -33,7 +35,7 @@ final class HotbarFeatures {
     private HotbarFeatures() {
     }
 
-    static void start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, PlacedFeatures placed, Commands commands) {
+    static void start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, PlacedFeatures placed, Commands commands, PreferencesMenu preferences) {
         if (!config.isSet(HOTBAR_SECTION)) {
             plugin.getLogger().warning("The hotbar is off: config.yml has no '" + HOTBAR_SECTION + "' section");
             return;
@@ -48,8 +50,9 @@ final class HotbarFeatures {
         GameSelectorMenu games = new GameSelectorMenu(texts.map(root -> GameSelectorSettings.from(section(root, "menus.game-selector"))), buttons, languages);
         CustomRoomFeatures.lobby(plugin, core, commands, games::open, player -> placed.shopAccess().open(player, CustomRoomFeatures.SHOP_CATEGORY));
         ProfileMenu profile = new ProfileMenu(texts.map(root -> ProfileSettings.from(section(root, "menus.profile"))), languages, buttons, core.queries(), core.permissions(),
-            core.mainThread(), plugin.getLogger(), Optional.of((player, back) -> core.statistics().openHub(player, new Target(player.getUniqueId(), player.getName(), true),
-                Optional.of(back))));
+            core.mainThread(), plugin.getLogger(), Map.of(
+                ProfileMenu.STATISTICS, (player, back) -> core.statistics().openHub(player, new Target(player.getUniqueId(), player.getName(), true), Optional.of(back)),
+                ProfileMenu.PREFERENCES, (player, back) -> preferences.open(player, Optional.of(back))));
         LobbySelectorMenu lobbies = new LobbySelectorMenu(core, texts.map(root -> LobbySelectorSettings.from(section(root, "menus.lobby-selector"), core.identity().group())),
             core.messages());
 

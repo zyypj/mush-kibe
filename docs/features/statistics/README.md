@@ -20,7 +20,7 @@ A menu with a player's statistics in every game, opened from `Meu perfil` or wit
 
 | Command | Aliases | Description |
 |---|---|---|
-| `/stats [player]` | `/estatisticas` | Opens the statistics of the player, or your own. A name nobody has used answers `messages.statistics-not-found`. |
+| `/stats [player]` | `/estatisticas` | Opens the statistics of the player, or your own. A name nobody has used answers `messages.statistics-not-found`; a player who turned `Visibilidade de estatísticas` off in the [preferences](../preferences/README.md) answers `messages.statistics-hidden`. |
 
 ## Permissions
 

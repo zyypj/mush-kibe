@@ -754,6 +754,158 @@ menus:
             - "&a"
             - "&b"
           close: "&dΩ&5]"
+  preferences:
+    title: "Preferências"
+    rows: 6
+    first-pane: 9
+    tab-selected:
+      - " "
+      - "&aSelecionado."
+    tab-unselected:
+      - " "
+      - "&eClique para selecionar."
+    name-on: "&a{name}"
+    name-off: "&7{name}"
+    value: "&7Valor: {value}"
+    enabled: "&aAtivado"
+    disabled: "&cDesativado"
+    click-enable: "&eClique para ativar."
+    click-disable: "&eClique para desativar."
+    option-selected: "&a- {option}&7 (Selecionado)"
+    option-other: "&7- {option}"
+    click-cycle: "&eClique para trocar para {option}."
+    options:
+      public:
+        name: "&aPúblico"
+        dye: 2
+      limited:
+        name: "&eLimitado"
+        dye: 11
+      friends:
+        name: "&bAmigos"
+        dye: 12
+      "off":
+        name: "&cDesativado"
+        dye: 8
+    back:
+      slot: 49
+      item:
+        material: ARROW
+        name: "&aVoltar"
+        lore:
+          - "&7Para Meu perfil"
+    tabs:
+      geral:
+        slot: 1
+        item:
+          material: DIODE
+          name: "&aGeral"
+        entries:
+          chat:
+            slot: 29
+            preference: chat
+            item:
+              material: BOOK_AND_QUILL
+              name: "Bate-papo"
+              lore:
+                - "&7Mostrar o bate-papo geral."
+          confirm-lobby:
+            slot: 31
+            preference: confirm-lobby
+            item:
+              material: BED
+              name: "Confirmar voltar para o lobby"
+          tag-format:
+            slot: 33
+            below:
+              material: STONE_BUTTON
+            item:
+              material: NAME_TAG
+              name: "&aFormato da tag"
+              lore:
+                - "&7Altere o formato da tag"
+                - "&7para você."
+                - "&7"
+                - "&7Exclusivo para &d&lULTRA&6+"
+                - " "
+                - "&eClique para ver mais."
+      social:
+        slot: 2
+        item:
+          material: COOKIE
+          name: "&aSocial"
+        entries:
+          private-messages:
+            slot: 28
+            preference: private-messages
+            item:
+              material: SIGN
+              name: "Mensagens privadas"
+              lore:
+                - "&7Define quem pode te enviar"
+                - "&7mensagens privadas."
+          party-invites:
+            slot: 30
+            preference: party-invites
+            item:
+              material: BOOK
+              name: "Convite para party"
+              lore:
+                - "&7Permite receber convites"
+                - "&7de party."
+          clan-invites:
+            slot: 32
+            preference: clan-invites
+            item:
+              material: ITEM_FRAME
+              name: "Convite para clan"
+              lore:
+                - "&7Permite receber convites"
+                - "&7de clan."
+          friend-requests:
+            slot: 34
+            preference: friend-requests
+            item:
+              material: COOKIE
+              name: "Pedidos de amizade"
+              lore:
+                - "&7Permite receber pedidos"
+                - "&7de amizade."
+      privacidade:
+        slot: 3
+        item:
+          material: HOPPER
+          name: "&aPrivacidade"
+        entries:
+          stats-visible:
+            slot: 29
+            preference: stats-visible
+            item:
+              material: HOPPER
+              name: "Visibilidade de estatísticas"
+              lore:
+                - "&7Permite outros jogadores"
+                - "&7visualizarem suas estatísticas"
+                - "&7utilizando o /stats"
+          site-discord:
+            slot: 31
+            preference: site-discord
+            item:
+              material: LEASH
+              name: "Site: Mostrar Discord"
+              lore:
+                - "&7Mostra o seu Discord conectado"
+                - "&7em nosso site."
+          site-freeze-stats:
+            slot: 33
+            preference: site-freeze-stats
+            item:
+              material: ICE
+              name: "Site: Congelar estatísticas"
+              lore:
+                - "&7Congele as estatísticas"
+                - "&7na API enquanto estiver"
+                - "&7online."
   profile:
     title: "Meu perfil"
     rows: 6
@@ -2826,6 +2978,10 @@ messages:
   credits-taken: "&aVocê removeu &d{amount} créditos &ade &f{player}&a. Saldo: &d{balance}&a."
   credits-not-enough: "&f{player} &cnão tem créditos suficientes."
   credits-invalid-amount: "&cA quantia deve ser de 1 a {max}."
+  preferences-soon: "&cEm breve."
+  lobby-confirm: "&eDigite &f/lobby &enovamente para voltar ao lobby."
+  statistics-hidden: "&cO jogador &f{player} &cdeixou as estatísticas privadas."
+  party-invites-off: "&cO jogador &f{player} &cnão aceita convites para party."
   statistics-soon: "&cEm breve."
   statistics-not-found: "&cO jogador &f{player} &cnunca entrou no servidor."
   account:

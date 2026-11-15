@@ -13,6 +13,9 @@ import br.com.muxe.core.proxy.auth.AccessPolicy;
 import br.com.muxe.core.proxy.auth.AuthStatusResponder;
 import br.com.muxe.core.proxy.auth.AuthenticationGate;
 import br.com.muxe.core.common.permission.sync.PermissionSync;
+import br.com.muxe.core.common.preference.application.query.FindPreferencesQuery;
+import br.com.muxe.core.common.preference.domain.Preference;
+import br.com.muxe.core.common.preference.domain.Preferences;
 import br.com.muxe.core.proxy.config.AuthenticationSettings;
 import br.com.muxe.core.proxy.config.EditorSettings;
 import br.com.muxe.core.proxy.config.GeoIpSettings;
@@ -60,6 +63,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public final class ProxyBootstrap {
+
+    private static final Duration PREFERENCE_TIMEOUT = Duration.ofSeconds(2);
 
     private final Object plugin;
     private final ProxyServer proxy;
@@ -141,7 +146,9 @@ public final class ProxyBootstrap {
         PlayerDisplays displays = new PlayerDisplays();
         PartyBook book = new PartyBook(settings.rules(), displays::of);
         PartyCoordinator parties = new PartyCoordinator(runtime.packets(), book, displays, new VelocityPartyNetwork(proxy, gate, router), runtime.clock(),
-            settings.gatherTimeout(), logger);
+            settings.gatherTimeout(), logger, player -> runtime.queries().ask(new FindPreferencesQuery(player))
+                .completeOnTimeout(Preferences.DEFAULTS, PREFERENCE_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)
+                .exceptionally(error -> Preferences.DEFAULTS).join().on(Preference.PARTY_INVITES));
         parties.register();
         proxy.getEventManager().register(plugin, new PartyConnectionListener(parties));
         proxy.getScheduler().buildTask(plugin, parties::tick).repeat(1, TimeUnit.SECONDS).schedule();

@@ -62,6 +62,8 @@ import br.com.muxe.core.common.server.ServerIdentity;
 import br.com.muxe.core.common.server.directory.ServerDirectory;
 import br.com.muxe.core.common.server.directory.ServerDirectorySync;
 import br.com.muxe.core.common.server.heartbeat.ServerHeartbeat;
+import br.com.muxe.core.common.preference.PreferenceModule;
+import br.com.muxe.core.common.preference.infrastructure.postgres.PostgresPreferenceRepository;
 import br.com.muxe.core.common.shop.ShopModule;
 import br.com.muxe.core.common.stats.StatsModule;
 import br.com.muxe.core.common.stats.infrastructure.postgres.PostgresBedWarsTotalsRepository;
@@ -273,6 +275,7 @@ public final class CoreRuntime implements AutoCloseable {
             ArenaModule.register(commands, queries, new PostgresArenaRepository(), transactions, clock);
             CustomRoomModule.register(commands, queries, new PostgresPresetRepository(), transactions, clock);
             StatsModule.register(queries, new PostgresBedWarsTotalsRepository(), transactions);
+            PreferenceModule.register(commands, queries, new PostgresPreferenceRepository(), transactions, clock);
 
             ServerHeartbeat heartbeat = closer.register(new ServerHeartbeat(packets, identity, hooks.serverLoad(), directory, executors.scheduler(), clock, logger));
             transport.addConnectionListener(new ConnectionListener() {
