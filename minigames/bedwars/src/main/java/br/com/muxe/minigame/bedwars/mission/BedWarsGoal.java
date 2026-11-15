@@ -15,7 +15,14 @@ public enum BedWarsGoal {
     FINAL_KILLS(false),
     EXPLOSIVE_BLOCKS(false),
     FAST_WIN(false),
-    CLAY_BOUGHT(false);
+    CLAY_BOUGHT(false),
+    BRIDGE_EGGS(false),
+    FEW_BLOCKS_WIN(false),
+    DIAMONDS(false),
+    BOW_DAMAGE(false),
+    SHARPNESS_TWO(false),
+    KILLS(false),
+    MILK_CLEANSE(false);
 
     private final MissionGoal goal;
 

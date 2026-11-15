@@ -8,6 +8,7 @@ import br.com.muxe.minigame.bedwars.arena.BedWarsArena.TeamBase;
 import br.com.muxe.minigame.bedwars.arena.BedWarsArena;
 import br.com.muxe.minigame.bedwars.game.XpRewards;
 import br.com.muxe.minigame.bedwars.mission.BedWarsGoal;
+import br.com.muxe.minigame.bedwars.mission.MissionRules;
 import br.com.muxe.minigame.bedwars.stats.domain.MatchOutcome;
 import br.com.muxe.minigame.bedwars.stats.domain.MatchResult;
 import br.com.muxe.minigame.engine.setup.Point;
@@ -144,21 +145,30 @@ public final class Room {
         return outcomes;
     }
 
-    public Map<String, Long> missionTotals(Participant participant, Optional<TeamColor> winner, int fastWinSeconds, int endStoneBlocks) {
+    public Map<String, Long> missionTotals(Participant participant, Optional<TeamColor> winner, MissionRules rules) {
         RoomPlayer player = player(participant.id());
         boolean won = participant.team() != null && winner.filter(participant.team()::equals).isPresent();
+        RoomTeam team = participant.team() == null ? null : teams.get(participant.team());
+        boolean sharpened = team != null && team.level(RoomTeam.Upgrade.SHARPNESS) >= rules.sharpnessLevel();
         Map<String, Long> goals = new LinkedHashMap<>();
         goals.put(BedWarsGoal.KILL_STREAK.name(), (long) participant.bestKillStreak());
         goals.put(BedWarsGoal.INVISIBLE_BED.name(), (long) player.invisibleBeds());
-        goals.put(BedWarsGoal.END_STONE_DEFENSE.name(), player.endStones() >= endStoneBlocks ? 1L : 0L);
+        goals.put(BedWarsGoal.END_STONE_DEFENSE.name(), player.endStones() >= rules.endStoneBlocks() ? 1L : 0L);
         goals.put(BedWarsGoal.CLEAN_WIN.name(), won && !player.usedExplosives() ? 1L : 0L);
         goals.put(BedWarsGoal.BEDBUG_KILLS.name(), (long) player.bedbugKills());
         goals.put(BedWarsGoal.EMERALDS_IN_A_LIFE.name(), (long) player.bestEmeralds());
         goals.put(BedWarsGoal.FIREBALL_DAMAGE.name(), (long) Math.floor(player.fireballDamage()));
         goals.put(BedWarsGoal.FINAL_KILLS.name(), (long) participant.finalKills());
         goals.put(BedWarsGoal.EXPLOSIVE_BLOCKS.name(), (long) player.explosiveBlocks());
-        goals.put(BedWarsGoal.FAST_WIN.name(), won && match.elapsed() <= fastWinSeconds ? 1L : 0L);
+        goals.put(BedWarsGoal.FAST_WIN.name(), won && match.elapsed() <= rules.fastWinSeconds() ? 1L : 0L);
         goals.put(BedWarsGoal.CLAY_BOUGHT.name(), (long) player.clayBought());
+        goals.put(BedWarsGoal.BRIDGE_EGGS.name(), (long) player.bridgeEggs());
+        goals.put(BedWarsGoal.FEW_BLOCKS_WIN.name(), won && player.blocksBought() <= rules.fewBlocksMax() ? 1L : 0L);
+        goals.put(BedWarsGoal.DIAMONDS.name(), (long) player.diamonds());
+        goals.put(BedWarsGoal.BOW_DAMAGE.name(), (long) Math.floor(player.bowDamage()));
+        goals.put(BedWarsGoal.SHARPNESS_TWO.name(), sharpened ? 1L : 0L);
+        goals.put(BedWarsGoal.KILLS.name(), (long) participant.kills() + participant.finalKills());
+        goals.put(BedWarsGoal.MILK_CLEANSE.name(), player.milkCleansed() ? 1L : 0L);
         return goals;
     }
 }

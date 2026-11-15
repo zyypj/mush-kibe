@@ -29,8 +29,8 @@ Missões diárias e semanais compartilhadas por todos os modos de jogo, com um c
 
 ### Menu
 
-- `MissionMenus.open(player, back)` abre `Missões do Bed Wars` com uma linha por categoria: o ícone da categoria (`Progresso: feitas/total` e o tempo até o dia ou a semana acabar) seguido das missões dela. Uma missão em andamento brilha e termina com `&eEm progresso.`; uma completa termina com `&aConcluída.`.
-- `back` segue a regra do servidor para menus: um menu aberto por outro menu mostra o `Voltar` (slot 48) para ele; aberto direto (NPC, item, comando) não tem.
+- `MissionMenus.open(player, back)` abre `Missões do Bed Wars` com uma linha por categoria: o ícone da categoria (`Progresso: feitas/total` e o tempo até o dia ou a semana acabar) seguido das missões dela. Uma missão em andamento tem o nome amarelo, brilha e termina com `&eEm progresso.`; uma completa tem o nome verde (`&a`), não brilha e termina com `&aCompleta!`.
+- `back` segue a regra do servidor para menus: um menu aberto por outro menu mostra o `Voltar` (slot 48) para ele e tem 6 linhas; aberto direto (NPC, item, comando) não tem e tem 5 linhas, como no export.
 
 ## Comandos
 
@@ -50,7 +50,7 @@ No config de cada jogo, em `missions`:
 | `daily.<id>`, `weekly.<id>`, `credit-path.<id>` | os exports | `name`, `goal`, `target`, `xp`, `credits` e `description` (linhas com `{progress}`). |
 | `announce.*` | a referência | `prefix`, `name` (`{name}`, `{category}`), `description`, `progress`, `xp`, `credits`. |
 | `summary.*` | a referência | `border`, `headers.DAILY/WEEKLY/CREDIT_PATH`, `line` (`{name}`, `{progress}`, `{target}`, `{added}`) e `completed`. |
-| `menu.*` | os exports | Título, linhas, slots das categorias, itens e rótulos, textos da lore, o botão `back` e as unidades de tempo. |
+| `menu.*` | os exports | Título, linhas (`rows` 5 sem `Voltar`, `rows-with-back` 6 com ele), slots das categorias, itens e rótulos, o nome da missão completa (`completed-name`, `&a{name}`), textos da lore, o botão `back` e as unidades de tempo. |
 
 ## Pacotes
 

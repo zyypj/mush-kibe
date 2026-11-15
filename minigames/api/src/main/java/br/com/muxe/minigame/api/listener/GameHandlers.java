@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 public interface GameHandlers<S extends MatchState> {
@@ -47,6 +48,9 @@ public interface GameHandlers<S extends MatchState> {
     }
 
     default void pickup(Playing<S> playing, PlayerPickupItemEvent event) {
+    }
+
+    default void consume(Playing<S> playing, PlayerItemConsumeEvent event) {
     }
 
     default void openMenu(Player player) {

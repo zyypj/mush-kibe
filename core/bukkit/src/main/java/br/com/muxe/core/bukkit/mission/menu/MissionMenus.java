@@ -65,7 +65,7 @@ public final class MissionMenus {
 
     private Menu menu(MissionConfig config, MissionBoard board, Optional<Consumer<Player>> back) {
         MissionConfig.Menu menu = config.menu();
-        Menu.Builder builder = Menu.builder(menu.title()).rows(menu.rows());
+        Menu.Builder builder = Menu.builder(menu.title()).rows(MissionView.rows(menu, back.isPresent()));
         for (Map.Entry<MissionCadence, MissionConfig.Category> category : menu.categories().entrySet()) {
             MissionCadence cadence = category.getKey();
             Duration remaining = Duration.between(clock.instant(), cadence.end(clock.instant(), zone));
@@ -76,7 +76,7 @@ public final class MissionMenus {
                     continue;
                 }
                 MissionConfig.Texts texts = config.texts(entry.mission().id());
-                ItemBuilder icon = menu.mission().name(menu.mission().name().replace("{name}", texts.name()))
+                ItemBuilder icon = menu.mission().name(MissionView.name(menu, texts, entry))
                     .lore(MissionView.missionLore(menu, texts, entry, category.getValue().label()))
                     .glow(!entry.progress().completed());
                 builder.button(slot++, icon);

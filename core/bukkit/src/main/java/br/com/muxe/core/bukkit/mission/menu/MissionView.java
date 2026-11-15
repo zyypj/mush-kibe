@@ -2,6 +2,7 @@ package br.com.muxe.core.bukkit.mission.menu;
 
 import br.com.muxe.core.bukkit.credit.CreditFormat;
 import br.com.muxe.core.bukkit.mission.config.MissionConfig;
+import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.common.mission.domain.Mission;
 import br.com.muxe.core.common.mission.domain.MissionBoard;
 import java.time.Duration;
@@ -22,6 +23,15 @@ public final class MissionView {
         return menu.categoryLore().stream()
             .map(line -> line.replace("{done}", String.valueOf(done)).replace("{total}", String.valueOf(total)).replace("{time}", time))
             .toList();
+    }
+
+    public static int rows(MissionConfig.Menu menu, boolean back) {
+        return back ? menu.rowsWithBack() : menu.rows();
+    }
+
+    public static String name(MissionConfig.Menu menu, MissionConfig.Texts texts, MissionBoard.Entry entry) {
+        String pattern = entry.progress().completed() ? menu.completedName() : menu.mission().name();
+        return Colors.translate(pattern.replace("{name}", texts.name()));
     }
 
     public static List<String> missionLore(MissionConfig.Menu menu, MissionConfig.Texts texts, MissionBoard.Entry entry, String label) {

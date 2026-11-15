@@ -38,6 +38,7 @@ import br.com.muxe.minigame.bedwars.game.CompactTower;
 import br.com.muxe.minigame.bedwars.game.Cooldowns;
 import br.com.muxe.minigame.bedwars.game.ForgeHeights;
 import br.com.muxe.minigame.bedwars.game.ForgeLayout;
+import br.com.muxe.minigame.bedwars.game.MagicMilk;
 import br.com.muxe.minigame.bedwars.game.RandomItems;
 import br.com.muxe.minigame.bedwars.game.Slingshot;
 import br.com.muxe.minigame.bedwars.level.LevelBar;
@@ -134,6 +135,7 @@ public final class BedWarsMatch implements MatchState {
     private final Set<Long> towerBlocks = new HashSet<>();
     private final List<BukkitTask> towers = new ArrayList<>();
     private final SpecialItems specials;
+    private final MagicMilk milk = new MagicMilk();
 
     public BedWarsMatch(MatchRuntime<BedWarsMatch> runtime, BedWarsServices services, BedWarsArena arena) {
         this.runtime = runtime;
@@ -163,6 +165,10 @@ public final class BedWarsMatch implements MatchState {
 
     public SpecialItems specials() {
         return specials;
+    }
+
+    public void drinkMilk(UUID player) {
+        milk.drink(player, core.clock().instant());
     }
 
     public CustomRules rules() {
@@ -765,7 +771,7 @@ public final class BedWarsMatch implements MatchState {
 
     private Optional<Map<String, Long>> missionTotals(UUID id, Optional<TeamColor> winner) {
         MissionRules rules = services.missionRules();
-        return match.player(id).map(player -> room.missionTotals(player, winner, rules.fastWinSeconds(), rules.endStoneBlocks()));
+        return match.player(id).map(player -> room.missionTotals(player, winner, rules));
     }
 
     private void runEvent(BedWarsEvent event) {
@@ -820,7 +826,7 @@ public final class BedWarsMatch implements MatchState {
                     }
                     continue;
                 }
-                if (!room.bedAlive(team.color())) {
+                if (!room.bedAlive(team.color()) || milk.shields(player.getUniqueId(), core.clock().instant())) {
                     continue;
                 }
                 if (blindTrap) {

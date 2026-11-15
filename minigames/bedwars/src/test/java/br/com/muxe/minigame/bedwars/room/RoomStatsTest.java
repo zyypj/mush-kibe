@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import br.com.muxe.minigame.api.match.Match;
 import br.com.muxe.minigame.api.match.Participant;
 import br.com.muxe.minigame.bedwars.game.XpRewards;
+import br.com.muxe.minigame.bedwars.mission.MissionRules;
 import br.com.muxe.minigame.bedwars.stats.domain.MatchOutcome;
 import br.com.muxe.minigame.bedwars.stats.domain.MatchResult;
 import br.com.muxe.minigame.engine.team.TeamColor;
@@ -91,14 +92,70 @@ class RoomStatsTest {
             match.tick();
         }
 
-        Map<String, Long> winning = room.missionTotals(red, Optional.of(TeamColor.VERMELHO), 210, 10);
+        Map<String, Long> winning = room.missionTotals(red, Optional.of(TeamColor.VERMELHO), MissionRules.DEFAULT);
         room.player(blue.id()).useExplosive();
-        Map<String, Long> losing = room.missionTotals(blue, Optional.of(TeamColor.VERMELHO), 210, 10);
+        Map<String, Long> losing = room.missionTotals(blue, Optional.of(TeamColor.VERMELHO), MissionRules.DEFAULT);
 
         assertThat(winning).containsEntry("KILL_STREAK", 2L).containsEntry("FINAL_KILLS", 1L).containsEntry("EMERALDS_IN_A_LIFE", 3L)
             .containsEntry("FIREBALL_DAMAGE", 2L).containsEntry("CLAY_BOUGHT", 16L).containsEntry("FAST_WIN", 1L).containsEntry("CLEAN_WIN", 1L);
         assertThat(losing).containsEntry("FAST_WIN", 0L).containsEntry("CLEAN_WIN", 0L);
-        assertThat(room.missionTotals(red, Optional.empty(), 210, 10)).containsEntry("FAST_WIN", 0L);
+        assertThat(room.missionTotals(red, Optional.empty(), MissionRules.DEFAULT)).containsEntry("FAST_WIN", 0L);
+    }
+
+    @Test
+    void theNewMissionTotalsCountEggsDiamondsBowDamageKillsAndMilk() {
+        Room room = started();
+        Match match = room.match();
+        Participant red = player(room, TeamColor.VERMELHO);
+        Participant blue = player(room, TeamColor.AZUL);
+        match.credit(red, false);
+        match.credit(red, false);
+        match.credit(red, true);
+        RoomPlayer stats = room.player(red.id());
+        stats.addBridgeEgg();
+        stats.addBridgeEgg();
+        stats.addDiamonds(4);
+        stats.addDiamonds(2);
+        stats.addBowDamage(3.5);
+        stats.addBowDamage(4);
+
+        Map<String, Long> before = room.missionTotals(red, Optional.empty(), MissionRules.DEFAULT);
+        stats.cleanseWithMilk();
+        Map<String, Long> after = room.missionTotals(red, Optional.empty(), MissionRules.DEFAULT);
+
+        assertThat(before).containsEntry("BRIDGE_EGGS", 2L).containsEntry("DIAMONDS", 6L).containsEntry("BOW_DAMAGE", 7L).containsEntry("KILLS", 3L)
+            .containsEntry("MILK_CLEANSE", 0L);
+        assertThat(after).containsEntry("MILK_CLEANSE", 1L);
+        assertThat(room.missionTotals(blue, Optional.empty(), MissionRules.DEFAULT)).containsEntry("KILLS", 0L).containsEntry("DIAMONDS", 0L);
+    }
+
+    @Test
+    void winningWithAtMostSixteenBlocksBoughtCountsOnlyForTheWinner() {
+        Room room = started();
+        Participant red = player(room, TeamColor.VERMELHO);
+        Participant blue = player(room, TeamColor.AZUL);
+        room.player(red.id()).addBlocks(16);
+        room.player(blue.id()).addBlocks(4);
+
+        assertThat(room.missionTotals(red, Optional.of(TeamColor.VERMELHO), MissionRules.DEFAULT)).containsEntry("FEW_BLOCKS_WIN", 1L);
+        assertThat(room.missionTotals(red, Optional.empty(), MissionRules.DEFAULT)).containsEntry("FEW_BLOCKS_WIN", 0L);
+        assertThat(room.missionTotals(blue, Optional.of(TeamColor.VERMELHO), MissionRules.DEFAULT)).containsEntry("FEW_BLOCKS_WIN", 0L);
+        room.player(red.id()).addBlocks(1);
+        assertThat(room.missionTotals(red, Optional.of(TeamColor.VERMELHO), MissionRules.DEFAULT)).containsEntry("FEW_BLOCKS_WIN", 0L);
+    }
+
+    @Test
+    void sharpnessTwoCountsForTheTeamThatReachedIt() {
+        Room room = started();
+        Participant red = player(room, TeamColor.VERMELHO);
+        Participant blue = player(room, TeamColor.AZUL);
+        room.team(TeamColor.VERMELHO).upgrade(RoomTeam.Upgrade.SHARPNESS, 1);
+        room.team(TeamColor.AZUL).upgrade(RoomTeam.Upgrade.SHARPNESS, 1);
+
+        assertThat(room.missionTotals(red, Optional.empty(), MissionRules.DEFAULT)).containsEntry("SHARPNESS_TWO", 0L);
+        room.team(TeamColor.VERMELHO).upgrade(RoomTeam.Upgrade.SHARPNESS, 2);
+        assertThat(room.missionTotals(red, Optional.empty(), MissionRules.DEFAULT)).containsEntry("SHARPNESS_TWO", 1L);
+        assertThat(room.missionTotals(blue, Optional.empty(), MissionRules.DEFAULT)).containsEntry("SHARPNESS_TWO", 0L);
     }
 
     @Test

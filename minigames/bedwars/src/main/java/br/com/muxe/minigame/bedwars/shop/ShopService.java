@@ -15,6 +15,7 @@ import br.com.muxe.minigame.bedwars.cosmetic.wood.WoodTypes;
 import br.com.muxe.minigame.bedwars.game.BridgeEgg;
 import br.com.muxe.minigame.bedwars.game.CompactTower;
 import br.com.muxe.minigame.bedwars.game.IceBridge;
+import br.com.muxe.minigame.bedwars.game.MagicMilk;
 import br.com.muxe.minigame.bedwars.game.Parachute;
 import br.com.muxe.minigame.bedwars.game.Rewind;
 import br.com.muxe.minigame.bedwars.game.Slingshot;
@@ -56,7 +57,7 @@ public final class ShopService {
     public static final String PORTABLE_SHOP_ID = "loja-portatil";
     public static final String PORTABLE_ENDER_CHEST_ID = "bau-do-fim";
     public static final Set<String> BUYABLE_SPECIALS = Set.of(Bedbugs.ITEM_ID, Slingshot.ITEM_ID, CompactTower.ITEM_ID, BridgeEgg.ITEM_ID, IceBridge.ITEM_ID,
-        Parachute.ITEM_ID, Rewind.ITEM_ID, SpiderWeb.ITEM_ID, PORTABLE_SHOP_ID, PORTABLE_ENDER_CHEST_ID);
+        Parachute.ITEM_ID, Rewind.ITEM_ID, SpiderWeb.ITEM_ID, PORTABLE_SHOP_ID, PORTABLE_ENDER_CHEST_ID, MagicMilk.ITEM_ID);
 
     public static final int ROOM_MENU_SLOT = 45;
     public static final List<Integer> ITEM_SLOTS = List.of(19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43);
@@ -394,6 +395,9 @@ public final class ShopService {
         give(player, roomPlayer, team, item, offer, bought);
         if (tier.material() == Material.HARD_CLAY || tier.material() == Material.STAINED_CLAY) {
             roomPlayer.addClay(item.amount());
+        }
+        if (item.type() == ShopCatalog.Type.BLOCK || item.type() == ShopCatalog.Type.WOOL) {
+            roomPlayer.addBlocks(item.amount());
         }
         player.sendMessage(messages.get(player, "bought", "item", bought));
         MatchSounds.play(sounds.bought(), player);

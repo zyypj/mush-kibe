@@ -49,6 +49,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -341,6 +342,12 @@ public final class MatchListener<S extends MatchState> implements Listener {
             }
             handlers.pickup(playing.get(), event);
         });
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onConsume(PlayerItemConsumeEvent event) {
+        UUID id = event.getPlayer().getUniqueId();
+        matches.of(id).flatMap(runtime -> playing(runtime, id)).ifPresent(playing -> handlers.consume(playing, event));
     }
 
     @EventHandler(ignoreCancelled = true)

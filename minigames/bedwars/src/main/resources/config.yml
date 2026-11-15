@@ -903,6 +903,8 @@ missions:
   end-stone-radius: 3
   end-stone-blocks: 10
   bedbug-assist-seconds: 10
+  few-blocks-max: 16
+  sharpness-level: 2
   daily:
     ninguem-me-para:
       name: "Ninguém me para!"
@@ -956,6 +958,30 @@ missions:
       description:
         - "&fColete 8 Esmeraldas sem"
         - "&fmorrer: {progress}"
+    que-preguica:
+      name: "Que preguiça..."
+      goal: BRIDGE_EGGS
+      target: 2
+      xp: 625
+      description:
+        - "&fUtilize 2 Ovos das Pontes:"
+        - "&f{progress}"
+    fim-da-linha-diaria:
+      name: "Fim da linha"
+      goal: FINAL_KILLS
+      target: 5
+      xp: 625
+      description:
+        - "&fElimine 5 adversários"
+        - "&ffinais: {progress}"
+    pra-que-mais:
+      name: "Pra que mais?"
+      goal: FEW_BLOCKS_WIN
+      target: 1
+      xp: 625
+      description:
+        - "&fGanhe 1 partida comprando"
+        - "&fno máximo 16 blocos: {progress}"
   weekly:
     sou-eu-bola-de-fogo:
       name: "Sou eu bola de fogo"
@@ -1002,6 +1028,53 @@ missions:
       description:
         - "&fCompre 50 blocos de Argila:"
         - "&f{progress}"
+    colecionador-de-diamantes:
+      name: "Colecionador de Diamantes"
+      goal: DIAMONDS
+      target: 150
+      xp: 2500
+      credits: 15
+      description:
+        - "&fColete 150 diamantes:"
+        - "&f{progress}"
+    arqueiro:
+      name: "Arqueiro"
+      goal: BOW_DAMAGE
+      target: 500
+      xp: 2500
+      credits: 15
+      description:
+        - "&fCause 500 de dano com"
+        - "&fo arco: {progress}"
+    afiado:
+      name: "Afiado!"
+      goal: SHARPNESS_TWO
+      target: 1
+      xp: 2500
+      credits: 15
+      description:
+        - "&fMelhore sua espada para"
+        - "&fAfiação II em 1 partida:"
+        - "&f{progress}"
+    lutador-eficiente:
+      name: "Lutador eficiente"
+      goal: KILLS
+      target: 100
+      xp: 2500
+      credits: 15
+      description:
+        - "&fElimine 100 adversários:"
+        - "&f{progress}"
+    milkshake:
+      name: "Milkshake"
+      goal: MILK_CLEANSE
+      target: 3
+      xp: 2500
+      credits: 15
+      description:
+        - "&fRetire efeitos negativos"
+        - "&fcom o Leite Mágico em"
+        - "&f3 partidas: {progress}"
   credit-path:
     complecionista:
       name: "Complecionista"
@@ -1028,7 +1101,8 @@ missions:
     completed: " &bCOMPLETO!"
   menu:
     title: "Missões do Bed Wars"
-    rows: 6
+    rows: 5
+    rows-with-back: 6
     categories:
       DAILY:
         slot: 10
@@ -1059,12 +1133,13 @@ missions:
     mission:
       material: PAPER
       name: "&e{name}"
+    completed-name: "&a{name}"
     reward-one: "&eRecompensa:"
     reward-many: "&eRecompensas:"
     xp-reward: "&b+{xp} XP (Bed Wars)"
     credits-reward: "&d+{credits} créditos"
     in-progress: "&eEm progresso."
-    completed: "&aConcluída."
+    completed: "&aCompleta!"
     progress: "&a{progress}/{target}"
     back:
       slot: 48

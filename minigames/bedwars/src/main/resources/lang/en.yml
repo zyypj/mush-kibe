@@ -453,6 +453,21 @@ missions:
       description:
         - "&fCollect 8 Emeralds without"
         - "&fdying: {progress}"
+    que-preguica:
+      name: "So Lazy..."
+      description:
+        - "&fUse 2 Bridge Eggs:"
+        - "&f{progress}"
+    fim-da-linha-diaria:
+      name: "End of the Line"
+      description:
+        - "&fGet 5 Final"
+        - "&fKills: {progress}"
+    pra-que-mais:
+      name: "Who Needs More?"
+      description:
+        - "&fWin 1 game buying"
+        - "&fat most 16 blocks: {progress}"
   weekly:
     sou-eu-bola-de-fogo:
       name: "I Am the Fireball"
@@ -479,6 +494,33 @@ missions:
       description:
         - "&fBuy 50 Hardened Clay blocks:"
         - "&f{progress}"
+    colecionador-de-diamantes:
+      name: "Diamond Collector"
+      description:
+        - "&fCollect 150 diamonds:"
+        - "&f{progress}"
+    arqueiro:
+      name: "Archer"
+      description:
+        - "&fDeal 500 damage with"
+        - "&fthe bow: {progress}"
+    afiado:
+      name: "Sharp!"
+      description:
+        - "&fUpgrade your sword to"
+        - "&fSharpness II in 1 game:"
+        - "&f{progress}"
+    lutador-eficiente:
+      name: "Efficient Fighter"
+      description:
+        - "&fKill 100 opponents:"
+        - "&f{progress}"
+    milkshake:
+      name: "Milkshake"
+      description:
+        - "&fRemove negative effects"
+        - "&fwith Magic Milk in"
+        - "&f3 games: {progress}"
   credit-path:
     complecionista:
       name: "Completionist"
@@ -523,12 +565,13 @@ missions:
       - "&a{time}"
     mission:
       name: "&e{name}"
+    completed-name: "&a{name}"
     reward-one: "&eReward:"
     reward-many: "&eRewards:"
     xp-reward: "&b+{xp} XP (Bed Wars)"
     credits-reward: "&d+{credits} credits"
     in-progress: "&eIn progress."
-    completed: "&aCompleted."
+    completed: "&aComplete!"
     progress: "&a{progress}/{target}"
     back:
       item:

@@ -164,7 +164,8 @@ O NPC da loja abre os menus dos exports: Compra Rápida (o layout do export) e a
 - **Loja Portátil** (livro): o clique direito abre a loja em qualquer lugar, com `random.drink` (tom 2,0).
 - **Baú do Fim** (baú do fim): o clique direito abre o baú do fim do jogador em qualquer lugar, com `random.chestopen` (tom 2,0).
 - Todos esses itens são gastos no uso. Os blocos deles só entram onde há ar e fora das áreas protegidas e contam como colocados por jogador; blocos de gelo, teia e para-quedas não dropam nada ao quebrar. Os materiais desses itens nunca vêm como item aleatório no Pilares.
-- Ainda não funcionam: os itens especiais Golem de Ferro, Leite Mágico e Rastreador, que avisam que chegam em breve e não cobram nada.
+- **Leite Mágico** (balde de leite, 2 ouros): beber tira só os efeitos negativos (cegueira, lentidão, cansaço, fraqueza, veneno, náusea, fome, wither, dano) e mantém os outros, e por 30 s o jogador não dispara nenhuma armadilha inimiga (`MagicMilk`).
+- Ainda não funcionam: os itens especiais Golem de Ferro e Rastreador, que avisam que chegam em breve e não cobram nada.
 
 ### Melhorias do time
 
@@ -473,12 +474,19 @@ O BedWars é o primeiro jogo com [missões](../missions/README.pt-BR.md). Ele re
 | `BEDBUG_KILLS` | soma | Kills de um inimigo que um Percevejo do time de quem matou acertou nos últimos `bedbug-assist-seconds` (10). Um aliado inesperado (3). |
 | `EMERALDS_IN_A_LIFE` | melhor | Esmeraldas pegas dos geradores sem morrer. Colecionador de Esmeraldas (8). |
 | `FIREBALL_DAMAGE` | soma | Dano causado em outros jogadores com Bolas de Fogo. Sou eu bola de fogo (1.000). |
-| `FINAL_KILLS` | soma | Kills finais. Fim da linha (35). |
+| `FINAL_KILLS` | soma | Kills finais. Fim da linha (diária 5, semanal 35). |
 | `EXPLOSIVE_BLOCKS` | soma | Blocos colocados destruídos pela TNT ou Bola de Fogo do jogador. Olha a explosão (1.000). |
 | `FAST_WIN` | soma | Vitórias em até `fast-win-seconds` (210). Ansiedade mais de 8000 (1). |
 | `CLAY_BOUGHT` | soma | Blocos de Argila comprados. Artesão (50). |
+| `BRIDGE_EGGS` | soma | Ovos das Pontes lançados. Que preguiça... (2). |
+| `FEW_BLOCKS_WIN` | soma | Vitórias comprando no máximo `few-blocks-max` (16) blocos da categoria Blocos (lã, argila, vidro, madeira, pedra do fim...). Pra que mais? (1). |
+| `DIAMONDS` | soma | Diamantes pegos dos geradores, contando os divididos. Colecionador de Diamantes (150). |
+| `BOW_DAMAGE` | soma | Dano causado em outros jogadores com flechas. Arqueiro (500). |
+| `SHARPNESS_TWO` | soma | 1 por partida em que o time do jogador chega ao nível `sharpness-level` (2) de Afiação nas Espadas, para todos do time. Afiado! (1). |
+| `KILLS` | soma | Kills, contando as finais. Lutador eficiente (100). |
+| `MILK_CLEANSE` | soma | 1 por partida em que o jogador bebe Leite Mágico estando com um efeito negativo. Milkshake (3). |
 
-As diárias dão 625 XP; as semanais 2.500 XP e 15 créditos; o Complecionista (completar todas as semanais) dá 15 créditos. Cada jogador recebe 3 das 6 diárias e as 5 semanais da semana. As missões de Halloween da referência não entraram.
+As diárias dão 625 XP; as semanais 2.500 XP e 15 créditos; o Complecionista (completar todas as semanais) dá 15 créditos. Cada jogador recebe 3 das 9 diárias e as 5 das 10 semanais da semana. O Fim da linha diário tem o id `fim-da-linha-diaria`, porque o progresso é guardado por id da missão e um dia pode começar na mesma data de uma semana. As missões de Halloween da referência não entraram.
 
 O Percevejo agora pode ser comprado: arremessada, a bola de neve faz surgir uma traça do time de quem arremessou onde cair. Por 15 segundos ela persegue o inimigo mais próximo a até 16 blocos, nunca quebra blocos, não dropa nada, e as kills dela contam para quem arremessou.
 
@@ -594,7 +602,7 @@ O Percevejo agora pode ser comprado: arremessada, a bola de neve faz surgir uma 
 | `lobby.stats-npc` | 22.5 81 -1.5 | Posição, linhas, tamanho da barra de XP e `labels` (alturas das linhas) do NPC de estatísticas. |
 | `lobby.npc-labels` | os exports | `bottom`, `gaps` e `spacing` das linhas dos NPCs de modo e de missões. |
 | `lobby.tops.spacing.*` | os exports | Espaços `title`, `list`, `entries`, `click` e `periods` dos tops. |
-| `missions.*` | os exports | O catálogo e os textos das [missões](../missions/README.pt-BR.md#configuração), mais `fast-win-seconds` (210), `end-stone-radius` (3), `end-stone-blocks` (10) e `bedbug-assist-seconds` (10). |
+| `missions.*` | os exports | O catálogo e os textos das [missões](../missions/README.pt-BR.md#configuração), mais `fast-win-seconds` (210), `end-stone-radius` (3), `end-stone-blocks` (10), `bedbug-assist-seconds` (10), `few-blocks-max` (16) e `sharpness-level` (2). |
 | `lobby.tops.boards.<id>` | os quatro tops | `category` (`FINAL_KILLS`, `WINS`, `WINSTREAK`, `LEVEL`), `title`, `location` do suporte do topo, `periods` na ordem de exibição e `modes`. |
 | `lobby.tops.*` | os exports | Textos de cabeçalho, posição, vazio (`Ninguém` - `0`), clique e períodos, `label-above-stand` (2.38125, onde o cliente 1.8 desenha o nome de um suporte em tamanho cheio), `refresh-seconds` (60), `click-sound` (`CLICK`, vazio para nenhum) e `xp-value` (`{xp} XP`, o top de nível fora do Total). |
 | `lobby.tops.selector.*` | o export | `location` do suporte do `SELECIONAR MODO`, `list-offset` e `footer-offset` (0.375 e 1.90625 abaixo dele), `list-spacing` (0.28125), `visible-modes` (5) e os textos de cabeçalho, rodapé, selecionado, outros e `general-name`. |

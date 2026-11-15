@@ -20,6 +20,11 @@ public final class RoomPlayer {
     private double fireballDamage;
     private int explosiveBlocks;
     private int clayBought;
+    private int blocksBought;
+    private int bridgeEggs;
+    private int diamonds;
+    private double bowDamage;
+    private boolean milkCleansed;
 
     public RoomPlayer(UUID id) {
         this.id = id;
@@ -108,6 +113,46 @@ public final class RoomPlayer {
 
     public void addClay(int amount) {
         clayBought += amount;
+    }
+
+    public int blocksBought() {
+        return blocksBought;
+    }
+
+    public void addBlocks(int amount) {
+        blocksBought += Math.max(0, amount);
+    }
+
+    public int bridgeEggs() {
+        return bridgeEggs;
+    }
+
+    public void addBridgeEgg() {
+        bridgeEggs++;
+    }
+
+    public int diamonds() {
+        return diamonds;
+    }
+
+    public void addDiamonds(int amount) {
+        diamonds += Math.max(0, amount);
+    }
+
+    public double bowDamage() {
+        return bowDamage;
+    }
+
+    public void addBowDamage(double amount) {
+        bowDamage += Math.max(0, amount);
+    }
+
+    public boolean milkCleansed() {
+        return milkCleansed;
+    }
+
+    public void cleanseWithMilk() {
+        milkCleansed = true;
     }
 
     public int armorTier() {

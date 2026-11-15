@@ -6,10 +6,12 @@ import static org.assertj.core.api.Assertions.within;
 import br.com.muxe.core.bukkit.display.DisplayLabel;
 import br.com.muxe.core.bukkit.mission.announce.MissionTexts;
 import br.com.muxe.core.bukkit.mission.config.MissionConfig;
+import br.com.muxe.core.bukkit.mission.menu.MissionView;
 import br.com.muxe.core.bukkit.nms.PacketHologramTransport;
 import br.com.muxe.core.bukkit.npc.NpcLabelLayout;
 import br.com.muxe.core.common.mission.domain.Mission;
 import br.com.muxe.core.common.mission.domain.MissionBoard;
+import br.com.muxe.core.common.mission.domain.MissionCadence;
 import br.com.muxe.core.common.mission.domain.MissionSession;
 import br.com.muxe.minigame.bedwars.lobby.settings.StatsNpcSettings;
 import br.com.muxe.minigame.bedwars.lobby.top.TopTexts;
@@ -30,13 +32,56 @@ class BedWarsMissionsTest {
     @Test
     void theCatalogHasTheExportedMissionsWithoutHalloween() {
         assertThat(CONFIG.catalog().daily()).extracting(Mission::id).containsExactly("ninguem-me-para", "quem-foi", "protecao-do-fim", "rei-das-pontes",
-            "um-aliado-inesperado", "colecionador-de-esmeraldas");
+            "um-aliado-inesperado", "colecionador-de-esmeraldas", "que-preguica", "fim-da-linha-diaria", "pra-que-mais");
         assertThat(CONFIG.catalog().weekly()).extracting(Mission::id).containsExactly("sou-eu-bola-de-fogo", "fim-da-linha", "olha-a-explosao",
-            "ansiedade-mais-de-8000", "artesao");
+            "ansiedade-mais-de-8000", "artesao", "colecionador-de-diamantes", "arqueiro", "afiado", "lutador-eficiente", "milkshake");
         assertThat(CONFIG.catalog().creditPath()).extracting(Mission::credits).containsExactly(15L);
         assertThat(CONFIG.catalog().dailyCount()).isEqualTo(3);
         assertThat(CONFIG.texts("fim-da-linha").name()).isEqualTo("Fim da linha");
         assertThat(MissionRules.from(RoomFixtures.CONFIG.getConfigurationSection("missions"))).isEqualTo(MissionRules.DEFAULT);
+    }
+
+    @Test
+    void theExportedMissionsHaveTheirGoalsTargetsAndRewards() {
+        assertThat(mission(CONFIG.catalog().daily(), "que-preguica")).isEqualTo(new Mission("que-preguica", MissionCadence.DAILY,
+            BedWarsGoal.BRIDGE_EGGS.goal(), 2, 625, 0));
+        assertThat(mission(CONFIG.catalog().daily(), "fim-da-linha-diaria")).isEqualTo(new Mission("fim-da-linha-diaria", MissionCadence.DAILY,
+            BedWarsGoal.FINAL_KILLS.goal(), 5, 625, 0));
+        assertThat(mission(CONFIG.catalog().daily(), "pra-que-mais")).isEqualTo(new Mission("pra-que-mais", MissionCadence.DAILY,
+            BedWarsGoal.FEW_BLOCKS_WIN.goal(), 1, 625, 0));
+        assertThat(CONFIG.catalog().weekly().subList(5, 10)).containsExactly(
+            new Mission("colecionador-de-diamantes", MissionCadence.WEEKLY, BedWarsGoal.DIAMONDS.goal(), 150, 2500, 15),
+            new Mission("arqueiro", MissionCadence.WEEKLY, BedWarsGoal.BOW_DAMAGE.goal(), 500, 2500, 15),
+            new Mission("afiado", MissionCadence.WEEKLY, BedWarsGoal.SHARPNESS_TWO.goal(), 1, 2500, 15),
+            new Mission("lutador-eficiente", MissionCadence.WEEKLY, BedWarsGoal.KILLS.goal(), 100, 2500, 15),
+            new Mission("milkshake", MissionCadence.WEEKLY, BedWarsGoal.MILK_CLEANSE.goal(), 3, 2500, 15));
+        assertThat(CONFIG.texts("fim-da-linha-diaria").name()).isEqualTo("Fim da linha");
+    }
+
+    @Test
+    void theMenuShowsTheNewMissionsAsExported() {
+        MissionConfig.Menu menu = CONFIG.menu();
+        MissionBoard board = board(List.of(
+            mission(CONFIG.catalog().daily(), "que-preguica"),
+            mission(CONFIG.catalog().weekly(), "afiado"),
+            mission(CONFIG.catalog().weekly(), "lutador-eficiente")
+        ), Map.of("KILLS", 100L));
+        MissionBoard.Entry lazy = board.entries().get(0);
+        MissionBoard.Entry sharp = board.entries().get(1);
+        MissionBoard.Entry fighter = board.entries().get(2);
+
+        assertThat(MissionView.name(menu, CONFIG.texts("que-preguica"), lazy)).isEqualTo("§eQue preguiça...");
+        assertThat(MissionView.missionLore(menu, CONFIG.texts("que-preguica"), lazy, "Diária")).containsExactly(
+            "&7Diária", " ", "&fUtilize 2 Ovos das Pontes:", "&f&a0/2", " ", "&eRecompensa:", "&b+625 XP (Bed Wars)", " ", "&eEm progresso.");
+        assertThat(MissionView.missionLore(menu, CONFIG.texts("afiado"), sharp, "Semanal")).containsExactly(
+            "&7Semanal", " ", "&fMelhore sua espada para", "&fAfiação II em 1 partida:", "&f&a0/1", " ", "&eRecompensas:", "&b+2.500 XP (Bed Wars)",
+            "&d+15 créditos", " ", "&eEm progresso.");
+        assertThat(MissionView.name(menu, CONFIG.texts("lutador-eficiente"), fighter)).isEqualTo("§aLutador eficiente");
+        assertThat(MissionView.missionLore(menu, CONFIG.texts("lutador-eficiente"), fighter, "Semanal")).containsExactly(
+            "&7Semanal", " ", "&fElimine 100 adversários:", "&f&a100/100", " ", "&eRecompensas:", "&b+2.500 XP (Bed Wars)", "&d+15 créditos", " ",
+            "&aCompleta!");
+        assertThat(MissionView.rows(menu, false)).isEqualTo(5);
+        assertThat(MissionView.rows(menu, true)).isEqualTo(6);
     }
 
     @Test
@@ -128,6 +173,10 @@ class BedWarsMissionsTest {
             CONFIG.catalog().creditPath().getFirst()
         );
         return new MissionSession(MissionBoard.of(active, Map.of(), MissionBoard.starts(active, NOW, ZONE)));
+    }
+
+    private static MissionBoard board(List<Mission> active, Map<String, Long> amounts) {
+        return MissionBoard.of(active, Map.of(), MissionBoard.starts(active, NOW, ZONE)).apply(amounts).board();
     }
 
     private static Mission mission(List<Mission> pool, String id) {

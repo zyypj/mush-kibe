@@ -164,7 +164,8 @@ The shop NPC opens the menus of the exports: Compra Rápida (the exported layout
 - **Loja Portátil** (book): right click opens the shop anywhere, with `random.drink` (pitch 2.0).
 - **Baú do Fim** (ender chest): right click opens the player's ender chest anywhere, with `random.chestopen` (pitch 2.0).
 - Every one of these is spent on use. Their blocks go only where there is air and outside the protected areas and count as placed by a player; ice, cobweb and parachute blocks drop nothing when broken. The materials of these items never come as random items in Pilares.
-- Not working yet: the special items Golem de Ferro, Leite Mágico and Rastreador, which say they are coming soon and charge nothing.
+- **Leite Mágico** (milk bucket, 2 gold): drinking it removes only the negative effects (blindness, slowness, mining fatigue, weakness, poison, nausea, hunger, wither, harming) and keeps the others, and for 30 s the player sets off no enemy trap (`MagicMilk`).
+- Not working yet: the special items Golem de Ferro and Rastreador, which say they are coming soon and charge nothing.
 
 ### Team upgrades
 
@@ -473,12 +474,19 @@ BedWars is the first game with [missions](../missions/README.md). It registers i
 | `BEDBUG_KILLS` | sum | Kills of an enemy a Percevejo of the killer's team hit in the last `bedbug-assist-seconds` (10). Um aliado inesperado (3). |
 | `EMERALDS_IN_A_LIFE` | best | Emeralds picked up from generators without dying. Colecionador de Esmeraldas (8). |
 | `FIREBALL_DAMAGE` | sum | Damage dealt to other players with Fireballs. Sou eu bola de fogo (1.000). |
-| `FINAL_KILLS` | sum | Final kills. Fim da linha (35). |
+| `FINAL_KILLS` | sum | Final kills. Fim da linha (daily 5, weekly 35). |
 | `EXPLOSIVE_BLOCKS` | sum | Placed blocks destroyed by the player's TNT or Fireball. Olha a explosão (1.000). |
 | `FAST_WIN` | sum | Wins within `fast-win-seconds` (210). Ansiedade mais de 8000 (1). |
 | `CLAY_BOUGHT` | sum | Clay blocks bought. Artesão (50). |
+| `BRIDGE_EGGS` | sum | Bridge Eggs thrown. Que preguiça... (2). |
+| `FEW_BLOCKS_WIN` | sum | Wins after buying at most `few-blocks-max` (16) blocks of the Blocks category (wool, clay, glass, wood, end stone...). Pra que mais? (1). |
+| `DIAMONDS` | sum | Diamonds picked up from generators, shared ones included. Colecionador de Diamantes (150). |
+| `BOW_DAMAGE` | sum | Damage dealt to other players with arrows. Arqueiro (500). |
+| `SHARPNESS_TWO` | sum | 1 per match in which the player's team reaches Afiação nas Espadas level `sharpness-level` (2), for every member of the team. Afiado! (1). |
+| `KILLS` | sum | Kills, final ones included. Lutador eficiente (100). |
+| `MILK_CLEANSE` | sum | 1 per match in which the player drinks Leite Mágico while under a negative effect. Milkshake (3). |
 
-Daily missions give 625 XP; weekly ones 2.500 XP and 15 credits; Complecionista (complete every weekly mission) gives 15 credits. Each player gets 3 of the 6 daily missions and the week's 5 weekly missions. The Halloween missions of the reference are not included.
+Daily missions give 625 XP; weekly ones 2.500 XP and 15 credits; Complecionista (complete every weekly mission) gives 15 credits. Each player gets 3 of the 9 daily missions and the week's 5 of the 10 weekly missions. The daily Fim da linha has the id `fim-da-linha-diaria`, because progress is stored per mission id and a day can start on the same date as a week. The Halloween missions of the reference are not included.
 
 The Percevejo can be bought now: thrown, its snowball spawns a silverfish of the thrower's team where it lands. For 15 seconds it chases the closest enemy within 16 blocks, never breaks blocks, drops nothing, and its kills count for the thrower.
 
@@ -594,7 +602,7 @@ The Percevejo can be bought now: thrown, its snowball spawns a silverfish of the
 | `lobby.stats-npc` | 22.5 81 -1.5 | Position, lines, XP bar size and `labels` (line heights) of the statistics NPC. |
 | `lobby.npc-labels` | the exports | `bottom`, `gaps` and `spacing` of the mode and missions NPC lines. |
 | `lobby.tops.spacing.*` | the exports | `title`, `list`, `entries`, `click` and `periods` gaps of the tops. |
-| `missions.*` | the exports | The [missions](../missions/README.md#configuration) catalog and texts, plus `fast-win-seconds` (210), `end-stone-radius` (3), `end-stone-blocks` (10) and `bedbug-assist-seconds` (10). |
+| `missions.*` | the exports | The [missions](../missions/README.md#configuration) catalog and texts, plus `fast-win-seconds` (210), `end-stone-radius` (3), `end-stone-blocks` (10), `bedbug-assist-seconds` (10), `few-blocks-max` (16) and `sharpness-level` (2). |
 | `lobby.tops.boards.<id>` | the four tops | `category` (`FINAL_KILLS`, `WINS`, `WINSTREAK`, `LEVEL`), `title`, `location` of the top stand, `periods` in display order and `modes`. |
 | `lobby.tops.*` | the exports | Header, entry, empty (`Ninguém` - `0`), click and period texts, `label-above-stand` (2.38125, where the 1.8 client draws the name of a full-size stand), `refresh-seconds` (60), `click-sound` (`CLICK`, empty for none) and `xp-value` (`{xp} XP`, the level top outside Total). |
 | `lobby.tops.selector.*` | the export | `location` of the `SELECIONAR MODO` stand, `list-offset` and `footer-offset` (0.375 and 1.90625 below it), `list-spacing` (0.28125), `visible-modes` (5) and the header, footer, selected, other and `general-name` texts. |

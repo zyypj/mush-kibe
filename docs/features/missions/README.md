@@ -29,8 +29,8 @@ Daily and weekly missions shared by every game mode, with a credit path that pay
 
 ### Menu
 
-- `MissionMenus.open(player, back)` opens `Missões do Bed Wars` with one row per category: the category icon (`Progresso: done/total` and the time left until the day or week ends) followed by its missions. A mission in progress glows and ends with `&eEm progresso.`; a completed one ends with `&aConcluída.`.
-- `back` follows the server rule for menus: a menu opened from another menu shows `Voltar` (slot 48) back to it; opened directly (NPC, item, command) it has none.
+- `MissionMenus.open(player, back)` opens `Missões do Bed Wars` with one row per category: the category icon (`Progresso: done/total` and the time left until the day or week ends) followed by its missions. A mission in progress has a yellow name, glows and ends with `&eEm progresso.`; a completed one has a green name (`&a`), does not glow and ends with `&aCompleta!`.
+- `back` follows the server rule for menus: a menu opened from another menu shows `Voltar` (slot 48) back to it and has 6 rows; opened directly (NPC, item, command) it has none and 5 rows, as in the export.
 
 ## Commands
 
@@ -50,7 +50,7 @@ In each game's config, under `missions`:
 | `daily.<id>`, `weekly.<id>`, `credit-path.<id>` | the exports | `name`, `goal`, `target`, `xp`, `credits` and `description` (lines with `{progress}`). |
 | `announce.*` | the reference | `prefix`, `name` (`{name}`, `{category}`), `description`, `progress`, `xp`, `credits`. |
 | `summary.*` | the reference | `border`, `headers.DAILY/WEEKLY/CREDIT_PATH`, `line` (`{name}`, `{progress}`, `{target}`, `{added}`) and `completed`. |
-| `menu.*` | the exports | Title, rows, category slots, items and labels, lore texts, the `back` button and the time units. |
+| `menu.*` | the exports | Title, rows (`rows` 5 without `Voltar`, `rows-with-back` 6 with it), category slots, items and labels, the name of a completed mission (`completed-name`, `&a{name}`), lore texts, the `back` button and the time units. |
 
 ## Packets
 

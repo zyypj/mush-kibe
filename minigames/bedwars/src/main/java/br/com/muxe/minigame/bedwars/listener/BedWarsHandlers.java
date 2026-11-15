@@ -18,6 +18,7 @@ import br.com.muxe.minigame.bedwars.custom.CustomRules;
 import br.com.muxe.minigame.bedwars.game.ExplosionKnockback.Source;
 import br.com.muxe.minigame.bedwars.game.ExplosionKnockback;
 import br.com.muxe.minigame.bedwars.game.Foliage;
+import br.com.muxe.minigame.bedwars.game.MagicMilk;
 import br.com.muxe.minigame.bedwars.game.Parachute;
 import br.com.muxe.minigame.bedwars.game.Rewind;
 import br.com.muxe.minigame.bedwars.game.Slingshot;
@@ -49,6 +50,7 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
@@ -62,10 +64,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -174,6 +178,7 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
             case EGG -> {
                 consumeOne(player);
                 specials.bridgeEgg(player.launchProjectile(Egg.class), playing.participant().team());
+                state.room().player(id).addBridgeEgg();
             }
             case BLAZE_ROD -> {
                 if (specials.spiderCooldown(id).isEmpty()) {
@@ -331,6 +336,8 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         UUID victimId = victim.participant().id();
         attacker.filter(other -> !other.id().equals(victimId) && event.getDamager() instanceof Fireball)
             .ifPresent(other -> victim.state().room().player(other.id()).addFireballDamage(event.getFinalDamage()));
+        attacker.filter(other -> !other.id().equals(victimId) && event.getDamager() instanceof Arrow)
+            .ifPresent(other -> victim.state().room().player(other.id()).addBowDamage(event.getFinalDamage()));
         bedbugs.bug(event.getDamager()).ifPresent(bug -> victim.state().bedbugHit(victimId, bug.team()));
         if (event.getDamager() instanceof Fireball && victim.state().rules().fireballFight() && event.getEntity() instanceof Player hit) {
             event.setDamage(event.getDamage() * CustomRules.FIGHT_DAMAGE);
@@ -437,7 +444,26 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         player.playSound(player.getLocation(), Sound.ITEM_PICKUP, ForgePickup.SOUND_VOLUME, ForgePickup.SOUND_PITCH);
         if (type == Material.EMERALD) {
             state.room().player(player.getUniqueId()).addEmeralds(amount);
+        } else if (type == Material.DIAMOND) {
+            state.room().player(player.getUniqueId()).addDiamonds(amount);
         }
+    }
+
+    @Override
+    public void consume(Playing<BedWarsMatch> playing, PlayerItemConsumeEvent event) {
+        if (event.getItem().getType() != Material.MILK_BUCKET) {
+            return;
+        }
+        event.setCancelled(true);
+        Player player = event.getPlayer();
+        List<String> active = player.getActivePotionEffects().stream().map(effect -> effect.getType().getName()).toList();
+        List<String> negative = MagicMilk.negative(active);
+        negative.forEach(name -> player.removePotionEffect(PotionEffectType.getByName(name)));
+        if (!negative.isEmpty()) {
+            playing.state().room().player(player.getUniqueId()).cleanseWithMilk();
+        }
+        playing.state().drinkMilk(player.getUniqueId());
+        consumeOne(player);
     }
 
     private void sling(Player player, BedWarsMatch state) {
