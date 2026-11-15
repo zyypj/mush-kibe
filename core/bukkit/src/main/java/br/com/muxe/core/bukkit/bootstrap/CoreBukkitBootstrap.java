@@ -44,6 +44,9 @@ import br.com.muxe.core.bukkit.scheduledgame.ScheduledAnnouncer;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledGame;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledGames;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledPlay;
+import br.com.muxe.core.bukkit.stats.StatsCommand;
+import br.com.muxe.core.bukkit.stats.StatsMenus;
+import br.com.muxe.core.bukkit.stats.StatsSettings;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.bukkit.text.Title;
 import br.com.muxe.core.bukkit.thread.BukkitMainThreadExecutor;
@@ -59,6 +62,7 @@ import br.com.muxe.core.common.match.MatchReturns;
 import br.com.muxe.core.common.permission.sync.PermissionSync;
 import br.com.muxe.core.common.runtime.CoreRuntime;
 import br.com.muxe.core.common.runtime.PlatformHooks;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.ServicePriority;
@@ -141,6 +145,10 @@ public final class CoreBukkitBootstrap {
         commands.register(new MegaBedWarsCommand(scheduledPlay));
         plugin.getServer().getScheduler().runTaskTimer(plugin, new ScheduledAnnouncer(scheduledGames, plugin.getServer()::getOnlinePlayers, messages),
             ScheduledAnnouncer.PERIOD_TICKS, ScheduledAnnouncer.PERIOD_TICKS);
+        StatsMenus statistics = new StatsMenus(texts.map(section -> StatsSettings.from(Objects.requireNonNull(section.getConfigurationSection("menus.statistics"),
+            "Missing configuration section menus.statistics"))), messages, core.queries(), mainThread, plugin.getLogger());
+        core.statistics(statistics);
+        commands.register(new StatsCommand(statistics, core.queries(), mainThread, messages));
         HotbarFeatures.start(plugin, core, config, features, commands);
         CommandMapRegistrar.commandMap(plugin.getServer())
             .ifPresent(map -> {

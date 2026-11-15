@@ -16,10 +16,12 @@ import br.com.muxe.core.bukkit.selector.game.GameSelectorMenu;
 import br.com.muxe.core.bukkit.selector.game.GameSelectorSettings;
 import br.com.muxe.core.bukkit.selector.lobby.LobbySelectorMenu;
 import br.com.muxe.core.bukkit.selector.lobby.LobbySelectorSettings;
+import br.com.muxe.core.bukkit.stats.Target;
 import br.com.muxe.core.bukkit.visibility.VisibilityService;
 import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.visibility.domain.FriendDirectory;
 import java.util.Objects;
+import java.util.Optional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,7 +48,8 @@ final class HotbarFeatures {
         GameSelectorMenu games = new GameSelectorMenu(texts.map(root -> GameSelectorSettings.from(section(root, "menus.game-selector"))), buttons, languages);
         CustomRoomFeatures.lobby(plugin, core, commands, games::open, player -> placed.shopAccess().open(player, CustomRoomFeatures.SHOP_CATEGORY));
         ProfileMenu profile = new ProfileMenu(texts.map(root -> ProfileSettings.from(section(root, "menus.profile"))), languages, buttons, core.queries(), core.permissions(),
-            core.mainThread(), plugin.getLogger());
+            core.mainThread(), plugin.getLogger(), Optional.of((player, back) -> core.statistics().openHub(player, new Target(player.getUniqueId(), player.getName(), true),
+                Optional.of(back))));
         LobbySelectorMenu lobbies = new LobbySelectorMenu(core, texts.map(root -> LobbySelectorSettings.from(section(root, "menus.lobby-selector"), core.identity().group())),
             core.messages());
 

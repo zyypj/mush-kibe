@@ -1,4 +1,4 @@
-package br.com.muxe.minigame.bedwars.lobby.format;
+package br.com.muxe.core.bukkit.stats;
 
 import java.util.List;
 import java.util.Map;
@@ -27,12 +27,12 @@ public final class LevelBadges {
     }
 
     public static LevelBadges from(ConfigurationSection section) {
-        ConfigurationSection badges = Objects.requireNonNull(section.getConfigurationSection("badges"), "Missing configuration section levels.badges");
+        ConfigurationSection badges = Objects.requireNonNull(section.getConfigurationSection("badges"), "Missing configuration section " + section.getCurrentPath() + ".badges");
         Map<Integer, String> byLevel = new TreeMap<>();
         for (String key : badges.getKeys(false)) {
             byLevel.put(Integer.parseInt(key), badges.getString(key));
         }
-        ConfigurationSection rainbow = Objects.requireNonNull(section.getConfigurationSection("rainbow"), "Missing configuration section levels.rainbow");
+        ConfigurationSection rainbow = Objects.requireNonNull(section.getConfigurationSection("rainbow"), "Missing configuration section " + section.getCurrentPath() + ".rainbow");
         return new LevelBadges(byLevel, rainbow.getInt("from", 1000), rainbow.getString("open", ""), rainbow.getStringList("digits"), rainbow.getString("close", ""));
     }
 

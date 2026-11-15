@@ -254,6 +254,239 @@ menus:
             - "&7Move the statistics to another account."
             - " "
             - "&eClick to view more."
+  statistics:
+    title: "Your statistics"
+    title-other: "{name}'s statistics"
+    back:
+      item:
+        name: "&aBack"
+        lore:
+          - "&7To My profile"
+    games:
+      "hg":
+        item:
+          name: "&aHG"
+          lore:
+            - "&7Total Wins: &a0"
+            - "&7Total Kills: &a0"
+            - "&7Total Deaths: &a0"
+            - "&7Total Assists: &a0"
+            - " "
+            - "&7Minimuxe Wins: &a0"
+            - "&7Minimuxe Kills: &a0"
+            - "&7Minimuxe Deaths: &a0"
+            - " "
+            - "&7Coins: &60"
+      "duels":
+        item:
+          name: "&aDuels"
+          lore:
+            - "&eClick to view more."
+      "pvp":
+        item:
+          name: "&aPvP"
+          lore:
+            - "&7Arena: Kills: &a0"
+            - "&7Arena: Deaths: &a0"
+            - "&7Arena: Best Killstreak: &a0"
+            - " "
+            - "&7FPS: Kills: &a0"
+            - "&7FPS: Deaths: &a0"
+            - "&7FPS: Best Killstreak: &a0"
+      "skywars":
+        item:
+          name: "&aSky Wars"
+          lore:
+            - "&eClick to view more."
+      "bedwars":
+        item:
+          name: "&aBed Wars"
+          lore:
+            - "&eClick to view more."
+      "quick-builders":
+        item:
+          name: "&aQuick Builders"
+          lore:
+            - "&7Level: &7[0&l✫&7]"
+            - " "
+            - "&7Games: &a0"
+            - "&7Wins: &a0"
+            - "&7Losses: &a0"
+            - "&7Win %: &a0%"
+            - " "
+            - "&7Builds: &a0"
+            - "&7Perfect builds: &a0"
+            - "&7Perfection %: &a0%"
+            - " "
+            - "&7Winstreak: &a0"
+            - "&7Best Winstreak: &a0"
+            - " "
+            - "&7Perfect Streak: &a0"
+            - "&7Best Perfect Streak: &a0"
+      "ctf":
+        item:
+          name: "&aCTF"
+          lore:
+            - "&7Kills: &a0"
+            - "&7Captures: &a0"
+            - "&7Returns: &a0"
+            - "&7Games: &a0"
+      "murder":
+        item:
+          name: "&aMurder"
+          lore:
+            - "&7Games: &a0"
+            - " "
+            - "&7Wins: &a0"
+            - "&7Losses: &a0"
+            - " "
+            - "&7Kills: &a0"
+            - "&7Cases solved: &a0"
+            - "&7Deaths: &a0"
+            - " "
+            - "&7Emeralds collected: &a0"
+      "build-battle":
+        item:
+          name: "&aBuild Battle"
+          lore:
+            - "&7Level: &7[0&l✫&7]"
+            - " "
+            - "&7Games: &a0"
+            - " "
+            - "&7Wins: &a0"
+            - "&7Losses: &a0"
+            - " "
+            - "&7Winstreak: &a0"
+            - "&7Best Winstreak: &a0"
+            - " "
+            - "&7Perfects: &a0"
+            - "&7Points: &a0"
+      "hide-and-seek":
+        item:
+          name: "&aHide and Seek"
+          lore:
+            - "&7Games: &a0"
+            - " "
+            - "&7Winstreak: &a0"
+            - "&7Best Winstreak: &a0"
+            - " "
+            - "&7Wins: &a0"
+            - "&7Losses: &a0"
+            - "&7Deaths: &a0"
+            - " "
+            - "&7Block swaps: &a0"
+            - "&7Times frozen: &a0"
+            - "&7Seekers stunned: &a0"
+            - " "
+            - "&7Blocks killed: &a0"
+            - "&7Blocks found: &a0"
+    bedwars:
+      title: "Your statistics (Bed Wars)"
+      title-other: "{name}'s statistics (Bed Wars)"
+      back:
+        item:
+          name: "&aBack"
+          lore:
+            - "&7To {parent}"
+      general:
+        item:
+          name: "&aGeneral"
+          lore:
+            - "&7Level: {level}"
+            - "&7XP: &a{xp}"
+            - " "
+            - "&7Games: &a{games}"
+            - " "
+            - "&7Beds broken: &a{beds-broken}"
+            - "&7Beds lost: &a{beds-lost}"
+            - " "
+            - "&7Kills: &a{kills}"
+            - "&7Deaths: &a{deaths}"
+            - "&7Assists: &a{assists}"
+            - "&7Final kills: &a{final-kills}"
+            - "&7Final deaths: &a{final-deaths}"
+            - "&7Final assists: &a{final-assists}"
+            - " "
+            - "&7Wins: &a{wins}"
+            - "&7Losses: &a{losses}"
+            - " "
+            - "&7Winstreak: &a{winstreak}"
+            - "&7Best Winstreak: &a{best-winstreak}"
+      lore:
+        - "&7Games: &a{games}"
+        - " "
+        - "&7Beds broken: &a{beds-broken}"
+        - "&7Beds lost: &a{beds-lost}"
+        - " "
+        - "&7Kills: &a{kills}"
+        - "&7Deaths: &a{deaths}"
+        - "&7Assists: &a{assists}"
+        - "&7Final kills: &a{final-kills}"
+        - "&7Final deaths: &a{final-deaths}"
+        - "&7Final assists: &a{final-assists}"
+        - " "
+        - "&7Wins: &a{wins}"
+        - "&7Losses: &a{losses}"
+        - " "
+        - "&7Winstreak: &a{winstreak}"
+        - "&7Best Winstreak: &a{best-winstreak}"
+      modes:
+        "solo":
+          item:
+            name: "&aSolo"
+        "duplas":
+          item:
+            name: "&aDoubles"
+        "trios":
+          item:
+            name: "&aTrios"
+        "quartetos":
+          item:
+            name: "&aSquads"
+        "1v1":
+          item:
+            name: "&a1v1"
+        "2v2":
+          item:
+            name: "&a2v2"
+        "3v3":
+          item:
+            name: "&a3v3"
+        "4v4":
+          item:
+            name: "&a4v4"
+        "mega":
+          item:
+            name: "&aMega"
+      level-badges:
+        badges:
+          "0": "&7[{level}&l✫&7]"
+          "10": "&a[{level}&l✶&a]"
+          "20": "&b[{level}&l✽&b]"
+          "30": "&d[{level}&l✿&d]"
+          "40": "&e[{level}&l✸&e]"
+          "50": "&6[{level}&l✹&6]"
+          "60": "&5[{level}&l✣&5]"
+          "70": "&2[{level}&l✦&2]"
+          "80": "&9[{level}&l✵&9]"
+          "90": "&c[{level}&l❊&c]"
+          "100": "&4[{level}&l❤&4]"
+          "200": "&e[&6{level}✪&e]"
+          "300": "&b[&3{level}❂&b]"
+          "400": "&d[&5{level}❁&d]"
+          "500": "&7[&f{level}❋&7]"
+          "600": "&1[&9{level}✟&1]"
+          "700": "&2[&a{level}&l۞&2]"
+          "800": "&6[&e{level}&l✌&6]"
+          "900": "&4[&c{level}&l⚝&4]"
+        rainbow:
+          open: "&c["
+          digits:
+            - "&6"
+            - "&e"
+            - "&a"
+            - "&b"
+          close: "&dΩ&5]"
   profile:
     title: "My profile"
     first-login:
@@ -1388,6 +1621,8 @@ messages:
   credits-taken: "&aYou removed &d{amount} credits &afrom &f{player}&a. Balance: &d{balance}&a."
   credits-not-enough: "&f{player} &cdoesn't have enough credits."
   credits-invalid-amount: "&cThe amount must be from 1 to {max}."
+  statistics-soon: "&cComing soon."
+  statistics-not-found: "&cThe player &f{player} &chas never joined the server."
   account:
     usage: "&cUsage: &f/account <player>"
     not-found: "&cThe player &f{player} &chas never joined the server."

@@ -61,7 +61,7 @@ Rank: Ultra (29d 23h)
 
 - O primeiro login vem da [conta](../accounts/README.pt-BR.md) do jogador e é formatado com `first-login.format` no fuso `first-login.time-zone`. Quando a conta não pode ser lida, aparece `first-login.unknown` (`-`).
 - Os créditos mostram `default-credits` até existir uma carteira.
-- Botões: `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin`, `Nick (/nick)` e `Menu do Ultra+`. O `Nick` abre a loja na categoria Ultra+; `Medalhas` fecha o menu e roda `/medalha`, que envia a [lista de medalhas](../ranks-and-tags/README.pt-BR.md#medalha) no chat; os outros ainda não fazem nada, porque os seus menus não existem.
+- Botões: `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin`, `Nick (/nick)` e `Menu do Ultra+`. O `Nick` abre a loja na categoria Ultra+; `Medalhas` fecha o menu e roda `/medalha`, que envia a [lista de medalhas](../ranks-and-tags/README.pt-BR.md#medalha) no chat; `Ver estatísticas` abre as [estatísticas](../statistics/README.pt-BR.md) com `Voltar` de volta ao perfil; os outros ainda não fazem nada, porque os seus menus não existem.
 
 ### Seletor de lobby
 
@@ -237,7 +237,7 @@ O perfil lê a conta com `FindAccountQuery`.
 ## Limitações conhecidas
 
 - O item de cosméticos ainda não faz nada.
-- Os botões do perfil `Amigos`, `Ver estatísticas`, `Preferências`, `Sua skin` e `Menu do Ultra+` ainda não fazem nada.
+- Os botões do perfil `Amigos`, `Preferências`, `Sua skin` e `Menu do Ultra+` ainda não fazem nada.
 - Não existe sistema de amigos, então "Apenas amigos" esconde todo mundo.
 - Ainda não existem créditos: o perfil mostra `default-credits`.
 - O `{players}` do seletor de jogo é lido quando o menu abre e não é atualizado enquanto ele está aberto.

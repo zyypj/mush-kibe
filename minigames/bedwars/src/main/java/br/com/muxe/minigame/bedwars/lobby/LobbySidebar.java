@@ -2,8 +2,8 @@ package br.com.muxe.minigame.bedwars.lobby;
 
 import br.com.muxe.core.bukkit.credit.CreditFormat;
 import br.com.muxe.core.bukkit.scoreboard.SidebarContent;
-import br.com.muxe.minigame.bedwars.game.Levels;
-import br.com.muxe.minigame.bedwars.lobby.format.LevelBadges;
+import br.com.muxe.core.bukkit.stats.LevelBadges;
+import br.com.muxe.core.common.stats.domain.BedWarsLevels;
 import br.com.muxe.minigame.bedwars.lobby.format.XpBar;
 import br.com.muxe.minigame.bedwars.lobby.settings.LobbyScoreboardSettings;
 import br.com.muxe.minigame.bedwars.stats.domain.PlayerStats;
@@ -22,7 +22,7 @@ public final class LobbySidebar {
 
     public static SidebarContent content(LobbyScoreboardSettings settings, PlayerStats stats, LevelBadges badges, Collection<String> modes,
                                          Function<String, String> modeNames, int players) {
-        Levels.Progress progress = Levels.progress(Math.max(0, stats.general().xp()));
+        BedWarsLevels.Progress progress = BedWarsLevels.progress(Math.max(0, stats.general().xp()));
         List<String> lines = new ArrayList<>();
         for (String line : settings.lines()) {
             if (line.trim().equals(LobbyScoreboardSettings.MODES)) {

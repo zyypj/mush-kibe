@@ -2,10 +2,10 @@ package br.com.muxe.minigame.bedwars.bootstrap;
 
 import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.language.LocalizedConfig;
+import br.com.muxe.core.bukkit.stats.LevelBadges;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.minigame.api.arena.ArenaSchema;
 import br.com.muxe.minigame.api.matchmaking.MatchConnector;
-import br.com.muxe.minigame.bedwars.lobby.format.LevelBadges;
 import br.com.muxe.minigame.bedwars.lobby.menu.LobbyMenuSettings;
 import br.com.muxe.minigame.bedwars.lobby.menu.LobbyMenus;
 import br.com.muxe.minigame.bedwars.lobby.top.TagColors;

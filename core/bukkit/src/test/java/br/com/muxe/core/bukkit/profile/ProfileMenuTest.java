@@ -12,6 +12,8 @@ import br.com.muxe.core.bukkit.menu.button.MenuFixtures;
 import br.com.muxe.core.bukkit.permission.command.RankTestKit;
 import br.com.muxe.core.bukkit.shop.ShopFixtures;
 import br.com.muxe.core.common.cqrs.bus.SimpleQueryBus;
+import br.com.muxe.core.common.language.domain.LanguageLookup;
+import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.permission.domain.PermissionNode;
 import br.com.muxe.core.common.testing.TestNetwork;
 import java.lang.reflect.Proxy;
@@ -110,6 +112,26 @@ class ProfileMenuTest {
 
         assertThat(medals.icon().name()).isEqualTo("§aMedalhas");
         assertThat(calls).containsExactly("close", "/medalha");
+    }
+
+    @Test
+    void theStatisticsButtonOpensTheStatisticsWithAWayBackToTheProfile() {
+        List<String> calls = new ArrayList<>();
+        Player player = (Player) Proxy.newProxyInstance(Player.class.getClassLoader(), new Class<?>[] {Player.class}, (proxy, method, args) -> {
+            if (method.getName().equals("getName")) {
+                return "tadeu";
+            }
+            return method.getReturnType() == boolean.class ? true : null;
+        });
+        ProfileMenu linked = new ProfileMenu(Localized.same(settings), LanguageLookup.DEFAULT, MenuFixtures.actions(network, MenuFixtures.servers()),
+            new SimpleQueryBus(Runnable::run, List.of()), ranks, Runnable::run, Logger.getLogger("test"),
+            Optional.of((viewer, back) -> calls.add("statistics of " + viewer.getName() + (back == null ? "" : " with back"))));
+
+        MenuButton statistics = linked.menu(head(Optional.empty())).button(30).orElseThrow();
+        statistics.click().click(new ClickContext(player, ClickType.LEFT, 30, null));
+
+        assertThat(statistics.icon().name()).isEqualTo("§aVer estatísticas");
+        assertThat(calls).containsExactly("statistics of tadeu with back");
     }
 
     private ProfileHead head(Optional<Instant> firstSeenAt) {

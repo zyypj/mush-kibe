@@ -1,8 +1,8 @@
 package br.com.muxe.minigame.bedwars.lobby;
 
 import br.com.muxe.core.bukkit.credit.CreditFormat;
-import br.com.muxe.minigame.bedwars.game.Levels;
-import br.com.muxe.minigame.bedwars.lobby.format.LevelBadges;
+import br.com.muxe.core.bukkit.stats.LevelBadges;
+import br.com.muxe.core.common.stats.domain.BedWarsLevels;
 import br.com.muxe.minigame.bedwars.lobby.format.XpBar;
 import br.com.muxe.minigame.bedwars.stats.domain.StatCounters;
 import java.util.List;
@@ -24,7 +24,7 @@ public final class LobbyLines {
     }
 
     public static List<String> stats(List<String> lines, StatCounters general, LevelBadges badges, int segments) {
-        Levels.Progress progress = Levels.progress(Math.max(0, general.xp()));
+        BedWarsLevels.Progress progress = BedWarsLevels.progress(Math.max(0, general.xp()));
         return lines.stream().map(line -> counters(line, general)
             .replace("{level}", badges.of(progress.level()))
             .replace("{bar}", XpBar.of(progress, segments))).toList();

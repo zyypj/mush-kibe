@@ -13,6 +13,7 @@ import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.core.common.language.domain.Text;
+import br.com.muxe.core.common.stats.domain.BedWarsLevels;
 import br.com.muxe.minigame.api.cosmetic.message.KillAnnouncer;
 import br.com.muxe.minigame.api.cosmetic.message.LifetimeTally;
 import br.com.muxe.minigame.api.match.Match;
@@ -37,7 +38,6 @@ import br.com.muxe.minigame.bedwars.game.CompactTower;
 import br.com.muxe.minigame.bedwars.game.Cooldowns;
 import br.com.muxe.minigame.bedwars.game.ForgeHeights;
 import br.com.muxe.minigame.bedwars.game.ForgeLayout;
-import br.com.muxe.minigame.bedwars.game.Levels;
 import br.com.muxe.minigame.bedwars.game.RandomItems;
 import br.com.muxe.minigame.bedwars.game.Slingshot;
 import br.com.muxe.minigame.bedwars.level.LevelBar;
@@ -698,7 +698,7 @@ public final class BedWarsMatch implements MatchState {
     public int chatLevel(UUID id) {
         long stored = storedXp.getOrDefault(id, 0L);
         long earned = match.player(id).map(Participant::xp).orElse(0L);
-        return Levels.progress(Math.max(0, stored + earned)).level();
+        return BedWarsLevels.progress(Math.max(0, stored + earned)).level();
     }
 
     public ResourcePool resources(Player player, boolean teamDiamonds) {

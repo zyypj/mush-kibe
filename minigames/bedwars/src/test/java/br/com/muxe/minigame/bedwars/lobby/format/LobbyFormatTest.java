@@ -2,7 +2,8 @@ package br.com.muxe.minigame.bedwars.lobby.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import br.com.muxe.minigame.bedwars.game.Levels;
+import br.com.muxe.core.bukkit.stats.LevelBadges;
+import br.com.muxe.core.common.stats.domain.BedWarsLevels;
 import br.com.muxe.minigame.bedwars.room.RoomFixtures;
 import org.junit.jupiter.api.Test;
 
@@ -29,8 +30,8 @@ class LobbyFormatTest {
 
     @Test
     void theXpBarShowsTheProgressOfTheCurrentLevel() {
-        assertThat(XpBar.of(Levels.progress(0), 10)).isEqualTo("&f[&a&7\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae&f] &7(0/5k)");
-        assertThat(XpBar.of(new Levels.Progress(126, 31_800, 60_000), 12)).isEqualTo("&f[&a\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae&7\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae&f] &7(31.8k/60k)");
+        assertThat(XpBar.of(BedWarsLevels.progress(0), 10)).isEqualTo("&f[&a&7\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae&f] &7(0/5k)");
+        assertThat(XpBar.of(new BedWarsLevels.Progress(126, 31_800, 60_000), 12)).isEqualTo("&f[&a\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae&7\u25ae\u25ae\u25ae\u25ae\u25ae\u25ae&f] &7(31.8k/60k)");
     }
 
     @Test

@@ -12,6 +12,7 @@ import br.com.muxe.core.bukkit.permission.display.NameTags;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledGames;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledPlay;
 import br.com.muxe.core.bukkit.scoreboard.SidebarOverrides;
+import br.com.muxe.core.bukkit.stats.StatsMenus;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.cqrs.command.CommandBus;
 import br.com.muxe.core.common.cqrs.query.QueryBus;
@@ -95,4 +96,6 @@ public interface MuxeCore {
     ScheduledGames scheduledGames();
 
     ScheduledPlay scheduledPlay();
+
+    StatsMenus statistics();
 }

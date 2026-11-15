@@ -1,8 +1,8 @@
 package br.com.muxe.minigame.bedwars.lobby;
 
+import br.com.muxe.core.bukkit.stats.LevelBadges;
 import br.com.muxe.core.bukkit.text.Colors;
-import br.com.muxe.minigame.bedwars.game.Levels;
-import br.com.muxe.minigame.bedwars.lobby.format.LevelBadges;
+import br.com.muxe.core.common.stats.domain.BedWarsLevels;
 import br.com.muxe.minigame.bedwars.preferences.PlayerPreferences;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -27,7 +27,7 @@ public final class LevelChat implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onChat(AsyncPlayerChatEvent event) {
-        int level = Levels.progress(Math.max(0, stats.of(event.getPlayer().getUniqueId()).general().xp())).level();
+        int level = BedWarsLevels.progress(Math.max(0, stats.of(event.getPlayer().getUniqueId()).general().xp())).level();
         String badge = badge(badges, level, preferences.of(event.getPlayer().getUniqueId()).showLevel());
         event.setFormat(Colors.translate(badge) + " " + event.getFormat());
     }

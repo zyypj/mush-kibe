@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.scoreboard.SidebarContent;
+import br.com.muxe.core.bukkit.stats.LevelBadges;
 import br.com.muxe.core.common.language.domain.Language;
 import br.com.muxe.core.common.language.domain.Localized;
 import br.com.muxe.minigame.bedwars.BedWarsPlugin;
-import br.com.muxe.minigame.bedwars.lobby.format.LevelBadges;
 import br.com.muxe.minigame.bedwars.lobby.settings.LobbyNpc;
 import br.com.muxe.minigame.bedwars.lobby.settings.LobbyScoreboardSettings;
 import br.com.muxe.minigame.bedwars.lobby.settings.StatsNpcSettings;

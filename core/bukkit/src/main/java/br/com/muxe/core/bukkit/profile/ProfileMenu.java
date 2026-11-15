@@ -14,11 +14,15 @@ import br.com.muxe.core.common.language.domain.Localized;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.entity.Player;
 
 public final class ProfileMenu {
+
+    public static final String STATISTICS = "statistics";
 
     private final Localized<ProfileSettings> settings;
     private final LanguageLookup languages;
@@ -27,6 +31,7 @@ public final class ProfileMenu {
     private final PlayerRanks ranks;
     private final Executor mainThread;
     private final Logger logger;
+    private final Optional<BiConsumer<Player, Consumer<Player>>> statistics;
 
     public ProfileMenu(ProfileSettings settings, ButtonActions actions, QueryBus queries, PlayerRanks ranks, Executor mainThread, Logger logger) {
         this(Localized.same(settings), LanguageLookup.DEFAULT, actions, queries, ranks, mainThread, logger);
@@ -34,6 +39,12 @@ public final class ProfileMenu {
 
     public ProfileMenu(Localized<ProfileSettings> settings, LanguageLookup languages, ButtonActions actions, QueryBus queries, PlayerRanks ranks, Executor mainThread,
                        Logger logger) {
+        this(settings, languages, actions, queries, ranks, mainThread, logger, Optional.empty());
+    }
+
+    public ProfileMenu(Localized<ProfileSettings> settings, LanguageLookup languages, ButtonActions actions, QueryBus queries, PlayerRanks ranks, Executor mainThread,
+                       Logger logger, Optional<BiConsumer<Player, Consumer<Player>>> statistics) {
+        this.statistics = statistics;
         this.settings = settings;
         this.languages = languages;
         this.actions = actions;
@@ -77,7 +88,11 @@ public final class ProfileMenu {
         }
         builder.button(head.slot(), icon, context -> actions.run(context, head));
         for (ConfiguredButton button : settings.buttons()) {
-            builder.button(button.slot(), button.item(), context -> actions.run(context, button));
+            if (button.id().equals(STATISTICS) && statistics.isPresent()) {
+                builder.button(button.slot(), button.item(), context -> statistics.get().accept(context.player(), this::open));
+            } else {
+                builder.button(button.slot(), button.item(), context -> actions.run(context, button));
+            }
         }
         return builder.build();
     }

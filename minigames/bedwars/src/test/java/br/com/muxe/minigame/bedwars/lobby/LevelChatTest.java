@@ -2,7 +2,7 @@ package br.com.muxe.minigame.bedwars.lobby;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import br.com.muxe.minigame.bedwars.lobby.format.LevelBadges;
+import br.com.muxe.core.bukkit.stats.LevelBadges;
 import br.com.muxe.minigame.bedwars.room.RoomFixtures;
 import org.junit.jupiter.api.Test;
 

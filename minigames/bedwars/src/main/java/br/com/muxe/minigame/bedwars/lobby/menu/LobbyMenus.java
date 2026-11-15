@@ -4,17 +4,17 @@ import br.com.muxe.core.bukkit.api.MuxeCore;
 import br.com.muxe.core.bukkit.item.ItemBuilder;
 import br.com.muxe.core.bukkit.menu.Menu;
 import br.com.muxe.core.bukkit.prompt.ChatPrompts;
+import br.com.muxe.core.bukkit.stats.LevelBadges;
 import br.com.muxe.core.bukkit.text.MessageCatalog;
 import br.com.muxe.core.common.language.domain.Language;
 import br.com.muxe.core.common.language.domain.Localized;
+import br.com.muxe.core.common.stats.domain.BedWarsLevels;
 import br.com.muxe.minigame.api.arena.ArenaSchema;
 import br.com.muxe.minigame.api.cosmetic.menu.MenuSlot;
 import br.com.muxe.minigame.api.matchmaking.MatchConnector;
 import br.com.muxe.minigame.api.matchmaking.RoomDirectory;
 import br.com.muxe.minigame.api.network.ArenaInfo;
-import br.com.muxe.minigame.bedwars.game.Levels;
 import br.com.muxe.minigame.bedwars.lobby.LobbyLines;
-import br.com.muxe.minigame.bedwars.lobby.format.LevelBadges;
 import br.com.muxe.minigame.bedwars.lobby.top.TagColors;
 import br.com.muxe.minigame.bedwars.lobby.top.TopData;
 import br.com.muxe.minigame.bedwars.stats.application.command.ToggleFavouriteMapCommand;
@@ -217,7 +217,7 @@ public final class LobbyMenus {
     private void showStats(Player player, PlayerStats stats) {
         LobbyMenuSettings.Stats menu = settings.in(messages.language(player)).stats();
         Menu.Builder builder = Menu.builder(menu.title()).rows(menu.rows());
-        Levels.Progress progress = Levels.progress(Math.max(0, stats.general().xp()));
+        BedWarsLevels.Progress progress = BedWarsLevels.progress(Math.max(0, stats.general().xp()));
         ItemBuilder general = menu.general().item();
         builder.button(menu.general().slot(), general.lore(general.lore().stream()
             .map(line -> LobbyLines.counters(line, stats.general()).replace("{level}", badges.of(progress.level()))).toList()));

@@ -456,6 +456,304 @@ menus:
             - "&7Leve as estatísticas para outra conta."
             - " "
             - "&eClique para ver mais."
+  statistics:
+    title: "Suas estatísticas"
+    title-other: "Estatísticas de {name}"
+    rows: 4
+    back:
+      slot: 31
+      item:
+        material: ARROW
+        name: "&aVoltar"
+        lore:
+          - "&7Para Meu perfil"
+    games:
+      "hg":
+        slot: 10
+        opens: nothing
+        item:
+          material: MUSHROOM_SOUP
+          name: "&aHG"
+          lore:
+            - "&7Vitórias Totais: &a0"
+            - "&7Kills Totais: &a0"
+            - "&7Mortes Totais: &a0"
+            - "&7Assists Totais: &a0"
+            - " "
+            - "&7Vitórias Minimuxe: &a0"
+            - "&7Kills Minimuxe: &a0"
+            - "&7Mortes Minimuxe: &a0"
+            - " "
+            - "&7Coins: &60"
+      "duels":
+        slot: 11
+        opens: soon
+        item:
+          material: DIAMOND_SWORD
+          name: "&aDuels"
+          lore:
+            - "&eClique para ver mais."
+      "pvp":
+        slot: 12
+        opens: nothing
+        item:
+          material: IRON_CHESTPLATE
+          name: "&aPvP"
+          lore:
+            - "&7Arena: Kills: &a0"
+            - "&7Arena: Mortes: &a0"
+            - "&7Arena: Maior Killstreak: &a0"
+            - " "
+            - "&7FPS: Kills: &a0"
+            - "&7FPS: Mortes: &a0"
+            - "&7FPS: Maior Killstreak: &a0"
+      "skywars":
+        slot: 13
+        opens: soon
+        item:
+          material: EYE_OF_ENDER
+          name: "&aSky Wars"
+          lore:
+            - "&eClique para ver mais."
+      "bedwars":
+        slot: 14
+        opens: bedwars
+        item:
+          material: BED
+          name: "&aBed Wars"
+          lore:
+            - "&eClique para ver mais."
+      "quick-builders":
+        slot: 15
+        opens: nothing
+        item:
+          material: DIAMOND_PICKAXE
+          name: "&aQuick Builders"
+          lore:
+            - "&7Nível: &7[0&l✫&7]"
+            - " "
+            - "&7Partidas: &a0"
+            - "&7Vitórias: &a0"
+            - "&7Derrotas: &a0"
+            - "&7% de Vitória: &a0%"
+            - " "
+            - "&7Construções: &a0"
+            - "&7Construções perfeitas: &a0"
+            - "&7% de Perfeição: &a0%"
+            - " "
+            - "&7Winstreak: &a0"
+            - "&7Maior Winstreak: &a0"
+            - " "
+            - "&7Perfect Streak: &a0"
+            - "&7Maior Perfect Streak: &a0"
+      "ctf":
+        slot: 16
+        opens: nothing
+        item:
+          material: WOOL
+          data: 11
+          name: "&aCTF"
+          lore:
+            - "&7Kills: &a0"
+            - "&7Capturas: &a0"
+            - "&7Retornos: &a0"
+            - "&7Partidas: &a0"
+      "murder":
+        slot: 19
+        opens: nothing
+        item:
+          material: REDSTONE
+          name: "&aMurder"
+          lore:
+            - "&7Partidas: &a0"
+            - " "
+            - "&7Vitórias: &a0"
+            - "&7Derrotas: &a0"
+            - " "
+            - "&7Kills: &a0"
+            - "&7Casos resolvidos: &a0"
+            - "&7Mortes: &a0"
+            - " "
+            - "&7Esmeraldas coletadas: &a0"
+      "build-battle":
+        slot: 20
+        opens: nothing
+        item:
+          material: WORKBENCH
+          name: "&aBuild Battle"
+          lore:
+            - "&7Nível: &7[0&l✫&7]"
+            - " "
+            - "&7Partidas: &a0"
+            - " "
+            - "&7Vitórias: &a0"
+            - "&7Derrotas: &a0"
+            - " "
+            - "&7Winstreak: &a0"
+            - "&7Maior Winstreak: &a0"
+            - " "
+            - "&7Perfeitos: &a0"
+            - "&7Pontos: &a0"
+      "hide-and-seek":
+        slot: 21
+        opens: nothing
+        item:
+          material: MELON_BLOCK
+          name: "&aHide and Seek"
+          lore:
+            - "&7Partidas: &a0"
+            - " "
+            - "&7Winstreak: &a0"
+            - "&7Maior Winstreak: &a0"
+            - " "
+            - "&7Vitórias: &a0"
+            - "&7Derrotas: &a0"
+            - "&7Mortes: &a0"
+            - " "
+            - "&7Trocas de blocos: &a0"
+            - "&7Vezes congelado: &a0"
+            - "&7Caçadores atordoados: &a0"
+            - " "
+            - "&7Blocos abatidos: &a0"
+            - "&7Blocos detectados: &a0"
+    bedwars:
+      title: "Suas estatísticas (Bed Wars)"
+      title-other: "Estatísticas de {name} (Bed Wars)"
+      rows: 6
+      back:
+        slot: 49
+        item:
+          material: ARROW
+          name: "&aVoltar"
+          lore:
+            - "&7Para {parent}"
+      general:
+        slot: 4
+        item:
+          material: PAPER
+          name: "&aGeral"
+          lore:
+            - "&7Nível: {level}"
+            - "&7XP: &a{xp}"
+            - " "
+            - "&7Partidas: &a{games}"
+            - " "
+            - "&7Camas quebradas: &a{beds-broken}"
+            - "&7Camas perdidas: &a{beds-lost}"
+            - " "
+            - "&7Kills: &a{kills}"
+            - "&7Mortes: &a{deaths}"
+            - "&7Assistências: &a{assists}"
+            - "&7Kills finais: &a{final-kills}"
+            - "&7Mortes finais: &a{final-deaths}"
+            - "&7Assistências finais: &a{final-assists}"
+            - " "
+            - "&7Vitórias: &a{wins}"
+            - "&7Derrotas: &a{losses}"
+            - " "
+            - "&7Winstreak: &a{winstreak}"
+            - "&7Maior Winstreak: &a{best-winstreak}"
+      lore:
+        - "&7Partidas: &a{games}"
+        - " "
+        - "&7Camas quebradas: &a{beds-broken}"
+        - "&7Camas perdidas: &a{beds-lost}"
+        - " "
+        - "&7Kills: &a{kills}"
+        - "&7Mortes: &a{deaths}"
+        - "&7Assistências: &a{assists}"
+        - "&7Kills finais: &a{final-kills}"
+        - "&7Mortes finais: &a{final-deaths}"
+        - "&7Assistências finais: &a{final-assists}"
+        - " "
+        - "&7Vitórias: &a{wins}"
+        - "&7Derrotas: &a{losses}"
+        - " "
+        - "&7Winstreak: &a{winstreak}"
+        - "&7Maior Winstreak: &a{best-winstreak}"
+      modes:
+        "solo":
+          slot: 10
+          item:
+            material: BED
+            name: "&aSolo"
+        "duplas":
+          slot: 12
+          item:
+            material: BED
+            amount: 2
+            name: "&aDuplas"
+        "trios":
+          slot: 14
+          item:
+            material: BED
+            amount: 3
+            name: "&aTrios"
+        "quartetos":
+          slot: 16
+          item:
+            material: BED
+            amount: 4
+            name: "&aQuartetos"
+        "1v1":
+          slot: 28
+          item:
+            material: BED
+            name: "&a1v1"
+        "2v2":
+          slot: 30
+          item:
+            material: BED
+            amount: 2
+            name: "&a2v2"
+        "3v3":
+          slot: 32
+          item:
+            material: BED
+            amount: 3
+            name: "&a3v3"
+        "4v4":
+          slot: 34
+          item:
+            material: BED
+            amount: 4
+            name: "&a4v4"
+        "mega":
+          slot: 40
+          item:
+            material: BED
+            amount: 64
+            name: "&aMega"
+      level-badges:
+        badges:
+          "0": "&7[{level}&l✫&7]"
+          "10": "&a[{level}&l✶&a]"
+          "20": "&b[{level}&l✽&b]"
+          "30": "&d[{level}&l✿&d]"
+          "40": "&e[{level}&l✸&e]"
+          "50": "&6[{level}&l✹&6]"
+          "60": "&5[{level}&l✣&5]"
+          "70": "&2[{level}&l✦&2]"
+          "80": "&9[{level}&l✵&9]"
+          "90": "&c[{level}&l❊&c]"
+          "100": "&4[{level}&l❤&4]"
+          "200": "&e[&6{level}✪&e]"
+          "300": "&b[&3{level}❂&b]"
+          "400": "&d[&5{level}❁&d]"
+          "500": "&7[&f{level}❋&7]"
+          "600": "&1[&9{level}✟&1]"
+          "700": "&2[&a{level}&l۞&2]"
+          "800": "&6[&e{level}&l✌&6]"
+          "900": "&4[&c{level}&l⚝&4]"
+        rainbow:
+          from: 1000
+          open: "&c["
+          digits:
+            - "&6"
+            - "&e"
+            - "&a"
+            - "&b"
+          close: "&dΩ&5]"
   profile:
     title: "Meu perfil"
     rows: 6
@@ -2528,6 +2826,8 @@ messages:
   credits-taken: "&aVocê removeu &d{amount} créditos &ade &f{player}&a. Saldo: &d{balance}&a."
   credits-not-enough: "&f{player} &cnão tem créditos suficientes."
   credits-invalid-amount: "&cA quantia deve ser de 1 a {max}."
+  statistics-soon: "&cEm breve."
+  statistics-not-found: "&cO jogador &f{player} &cnunca entrou no servidor."
   account:
     usage: "&cUso: &f/account <jogador>"
     not-found: "&cO jogador &f{player} &cnunca entrou no servidor."

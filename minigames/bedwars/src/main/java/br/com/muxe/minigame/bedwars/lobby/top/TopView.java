@@ -1,8 +1,8 @@
 package br.com.muxe.minigame.bedwars.lobby.top;
 
 import br.com.muxe.core.bukkit.credit.CreditFormat;
-import br.com.muxe.minigame.bedwars.game.Levels;
-import br.com.muxe.minigame.bedwars.lobby.format.LevelBadges;
+import br.com.muxe.core.bukkit.stats.LevelBadges;
+import br.com.muxe.core.common.stats.domain.BedWarsLevels;
 import br.com.muxe.minigame.bedwars.stats.domain.PlayerStats;
 import br.com.muxe.minigame.bedwars.stats.domain.StatsPeriod;
 import br.com.muxe.minigame.bedwars.stats.domain.TopCategory;
@@ -49,7 +49,7 @@ public final class TopView {
             return CreditFormat.format(entry.value());
         }
         if (period(board, state) == StatsPeriod.TOTAL) {
-            return badges.of(Levels.progress(Math.max(0, entry.totalXp())).level());
+            return badges.of(BedWarsLevels.progress(Math.max(0, entry.totalXp())).level());
         }
         return texts.xpValue().replace("{xp}", CreditFormat.format(entry.value()));
     }

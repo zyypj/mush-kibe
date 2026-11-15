@@ -1,12 +1,12 @@
-package br.com.muxe.minigame.bedwars.game;
+package br.com.muxe.core.common.stats.domain;
 
-public final class Levels {
+public final class BedWarsLevels {
 
     public static final long BASE = 5_000;
     public static final int LEVELS_PER_STEP = 10;
     public static final int FIRST_LEVEL = 1;
 
-    private Levels() {
+    private BedWarsLevels() {
     }
 
     public static long costOf(int targetLevel) {

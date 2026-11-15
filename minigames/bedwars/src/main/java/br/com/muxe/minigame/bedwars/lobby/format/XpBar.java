@@ -1,6 +1,7 @@
 package br.com.muxe.minigame.bedwars.lobby.format;
 
-import br.com.muxe.minigame.bedwars.game.Levels;
+import br.com.muxe.core.common.stats.domain.BedWarsLevels;
+
 
 public final class XpBar {
 
@@ -9,7 +10,7 @@ public final class XpBar {
     private XpBar() {
     }
 
-    public static String of(Levels.Progress progress, int segments) {
+    public static String of(BedWarsLevels.Progress progress, int segments) {
         int filled = progress.needed() <= 0 ? segments : (int) Math.min(segments, progress.xp() * segments / progress.needed());
         return "&f[&a" + SEGMENT.repeat(filled) + "&7" + SEGMENT.repeat(segments - filled) + "&f] &7(" + compact(progress.xp()) + "/" + compact(progress.needed()) + ")";
     }

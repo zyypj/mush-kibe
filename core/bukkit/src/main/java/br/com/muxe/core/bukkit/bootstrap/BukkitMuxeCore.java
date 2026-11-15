@@ -5,6 +5,7 @@ import br.com.muxe.core.bukkit.buildmode.BuildMode;
 import br.com.muxe.core.bukkit.combat.knockback.KnockbackService;
 import br.com.muxe.core.bukkit.customroom.CustomRoomKit;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledGames;
+import br.com.muxe.core.bukkit.stats.StatsMenus;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledPlay;
 import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.language.PlayerLanguages;
@@ -44,6 +45,7 @@ final class BukkitMuxeCore implements MuxeCore {
     private final KnockbackService knockback;
     private CustomRoomKit customRooms;
     private ScheduledGames scheduledGames;
+    private StatsMenus statistics;
     private ScheduledPlay scheduledPlay;
     private final NameTags nameTags = new NameTags();
     private final SidebarOverrides sidebars = new SidebarOverrides();
@@ -99,6 +101,15 @@ final class BukkitMuxeCore implements MuxeCore {
     @Override
     public ScheduledPlay scheduledPlay() {
         return scheduledPlay;
+    }
+
+    @Override
+    public StatsMenus statistics() {
+        return statistics;
+    }
+
+    void statistics(StatsMenus menus) {
+        this.statistics = menus;
     }
 
     void scheduledGames(ScheduledGames games, ScheduledPlay play) {
