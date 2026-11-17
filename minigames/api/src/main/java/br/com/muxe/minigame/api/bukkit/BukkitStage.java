@@ -45,6 +45,8 @@ import org.bukkit.util.Vector;
 
 public final class BukkitStage implements Stage {
 
+    public static final String PREGAME_FLY = "muxe.pregame.fly";
+
     public static final GameMode PLAYER_MODE = GameMode.SURVIVAL;
     public static final GameMode SPECTATOR_MODE = GameMode.ADVENTURE;
 
@@ -164,6 +166,11 @@ public final class BukkitStage implements Stage {
     @Override
     public void waitingItems(UUID id, List<HotbarItem> items) {
         online(id).ifPresent(player -> items.forEach(item -> player.getInventory().setItem(item.slot(), named(item))));
+    }
+
+    @Override
+    public void waitingFlight(UUID id) {
+        online(id).filter(player -> player.hasPermission(PREGAME_FLY)).ifPresent(player -> player.setAllowFlight(true));
     }
 
     @Override

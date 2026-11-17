@@ -9,7 +9,7 @@ import br.com.muxe.core.common.permission.domain.Tag;
 import java.util.Objects;
 import java.util.Optional;
 
-public record RankDisplay(Optional<Tag> tag, Optional<Medal> medal) {
+public record RankDisplay(Optional<Tag> tag, Optional<Medal> medal, String emblem) {
 
     public static final String DEFAULT_COLOR = "&7";
     public static final String DEFAULT_TAG = "&7Membro";
@@ -18,6 +18,11 @@ public record RankDisplay(Optional<Tag> tag, Optional<Medal> medal) {
     public RankDisplay {
         Objects.requireNonNull(tag, "tag");
         Objects.requireNonNull(medal, "medal");
+        Objects.requireNonNull(emblem, "emblem");
+    }
+
+    public RankDisplay(Optional<Tag> tag, Optional<Medal> medal) {
+        this(tag, medal, "");
     }
 
     public RankDisplay(Optional<Tag> tag) {
@@ -37,7 +42,15 @@ public record RankDisplay(Optional<Tag> tag, Optional<Medal> medal) {
     }
 
     public RankDisplay withMedal(Optional<Medal> chosen) {
-        return new RankDisplay(tag, chosen);
+        return new RankDisplay(tag, chosen, emblem);
+    }
+
+    public RankDisplay withTag(Optional<Tag> chosen) {
+        return new RankDisplay(chosen, medal, emblem);
+    }
+
+    public RankDisplay withEmblem(String chosen) {
+        return new RankDisplay(tag, medal, chosen);
     }
 
     public String medalPrefix() {
@@ -66,13 +79,13 @@ public record RankDisplay(Optional<Tag> tag, Optional<Medal> medal) {
 
     public String chatFormat(String template) {
         return Colors.translate(escape(fill(template)))
-            .replace("{player}", "%1$s")
+            .replace("{player}", "%1$s" + Colors.translate(escape(emblem)))
             .replace("{message}", "%2$s");
     }
 
     public String preview(String template, String player, String message) {
         return fill(template)
-            .replace("{player}", player)
+            .replace("{player}", player + emblem)
             .replace("{message}", message);
     }
 

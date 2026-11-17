@@ -2,7 +2,8 @@ package br.com.muxe.core.bukkit.profile;
 
 import br.com.muxe.core.bukkit.menu.button.ConfiguredButton;
 import br.com.muxe.core.common.permission.domain.HeldRank;
-import br.com.muxe.core.common.permission.domain.RemainingTime;
+import br.com.muxe.core.bukkit.text.DurationWords;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +22,9 @@ public record ProfileSettings(
     String unknownFirstLogin,
     long credits,
     String rankLine,
-    String permanentRank
+    String permanentRank,
+    String expiresLine,
+    DurationWords words
 ) {
 
     public ProfileSettings {
@@ -31,6 +34,8 @@ public record ProfileSettings(
         Objects.requireNonNull(unknownFirstLogin, "unknownFirstLogin");
         Objects.requireNonNull(rankLine, "rankLine");
         Objects.requireNonNull(permanentRank, "permanentRank");
+        Objects.requireNonNull(expiresLine, "expiresLine");
+        Objects.requireNonNull(words, "words");
         buttons = List.copyOf(buttons);
         List<ConfiguredButton> all = new ArrayList<>(buttons);
         all.add(head);
@@ -49,7 +54,9 @@ public record ProfileSettings(
             section.getString("first-login.unknown", "-"),
             section.getLong("default-credits", 0),
             section.getString("ranks.line", "&7Rank: {rank} &7({time})"),
-            section.getString("ranks.permanent", "Vitalício")
+            section.getString("ranks.permanent", "Vitalício"),
+            section.getString("ranks.expires", " &7Acaba em: {remaining}"),
+            DurationWords.from(section.getRoot())
         );
     }
 
@@ -58,10 +65,13 @@ public record ProfileSettings(
     }
 
     public List<String> rankLines(List<HeldRank> ranks, Instant now) {
-        return ranks.stream()
-            .map(rank -> rankLine
-                .replace("{rank}", rank.display())
-                .replace("{time}", rank.remaining(now).map(RemainingTime::format).orElse(permanentRank)))
-            .toList();
+        List<String> lines = new ArrayList<>();
+        for (HeldRank rank : ranks) {
+            Optional<Duration> remaining = rank.remaining(now);
+            String time = rank.node().expiresAt().map(end -> words.largest(Duration.between(rank.node().addedAt(), end))).orElse(permanentRank);
+            lines.add(rankLine.replace("{rank}", rank.display()).replace("{time}", time));
+            remaining.ifPresent(left -> lines.add(expiresLine.replace("{remaining}", words.full(left))));
+        }
+        return lines;
     }
 }

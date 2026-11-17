@@ -46,7 +46,7 @@ On a server whose kind is in `hotbar.server-kinds` (only `LOBBY` by default; aut
 ### Profile
 
 - Title `Meu perfil`, 6 rows. Opened by the head.
-- The head at the top (slot 13) shows the player's skin, the name with the tag they display and the lore, with one `Rank` line per rank given to the player (lowest first, `Vitalício` or the time left):
+- The head at the top (slot 13) shows the player's skin, the name with the tag they display and the lore, with one `Rank` line per rank given to the player (lowest first, `Vitalício` or the time it was given for), and, under a timed rank, an `Acaba em` line with the time left spelled out:
 
 ```text
 NATAL tadeu
@@ -54,14 +54,15 @@ NATAL tadeu
 Primeiro login: 10/09/2021 16:29
 Créditos: 0
 Rank: VIP (Vitalício)
-Rank: Ultra (29d 23h)
+Rank: Ultra (30 dias)
+ Acaba em: 21 dias 21 horas 54 minutos 3 segundos
 ```
 
 - The name is `&c&lNATAL &ctadeu`: the prefix and color of the displayed tag, as in the chat. The rank lines are `&7Rank: &aVIP &7(Vitalício)`. See [Ranks and tags](../ranks-and-tags/README.md).
 
 - The first login comes from the player's [account](../accounts/README.md) and is formatted with `first-login.format` in `first-login.time-zone`. When the account cannot be read, `first-login.unknown` (`-`) is shown.
 - Credits show `default-credits` until a wallet exists.
-- Buttons: `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin`, `Nick (/nick)` and `Menu do Ultra+`. `Nick` opens the shop on the Ultra+ category; `Medalhas` closes the menu and runs `/medalha`, which sends the [medal list](../ranks-and-tags/README.md#medalha) in the chat; `Ver estatísticas` opens the [statistics](../statistics/README.md) and `Preferências` the [preferences](../preferences/README.md), both with `Voltar` back to the profile; the others do nothing yet, because their menus do not exist.
+- Buttons: `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin`, `Nick (/nick)`, `Emblemas` (slot 40) and `Menu do Ultra+`. `Nick` opens the shop on the Ultra+ category; `Medalhas` closes the menu and runs `/medalha`, which sends the [medal list](../ranks-and-tags/README.md#medalha) in the chat; `Ver estatísticas` opens the [statistics](../statistics/README.md), `Preferências` the [preferences](../preferences/README.md), and `Emblemas` and `Menu do Ultra+` the [Ultra+ menus](../ultra-plus/README.md), all with `Voltar` back to the profile; the others do nothing yet, because their menus do not exist.
 
 ### Lobby selector
 
@@ -136,8 +137,9 @@ Slots in `menus` are inventory slots, from 0 (top left) to 53, like in the shop.
 | `menus.game-selector.buttons.<id>` | 14 games and `custom-room` | `slot`, `item` and, optionally, `game` (a server group) or `shop` (a shop category id; empty for the default one). Placeholder: `{players}`. |
 | `menus.profile.title`, `rows` | `Meu perfil`, `6` | Profile title and height. |
 | `menus.profile.head` | Slot `13`, the player's head named `{name}` | `slot` and `item` of the head. Placeholders: `{player}` (plain name), `{name}` (name with the tag prefix and color), `{first-login}`, `{credits}`. |
-| `menus.profile.ranks.line`, `ranks.permanent` | `&7Rank: {rank} &7({time})`, `Vitalício` | Lore line added for each rank (`{rank}` is the rank tag, such as `&aVIP`; `{time}` is the time left or `ranks.permanent`). |
-| `menus.profile.buttons.<id>` | The 7 profile buttons | Same keys as the game selector buttons, plus `command` (a command the player runs after the menu closes; `medalha` on `medals`). |
+| `menus.profile.ranks.line`, `ranks.permanent`, `ranks.expires` | `&7Rank: {rank} &7({time})`, `Vitalício`, ` &7Acaba em: {remaining}` | Lore line added for each rank (`{rank}` is the rank tag, such as `&aVIP`; `{time}` is the time the rank was given for, in its largest unit, or `ranks.permanent`) and, for a timed rank, the line with the time left (`{remaining}`). |
+| `time-units` | `dia`/`dias`, `hora`/`horas`, `minuto`/`minutos`, `segundo`/`segundos` | Words used to spell times out (`day`, `days`, `hour`, `hours`, `minute`, `minutes`, `second`, `seconds`). |
+| `menus.profile.buttons.<id>` | The 8 profile buttons | Same keys as the game selector buttons, plus `command` (a command the player runs after the menu closes; `medalha` on `medals`). |
 | `menus.profile.first-login.format`, `time-zone`, `unknown` | `dd/MM/yyyy HH:mm`, `America/Sao_Paulo`, `-` | How the first login is written, and what is shown when it is unknown. |
 | `menus.profile.default-credits` | `0` | Credits shown until a wallet exists. |
 | `menus.lobby-selector.group` | not set (the server's group) | Group listed in the lobby selector. |
@@ -237,7 +239,7 @@ The profile reads the account with `FindAccountQuery`.
 ## Known limitations
 
 - The cosmetics item does nothing yet.
-- The profile buttons `Amigos`, `Sua skin` and `Menu do Ultra+` do nothing yet.
+- The profile buttons `Amigos` and `Sua skin` do nothing yet.
 - There is no friend system, so "Only friends" hides everyone.
 - There are no credits yet: the profile shows `default-credits`.
 - `{players}` in the game selector is read when the menu opens and does not refresh while it is open.

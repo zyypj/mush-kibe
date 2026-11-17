@@ -43,6 +43,7 @@ class MatchRuntimeTest {
         assertThat(stage.looks).containsEntry(red, Look.PLAYER);
         assertThat(stage.positions.get(red)).isEqualTo(runtime.match().arena().waitingSpawn());
         assertThat(stage.items.get(red)).extracting("material").containsExactly("CHEST", "BED");
+        assertThat(stage.waitingFlight).containsExactly(red);
         assertThat(stage.messagesOf(red)).containsExactly("red entrou (1/2)");
         assertThat(stage.boards.get(red)).containsExactly("abc123", "Jogadores: 1/2");
         assertThat(runtime.state().calls).containsExactly("arrived");

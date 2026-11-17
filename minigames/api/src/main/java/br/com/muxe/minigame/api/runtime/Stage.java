@@ -50,6 +50,9 @@ public interface Stage {
 
     void waitingItems(UUID id, List<HotbarItem> items);
 
+    default void waitingFlight(UUID id) {
+    }
+
     void spectatorItems(UUID id, List<HotbarItem> items);
 
     void showBoard(UUID id);

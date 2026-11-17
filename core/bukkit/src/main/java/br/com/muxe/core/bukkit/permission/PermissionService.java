@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +45,7 @@ public final class PermissionService implements PlayerRanks, Listener, Runnable 
     private final Logger logger;
     private final Map<UUID, PermissibleBase> originals = new ConcurrentHashMap<>();
     private final List<Consumer<Player>> listeners = new CopyOnWriteArrayList<>();
+    private volatile BiFunction<UUID, RankDisplay, RankDisplay> style = (player, display) -> display;
 
     private PermissionService(JavaPlugin plugin, PermissionSync sync, String serverGroup, Clock clock) {
         this.server = plugin.getServer();
@@ -95,7 +97,16 @@ public final class PermissionService implements PlayerRanks, Listener, Runnable 
         Optional<PermissionUser> user = cache.user(player);
         Optional<String> tag = user.flatMap(PermissionUser::selectedTag);
         Optional<String> medal = user.flatMap(PermissionUser::selectedMedal);
-        return cache.resolved(player).map(resolved -> RankDisplay.of(sync.data(), resolved, tag, medal)).orElse(RankDisplay.NONE);
+        RankDisplay display = cache.resolved(player).map(resolved -> RankDisplay.of(sync.data(), resolved, tag, medal)).orElse(RankDisplay.NONE);
+        return style.apply(player, display);
+    }
+
+    public void style(BiFunction<UUID, RankDisplay, RankDisplay> chosen) {
+        style = chosen;
+    }
+
+    public void refresh(Player player) {
+        changed(player);
     }
 
     public void onChange(Consumer<Player> listener) {

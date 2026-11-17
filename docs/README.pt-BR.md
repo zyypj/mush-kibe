@@ -43,6 +43,7 @@ Tudo sobre a Muxe está documentado aqui, em inglês e português. As regras de 
 - [Missões](features/missions/README.pt-BR.md): missões diárias e semanais compartilhadas por todos os jogos, completadas na hora, com caminho dos créditos.
 - [Preferências](features/preferences/README.pt-BR.md): o menu `Preferências` do `Meu perfil`: chat, confirmação do `/lobby`, convites e privacidade.
 - [Estatísticas](features/statistics/README.pt-BR.md): as estatísticas de um jogador em todos os jogos, pelo `Meu perfil` ou pelo `/stats`, em qualquer servidor.
+- [Ultra+](features/ultra-plus/README.pt-BR.md): emblemas, o `Menu do Ultra+` com a recompensa mensal e os níveis de tag, a cor do `+`, o voo na sala de espera e o intervalo do chat.
 - [Parkour](features/parkour/README.pt-BR.md): um parkour cronometrado no lobby, com checkpoints, itens para reiniciar ou voltar, e um recorde pessoal por mapa, compartilhado pelo grupo de servidores.
 - [Loja](features/shop/README.pt-BR.md): `/loja`, os menus de compra, as caixas registradoras e a promoção da rede.
 - [SkyWars](features/skywars/README.pt-BR.md): esqueleto do plugin e modos.

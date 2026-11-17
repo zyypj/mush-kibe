@@ -46,7 +46,7 @@ Num servidor cujo tipo está em `hotbar.server-kinds` (só `LOBBY` por padrão; 
 ### Perfil
 
 - Título `Meu perfil`, 6 linhas. Aberto pela cabeça.
-- A cabeça no topo (slot 13) mostra a skin do jogador, o nome com a tag que ele exibe e a lore, com uma linha `Rank` para cada cargo dado ao jogador (do menor para o maior, `Vitalício` ou o tempo que falta):
+- A cabeça no topo (slot 13) mostra a skin do jogador, o nome com a tag que ele exibe e a lore, com uma linha `Rank` para cada cargo dado ao jogador (do menor para o maior, `Vitalício` ou o tempo pelo qual foi dado) e, embaixo de um cargo com tempo, uma linha `Acaba em` com o tempo que falta por extenso:
 
 ```text
 NATAL tadeu
@@ -54,14 +54,15 @@ NATAL tadeu
 Primeiro login: 10/09/2021 16:29
 Créditos: 0
 Rank: VIP (Vitalício)
-Rank: Ultra (29d 23h)
+Rank: Ultra (30 dias)
+ Acaba em: 21 dias 21 horas 54 minutos 3 segundos
 ```
 
 - O nome é `&c&lNATAL &ctadeu`: o prefixo e a cor da tag exibida, como no chat. As linhas de cargo são `&7Rank: &aVIP &7(Vitalício)`. Veja [Cargos e tags](../ranks-and-tags/README.pt-BR.md).
 
 - O primeiro login vem da [conta](../accounts/README.pt-BR.md) do jogador e é formatado com `first-login.format` no fuso `first-login.time-zone`. Quando a conta não pode ser lida, aparece `first-login.unknown` (`-`).
 - Os créditos mostram `default-credits` até existir uma carteira.
-- Botões: `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin`, `Nick (/nick)` e `Menu do Ultra+`. O `Nick` abre a loja na categoria Ultra+; `Medalhas` fecha o menu e roda `/medalha`, que envia a [lista de medalhas](../ranks-and-tags/README.pt-BR.md#medalha) no chat; `Ver estatísticas` abre as [estatísticas](../statistics/README.pt-BR.md) e `Preferências` as [preferências](../preferences/README.pt-BR.md), os dois com `Voltar` de volta ao perfil; os outros ainda não fazem nada, porque os seus menus não existem.
+- Botões: `Amigos`, `Ver estatísticas`, `Preferências`, `Medalhas`, `Sua skin`, `Nick (/nick)`, `Emblemas` (slot 40) e `Menu do Ultra+`. O `Nick` abre a loja na categoria Ultra+; `Medalhas` fecha o menu e roda `/medalha`, que envia a [lista de medalhas](../ranks-and-tags/README.pt-BR.md#medalha) no chat; `Ver estatísticas` abre as [estatísticas](../statistics/README.pt-BR.md), `Preferências` as [preferências](../preferences/README.pt-BR.md), e `Emblemas` e `Menu do Ultra+` os [menus do Ultra+](../ultra-plus/README.pt-BR.md), todos com `Voltar` de volta ao perfil; os outros ainda não fazem nada, porque os seus menus não existem.
 
 ### Seletor de lobby
 
@@ -136,8 +137,9 @@ Os slots em `menus` são slots do inventário, de 0 (canto superior esquerdo) a 
 | `menus.game-selector.buttons.<id>` | 14 jogos e `custom-room` | `slot`, `item` e, opcionalmente, `game` (um grupo de servidores) ou `shop` (o id de uma categoria da loja; vazio para a padrão). Placeholder: `{players}`. |
 | `menus.profile.title`, `rows` | `Meu perfil`, `6` | Título e altura do perfil. |
 | `menus.profile.head` | Slot `13`, a cabeça do jogador com o nome `{name}` | `slot` e `item` da cabeça. Placeholders: `{player}` (nome puro), `{name}` (nome com o prefixo e a cor da tag), `{first-login}`, `{credits}`. |
-| `menus.profile.ranks.line`, `ranks.permanent` | `&7Rank: {rank} &7({time})`, `Vitalício` | Linha da lore adicionada para cada cargo (`{rank}` é a tag do cargo, como `&aVIP`; `{time}` é o tempo que falta ou `ranks.permanent`). |
-| `menus.profile.buttons.<id>` | Os 7 botões do perfil | As mesmas chaves dos botões do seletor de jogo, mais `command` (um comando que o jogador roda depois que o menu fecha; `medalha` em `medals`). |
+| `menus.profile.ranks.line`, `ranks.permanent`, `ranks.expires` | `&7Rank: {rank} &7({time})`, `Vitalício`, ` &7Acaba em: {remaining}` | Linha da lore adicionada para cada cargo (`{rank}` é a tag do cargo, como `&aVIP`; `{time}` é o tempo pelo qual o cargo foi dado, na maior unidade, ou `ranks.permanent`) e, para um cargo com tempo, a linha com o tempo que falta (`{remaining}`). |
+| `time-units` | `dia`/`dias`, `hora`/`horas`, `minuto`/`minutos`, `segundo`/`segundos` | Palavras usadas para escrever tempos por extenso (`day`, `days`, `hour`, `hours`, `minute`, `minutes`, `second`, `seconds`). |
+| `menus.profile.buttons.<id>` | Os 8 botões do perfil | As mesmas chaves dos botões do seletor de jogo, mais `command` (um comando que o jogador roda depois que o menu fecha; `medalha` em `medals`). |
 | `menus.profile.first-login.format`, `time-zone`, `unknown` | `dd/MM/yyyy HH:mm`, `America/Sao_Paulo`, `-` | Como o primeiro login é escrito e o que aparece quando ele é desconhecido. |
 | `menus.profile.default-credits` | `0` | Créditos mostrados até existir uma carteira. |
 | `menus.lobby-selector.group` | não definido (o grupo do servidor) | Grupo listado no seletor de lobby. |
@@ -237,7 +239,7 @@ O perfil lê a conta com `FindAccountQuery`.
 ## Limitações conhecidas
 
 - O item de cosméticos ainda não faz nada.
-- Os botões do perfil `Amigos`, `Sua skin` e `Menu do Ultra+` ainda não fazem nada.
+- Os botões do perfil `Amigos` e `Sua skin` ainda não fazem nada.
 - Não existe sistema de amigos, então "Apenas amigos" esconde todo mundo.
 - Ainda não existem créditos: o perfil mostra `default-credits`.
 - O `{players}` do seletor de jogo é lido quando o menu abre e não é atualizado enquanto ele está aberto.

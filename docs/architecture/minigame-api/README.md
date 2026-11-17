@@ -85,7 +85,7 @@ server.listen(new SkyWarsHandlers());
 
 | When | What the API does | Hooks |
 |---|---|---|
-| A player joins | Resets them to survival, says `room-joined` to the room, teleports them to the waiting spawn, gives the waiting hotbar, the scoreboard and the knockback profile of the mode (dropped when they leave the room). | `arrived` |
+| A player joins | Resets them to survival, says `room-joined` to the room, teleports them to the waiting spawn, gives the waiting hotbar, lets them fly if they have `muxe.pregame.fly` (`Stage.waitingFlight`, undone by the reset when the match starts), the scoreboard and the knockback profile of the mode (dropped when they leave the room). | `arrived` |
 | The minimum is reached | Runs the [start countdown](../game-engine/README.md#start-countdown), with the titles of `countdown.titles` (no fade in, 20 ticks on screen, 20 ticks fade out), the `countdown` sound and, on the same seconds, `countdown` in the chat (`countdown-one` on the last second). | |
 | The countdown ends | Draws the teams (favourite colours from `Minigame.teamPreferences`), protects everyone, spawns each player on their team spawn, removes the waiting area, says `match-started` and plays `match-start`. Teams nobody joined stop respawning and are out. | `starting`, `spawned`, `started` |
 | Every second | Counts the time, updates the respawn countdown (`died-title` over `respawn-subtitle`, `respawn-subtitle-one` on the last second, without fading so only the number changes, and the same line in the chat), respawns players whose time is up (`respawned` in the chat and as the subtitle), eliminates players who did not return in time, refreshes the scoreboard. | `everySecond`, `playing` |

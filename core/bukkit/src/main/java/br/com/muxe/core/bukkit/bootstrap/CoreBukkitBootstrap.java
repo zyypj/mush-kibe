@@ -43,6 +43,12 @@ import br.com.muxe.core.bukkit.preference.LobbyConfirmations;
 import br.com.muxe.core.bukkit.preference.PreferenceService;
 import br.com.muxe.core.bukkit.preference.PreferencesMenu;
 import br.com.muxe.core.bukkit.preference.PreferencesSettings;
+import br.com.muxe.core.bukkit.ultraplus.UltraPlusCommand;
+import br.com.muxe.core.bukkit.ultraplus.UltraPlusMenus;
+import br.com.muxe.core.bukkit.ultraplus.UltraPlusService;
+import br.com.muxe.core.bukkit.ultraplus.UltraPlusSettings;
+import br.com.muxe.core.bukkit.chat.ChatIntervalListener;
+import br.com.muxe.core.common.cooldown.ChatInterval;
 import br.com.muxe.core.bukkit.scheduledgame.MegaBedWarsCommand;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledAnnouncer;
 import br.com.muxe.core.bukkit.scheduledgame.ScheduledGame;
@@ -159,7 +165,15 @@ public final class CoreBukkitBootstrap {
         commands.register(new StatsCommand(statistics, preferences, core.queries(), mainThread, messages));
         PreferencesMenu preferencesMenu = new PreferencesMenu(texts.map(section -> PreferencesSettings.from(Objects.requireNonNull(
             section.getConfigurationSection("menus.preferences"), "Missing configuration section menus.preferences"))), preferences, messages);
-        HotbarFeatures.start(plugin, core, config, features, commands, preferencesMenu);
+        UltraPlusService ultraPlus = new UltraPlusService(UltraPlusSettings.from(texts.standard()), permissions, core.commands(), core.queries(), mainThread,
+            permissions::refresh, plugin.getLogger());
+        plugin.getServer().getPluginManager().registerEvents(ultraPlus, plugin);
+        permissions.style(ultraPlus::style);
+        UltraPlusMenus ultraPlusMenus = new UltraPlusMenus(texts.map(UltraPlusSettings::from), ultraPlus, messages, mainThread, runtime.clock());
+        commands.register(new UltraPlusCommand(ultraPlusMenus));
+        plugin.getServer().getPluginManager().registerEvents(ChatIntervalListener.from(config.getConfigurationSection("chat-interval"),
+            new ChatInterval(runtime.clock()), messages), plugin);
+        HotbarFeatures.start(plugin, core, config, features, commands, preferencesMenu, ultraPlusMenus);
         CommandMapRegistrar.commandMap(plugin.getServer())
             .ifPresent(map -> {
                 new PermissionMessages(plugin, map, messages.get("no-permission")).start();

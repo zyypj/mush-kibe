@@ -11,6 +11,7 @@ import br.com.muxe.core.bukkit.language.LocalizedConfig;
 import br.com.muxe.core.bukkit.language.PlayerLanguages;
 import br.com.muxe.core.bukkit.menu.button.ButtonActions;
 import br.com.muxe.core.bukkit.preference.PreferencesMenu;
+import br.com.muxe.core.bukkit.ultraplus.UltraPlusMenus;
 import br.com.muxe.core.bukkit.profile.ProfileMenu;
 import br.com.muxe.core.bukkit.profile.ProfileSettings;
 import br.com.muxe.core.bukkit.selector.game.GameSelectorMenu;
@@ -35,7 +36,8 @@ final class HotbarFeatures {
     private HotbarFeatures() {
     }
 
-    static void start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, PlacedFeatures placed, Commands commands, PreferencesMenu preferences) {
+    static void start(JavaPlugin plugin, MuxeCore core, FileConfiguration config, PlacedFeatures placed, Commands commands, PreferencesMenu preferences,
+                      UltraPlusMenus ultraPlus) {
         if (!config.isSet(HOTBAR_SECTION)) {
             plugin.getLogger().warning("The hotbar is off: config.yml has no '" + HOTBAR_SECTION + "' section");
             return;
@@ -52,7 +54,9 @@ final class HotbarFeatures {
         ProfileMenu profile = new ProfileMenu(texts.map(root -> ProfileSettings.from(section(root, "menus.profile"))), languages, buttons, core.queries(), core.permissions(),
             core.mainThread(), plugin.getLogger(), Map.of(
                 ProfileMenu.STATISTICS, (player, back) -> core.statistics().openHub(player, new Target(player.getUniqueId(), player.getName(), true), Optional.of(back)),
-                ProfileMenu.PREFERENCES, (player, back) -> preferences.open(player, Optional.of(back))));
+                ProfileMenu.PREFERENCES, (player, back) -> preferences.open(player, Optional.of(back)),
+                ProfileMenu.EMBLEMS, (player, back) -> ultraPlus.openEmblems(player, Optional.of(back)),
+                ProfileMenu.ULTRA_PLUS, (player, back) -> ultraPlus.openMain(player, Optional.of(back))));
         LobbySelectorMenu lobbies = new LobbySelectorMenu(core, texts.map(root -> LobbySelectorSettings.from(section(root, "menus.lobby-selector"), core.identity().group())),
             core.messages());
 

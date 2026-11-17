@@ -43,6 +43,7 @@ Everything about Muxe is documented here, in English and Portuguese. The rules f
 - [Missions](features/missions/README.md): daily and weekly missions shared by every game, completed live, with a credit path.
 - [Preferences](features/preferences/README.md): the `Preferências` menu of `Meu perfil`: chat, `/lobby` confirmation, invites and privacy.
 - [Statistics](features/statistics/README.md): a player's statistics in every game, from `Meu perfil` or `/stats`, on any server.
+- [Ultra+](features/ultra-plus/README.md): emblems, the `Menu do Ultra+` with the monthly reward and tag levels, the `+` color, waiting-room flight and the chat interval.
 - [Parkour](features/parkour/README.md): a timed lobby parkour with checkpoints, items to restart or go back, and a personal record per map, shared by the server group.
 - [Shop](features/shop/README.md): `/loja`, the checkout menus, cash registers and the network promotion.
 - [SkyWars](features/skywars/README.md): plugin skeleton and modes.

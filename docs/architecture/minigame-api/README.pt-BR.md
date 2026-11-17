@@ -85,7 +85,7 @@ server.listen(new SkyWarsHandlers());
 
 | Quando | O que a API faz | Ganchos |
 |---|---|---|
-| Um jogador entra | Volta ele ao sobrevivência, avisa `room-joined` na sala, teleporta para o spawn da espera, dá a hotbar da espera, o placar e o perfil de knockback do modo (tirado quando sai da sala). | `arrived` |
+| Um jogador entra | Volta ele ao sobrevivência, avisa `room-joined` na sala, teleporta para o spawn da espera, dá a hotbar da espera, deixa voar quem tem `muxe.pregame.fly` (`Stage.waitingFlight`, desfeito pela limpeza quando a partida começa), o placar e o perfil de knockback do modo (tirado quando sai da sala). | `arrived` |
 | O mínimo é atingido | Roda a [contagem de início](../game-engine/README.pt-BR.md#contagem-para-iniciar), com os títulos de `countdown.titles` (sem fade de entrada, 20 ticks na tela, 20 ticks de fade de saída), o som `countdown` e, nos mesmos segundos, `countdown` no chat (`countdown-one` no último segundo). | |
 | A contagem acaba | Sorteia os times (cores favoritas de `Minigame.teamPreferences`), protege todos, coloca cada jogador no spawn do time, apaga a área de espera, avisa `match-started` e toca `match-start`. Times sem ninguém param de renascer e estão fora. | `starting`, `spawned`, `started` |
 | A cada segundo | Conta o tempo, atualiza a contagem para renascer (`died-title` sobre `respawn-subtitle`, `respawn-subtitle-one` no último segundo, sem fade, então só o número muda, e a mesma linha no chat), renasce quem já pode (`respawned` no chat e como subtítulo), elimina quem não voltou a tempo, atualiza o placar. | `everySecond`, `playing` |

@@ -58,10 +58,11 @@ class ProfileMenuTest {
     }
 
     @Test
-    void theHeadShowsTheSelectedTagAndEveryRankWithItsTimeLeft() {
+    void theHeadShowsTheSelectedTagAndEveryRankWithItsGrantedTimeAndTimeLeft() {
+        Instant ends = RankTestKit.NOW.plus(Duration.ofDays(21).plusHours(21).plusMinutes(54).plusSeconds(3));
         ranks.online("tadeu",
             PermissionNode.group("vip", Optional.empty(), RankTestKit.NOW),
-            PermissionNode.group("ultra", Optional.of(RankTestKit.NOW.plus(Duration.ofDays(30)).minusSeconds(60)), RankTestKit.NOW),
+            PermissionNode.group("ultra", Optional.of(ends), ends.minus(Duration.ofDays(30))),
             PermissionNode.permanent("muxe.tag.natal", true, RankTestKit.NOW));
         ranks.sync.selectTag(RankTestKit.uuid("tadeu"), Optional.of("natal")).join();
 
@@ -73,7 +74,8 @@ class ProfileMenuTest {
             "§7Primeiro login: 10/09/2021 16:29",
             "§7Créditos: §d0",
             "§7Rank: §aVIP §7(Vitalício)",
-            "§7Rank: §dUltra §7(29d 23h)"
+            "§7Rank: §dUltra §7(30 dias)",
+            " §7Acaba em: 21 dias 21 horas 54 minutos 3 segundos"
         );
     }
 
@@ -84,9 +86,9 @@ class ProfileMenuTest {
 
     @Test
     void theButtonsSitInTheReferenceSlotsTheNickOneOpensTheShopAndTheMedalsOneListsTheMedals() {
-        assertThat(settings.buttons()).extracting(ConfiguredButton::slot).containsExactly(29, 30, 31, 32, 33, 39, 41);
+        assertThat(settings.buttons()).extracting(ConfiguredButton::slot).containsExactly(29, 30, 31, 32, 33, 39, 40, 41);
         assertThat(settings.buttons()).extracting(ConfiguredButton::action).containsExactly(
-            ButtonAction.NONE, ButtonAction.NONE, ButtonAction.NONE, ButtonAction.command("medalha"), ButtonAction.NONE, ButtonAction.shop("ultra-plus"), ButtonAction.NONE);
+            ButtonAction.NONE, ButtonAction.NONE, ButtonAction.NONE, ButtonAction.command("medalha"), ButtonAction.NONE, ButtonAction.shop("ultra-plus"), ButtonAction.NONE, ButtonAction.NONE);
 
         Menu menu = profile.menu(head(Optional.empty()));
         assertThat(icon(menu, 29).name()).isEqualTo("§aAmigos");
@@ -116,7 +118,7 @@ class ProfileMenuTest {
     }
 
     @Test
-    void theStatisticsAndPreferencesButtonsOpenTheirMenusWithAWayBackToTheProfile() {
+    void theStatisticsPreferencesEmblemsAndUltraPlusButtonsOpenTheirMenusWithAWayBackToTheProfile() {
         List<String> calls = new ArrayList<>();
         Player player = (Player) Proxy.newProxyInstance(Player.class.getClassLoader(), new Class<?>[] {Player.class}, (proxy, method, args) -> {
             if (method.getName().equals("getName")) {
@@ -127,16 +129,24 @@ class ProfileMenuTest {
         ProfileMenu linked = new ProfileMenu(Localized.same(settings), LanguageLookup.DEFAULT, MenuFixtures.actions(network, MenuFixtures.servers()),
             new SimpleQueryBus(Runnable::run, List.of()), ranks, Runnable::run, Logger.getLogger("test"),
             Map.of(ProfileMenu.STATISTICS, (viewer, back) -> calls.add("statistics of " + viewer.getName() + (back == null ? "" : " with back")),
-                ProfileMenu.PREFERENCES, (viewer, back) -> calls.add("preferences of " + viewer.getName() + (back == null ? "" : " with back"))));
+                ProfileMenu.PREFERENCES, (viewer, back) -> calls.add("preferences of " + viewer.getName() + (back == null ? "" : " with back")),
+                ProfileMenu.EMBLEMS, (viewer, back) -> calls.add("emblems of " + viewer.getName() + (back == null ? "" : " with back")),
+                ProfileMenu.ULTRA_PLUS, (viewer, back) -> calls.add("ultra+ of " + viewer.getName() + (back == null ? "" : " with back"))));
 
         MenuButton statistics = linked.menu(head(Optional.empty())).button(30).orElseThrow();
         statistics.click().click(new ClickContext(player, ClickType.LEFT, 30, null));
         MenuButton preferences = linked.menu(head(Optional.empty())).button(31).orElseThrow();
         preferences.click().click(new ClickContext(player, ClickType.LEFT, 31, null));
+        MenuButton emblems = linked.menu(head(Optional.empty())).button(40).orElseThrow();
+        emblems.click().click(new ClickContext(player, ClickType.LEFT, 40, null));
+        MenuButton ultraPlus = linked.menu(head(Optional.empty())).button(41).orElseThrow();
+        ultraPlus.click().click(new ClickContext(player, ClickType.LEFT, 41, null));
 
         assertThat(statistics.icon().name()).isEqualTo("§aVer estatísticas");
         assertThat(preferences.icon().name()).isEqualTo("§aPreferências");
-        assertThat(calls).containsExactly("statistics of tadeu with back", "preferences of tadeu with back");
+        assertThat(emblems.icon().material()).isEqualTo(Material.SUGAR);
+        assertThat(emblems.icon().lore()).containsExactly("§7Veja e selecione emblemas.", " ", "§eClique para ver mais.");
+        assertThat(calls).containsExactly("statistics of tadeu with back", "preferences of tadeu with back", "emblems of tadeu with back", "ultra+ of tadeu with back");
     }
 
     private ProfileHead head(Optional<Instant> firstSeenAt) {

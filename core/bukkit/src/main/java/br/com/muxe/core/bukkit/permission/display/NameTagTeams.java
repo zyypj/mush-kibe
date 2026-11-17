@@ -84,6 +84,9 @@ public final class NameTagTeams implements Listener, Runnable {
             if (!tag.prefix().equals(team.getPrefix())) {
                 team.setPrefix(tag.prefix());
             }
+            if (!tag.suffix().equals(team.getSuffix())) {
+                team.setSuffix(tag.suffix());
+            }
             String previous = entries.put(name, tag.team());
             if (!tag.team().equals(previous) || !team.hasEntry(name)) {
                 if (previous != null && !previous.equals(tag.team())) {

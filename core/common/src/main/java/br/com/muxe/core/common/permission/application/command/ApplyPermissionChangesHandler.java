@@ -7,6 +7,7 @@ import br.com.muxe.core.common.permission.domain.PermissionData;
 import br.com.muxe.core.common.permission.domain.PermissionRepository;
 import br.com.muxe.core.common.permission.domain.PermissionRules;
 import br.com.muxe.core.common.permission.domain.PermissionUser;
+import br.com.muxe.core.common.permission.domain.UserGrants;
 import br.com.muxe.core.common.persistence.transaction.Transactions;
 import br.com.muxe.core.common.result.Problem;
 import br.com.muxe.core.common.result.Result;
@@ -24,11 +25,17 @@ public final class ApplyPermissionChangesHandler implements CommandHandler<Apply
     private final PermissionRepository permissions;
     private final Transactions transactions;
     private final Clock clock;
+    private final UserGrants grants;
 
     public ApplyPermissionChangesHandler(PermissionRepository permissions, Transactions transactions, Clock clock) {
+        this(permissions, transactions, clock, UserGrants.NONE);
+    }
+
+    public ApplyPermissionChangesHandler(PermissionRepository permissions, Transactions transactions, Clock clock, UserGrants grants) {
         this.permissions = permissions;
         this.transactions = transactions;
         this.clock = clock;
+        this.grants = grants;
     }
 
     @Override
@@ -63,7 +70,9 @@ public final class ApplyPermissionChangesHandler implements CommandHandler<Apply
                 }
                 actions.add(new PermissionAction(now, command.actor(), change.describe()));
             }
+            List<PermissionUser> before = users.values().stream().filter(grants::concerns).map(user -> permissions.user(user.id())).toList();
             permissions.saveUsers(users.values());
+            before.forEach(previous -> grants.changed(previous, users.get(previous.id()), now));
             permissions.logAll(actions);
             return Result.success();
         });

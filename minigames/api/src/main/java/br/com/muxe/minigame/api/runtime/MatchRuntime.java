@@ -253,6 +253,7 @@ public final class MatchRuntime<S extends MatchState> {
         audience.forEach(viewer -> stage.message(viewer, joined.in(stage.language(viewer))));
         stage.teleport(id, match.arena().waitingSpawn());
         stage.waitingItems(id, control.waitingItems(id, settings(id).waitingHotbar().items()));
+        stage.waitingFlight(id);
         stage.showBoard(id);
         boards.add(id);
         state.arrived(id);

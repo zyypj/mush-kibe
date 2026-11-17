@@ -21,6 +21,7 @@ import br.com.muxe.core.common.permission.application.query.LoadPermissionDataQu
 import br.com.muxe.core.common.permission.application.query.RecentPermissionActionsHandler;
 import br.com.muxe.core.common.permission.application.query.RecentPermissionActionsQuery;
 import br.com.muxe.core.common.permission.domain.PermissionRepository;
+import br.com.muxe.core.common.permission.domain.UserGrants;
 import br.com.muxe.core.common.persistence.transaction.Transactions;
 import java.time.Clock;
 
@@ -30,8 +31,12 @@ public final class PermissionModule {
     }
 
     public static void register(CommandBus commands, QueryBus queries, PermissionRepository permissions, Transactions transactions, Clock clock) {
-        commands.register(ApplyPermissionChangesCommand.class, new ApplyPermissionChangesHandler(permissions, transactions, clock));
-        commands.register(AddUserNodeCommand.class, new AddUserNodeHandler(permissions, transactions, clock));
+        register(commands, queries, permissions, transactions, clock, UserGrants.NONE);
+    }
+
+    public static void register(CommandBus commands, QueryBus queries, PermissionRepository permissions, Transactions transactions, Clock clock, UserGrants grants) {
+        commands.register(ApplyPermissionChangesCommand.class, new ApplyPermissionChangesHandler(permissions, transactions, clock, grants));
+        commands.register(AddUserNodeCommand.class, new AddUserNodeHandler(permissions, transactions, clock, grants));
         commands.register(RemoveUserNodeCommand.class, new RemoveUserNodeHandler(permissions, transactions, clock));
         commands.register(SelectTagCommand.class, new SelectTagHandler(permissions, transactions));
         commands.register(SelectMedalCommand.class, new SelectMedalHandler(permissions, transactions));

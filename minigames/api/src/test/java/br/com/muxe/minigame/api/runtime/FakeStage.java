@@ -30,6 +30,7 @@ public final class FakeStage implements Stage {
     public final Map<UUID, Look> looks = new HashMap<>();
     public final Map<UUID, Point> positions = new HashMap<>();
     public final Map<UUID, List<HotbarItem>> items = new HashMap<>();
+    public final Set<UUID> waitingFlight = new HashSet<>();
     public final Map<UUID, List<String>> boards = new HashMap<>();
     public final Map<UUID, String> sentTo = new HashMap<>();
     public final Map<UUID, Boolean> endTitles = new HashMap<>();
@@ -123,6 +124,11 @@ public final class FakeStage implements Stage {
     @Override
     public void waitingItems(UUID id, List<HotbarItem> list) {
         items.put(id, List.copyOf(list));
+    }
+
+    @Override
+    public void waitingFlight(UUID id) {
+        waitingFlight.add(id);
     }
 
     @Override

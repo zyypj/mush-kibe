@@ -25,6 +25,8 @@ public final class ProfileMenu {
 
     public static final String STATISTICS = "statistics";
     public static final String PREFERENCES = "preferences";
+    public static final String EMBLEMS = "emblems";
+    public static final String ULTRA_PLUS = "ultra-plus";
 
     private final Localized<ProfileSettings> settings;
     private final LanguageLookup languages;

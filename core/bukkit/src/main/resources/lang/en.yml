@@ -94,6 +94,15 @@ hotbar:
   lobby-selector:
     item:
       name: "&aSelect lobby"
+time-units:
+  day: "day"
+  days: "days"
+  hour: "hour"
+  hours: "hours"
+  minute: "minute"
+  minutes: "minutes"
+  second: "second"
+  seconds: "seconds"
 menus:
   game-selector:
     title: "Select game"
@@ -594,12 +603,148 @@ menus:
                 - "&7Freeze your statistics"
                 - "&7in the API while you are"
                 - "&7online."
+  ultra-plus:
+    title: "Ultra+ menu"
+    prefix: "{color}&lULTRA{plus}+ "
+    reward:
+      item:
+        name: "&aMonthly reward"
+        lore:
+          - "&7Claim the monthly reward"
+          - "&7of Ultra+!"
+          - " "
+          - "&7Reward:"
+          - "&7- &d{credits} credits"
+    plus-color:
+      item:
+        name: "&aColor of the &6+ &a(/cormais)"
+        lore:
+          - "&7Change the color of your +!"
+          - " "
+          - "&eClick to select."
+    levels:
+      "1":
+        item:
+          name: "&dTag Level I"
+      "2":
+        item:
+          name: "&bTag Level II"
+      "3":
+        item:
+          name: "&6Tag Level III"
+      "4":
+        item:
+          name: "&cTag Level IV"
+    texts:
+      included: "&7Included in Ultra+"
+      required: "&7Months required:"
+      progress: "&a{months}/{required} &7({percent}%)"
+      example: "&7Example:"
+      selected: "&aSelected."
+      emblem-selected: "&aSelected."
+      select: "&eClick to select."
+      locked: "&cLocked."
+      exclusive: "&7Exclusive to &d&lULTRA&6+"
+      resets: "&bResets in {time}."
+      claimed: "&cAlready claimed."
+      claim: "&eClick to claim."
+    back:
+      item:
+        name: "&aBack"
+        lore:
+          - "&7To My profile"
+  plus-colors:
+    title: "Color of the +"
+    colors:
+      dourado:
+        item:
+          name: "&6+ &7(Gold)"
+      amarelo:
+        item:
+          name: "&e+ &7(Yellow)"
+      vermelho:
+        item:
+          name: "&c+ &7(Red)"
+      vermelho-escuro:
+        item:
+          name: "&4+ &7(Dark Red)"
+      azul:
+        item:
+          name: "&9+ &7(Blue)"
+      azul-escuro:
+        item:
+          name: "&1+ &7(Dark Blue)"
+      verde:
+        item:
+          name: "&a+ &7(Green)"
+      verde-escuro:
+        item:
+          name: "&2+ &7(Dark Green)"
+      ciano:
+        item:
+          name: "&b+ &7(Cyan)"
+      ciano-escuro:
+        item:
+          name: "&3+ &7(Dark Cyan)"
+      branco:
+        item:
+          name: "&f+ &7(White)"
+      preto:
+        item:
+          name: "&0+ &7(Black)"
+    back:
+      item:
+        name: "&aBack"
+        lore:
+          - "&7To Ultra+ menu"
+  emblems:
+    title: "Emblems"
+    none:
+      item:
+        name: "&aNone "
+    emblems:
+      coracao:
+        item:
+          name: "&aHeart ❤"
+      flor:
+        item:
+          name: "&aFlower ✿"
+      yin-yang:
+        item:
+          name: "&aYin Yang ☯"
+      x:
+        item:
+          name: "&aX ✖"
+      estrela:
+        item:
+          name: "&aStar ✦"
+      sorriso:
+        item:
+          name: "&aSmile ツ"
+      estrelado:
+        item:
+          name: "&aStarry ✩"
+      seta:
+        item:
+          name: "&aArrow ⬅"
+      correto:
+        item:
+          name: "&aCheck ✔"
+      mais:
+        item:
+          name: "&aPlus +"
+    back:
+      item:
+        name: "&aBack"
+        lore:
+          - "&7To My profile"
   profile:
     title: "My profile"
     first-login:
       format: "dd/MM/yyyy HH:mm"
     ranks:
       line: "&7Rank: {rank} &7({time})"
+      expires: " &7Ends in: {remaining}"
     head:
       item:
         lore:
@@ -653,6 +798,13 @@ menus:
             - "&7Exclusive to &d&lULTRA&6+"
             - " "
             - "&eClick to buy."
+      emblems:
+        item:
+          name: "&aEmblems"
+          lore:
+            - "&7View and select emblems."
+            - " "
+            - "&eClick to view more."
       ultra-plus:
         item:
           name: "&dUltra&6+ &aMenu"
@@ -1390,6 +1542,12 @@ custom-room:
     editing-title: "Editing {name}..."
 
 messages:
+  ultra-plus-only: "&cExclusive to &d&lULTRA&6+&c."
+  ultra-plus-locked: "&cYou do not have enough months of Ultra+ for this yet."
+  ultra-plus-reward-claimed: "&aYou claimed &d{credits} credits&a!"
+  ultra-plus-reward-already: "&cYou already claimed this month's reward."
+  ultra-plus-reward-failed: "&cThe reward could not be claimed now. Try again."
+  chat-cooldown: "&cWait {seconds}s to talk again."
   language-usage: "&eUsage: /language <portuguese|english>. Current language: &f{language}&e."
   language-changed: "&aLanguage changed to &f{language}&a."
   language-already: "&cYou are already using &f{language}&c."

@@ -232,6 +232,18 @@ hotbar:
       name: "&aSelecionar lobby"
       glow: true
 
+time-units:
+  day: "dia"
+  days: "dias"
+  hour: "hora"
+  hours: "horas"
+  minute: "minuto"
+  minutes: "minutos"
+  second: "segundo"
+  seconds: "segundos"
+chat-interval:
+  seconds: 3
+  fast-seconds: 1
 menus:
   game-selector:
     title: "Selecionar jogo"
@@ -906,6 +918,266 @@ menus:
                 - "&7Congele as estatísticas"
                 - "&7na API enquanto estiver"
                 - "&7online."
+  ultra-plus:
+    title: "Menu do Ultra+"
+    prefix: "{color}&lULTRA{plus}+ "
+    rows: 5
+    example: "{prefix}{color}{player}{emblem}"
+    reward:
+      slot: 12
+      credits: 450
+      time-zone: America/Sao_Paulo
+      item:
+        material: MINECART
+        name: "&aRecompensa mensal"
+        lore:
+          - "&7Resgate a recompensa mensal"
+          - "&7do Ultra+!"
+          - " "
+          - "&7Recompensa:"
+          - "&7- &d{credits} créditos"
+    plus-color:
+      slot: 14
+      item:
+        material: INK_SACK
+        data: 11
+        name: "&aCor do &6+ &a(/cormais)"
+        lore:
+          - "&7Altere a cor do seu +!"
+          - " "
+          - "&eClique para selecionar."
+    levels:
+      "1":
+        slot: 28
+        color: "5"
+        months: 0
+        item:
+          material: INK_SACK
+          data: 5
+          name: "&dTag Nível I"
+      "2":
+        slot: 30
+        color: "b"
+        months: 6
+        item:
+          material: DIAMOND
+          name: "&bTag Nível II"
+      "3":
+        slot: 32
+        color: "6"
+        months: 12
+        item:
+          material: GOLD_INGOT
+          name: "&6Tag Nível III"
+      "4":
+        slot: 34
+        color: "c"
+        months: 24
+        item:
+          material: REDSTONE
+          name: "&cTag Nível IV"
+    progress:
+      material: STAINED_GLASS_PANE
+      data: 4
+      dashes: 10
+    texts:
+      included: "&7Incluso no Ultra+"
+      required: "&7Meses necessários:"
+      progress: "&a{months}/{required} &7({percent}%)"
+      example: "&7Exemplo:"
+      selected: "&aSelecionada."
+      emblem-selected: "&aSelecionado."
+      select: "&eClique para selecionar."
+      locked: "&cBloqueado."
+      exclusive: "&7Exclusivo para &d&lULTRA&6+"
+      resets: "&bReinicia em {time}."
+      claimed: "&cJá resgatado."
+      claim: "&eClique para resgatar."
+    back:
+      slot: 39
+      item:
+        material: ARROW
+        name: "&aVoltar"
+        lore:
+          - "&7Para Meu perfil"
+  plus-colors:
+    title: "Cor do +"
+    rows: 4
+    colors:
+      dourado:
+        slot: 10
+        color: "6"
+        months: 0
+        item:
+          material: GOLD_INGOT
+          name: "&6+ &7(Dourado)"
+      amarelo:
+        slot: 11
+        color: "e"
+        months: 2
+        item:
+          material: INK_SACK
+          data: 11
+          name: "&e+ &7(Amarelo)"
+      vermelho:
+        slot: 12
+        color: "c"
+        months: 3
+        item:
+          material: INK_SACK
+          data: 1
+          name: "&c+ &7(Vermelho)"
+      vermelho-escuro:
+        slot: 13
+        color: "4"
+        months: 4
+        item:
+          material: NETHER_STALK
+          name: "&4+ &7(Vermelho Escuro)"
+      azul:
+        slot: 14
+        color: "9"
+        months: 5
+        item:
+          material: INK_SACK
+          data: 6
+          name: "&9+ &7(Azul)"
+      azul-escuro:
+        slot: 15
+        color: "1"
+        months: 6
+        item:
+          material: INK_SACK
+          data: 4
+          name: "&1+ &7(Azul-escuro)"
+      verde:
+        slot: 16
+        color: "a"
+        months: 7
+        item:
+          material: INK_SACK
+          data: 10
+          name: "&a+ &7(Verde)"
+      verde-escuro:
+        slot: 19
+        color: "2"
+        months: 8
+        item:
+          material: INK_SACK
+          data: 2
+          name: "&2+ &7(Verde-escuro)"
+      ciano:
+        slot: 20
+        color: "b"
+        months: 9
+        item:
+          material: DIAMOND
+          name: "&b+ &7(Ciano)"
+      ciano-escuro:
+        slot: 21
+        color: "3"
+        months: 10
+        item:
+          material: PRISMARINE_SHARD
+          name: "&3+ &7(Ciano-escuro)"
+      branco:
+        slot: 22
+        color: "f"
+        months: 11
+        item:
+          material: SUGAR
+          name: "&f+ &7(Branco)"
+      preto:
+        slot: 23
+        color: "0"
+        months: 12
+        item:
+          material: INK_SACK
+          name: "&0+ &7(Preto)"
+    back:
+      slot: 30
+      item:
+        material: ARROW
+        name: "&aVoltar"
+        lore:
+          - "&7Para Menu do Ultra+"
+  emblems:
+    title: "Emblemas"
+    rows: 4
+    none:
+      slot: 10
+      item:
+        material: BARRIER
+        name: "&aNenhum "
+    emblems:
+      coracao:
+        slot: 11
+        symbol: "❤"
+        item:
+          material: SUGAR
+          name: "&aCoração ❤"
+      flor:
+        slot: 12
+        symbol: "✿"
+        item:
+          material: SUGAR
+          name: "&aFlor ✿"
+      yin-yang:
+        slot: 13
+        symbol: "☯"
+        item:
+          material: SUGAR
+          name: "&aYin Yang ☯"
+      x:
+        slot: 14
+        symbol: "✖"
+        item:
+          material: SUGAR
+          name: "&aX ✖"
+      estrela:
+        slot: 15
+        symbol: "✦"
+        item:
+          material: SUGAR
+          name: "&aEstrela ✦"
+      sorriso:
+        slot: 16
+        symbol: "ツ"
+        item:
+          material: SUGAR
+          name: "&aSorriso ツ"
+      estrelado:
+        slot: 19
+        symbol: "✩"
+        item:
+          material: SUGAR
+          name: "&aEstrelado ✩"
+      seta:
+        slot: 20
+        symbol: "⬅"
+        item:
+          material: SUGAR
+          name: "&aSeta ⬅"
+      correto:
+        slot: 21
+        symbol: "✔"
+        item:
+          material: SUGAR
+          name: "&aCorreto ✔"
+      mais:
+        slot: 22
+        symbol: "+"
+        color: "6"
+        item:
+          material: SUGAR
+          name: "&aMais +"
+    back:
+      slot: 30
+      item:
+        material: ARROW
+        name: "&aVoltar"
+        lore:
+          - "&7Para Meu perfil"
   profile:
     title: "Meu perfil"
     rows: 6
@@ -917,6 +1189,7 @@ menus:
     ranks:
       line: "&7Rank: {rank} &7({time})"
       permanent: "Vitalício"
+      expires: " &7Acaba em: {remaining}"
     head:
       slot: 13
       item:
@@ -988,6 +1261,15 @@ menus:
             - "&7Exclusivo para &d&lULTRA&6+"
             - " "
             - "&eClique para comprar."
+      emblems:
+        slot: 40
+        item:
+          material: SUGAR
+          name: "&aEmblemas"
+          lore:
+            - "&7Veja e selecione emblemas."
+            - " "
+            - "&eClique para ver mais."
       ultra-plus:
         slot: 41
         item:
@@ -2631,6 +2913,12 @@ scheduled-games:
     announce-every-seconds: 60
 
 messages:
+  ultra-plus-only: "&cExclusivo para &d&lULTRA&6+&c."
+  ultra-plus-locked: "&cVocê ainda não tem meses de Ultra+ suficientes para isso."
+  ultra-plus-reward-claimed: "&aVocê resgatou &d{credits} créditos&a!"
+  ultra-plus-reward-already: "&cVocê já resgatou a recompensa deste mês."
+  ultra-plus-reward-failed: "&cNão foi possível resgatar agora. Tente novamente."
+  chat-cooldown: "&cAguarde {seconds}s para falar novamente."
   no-permission: "&cVocê não possui permissão para usar este comando."
   unknown-command: "&cComando não encontrado."
   players-only: "&cApenas jogadores podem usar este comando."
