@@ -136,7 +136,7 @@ See [Party](../../features/party/README.md) for the player side.
 | Rule | Default | Meaning |
 |---|---|---|
 | `respawn` | off | Teams start respawning. |
-| `breakOnlyPlaced` | on | Only blocks placed during the match can be broken or exploded. Trying to break another one says `cannot-break`. |
+| `breakOnlyPlaced` | on | Only blocks placed during the match can be broken or exploded. Trying to break another one says `cannot-break`. Water and lava never wash away a block of the map (`LiquidFlow`), a bucket cannot be filled from the map's liquid, and a poured bucket counts as a placed block; the game decides where a bucket may be poured (`GameHandlers.emptyBucket`). |
 | `hunger` | off | Hunger changes. |
 | `crafting` | off | Crafting is allowed. |
 | `enterBeds` | off | Beds can be used in the match world. |

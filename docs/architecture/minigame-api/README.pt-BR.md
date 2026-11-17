@@ -136,7 +136,7 @@ Veja [Party](../../features/party/README.pt-BR.md) para o lado do jogador.
 | Regra | Padrão | Significado |
 |---|---|---|
 | `respawn` | desligado | Os times começam renascendo. |
-| `breakOnlyPlaced` | ligado | Só blocos colocados na partida podem ser quebrados ou explodidos. Tentar quebrar outro avisa `cannot-break`. |
+| `breakOnlyPlaced` | ligado | Só blocos colocados na partida podem ser quebrados ou explodidos. Tentar quebrar outro avisa `cannot-break`. Água e lava nunca levam um bloco do mapa (`LiquidFlow`), um balde não pode ser enchido com o líquido do mapa, e um balde despejado conta como bloco colocado; o jogo decide onde um balde pode ser despejado (`GameHandlers.emptyBucket`). |
 | `hunger` | desligado | A fome muda. |
 | `crafting` | desligado | Pode craftar. |
 | `enterBeds` | desligado | Camas podem ser usadas no mundo das partidas. |

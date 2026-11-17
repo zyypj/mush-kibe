@@ -14,6 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -38,6 +39,9 @@ public interface GameHandlers<S extends MatchState> {
     }
 
     default void breakBlock(Playing<S> playing, BlockBreakEvent event) {
+    }
+
+    default void emptyBucket(Playing<S> playing, PlayerBucketEmptyEvent event, Block target) {
     }
 
     default boolean explodes(Block block) {

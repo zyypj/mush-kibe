@@ -33,6 +33,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -45,6 +46,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -208,6 +211,52 @@ public final class MatchListener<S extends MatchState> implements Listener {
             return;
         }
         found.get().match().unplaced(block.getX(), block.getY(), block.getZ());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
+        Player player = event.getPlayer();
+        Block target = event.getBlockClicked().getRelative(event.getBlockFace());
+        Optional<MatchRuntime<S>> found = matches.of(player.getUniqueId());
+        if (found.isEmpty() || !matches.isMatchWorld(target.getLocation())) {
+            return;
+        }
+        Optional<Playing<S>> playing = playing(found.get(), player.getUniqueId());
+        if (playing.isEmpty()) {
+            event.setCancelled(true);
+            return;
+        }
+        handlers.emptyBucket(playing.get(), event, target);
+        if (!event.isCancelled()) {
+            found.get().match().placed(target.getX(), target.getY(), target.getZ());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBucketFill(PlayerBucketFillEvent event) {
+        Player player = event.getPlayer();
+        Block source = event.getBlockClicked();
+        Optional<MatchRuntime<S>> found = matches.of(player.getUniqueId());
+        if (found.isEmpty() || !matches.isMatchWorld(source.getLocation())) {
+            return;
+        }
+        if (playing(found.get(), player.getUniqueId()).isEmpty() || !found.get().mayBreak(player.getUniqueId(), source.getX(), source.getY(), source.getZ())) {
+            event.setCancelled(true);
+            return;
+        }
+        found.get().match().unplaced(source.getX(), source.getY(), source.getZ());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onLiquidFlow(BlockFromToEvent event) {
+        Block to = event.getToBlock();
+        if (!event.getBlock().isLiquid() || !matches.isMatchWorld(to.getLocation())) {
+            return;
+        }
+        boolean placed = matches.at(to.getLocation()).filter(runtime -> runtime.match().wasPlaced(to.getX(), to.getY(), to.getZ())).isPresent();
+        if (!LiquidFlow.allowed(to.getType(), rules.breakOnlyPlaced(), placed)) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH)

@@ -14,6 +14,7 @@ import br.com.muxe.minigame.api.runtime.Playing;
 import br.com.muxe.minigame.bedwars.game.Activity;
 import br.com.muxe.minigame.bedwars.game.ChestDeposits;
 import br.com.muxe.minigame.bedwars.game.Cooldowns;
+import br.com.muxe.minigame.bedwars.game.EmptiedBucket;
 import br.com.muxe.minigame.bedwars.custom.CustomRules;
 import br.com.muxe.minigame.bedwars.game.ExplosionKnockback.Source;
 import br.com.muxe.minigame.bedwars.game.ExplosionKnockback;
@@ -63,6 +64,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -247,6 +249,18 @@ public final class BedWarsHandlers implements GameHandlers<BedWarsMatch> {
         if (block.getType() == Material.ENDER_STONE) {
             state.endStonePlaced(player, block);
         }
+    }
+
+    @Override
+    public void emptyBucket(Playing<BedWarsMatch> playing, PlayerBucketEmptyEvent event, Block target) {
+        Player player = event.getPlayer();
+        if (!playing.state().mayPlace(target.getLocation())) {
+            event.setCancelled(true);
+            player.sendMessage(messages.get(player, "cannot-place"));
+            return;
+        }
+        int slot = player.getInventory().getHeldItemSlot();
+        plugin.getServer().getScheduler().runTask(plugin, () -> player.getInventory().setItem(slot, EmptiedBucket.left(player.getInventory().getItem(slot))));
     }
 
     private void placeTower(Player player, BedWarsMatch state, Block anchor) {
