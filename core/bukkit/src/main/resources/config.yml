@@ -921,6 +921,7 @@ menus:
   ultra-plus:
     title: "Menu do Ultra+"
     prefix: "{color}&lULTRA{plus}+ "
+    tag-name: "Ultra{plus}+"
     rows: 5
     example: "{prefix}{color}{player}{emblem}"
     reward:

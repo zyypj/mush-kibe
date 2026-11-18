@@ -29,7 +29,7 @@ public record UltraPlusLook(UltraPlusSettings.Option level, UltraPlusSettings.Op
 
     public RankDisplay apply(UltraPlusSettings settings, RankDisplay display) {
         Optional<Tag> tag = display.tag().map(shown -> shown.id().equals(UltraPlusGrant.GROUP)
-            ? new Tag(shown.id(), shown.name(), level.color(), shown.weight(), Optional.of(settings.prefix(level, plus)), shown.decorative())
+            ? new Tag(shown.id(), settings.tagName(plus), level.color(), shown.weight(), Optional.of(settings.prefix(level, plus)), shown.decorative())
             : shown);
         return display.withTag(tag).withEmblem(emblemText());
     }

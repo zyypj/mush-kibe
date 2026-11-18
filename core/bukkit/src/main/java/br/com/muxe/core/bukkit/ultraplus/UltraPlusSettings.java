@@ -10,13 +10,14 @@ import java.util.Objects;
 import java.util.Optional;
 import org.bukkit.configuration.ConfigurationSection;
 
-public record UltraPlusSettings(String prefix, String example, long rewardCredits, ZoneId zone, Texts texts, DurationWords words, MainMenu main, OptionMenu colors,
+public record UltraPlusSettings(String prefix, String tagName, String example, long rewardCredits, ZoneId zone, Texts texts, DurationWords words, MainMenu main, OptionMenu colors,
                                 EmblemMenu emblems) {
 
     private static final String COLOR_MARK = "&";
 
     public UltraPlusSettings {
         Objects.requireNonNull(prefix, "prefix");
+        Objects.requireNonNull(tagName, "tagName");
         Objects.requireNonNull(example, "example");
         Objects.requireNonNull(zone, "zone");
         Objects.requireNonNull(texts, "texts");
@@ -30,6 +31,7 @@ public record UltraPlusSettings(String prefix, String example, long rewardCredit
         ConfigurationSection main = section(root, "menus.ultra-plus");
         return new UltraPlusSettings(
             main.getString("prefix", "{color}&lULTRA{plus}+ "),
+            main.getString("tag-name", "Ultra{plus}+"),
             main.getString("example", "{prefix}{color}{player}{emblem}"),
             main.getLong("reward.credits", 450),
             ZoneId.of(main.getString("reward.time-zone", "America/Sao_Paulo")),
@@ -43,6 +45,10 @@ public record UltraPlusSettings(String prefix, String example, long rewardCredit
 
     public String prefix(Option level, Option plus) {
         return prefix.replace("{color}", level.color()).replace("{plus}", plus.color());
+    }
+
+    public String tagName(Option plus) {
+        return tagName.replace("{plus}", plus.color());
     }
 
     public String example(Option level, Option plus, String emblem, String player) {

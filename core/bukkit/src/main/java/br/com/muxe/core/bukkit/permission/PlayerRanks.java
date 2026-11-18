@@ -22,4 +22,6 @@ public interface PlayerRanks {
     Optional<PermissionUser> user(UUID player);
 
     RankDisplay display(UUID player);
+
+    RankDisplay styled(UUID player, RankDisplay display);
 }

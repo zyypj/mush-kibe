@@ -8,6 +8,7 @@ import br.com.muxe.core.bukkit.command.framework.annotation.Subcommand;
 import br.com.muxe.core.bukkit.command.framework.annotation.Suggest;
 import br.com.muxe.core.bukkit.command.framework.annotation.Usage;
 import br.com.muxe.core.bukkit.permission.PlayerRanks;
+import br.com.muxe.core.bukkit.permission.display.RankDisplay;
 import br.com.muxe.core.bukkit.text.Colors;
 import br.com.muxe.core.common.permission.domain.Contexts;
 import br.com.muxe.core.common.permission.domain.Lifetime;
@@ -45,7 +46,7 @@ public final class TagCommand {
     public void tag(Player player, @Arg("tag") @Suggest(provider = PermissionSuggestions.USABLE_TAGS) Optional<String> id) {
         List<Tag> usable = permissions.resolved(player.getUniqueId()).map(ResolvedPermissions::tags).orElse(List.of());
         if (id.isEmpty()) {
-            list.send(player, usable, permissions.display(player.getUniqueId()).medal());
+            list.send(player, usable, permissions.display(player.getUniqueId()).medal(), display -> permissions.styled(player.getUniqueId(), display));
             return;
         }
         Optional<Tag> tag = permissions.data().tag(id.get().toLowerCase(Locale.ROOT));
@@ -54,14 +55,14 @@ public final class TagCommand {
             return;
         }
         if (!usable.contains(tag.get())) {
-            replies.send(player, "tag-locked", "tag", display(tag.get()));
+            replies.send(player, "tag-locked", "tag", display(styled(player, tag.get())));
             return;
         }
         replies.then(player, permissions.sync().selectTag(player.getUniqueId(), Optional.of(tag.get().id())), result -> {
             if (result.isFailure()) {
                 replies.send(player, Replies.FAILED);
             } else {
-                replies.send(player, "tag-selected", "tag", display(tag.get()));
+                replies.send(player, "tag-selected", "tag", display(styled(player, tag.get())));
             }
         });
     }
@@ -145,6 +146,10 @@ public final class TagCommand {
             return Optional.empty();
         }
         return tag;
+    }
+
+    private Tag styled(Player player, Tag tag) {
+        return permissions.styled(player.getUniqueId(), new RankDisplay(Optional.of(tag), Optional.empty())).tag().orElse(tag);
     }
 
     private static String display(Tag tag) {

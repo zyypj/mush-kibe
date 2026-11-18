@@ -19,7 +19,7 @@ The perks of the Ultra+ rank: emblems next to the nick, the `Menu do Ultra+` wit
   - `Recompensa mensal` (minecart, slot 12) pays 450 credits once per calendar month in Brasília time, says `Reinicia em <time>.` until the next month and `Já resgatado.` or `Clique para resgatar.`.
   - `Cor do + (/cormais)` (slot 14) opens the `+` colors.
   - The tag levels on row 4: `Tag Nível I` (slot 28, included), `Tag Nível II` (30, 6 months, aqua), `Tag Nível III` (32, 12 months, gold) and `Tag Nível IV` (34, 24 months, red). Between them, yellow panes show the progress to the next level as a bar of ten dashes (green for each 10%) and `Meses necessários: <months>/<required> (<percent>%)`.
-  - The chosen level colors the `ULTRA` and the nick of the Ultra+ tag (`§b§lULTRA§6+ §btadeu`).
+  - The chosen level colors the `ULTRA` and the nick of the Ultra+ tag (`§b§lULTRA§6+ §btadeu`). The tag name follows the same level and `+` colors in `/tag`, in the `/tag` messages and in the lobby scoreboard (`§bUltra§6+`).
 - **Cor do +** (4 rows, `Voltar` at slot 30 to `Menu do Ultra+`): twelve colors of the `+` of the Ultra+ tag, from `Dourado` (included) to `Preto` (12 months), one more each month.
 - A level, color or emblem shows `Selecionada.`/`Selecionado.` (and glows) when chosen, `Clique para selecionar.` when unlocked and `Bloqueado.` when the player is not Ultra+ or lacks the months. A choice that is no longer unlocked falls back to the included one.
 - **Flight in the waiting room:** players with `muxe.pregame.fly` (Ultra+) can fly in the waiting room of any match; the flight ends when the match starts.
@@ -48,6 +48,7 @@ Core `config.yml`, with English in `lang/en.yml`:
 |---|---|---|
 | `menus.ultra-plus.title`, `rows`, `back` | `Menu do Ultra+`, `5`, slot 39 | The Ultra+ menu. |
 | `menus.ultra-plus.prefix` | `{color}&lULTRA{plus}+ ` | Prefix of the Ultra+ tag; `{color}` is the level color and `{plus}` the `+` color. |
+| `menus.ultra-plus.tag-name` | `Ultra{plus}+` | Name of the Ultra+ tag in the level color, shown in `/tag`, in its messages and in the lobby scoreboard; `{plus}` is the `+` color. |
 | `menus.ultra-plus.example` | `{prefix}{color}{player}{emblem}` | The example line of the menus. |
 | `menus.ultra-plus.reward.slot`, `credits`, `time-zone`, `item` | `12`, `450`, `America/Sao_Paulo` | The monthly reward; `{credits}` in the lore. |
 | `menus.ultra-plus.plus-color` | slot 14 | The button that opens `Cor do +`. |
@@ -81,7 +82,8 @@ None.
 ## Acceptance criteria
 
 - [x] The three menus match the reference exports, with the progress panes and the claimed reward (`UltraPlusPagesTest`).
-- [x] The tag level, the `+` color and the emblem change the chat, the prefix and the name tag, and locked choices fall back (`UltraPlusLookTest`).
+- [x] The tag level, the `+` color and the emblem change the chat, the prefix, the tag name and the name tag, and locked choices fall back (`UltraPlusLookTest`).
+- [x] `/tag` lists and selects the tag with the colors the player chose (`TagCommandTest`).
 - [x] The days of each grant add up and extensions only count the new days (`UltraPlusGrantTest`).
 - [x] The reward pays once per month (`ClaimUltraPlusRewardHandlerTest`) and is saved with the choices (`PostgresUltraPlusRepositoryIntegrationTest`).
 - [x] Members wait 3 s and Ultra+ 1 s between chat messages (`ChatIntervalTest`).

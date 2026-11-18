@@ -32,6 +32,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
 public final class RankTestKit implements PlayerRanks, AutoCloseable {
@@ -52,6 +53,7 @@ public final class RankTestKit implements PlayerRanks, AutoCloseable {
     public final Replies replies = new Replies(Runnable::run, MESSAGES, Logger.getLogger("test"));
     public final TargetLookup targets = new TargetLookup(name -> Optional.empty(), queries);
     public final TestCommands framework = new TestCommands(ArgumentTypes.basic(), MESSAGES);
+    public BiFunction<UUID, RankDisplay, RankDisplay> style = (player, display) -> display;
 
     public RankTestKit() {
         PermissionModule.register(commands, queries, database, new DirectTransactions(), clock);
@@ -116,10 +118,15 @@ public final class RankTestKit implements PlayerRanks, AutoCloseable {
 
     @Override
     public RankDisplay display(UUID player) {
-        return cache.resolved(player)
+        return styled(player, cache.resolved(player)
             .map(resolved -> RankDisplay.of(sync.data(), resolved,
                 cache.user(player).flatMap(PermissionUser::selectedTag), cache.user(player).flatMap(PermissionUser::selectedMedal)))
-            .orElse(RankDisplay.NONE);
+            .orElse(RankDisplay.NONE));
+    }
+
+    @Override
+    public RankDisplay styled(UUID player, RankDisplay display) {
+        return style.apply(player, display);
     }
 
     @Override

@@ -98,6 +98,11 @@ public final class PermissionService implements PlayerRanks, Listener, Runnable 
         Optional<String> tag = user.flatMap(PermissionUser::selectedTag);
         Optional<String> medal = user.flatMap(PermissionUser::selectedMedal);
         RankDisplay display = cache.resolved(player).map(resolved -> RankDisplay.of(sync.data(), resolved, tag, medal)).orElse(RankDisplay.NONE);
+        return styled(player, display);
+    }
+
+    @Override
+    public RankDisplay styled(UUID player, RankDisplay display) {
         return style.apply(player, display);
     }
 

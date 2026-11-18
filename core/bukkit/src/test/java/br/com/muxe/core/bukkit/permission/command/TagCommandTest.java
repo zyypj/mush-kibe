@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import br.com.muxe.core.bukkit.command.framework.FakeSender;
 import br.com.muxe.core.common.permission.domain.PermissionAction;
 import br.com.muxe.core.common.permission.domain.PermissionNode;
+import br.com.muxe.core.common.permission.domain.Tag;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +43,23 @@ class TagCommandTest {
         assertThat(tadeu.messages()).containsExactly("§aVocê selecionou a tag §aVIP §acom sucesso.");
         assertThat(kit.stored("tadeu").selectedTag()).contains("vip");
         assertThat(kit.display(RankTestKit.uuid("tadeu")).formatName("tadeu")).isEqualTo("&a&lVIP &atadeu");
+    }
+
+    @Test
+    void theListAndTheSelectionShowTheTagWithTheColorsThePlayerChose() {
+        kit.online("tadeu", PermissionNode.group("ultra", Optional.empty(), NOW));
+        kit.style = (player, display) -> display.withTag(display.tag().map(tag -> tag.id().equals("ultra")
+            ? new Tag(tag.id(), "Ultra&c+", "&6", tag.weight(), Optional.of("&6&lULTRA&c+ "), tag.decorative())
+            : tag));
+        FakeSender tadeu = FakeSender.named("tadeu");
+
+        List<TagChoice> choices = list.choices(kit.resolved(RankTestKit.uuid("tadeu")).orElseThrow().tags(), "tadeu", Optional.empty(),
+            display -> kit.styled(RankTestKit.uuid("tadeu"), display));
+        kit.framework.run(tadeu.player(), "tag ultra");
+
+        assertThat(choices).extracting(TagChoice::label).containsExactly("§7Membro", "§aVIP", "§9MVP", "§6Pro", "§6Ultra§c+");
+        assertThat(choices.getLast().hover().get(1)).isEqualTo("§6§lULTRA§c+ §6tadeu: §fOlá!");
+        assertThat(tadeu.messages()).containsExactly("§aVocê selecionou a tag §6Ultra§c+ §acom sucesso.");
     }
 
     @Test

@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 public record TagChoice(String id, String label, List<String> hover) implements ChatChoice {
 
@@ -20,12 +21,18 @@ public record TagChoice(String id, String label, List<String> hover) implements 
     }
 
     public static List<TagChoice> of(List<Tag> usable, String player, Optional<Medal> medal, String chatTemplate, String previewMessage, List<String> hoverLines) {
+        return of(usable, player, medal, UnaryOperator.identity(), chatTemplate, previewMessage, hoverLines);
+    }
+
+    public static List<TagChoice> of(List<Tag> usable, String player, Optional<Medal> medal, UnaryOperator<RankDisplay> style, String chatTemplate,
+                                     String previewMessage, List<String> hoverLines) {
         return usable.stream()
             .sorted(Comparator.comparingInt(Tag::weight).thenComparing(Tag::id))
             .map(tag -> {
-                String preview = Colors.translate(new RankDisplay(Optional.of(tag), medal).preview(chatTemplate, player, previewMessage));
+                RankDisplay shown = style.apply(new RankDisplay(Optional.of(tag), medal));
+                String preview = Colors.translate(shown.preview(chatTemplate, player, previewMessage));
                 List<String> hover = hoverLines.stream().map(line -> line.replace(PREVIEW, preview)).toList();
-                return new TagChoice(tag.id(), Colors.translate(tag.display()), hover);
+                return new TagChoice(tag.id(), Colors.translate(shown.tag().orElse(tag).display()), hover);
             })
             .toList();
     }

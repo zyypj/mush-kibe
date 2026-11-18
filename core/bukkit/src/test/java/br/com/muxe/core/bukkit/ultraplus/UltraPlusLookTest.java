@@ -29,6 +29,7 @@ class UltraPlusLookTest {
         assertThat(display.emblem()).isEqualTo("❤");
         assertThat(display.preview(CHAT, "tadeu", "oi")).isEqualTo("&b&lULTRA&e+ &btadeu❤: &foi");
         assertThat(display.chatFormat(CHAT)).isEqualTo("§b§lULTRA§e+ §b%1$s❤: §f%2$s");
+        assertThat(display.tagDisplay()).isEqualTo("&bUltra&e+");
     }
 
     @Test
@@ -38,6 +39,7 @@ class UltraPlusLookTest {
         RankDisplay display = UltraPlusLook.of(SETTINGS, style, 3).apply(SETTINGS, new RankDisplay(Optional.of(ULTRA_PLUS)));
 
         assertThat(display.prefix()).isEqualTo("&5&lULTRA&6+ ");
+        assertThat(display.tagDisplay()).isEqualTo("&5Ultra&6+");
         assertThat(display.emblem()).isEmpty();
     }
 
