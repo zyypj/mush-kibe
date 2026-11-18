@@ -29,10 +29,15 @@ public record Preferences(Map<Preference, String> values) {
         return PrivateMessages.parse(value(Preference.PRIVATE_MESSAGES)).orElse(PrivateMessages.PUBLIC);
     }
 
+    public TagFormat tagFormat() {
+        return TagFormat.parse(value(Preference.TAG_FORMAT)).orElse(TagFormat.DEFAULT);
+    }
+
     public String next(Preference preference) {
         return switch (preference.kind()) {
             case TOGGLE -> String.valueOf(!on(preference));
             case PRIVATE_MESSAGES -> privateMessages().next().name();
+            case TAG_FORMAT -> tagFormat().next().name();
         };
     }
 

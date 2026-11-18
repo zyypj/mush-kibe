@@ -13,15 +13,18 @@ public final class PreferencesMenu {
 
     public static final String SOON = "preferences-soon";
     public static final String FIRST_TAB = "geral";
+    public static final String TAG_FORMAT = "tag-format";
 
     private final Localized<PreferencesSettings> settings;
     private final PreferenceService preferences;
     private final MessageCatalog messages;
+    private final TagFormatMenu tagFormat;
 
-    public PreferencesMenu(Localized<PreferencesSettings> settings, PreferenceService preferences, MessageCatalog messages) {
+    public PreferencesMenu(Localized<PreferencesSettings> settings, PreferenceService preferences, MessageCatalog messages, TagFormatMenu tagFormat) {
         this.settings = settings;
         this.preferences = preferences;
         this.messages = messages;
+        this.tagFormat = tagFormat;
     }
 
     public void open(Player player, Optional<Consumer<Player>> back) {
@@ -37,11 +40,18 @@ public final class PreferencesMenu {
                 switch (shown.click()) {
                     case NOTHING -> {
                     }
-                    case TAB -> open(context.player(), shown.tab().orElse(tab), back);
+                    case TAB -> open(context.player(), shown.target().orElse(tab), back);
                     case CHANGE -> {
                         Preference preference = shown.preference().orElseThrow();
                         preferences.change(id, preference, preferences.of(id).next(preference));
                         open(context.player(), tab, back);
+                    }
+                    case OPEN -> {
+                        if (shown.target().filter(TAG_FORMAT::equals).isPresent()) {
+                            tagFormat.open(context.player(), Optional.of(viewer -> open(viewer, tab, back)));
+                        } else {
+                            context.player().sendMessage(messages.get(context.player(), SOON));
+                        }
                     }
                     case SOON -> context.player().sendMessage(messages.get(context.player(), SOON));
                     case BACK -> back.ifPresent(open -> open.accept(context.player()));

@@ -5,6 +5,7 @@ import br.com.muxe.core.common.permission.domain.PermissionData;
 import br.com.muxe.core.common.permission.domain.PermissionUser;
 import br.com.muxe.core.common.permission.domain.ResolvedPermissions;
 import br.com.muxe.core.common.permission.sync.PermissionSync;
+import br.com.muxe.core.common.preference.domain.TagFormat;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Server;
@@ -46,6 +48,7 @@ public final class PermissionService implements PlayerRanks, Listener, Runnable 
     private final Map<UUID, PermissibleBase> originals = new ConcurrentHashMap<>();
     private final List<Consumer<Player>> listeners = new CopyOnWriteArrayList<>();
     private volatile BiFunction<UUID, RankDisplay, RankDisplay> style = (player, display) -> display;
+    private volatile Function<UUID, TagFormat> formats = viewer -> TagFormat.DEFAULT;
 
     private PermissionService(JavaPlugin plugin, PermissionSync sync, String serverGroup, Clock clock) {
         this.server = plugin.getServer();
@@ -108,6 +111,14 @@ public final class PermissionService implements PlayerRanks, Listener, Runnable 
 
     public void style(BiFunction<UUID, RankDisplay, RankDisplay> chosen) {
         style = chosen;
+    }
+
+    public TagFormat format(UUID viewer) {
+        return formats.apply(viewer);
+    }
+
+    public void formats(Function<UUID, TagFormat> chosen) {
+        formats = chosen;
     }
 
     public void refresh(Player player) {

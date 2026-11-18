@@ -1,6 +1,7 @@
 package br.com.muxe.core.bukkit.permission.display;
 
-import java.util.Collections;
+import br.com.muxe.core.common.preference.domain.TagFormat;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -24,18 +26,20 @@ public final class NameTagTeams implements Listener, Runnable {
     public static final long PERIOD_TICKS = 5L;
 
     private final Server server;
-    private final Function<UUID, NameTag> tags;
-    private final Map<UUID, NameTag> wanted = new HashMap<>();
+    private final BiFunction<UUID, TagFormat, NameTag> tags;
+    private final Function<UUID, TagFormat> formats;
+    private final Map<UUID, Map<TagFormat, NameTag>> wanted = new HashMap<>();
     private final Map<Scoreboard, Map<String, String>> applied = new WeakHashMap<>();
 
-    public NameTagTeams(Server server, Function<UUID, NameTag> tags) {
+    public NameTagTeams(Server server, BiFunction<UUID, TagFormat, NameTag> tags, Function<UUID, TagFormat> formats) {
         this.server = server;
         this.tags = tags;
+        this.formats = formats;
     }
 
     public void update(Player player) {
         if (player.isOnline()) {
-            wanted.put(player.getUniqueId(), tags.apply(player.getUniqueId()));
+            wanted.remove(player.getUniqueId());
             run();
         }
     }
@@ -55,12 +59,15 @@ public final class NameTagTeams implements Listener, Runnable {
     @Override
     public void run() {
         List<Player> online = List.copyOf(server.getOnlinePlayers());
-        Set<Scoreboard> boards = Collections.newSetFromMap(new IdentityHashMap<>());
+        Map<Scoreboard, TagFormat> boards = new IdentityHashMap<>();
         for (Player player : online) {
-            wanted.computeIfAbsent(player.getUniqueId(), tags::apply);
-            boards.add(player.getScoreboard());
+            boards.merge(player.getScoreboard(), formats.apply(player.getUniqueId()), NameTagTeams::shared);
         }
-        boards.forEach(board -> apply(board, online));
+        boards.forEach((board, format) -> apply(board, online, format));
+    }
+
+    static TagFormat shared(TagFormat one, TagFormat other) {
+        return one == other ? one : TagFormat.DEFAULT;
     }
 
     public void clear() {
@@ -69,11 +76,12 @@ public final class NameTagTeams implements Listener, Runnable {
         wanted.clear();
     }
 
-    private void apply(Scoreboard board, List<Player> online) {
+    private void apply(Scoreboard board, List<Player> online, TagFormat format) {
         Map<String, String> entries = applied.computeIfAbsent(board, ignored -> new HashMap<>());
         Set<String> present = new HashSet<>();
         for (Player player : online) {
-            NameTag tag = wanted.get(player.getUniqueId());
+            UUID id = player.getUniqueId();
+            NameTag tag = wanted.computeIfAbsent(id, ignored -> new EnumMap<>(TagFormat.class)).computeIfAbsent(format, chosen -> tags.apply(id, chosen));
             String name = player.getName();
             present.add(name);
             Team team = board.getTeam(tag.team());

@@ -24,6 +24,7 @@ import br.com.muxe.core.bukkit.permission.display.ChatFormatListener;
 import br.com.muxe.core.bukkit.permission.display.NameTag;
 import br.com.muxe.core.bukkit.permission.display.NameTagTeams;
 import br.com.muxe.core.bukkit.permission.display.NameTags;
+import br.com.muxe.core.bukkit.permission.display.TagFormatLook;
 import br.com.muxe.core.common.permission.domain.ResolvedPermissions;
 import br.com.muxe.core.common.permission.editor.EditorSessions;
 import java.util.Objects;
@@ -53,16 +54,16 @@ final class RankFeatures {
         Server server = plugin.getServer();
         PermissionService permissions = core.permissions();
         NameTags nameTags = core.nameTags();
-        NameTagTeams teams = new NameTagTeams(server, player -> nameTags.resolve(player, rank -> NameTag.of(
+        NameTagTeams teams = new NameTagTeams(server, (player, format) -> nameTags.resolve(player, rank -> NameTag.of(
             permissions.resolved(rank).flatMap(ResolvedPermissions::primaryGroup),
-            permissions.display(rank)
-        )));
+            TagFormatLook.apply(format, permissions.display(rank))
+        )), permissions::format);
         nameTags.attach(teams::update);
         permissions.onChange(teams::update);
         server.getPluginManager().registerEvents(teams, plugin);
         server.getScheduler().runTaskTimer(plugin, teams, NameTagTeams.PERIOD_TICKS, NameTagTeams.PERIOD_TICKS);
         String chatFormat = config.getString(CHAT_FORMAT, DEFAULT_CHAT_FORMAT);
-        server.getPluginManager().registerEvents(new ChatFormatListener(permissions::display, chatFormat), plugin);
+        server.getPluginManager().registerEvents(new ChatFormatListener(permissions::display, permissions::format, chatFormat), plugin);
 
         new PermissionSuggestions(
             permissions::data,

@@ -42,6 +42,8 @@ import br.com.muxe.core.bukkit.permission.PermissionService;
 import br.com.muxe.core.bukkit.preference.LobbyConfirmations;
 import br.com.muxe.core.bukkit.preference.PreferenceService;
 import br.com.muxe.core.bukkit.preference.PreferencesMenu;
+import br.com.muxe.core.bukkit.preference.TagFormatMenu;
+import br.com.muxe.core.bukkit.preference.TagFormatSettings;
 import br.com.muxe.core.bukkit.preference.PreferencesSettings;
 import br.com.muxe.core.bukkit.ultraplus.UltraPlusCommand;
 import br.com.muxe.core.bukkit.ultraplus.UltraPlusMenus;
@@ -70,6 +72,7 @@ import br.com.muxe.core.common.config.settings.MuxeSettings;
 import br.com.muxe.core.common.config.settings.SettingsLoader;
 import br.com.muxe.core.common.match.MatchReturns;
 import br.com.muxe.core.common.permission.sync.PermissionSync;
+import br.com.muxe.core.common.preference.domain.TagFormat;
 import br.com.muxe.core.common.runtime.CoreRuntime;
 import br.com.muxe.core.common.runtime.PlatformHooks;
 import java.util.Objects;
@@ -163,12 +166,16 @@ public final class CoreBukkitBootstrap {
             "Missing configuration section menus.statistics"))), messages, core.queries(), mainThread, plugin.getLogger());
         core.statistics(statistics);
         commands.register(new StatsCommand(statistics, preferences, core.queries(), mainThread, messages));
-        PreferencesMenu preferencesMenu = new PreferencesMenu(texts.map(section -> PreferencesSettings.from(Objects.requireNonNull(
-            section.getConfigurationSection("menus.preferences"), "Missing configuration section menus.preferences"))), preferences, messages);
         UltraPlusService ultraPlus = new UltraPlusService(UltraPlusSettings.from(texts.standard()), permissions, core.commands(), core.queries(), mainThread,
             permissions::refresh, plugin.getLogger());
         plugin.getServer().getPluginManager().registerEvents(ultraPlus, plugin);
         permissions.style(ultraPlus::style);
+        permissions.formats(viewer -> ultraPlus.member(viewer) ? preferences.of(viewer).tagFormat() : TagFormat.DEFAULT);
+        TagFormatMenu tagFormatMenu = new TagFormatMenu(texts.map(section -> TagFormatSettings.from(Objects.requireNonNull(
+            section.getConfigurationSection("menus.tag-format"), "Missing configuration section menus.tag-format"))), preferences, permissions::display, ultraPlus::member,
+            messages);
+        PreferencesMenu preferencesMenu = new PreferencesMenu(texts.map(section -> PreferencesSettings.from(Objects.requireNonNull(
+            section.getConfigurationSection("menus.preferences"), "Missing configuration section menus.preferences"))), preferences, messages, tagFormatMenu);
         UltraPlusMenus ultraPlusMenus = new UltraPlusMenus(texts.map(UltraPlusSettings::from), ultraPlus, messages, mainThread, runtime.clock());
         commands.register(new UltraPlusCommand(ultraPlusMenus));
         plugin.getServer().getPluginManager().registerEvents(ChatIntervalListener.from(config.getConfigurationSection("chat-interval"),

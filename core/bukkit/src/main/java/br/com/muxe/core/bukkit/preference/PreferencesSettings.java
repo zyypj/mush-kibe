@@ -36,7 +36,8 @@ public record PreferencesSettings(String title, int rows, int firstPane, Configu
                     .orElseThrow(() -> new IllegalArgumentException("Unknown preference '" + name + "' at " + entry.getCurrentPath())));
                 ConfigurationSection below = entry.getConfigurationSection("below");
                 entries.add(new Entry(key, entry.getInt("slot"), ItemBuilder.from(section(entry, "item")), preference,
-                    below == null ? Optional.empty() : Optional.of(Material.valueOf(below.getString("material", "STONE_BUTTON")))));
+                    below == null ? Optional.empty() : Optional.of(Material.valueOf(below.getString("material", "STONE_BUTTON"))),
+                    Optional.ofNullable(entry.getString("opens"))));
             }
             tabs.add(new Tab(id, ConfiguredButton.from(tab), entries));
         }
@@ -56,7 +57,7 @@ public record PreferencesSettings(String title, int rows, int firstPane, Configu
         }
     }
 
-    public record Entry(String id, int slot, ItemBuilder item, Optional<Preference> preference, Optional<Material> below) {
+    public record Entry(String id, int slot, ItemBuilder item, Optional<Preference> preference, Optional<Material> below, Optional<String> opens) {
     }
 
     public record Texts(String nameOn, String nameOff, String value, String enabled, String disabled, String clickEnable, String clickDisable, String optionSelected,

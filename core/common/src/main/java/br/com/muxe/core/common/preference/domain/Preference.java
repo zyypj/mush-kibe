@@ -12,7 +12,8 @@ public enum Preference {
     FRIEND_REQUESTS("friend-requests", Kind.TOGGLE, "true"),
     STATS_VISIBLE("stats-visible", Kind.TOGGLE, "true"),
     SITE_DISCORD("site-discord", Kind.TOGGLE, "true"),
-    SITE_FREEZE_STATS("site-freeze-stats", Kind.TOGGLE, "true");
+    SITE_FREEZE_STATS("site-freeze-stats", Kind.TOGGLE, "true"),
+    TAG_FORMAT("tag-format", Kind.TAG_FORMAT, TagFormat.DEFAULT.name());
 
     private final String key;
     private final Kind kind;
@@ -40,6 +41,7 @@ public enum Preference {
         return switch (kind) {
             case TOGGLE -> value.equals("true") || value.equals("false");
             case PRIVATE_MESSAGES -> PrivateMessages.parse(value).isPresent();
+            case TAG_FORMAT -> TagFormat.parse(value).isPresent();
         };
     }
 
@@ -49,6 +51,7 @@ public enum Preference {
 
     public enum Kind {
         TOGGLE,
-        PRIVATE_MESSAGES
+        PRIVATE_MESSAGES,
+        TAG_FORMAT
     }
 }

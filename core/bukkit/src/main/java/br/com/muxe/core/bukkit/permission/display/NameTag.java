@@ -53,6 +53,9 @@ public record NameTag(String team, String prefix, String suffix) {
     }
 
     static String fit(String prefix, String color) {
+        if (endsIn(prefix, color)) {
+            return cut(prefix, MAX_PREFIX);
+        }
         if (prefix.length() + color.length() <= MAX_PREFIX) {
             return prefix + color;
         }
@@ -61,6 +64,14 @@ public record NameTag(String team, String prefix, String suffix) {
             cut = cut.substring(0, cut.length() - 1);
         }
         return cut + color;
+    }
+
+    static boolean endsIn(String prefix, String color) {
+        int mark = prefix.lastIndexOf(COLOR_CHAR);
+        if (mark < 0 || mark + 1 >= prefix.length() || prefix.length() > MAX_PREFIX) {
+            return false;
+        }
+        return prefix.substring(mark, mark + 2).equalsIgnoreCase(color);
     }
 
     private static String order(int weight) {

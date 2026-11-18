@@ -24,6 +24,7 @@ The perks of the Ultra+ rank: emblems next to the nick, the `Menu do Ultra+` wit
 - A level, color or emblem shows `Selecionada.`/`Selecionado.` (and glows) when chosen, `Clique para selecionar.` when unlocked and `Bloqueado.` when the player is not Ultra+ or lacks the months. A choice that is no longer unlocked falls back to the included one.
 - **Flight in the waiting room:** players with `muxe.pregame.fly` (Ultra+) can fly in the waiting room of any match; the flight ends when the match starts.
 - **Chat interval:** members wait 3 s between chat messages, Ultra+ (`muxe.chat.fast`) 1 s, and staff (`muxe.chat.no-cooldown`) nothing. A message sent too early is not delivered and answers `messages.chat-cooldown`.
+- **Tag format:** Ultra+ players choose in `Preferências` > `Formato da tag` how they see every player's tag (chat, TAB and name tag). See [Preferences](../preferences/README.md).
 
 ## Commands
 

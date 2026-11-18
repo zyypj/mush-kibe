@@ -496,6 +496,38 @@ menus:
             - "&a"
             - "&b"
           close: "&dΩ&5]"
+  tag-format:
+    title: "Tag format"
+    back:
+      item:
+        name: "&aBack"
+        lore:
+          - "&7To Preferences"
+    texts:
+      example: "&7Example:"
+      exclusive: "&7Exclusive to &d&lULTRA&6+"
+      selected: "&aSelected."
+      select: "&eClick to select."
+      locked: "&cLocked."
+    formats:
+      default:
+        item:
+          name: "&aDefault"
+      color:
+        item:
+          name: "&aColor"
+      brackets-upper:
+        item:
+          name: "&aBrackets (Uppercase)"
+      brackets:
+        item:
+          name: "&aBrackets (Normal)"
+      default-white:
+        item:
+          name: "&aDefault (White)"
+      default-gray:
+        item:
+          name: "&aDefault (Gray)"
   preferences:
     title: "Preferences"
     tab-selected:

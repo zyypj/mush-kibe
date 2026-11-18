@@ -37,9 +37,10 @@ public final class PreferencesPages {
         for (PreferencesSettings.Entry entry : open.entries()) {
             if (entry.preference().isEmpty()) {
                 ItemBuilder icon = entry.item();
-                shown.add(new Shown(entry.slot(), icon, Click.SOON, Optional.empty(), Optional.empty()));
+                Click click = entry.opens().isPresent() ? Click.OPEN : Click.SOON;
+                shown.add(new Shown(entry.slot(), icon, click, Optional.empty(), entry.opens()));
                 entry.below().ifPresent(material -> shown.add(new Shown(entry.slot() + ROW_BELOW, ItemBuilder.of(material).name(icon.name()).lore(icon.lore()),
-                    Click.SOON, Optional.empty(), Optional.empty())));
+                    click, Optional.empty(), entry.opens())));
                 continue;
             }
             Preference preference = entry.preference().get();
@@ -86,10 +87,11 @@ public final class PreferencesPages {
         NOTHING,
         TAB,
         CHANGE,
+        OPEN,
         SOON,
         BACK
     }
 
-    public record Shown(int slot, ItemBuilder icon, Click click, Optional<Preference> preference, Optional<String> tab) {
+    public record Shown(int slot, ItemBuilder icon, Click click, Optional<Preference> preference, Optional<String> target) {
     }
 }

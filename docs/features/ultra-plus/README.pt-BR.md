@@ -24,6 +24,7 @@ As vantagens do rank Ultra+: emblemas ao lado do nick, o `Menu do Ultra+` com a 
 - Um nível, cor ou emblema mostra `Selecionada.`/`Selecionado.` (e brilha) quando escolhido, `Clique para selecionar.` quando liberado e `Bloqueado.` quando o jogador não é Ultra+ ou não tem os meses. Uma escolha que deixou de estar liberada volta para a inclusa.
 - **Voo na sala de espera:** jogadores com `muxe.pregame.fly` (Ultra+) podem voar na sala de espera de qualquer partida; o voo acaba quando a partida começa.
 - **Intervalo do chat:** membros esperam 3 s entre mensagens, Ultra+ (`muxe.chat.fast`) 1 s, e a staff (`muxe.chat.no-cooldown`) nada. Uma mensagem enviada antes da hora não é entregue e responde `messages.chat-cooldown`.
+- **Formato da tag:** jogadores Ultra+ escolhem em `Preferências` > `Formato da tag` como veem a tag de todos os jogadores (chat, TAB e name tag). Veja [Preferências](../preferences/README.pt-BR.md).
 
 ## Comandos
 

@@ -37,7 +37,9 @@ class PreferencesPagesTest {
         assertThat(at(page, 31).icon().name()).isEqualTo("§7Confirmar voltar para o lobby");
         assertThat(at(page, 31).icon().lore()).containsExactly(" ", "§7Valor: §cDesativado", " ", "§eClique para ativar.");
         assertThat(at(page, 40).icon().data()).isEqualTo(PreferencesPages.DYE_OFF);
-        assertThat(at(page, 33).click()).isEqualTo(Click.SOON);
+        assertThat(at(page, 33).click()).isEqualTo(Click.OPEN);
+        assertThat(at(page, 33).target()).contains(PreferencesMenu.TAG_FORMAT);
+        assertThat(at(page, 42).click()).isEqualTo(Click.OPEN);
         assertThat(at(page, 42).icon().material()).isEqualTo(Material.STONE_BUTTON);
         assertThat(at(page, 42).icon().lore()).contains("§7Exclusivo para §d§lULTRA§6+");
         assertThat(at(page, 49).click()).isEqualTo(Click.BACK);

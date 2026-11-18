@@ -20,6 +20,18 @@ class PreferencesTest {
         assertThat(preferences.on(Preference.STATS_VISIBLE)).isTrue();
         assertThat(preferences.on(Preference.SITE_DISCORD)).isTrue();
         assertThat(preferences.on(Preference.SITE_FREEZE_STATS)).isTrue();
+        assertThat(preferences.tagFormat()).isEqualTo(TagFormat.DEFAULT);
+    }
+
+    @Test
+    void theTagFormatKeepsAKnownFormatAndDropsAnUnknownOne() {
+        Preferences brackets = Preferences.DEFAULTS.with(Preference.TAG_FORMAT, "BRACKETS_UPPER");
+
+        assertThat(brackets.tagFormat()).isEqualTo(TagFormat.BRACKETS_UPPER);
+        assertThat(brackets.next(Preference.TAG_FORMAT)).isEqualTo("BRACKETS");
+        assertThat(Preferences.DEFAULTS.with(Preference.TAG_FORMAT, "SHOUTING").tagFormat()).isEqualTo(TagFormat.DEFAULT);
+        assertThat(Preference.byKey("tag-format")).contains(Preference.TAG_FORMAT);
+        assertThat(TagFormat.values()).allSatisfy(format -> assertThat(format.name().length()).isLessThanOrEqualTo(16));
     }
 
     @Test

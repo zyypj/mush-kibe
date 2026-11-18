@@ -766,6 +766,66 @@ menus:
             - "&a"
             - "&b"
           close: "&dΩ&5]"
+  tag-format:
+    title: "Formato da tag"
+    rows: 3
+    example: "{prefix}{color}{player}"
+    back:
+      slot: 21
+      item:
+        material: ARROW
+        name: "&aVoltar"
+        lore:
+          - "&7Para Preferências"
+    texts:
+      example: "&7Exemplo:"
+      exclusive: "&7Exclusivo para &d&lULTRA&6+"
+      selected: "&aSelecionado."
+      select: "&eClique para selecionar."
+      locked: "&cBloqueado."
+    formats:
+      default:
+        slot: 10
+        exclusive: false
+        item:
+          material: INK_SACK
+          data: 15
+          name: "&aPadrão"
+      color:
+        slot: 11
+        exclusive: true
+        item:
+          material: INK_SACK
+          data: 14
+          name: "&aCor"
+      brackets-upper:
+        slot: 12
+        exclusive: true
+        item:
+          material: INK_SACK
+          data: 13
+          name: "&aColchetes (Maiúsculo)"
+      brackets:
+        slot: 13
+        exclusive: true
+        item:
+          material: INK_SACK
+          data: 12
+          name: "&aColchetes (Normal)"
+      default-white:
+        slot: 14
+        exclusive: true
+        item:
+          material: INK_SACK
+          data: 11
+          name: "&aPadrão (Branco)"
+      default-gray:
+        slot: 15
+        exclusive: true
+        item:
+          material: INK_SACK
+          data: 10
+          name: "&aPadrão (Cinza)"
   preferences:
     title: "Preferências"
     rows: 6
@@ -829,6 +889,7 @@ menus:
               name: "Confirmar voltar para o lobby"
           tag-format:
             slot: 33
+            opens: tag-format
             below:
               material: STONE_BUTTON
             item:
